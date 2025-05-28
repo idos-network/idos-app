@@ -6,11 +6,15 @@ import {
 } from "@tanstack/react-router";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import * as React from "react";
+import { Suspense } from "react";
+import type * as React from "react";
 import type { QueryClient } from "@tanstack/react-query";
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary";
 import { NotFound } from "@/components/NotFound";
 import appCss from "@/styles/app.css?url";
+import * as TanstackQueryProvider from "@/providers/tanstack-query/root-provider";
+import * as RainbowKitProvider from "@/providers/wallet-providers/rainbow-kit";
+import Header from "@/components/Header";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -62,21 +66,28 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <TanstackQueryProvider.Provider>
+        <RainbowKitProvider.Provider>
+          <Header />
+          <Outlet />
+          <Suspense>
+            <TanStackRouterDevtools position="bottom-right" />
+            <ReactQueryDevtools buttonPosition="bottom-left" />
+          </Suspense>
+        </RainbowKitProvider.Provider>
+      </TanstackQueryProvider.Provider>
     </RootDocument>
   );
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body>
         {children}
-        <TanStackRouterDevtools position="bottom-right" />
-        <ReactQueryDevtools buttonPosition="bottom-left" />
         <Scripts />
       </body>
     </html>
