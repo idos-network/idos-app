@@ -1,7 +1,7 @@
+import { env } from "@/env";
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { mainnet } from "wagmi/chains";
-import { env } from "@/env";
 
 const projectID = env.VITE_WALLET_CONNECT_PROJECT_ID;
 
