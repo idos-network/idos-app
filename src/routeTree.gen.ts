@@ -11,14 +11,41 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AppRouteImport } from './routes/_app/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as AppStakingEventImport } from './routes/_app/staking-event'
+import { Route as AppNativeStakingImport } from './routes/_app/native-staking'
+import { Route as AppIdosProfileImport } from './routes/_app/idos-profile'
 
 // Create/Update Routes
+
+const AppRouteRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AppStakingEventRoute = AppStakingEventImport.update({
+  id: '/staking-event',
+  path: '/staking-event',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppNativeStakingRoute = AppNativeStakingImport.update({
+  id: '/native-staking',
+  path: '/native-staking',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppIdosProfileRoute = AppIdosProfileImport.update({
+  id: '/idos-profile',
+  path: '/idos-profile',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -32,39 +59,103 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/_app/idos-profile': {
+      id: '/_app/idos-profile'
+      path: '/idos-profile'
+      fullPath: '/idos-profile'
+      preLoaderRoute: typeof AppIdosProfileImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/native-staking': {
+      id: '/_app/native-staking'
+      path: '/native-staking'
+      fullPath: '/native-staking'
+      preLoaderRoute: typeof AppNativeStakingImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/_app/staking-event': {
+      id: '/_app/staking-event'
+      path: '/staking-event'
+      fullPath: '/staking-event'
+      preLoaderRoute: typeof AppStakingEventImport
+      parentRoute: typeof AppRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface AppRouteRouteChildren {
+  AppIdosProfileRoute: typeof AppIdosProfileRoute
+  AppNativeStakingRoute: typeof AppNativeStakingRoute
+  AppStakingEventRoute: typeof AppStakingEventRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppIdosProfileRoute: AppIdosProfileRoute,
+  AppNativeStakingRoute: AppNativeStakingRoute,
+  AppStakingEventRoute: AppStakingEventRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '': typeof AppRouteRouteWithChildren
+  '/idos-profile': typeof AppIdosProfileRoute
+  '/native-staking': typeof AppNativeStakingRoute
+  '/staking-event': typeof AppStakingEventRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '': typeof AppRouteRouteWithChildren
+  '/idos-profile': typeof AppIdosProfileRoute
+  '/native-staking': typeof AppNativeStakingRoute
+  '/staking-event': typeof AppStakingEventRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/_app/idos-profile': typeof AppIdosProfileRoute
+  '/_app/native-staking': typeof AppNativeStakingRoute
+  '/_app/staking-event': typeof AppStakingEventRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '' | '/idos-profile' | '/native-staking' | '/staking-event'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '' | '/idos-profile' | '/native-staking' | '/staking-event'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_app/idos-profile'
+    | '/_app/native-staking'
+    | '/_app/staking-event'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +168,32 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/_app"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/_app": {
+      "filePath": "_app/route.tsx",
+      "children": [
+        "/_app/idos-profile",
+        "/_app/native-staking",
+        "/_app/staking-event"
+      ]
+    },
+    "/_app/idos-profile": {
+      "filePath": "_app/idos-profile.tsx",
+      "parent": "/_app"
+    },
+    "/_app/native-staking": {
+      "filePath": "_app/native-staking.tsx",
+      "parent": "/_app"
+    },
+    "/_app/staking-event": {
+      "filePath": "_app/staking-event.tsx",
+      "parent": "/_app"
     }
   }
 }

@@ -12,10 +12,41 @@
 
   html,
   body {
-    @apply bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-200;
+    @apply font-body bg-gray-50 text-gray-900 dark:bg-ui-background-dark dark:text-gray-200;
   }
 
   .using-mouse * {
     outline: none !important;
   }
+}
+
+@theme {
+  --font-body: "Urbanist", sans-serif;
+  --font-heading: "Urbanist", sans-serif;
+  --font-mono: "Urbanist", sans-serif;
+
+  /* idOS colors */
+  --color-idos-aquamarine: #00ffb9;
+  --color-idos-dark-mode: #0a090c;
+  --color-idos-grey1: #1a1a1a;
+  --color-idos-grey2: #3b3b3b;
+  --color-idos-grey3: #4d4d4d;
+  --color-idos-grey4: #7a7a7a;
+  --color-idos-seasalt: #f8f8f8;
+
+  /* Semantic colors */
+  --color-semantic-success: #10b981;
+  --color-semantic-warning: #f59e0b;
+  --color-semantic-error: #ef4444;
+  --color-semantic-info: #3b82f6;
+
+  /* UI colors */
+  --color-ui-background-light: #f8f8f8;
+  --color-ui-background-dark: #0a090c;
+
+  --color-ui-text-light: #3b3b3b;
+  --color-ui-text-dark: #f8f8f8;
+
+  --color-ui-border-light: #f8f8f8;
+  --color-ui-border-dark: #3b3b3b;
 }
