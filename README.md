@@ -3,8 +3,8 @@
 From your terminal:
 
 ```sh
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 This starts your app in development mode, rebuilding assets on file changes.

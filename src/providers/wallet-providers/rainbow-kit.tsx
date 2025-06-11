@@ -1,12 +1,16 @@
-import { env } from "@/env";
-import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { env } from '@/env';
+import {
+  RainbowKitProvider,
+  darkTheme,
+  getDefaultConfig,
+} from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import { mainnet } from 'wagmi/chains';
 
 const projectID = env.VITE_WALLET_CONNECT_PROJECT_ID;
 
 const config = getDefaultConfig({
-  appName: "idOS Staking",
+  appName: 'idOS Staking',
   projectId: projectID,
   chains: [mainnet],
   ssr: true,
@@ -15,7 +19,18 @@ const config = getDefaultConfig({
 export function Provider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
-      <RainbowKitProvider>{children}</RainbowKitProvider>
+      <RainbowKitProvider
+        modalSize="compact"
+        theme={darkTheme({
+          accentColor: '#3b3b3b',
+          accentColorForeground: '#f8f8f8',
+          borderRadius: 'medium',
+          fontStack: 'system',
+          overlayBlur: 'small',
+        })}
+      >
+        {children}
+      </RainbowKitProvider>
     </WagmiProvider>
   );
 }

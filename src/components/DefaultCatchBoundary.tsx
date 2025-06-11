@@ -4,8 +4,8 @@ import {
   rootRouteId,
   useMatch,
   useRouter,
-} from "@tanstack/react-router";
-import type { ErrorComponentProps } from "@tanstack/react-router";
+} from '@tanstack/react-router';
+import type { ErrorComponentProps } from '@tanstack/react-router';
 
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const router = useRouter();
@@ -25,7 +25,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
             router.invalidate();
           }}
           className={
-            "rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700"
+            'rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700'
           }
         >
           Try Again
@@ -34,7 +34,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
           <Link
             to="/"
             className={
-              "rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700"
+              'rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700'
             }
           >
             Home
@@ -43,7 +43,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
           <Link
             to="/"
             className={
-              "rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700"
+              'rounded bg-gray-600 px-2 py-1 font-extrabold text-white uppercase dark:bg-gray-700'
             }
             onClick={(e) => {
               e.preventDefault();
