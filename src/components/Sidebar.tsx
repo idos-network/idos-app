@@ -29,6 +29,12 @@ export default function Sidebar() {
         >
           <MagicIcon className="h-4 w-4" /> Native Staking
         </Link>
+        <Link
+          to="/onboarding"
+          className="flex items-center gap-2 rounded px-3 py-2 [&.active]:bg-idos-grey2"
+        >
+          <MagicIcon className="h-4 w-4" /> Onboarding
+        </Link>
       </nav>
     </aside>
   );

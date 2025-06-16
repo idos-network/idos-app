@@ -11,7 +11,7 @@ export default function WalletGate() {
           Please connect your wallet to access the application
         </p>
       </div>
-      <ConnectButton />
+      <ConnectButton label="Connect EVM Wallet" />
     </div>
   );
 }

@@ -19,6 +19,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import type * as React from 'react';
 import { Suspense } from 'react';
 import { z } from 'zod';
+import OnboardingStepper from './components/onboarding/stepper';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -113,6 +114,29 @@ function Home() {
   return null;
 }
 
+// onboarding route
+// TODO remove this route when onboarding becomes dependent on wallet having a created profile or not
+export const onboardingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/onboarding',
+  component: Onboarding,
+});
+
+function Onboarding() {
+  useWalletGate();
+  return (
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <div className="flex flex-1 flex-col">
+        <Header />
+        <main className="flex-1 p-8 text-idos-seasalt flex flex-col gap-8">
+          <OnboardingStepper />
+        </main>
+      </div>
+    </div>
+  );
+}
+
 // idOS Profile route
 export const idosProfileRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -198,6 +222,7 @@ function StakingEvent() {
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
+  onboardingRoute,
   idosProfileRoute,
   nativeStakingRoute,
   stakingEventRoute,
