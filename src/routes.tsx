@@ -23,6 +23,7 @@ import { NearWalletProvider } from './providers/wallet-providers/near-provider';
 import { WalletConnectorProvider } from './providers/wallet-providers/wallet-connector';
 import OnboardingStepper from './components/onboarding/stepper';
 import { useIdOSLoginStatus } from './hooks/useIdOSHasProfile';
+import { StellarWalletProvider } from './providers/wallet-providers/stellar-provider';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -45,15 +46,17 @@ function RootComponent() {
       <TanstackQueryProvider.Provider>
         <RainbowKitProvider.Provider>
           <NearWalletProvider>
-            <WalletConnectorProvider>
-              <IDOSClientProvider>
-                <Outlet />
-                <Suspense>
-                  <TanStackRouterDevtools position="bottom-right" />
-                  <ReactQueryDevtools buttonPosition="bottom-left" />
-                </Suspense>
-              </IDOSClientProvider>
-            </WalletConnectorProvider>
+            <StellarWalletProvider>
+              <WalletConnectorProvider>
+                <IDOSClientProvider>
+                  <Outlet />
+                  <Suspense>
+                    <TanStackRouterDevtools position="bottom-right" />
+                    <ReactQueryDevtools buttonPosition="bottom-left" />
+                  </Suspense>
+                </IDOSClientProvider>
+              </WalletConnectorProvider>
+            </StellarWalletProvider>
           </NearWalletProvider>
         </RainbowKitProvider.Provider>
       </TanstackQueryProvider.Provider>

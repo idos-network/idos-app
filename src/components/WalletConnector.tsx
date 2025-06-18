@@ -43,6 +43,12 @@ export function WalletConnector() {
         label="Connect with NEAR"
         iconSrc="/near-mobile.png"
       />
+
+      <WalletConnectorButton
+        onClick={() => walletConnector.connectStellar()}
+        label="Connect with Stellar"
+        iconSrc="/stellar-icon.png"
+      />
     </div>
   );
 }

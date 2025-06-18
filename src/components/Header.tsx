@@ -1,6 +1,7 @@
 import CustomConnectButton from './CustomConnectButton';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import { NearHeader } from './NearHeader';
+import { StellarHeader } from './StellarHeader';
 
 export default function Header() {
   const walletConnector = useWalletConnector();
@@ -10,6 +11,7 @@ export default function Header() {
     <header className="flex justify-end gap-2 border-gray-800 border-b p-4 text-idos-seasalt">
       {wallet && wallet.type === 'ethereum' && <CustomConnectButton />}
       {wallet && wallet.type === 'near' && <NearHeader />}
+      {wallet && wallet.type === 'stellar' && <StellarHeader />}
 
       {/* TODO remove once Near modal is correctly implemented and rainbowkit modal uses walletConnect.disconnectAll*/}
       <button
