@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import WalletIcon from './icons/wallet';
 
+// TODO maybe update the openaccountmodal to use wallet.disconnectAll() instead
 export default function CustomConnectButton() {
   const client = useIdOS();
   const [hasProfile, setHasProfile] = useState(false);

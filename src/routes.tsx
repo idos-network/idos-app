@@ -16,10 +16,13 @@ import {
   createRoute,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import type * as React from 'react';
+import * as React from 'react';
 import { Suspense } from 'react';
 import { z } from 'zod';
+import { NearWalletProvider } from './providers/wallet-providers/near-provider';
+import { WalletConnectorProvider } from './providers/wallet-providers/wallet-connector';
 import OnboardingStepper from './components/onboarding/stepper';
+import { useIdOSLoginStatus } from './hooks/useIdOSHasProfile';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -41,13 +44,17 @@ function RootComponent() {
     <RootDocument>
       <TanstackQueryProvider.Provider>
         <RainbowKitProvider.Provider>
-          <IDOSClientProvider>
-            <Outlet />
-            <Suspense>
-              <TanStackRouterDevtools position="bottom-right" />
-              <ReactQueryDevtools buttonPosition="bottom-left" />
-            </Suspense>
-          </IDOSClientProvider>
+          <NearWalletProvider>
+            <WalletConnectorProvider>
+              <IDOSClientProvider>
+                <Outlet />
+                <Suspense>
+                  <TanStackRouterDevtools position="bottom-right" />
+                  <ReactQueryDevtools buttonPosition="bottom-left" />
+                </Suspense>
+              </IDOSClientProvider>
+            </WalletConnectorProvider>
+          </NearWalletProvider>
         </RainbowKitProvider.Provider>
       </TanstackQueryProvider.Provider>
     </RootDocument>
@@ -156,6 +163,7 @@ export const CredentialPublicNotesSchema = z.object({
 export type CredentialPublicNotes = z.infer<typeof CredentialPublicNotesSchema>;
 
 function IdosProfile() {
+  const hasProfile = useIdOSLoginStatus();
   useWalletGate();
 
   return (
@@ -165,7 +173,7 @@ function IdosProfile() {
         <Header />
         <main className="flex-1 p-8 text-idos-seasalt">
           <div className="container mx-auto px-4 py-8">
-            <CredentialsCard />
+            {(hasProfile && <CredentialsCard />) || <OnboardingStepper />}
           </div>
         </main>
       </div>

@@ -1,19 +1,25 @@
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
+import { useNearWallet } from './useNearWallet';
 
 export function useWalletGate() {
   const { isConnected } = useAccount();
+
+  const nearWallet = useNearWallet();
+
+  const isLoggedIn = nearWallet.selector.isSignedIn();
+
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!isConnected && location.pathname !== '/') {
+    if (!isConnected && !isLoggedIn && location.pathname !== '/') {
       navigate({ to: '/' });
-    } else if (isConnected && location.pathname === '/') {
+    } else if ((isConnected || isLoggedIn) && location.pathname === '/') {
       navigate({ to: '/idos-profile' });
     }
-  }, [isConnected, location.pathname, navigate]);
+  }, [isConnected, isLoggedIn, location.pathname, navigate]);
 
   return { isConnected };
 }
