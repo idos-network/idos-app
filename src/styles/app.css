@@ -28,13 +28,25 @@
   --font-mono: 'Urbanist', sans-serif;
 
   /* idOS colors */
-  --color-idos-aquamarine: #00ffb9;
   --color-idos-dark-mode: #0a090c;
   --color-idos-grey1: #1a1a1a;
   --color-idos-grey2: #3b3b3b;
   --color-idos-grey3: #4d4d4d;
   --color-idos-grey4: #7a7a7a;
   --color-idos-seasalt: #f8f8f8;
+
+  /* Aquamarine shades */
+  --color-aquamarine-950: #00382d;
+  --color-aquamarine-900: #00624d;
+  --color-aquamarine-800: #00785c;
+  --color-aquamarine-700: #009873;
+  --color-aquamarine-600: #00be89;
+  --color-aquamarine-500: #00e8a6;
+  --color-aquamarine-400: #00ffb9;
+  --color-aquamarine-300: #33ffcc;
+  --color-aquamarine-200: #92ffdc;
+  --color-aquamarine-100: #c6ffea;
+  --color-aquamarine-50: #e7fff7;
 
   /* Semantic colors */
   --color-semantic-success: #10b981;

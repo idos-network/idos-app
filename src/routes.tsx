@@ -21,7 +21,7 @@ import { Suspense } from 'react';
 import { z } from 'zod';
 import { NearWalletProvider } from './providers/wallet-providers/near-provider';
 import { WalletConnectorProvider } from './providers/wallet-providers/wallet-connector';
-import OnboardingStepper from './components/onboarding/stepper';
+import OnboardingStepper from './components/onboarding/OnboardingStepper';
 import { useIdOSLoginStatus } from './hooks/useIdOSHasProfile';
 import { StellarWalletProvider } from './providers/wallet-providers/stellar-provider';
 
@@ -109,29 +109,6 @@ function Home() {
   return null;
 }
 
-// onboarding route
-// TODO remove this route when onboarding becomes dependent on wallet having a created profile or not
-export const onboardingRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/onboarding',
-  component: Onboarding,
-});
-
-function Onboarding() {
-  useWalletGate();
-  return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <div className="flex flex-1 flex-col">
-        <Header />
-        <main className="flex-1 p-8 text-idos-seasalt flex flex-col gap-8">
-          <OnboardingStepper />
-        </main>
-      </div>
-    </div>
-  );
-}
-
 // idOS Profile route
 export const idosProfileRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -159,10 +136,16 @@ function IdosProfile() {
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
-        <main className="flex-1 p-8 text-idos-seasalt">
-          <div className="container mx-auto px-4 py-8">
-            {(hasProfile && <CredentialsCard />) || <OnboardingStepper />}
-          </div>
+        <main className="flex-1 p-8 pt-16 flex items-center justify-center text-idos-seasalt">
+          {hasProfile ? (
+            <div className="container mx-auto px-4 py-8">
+              <CredentialsCard />
+            </div>
+          ) : (
+            <div className="container mx-auto flex justify-center">
+              <OnboardingStepper />
+            </div>
+          )}
         </main>
       </div>
     </div>
@@ -218,7 +201,6 @@ function StakingEvent() {
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
-  onboardingRoute,
   idosProfileRoute,
   nativeStakingRoute,
   stakingEventRoute,
