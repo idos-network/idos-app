@@ -66,29 +66,18 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>idOS Staking</title>
-
-        <link rel="manifest" href="/site.webmanifest" />
-        <link rel="icon" href="/favicon-60x60.png" />
-        <link rel="icon" href="/favicon-32x32.png" />
-      </head>
-      <body>
-        {children}
-        <div
-          id="idOS-enclave"
-          style={{
-            position: 'absolute',
-            width: 0,
-            height: 0,
-            overflow: 'hidden',
-          }}
-        />
-      </body>
-    </html>
+    <>
+      {children}
+      <div
+        id="idOS-enclave"
+        style={{
+          position: 'absolute',
+          width: 0,
+          height: 0,
+          overflow: 'hidden',
+        }}
+      />
+    </>
   );
 }
 

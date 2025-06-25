@@ -47,7 +47,7 @@ function HumanVerificationStep({
 }) {
   return (
     <div
-      className={`w-[216px] h-[51px] flex items-center gap-2 pt-2 pr-6 pb-2 pl-2 rounded-[100px] ${isActive ? 'bg-neutral-50' : 'bg-neutral-800'}`}
+      className={`w-[216px] h-[51px] flex items-center gap-2 pt-2 pr-6 pb-2 pl-2 rounded-[100px] ${isDone ? 'border-none' : 'border-[0.5px] border-neutral-500'} ${isActive ? 'bg-neutral-50' : 'bg-neutral-800'}`}
     >
       <div
         className={`w-8 h-8 py-1 ${isActive || isDone ? 'bg-aquamarine-400' : 'bg-neutral-700'}  rounded-[100px] flex justify-center items-center gap-2.5`}
@@ -82,7 +82,7 @@ function CredentialStep({
 }) {
   return (
     <div
-      className={`w-[197px] h-[51px] flex items-center gap-2 pt-2 pr-6 pb-2 pl-2 rounded-[100px] border-[0.5px] ${isActive ? 'bg-neutral-50' : 'bg-neutral-800'}`}
+      className={`w-[197px] h-[51px] flex items-center gap-2 pt-2 pr-6 pb-2 pl-2 rounded-[100px] ${isDone ? 'border-none' : 'border-[0.5px] border-neutral-500'} ${isActive ? 'bg-neutral-50' : 'bg-neutral-800'}`}
     >
       <div
         className={`w-8 h-8 py-1 ${isActive || isDone ? 'bg-aquamarine-400' : 'bg-neutral-700'} rounded-[100px] flex justify-center items-center gap-2.5`}
@@ -120,10 +120,14 @@ export default function TopBar({ activeStep }: { activeStep?: string }) {
         }
       />
 
+      <div className="h-px flex-1 bg-neutral-600" />
+
       <HumanVerificationStep
         isActive={activeStep === 'step-three'}
         isDone={activeStep === 'step-four' || activeStep === 'step-five'}
       />
+
+      <div className="h-px flex-1 bg-neutral-600" />
 
       <CredentialStep
         isActive={activeStep === 'step-four'}
