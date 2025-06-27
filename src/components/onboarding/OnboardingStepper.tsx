@@ -10,6 +10,7 @@ import PortraitIcon from '../icons/portrait';
 import FrameIcon from '../icons/frame';
 import Spinner from './components/Spinner';
 import CheckIcon from '../icons/check';
+import KeylessEnroll from './components/KeylessEnroll';
 import { useSignMessage } from 'wagmi';
 
 function StepOne({ onNext }: { onNext: () => void }) {
@@ -125,20 +126,24 @@ function StepTwo({ onNext }: { onNext: () => void }) {
 }
 
 function StepThree({ onNext }: { onNext: () => void }) {
-  // todo impl camera and / or file upload for human verification
   const [state, setState] = useState('idle');
 
   async function handleProofOfHumanity() {
-    try {
-      setState('verifying');
-      // Simulate a verification process using the keyless biometric system
-      // TODO update this to receive the keyless response
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      setState('verified');
-    } catch (error) {
-      console.error('Verification failed:', error);
-      setState('idle');
-    }
+    setState('verifying');
+  }
+
+  function handleKeylessError(error: any) {
+    console.error('Keyless enrollment failed:', error);
+    setState('idle');
+  }
+
+  function handleKeylessFinished(result: any) {
+    console.log('Keyless enrollment successful:', result);
+    setState('verified');
+  }
+
+  function handleKeylessCancel() {
+    setState('idle');
   }
 
   return (
@@ -183,30 +188,15 @@ function StepThree({ onNext }: { onNext: () => void }) {
 
       {state === 'verifying' && (
         <>
-          Proof of personhood in progress...
-          <div className="w-[716px] h-[216px] flex flex-col gap-5 rounded-[20px] p-5 bg-neutral-900">
-            <video
-              ref={(video) => {
-                if (video) {
-                  navigator.mediaDevices
-                    .getUserMedia({ video: true })
-                    .then((stream) => {
-                      video.srcObject = stream;
-                      video.play();
-                    })
-                    .catch((err) =>
-                      console.error('Camera access failed:', err),
-                    );
-                }
-              }}
-              className="w-full h-32 object-cover rounded-lg"
-              autoPlay
-              muted
-            />
-          </div>
-          <StepperButton className="bg-aquamarine-600 text-neutral-950">
-            Continue
-          </StepperButton>
+          <TextBlock
+            title="Verify you are a human"
+            subtitle="Please follow the instructions to complete your biometric enrollment."
+          />
+          <KeylessEnroll
+            onError={handleKeylessError}
+            onFinished={handleKeylessFinished}
+            onCancel={handleKeylessCancel}
+          />
         </>
       )}
 
