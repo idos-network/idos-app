@@ -31,6 +31,8 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build
         run: npm run build
@@ -40,7 +42,6 @@ jobs:
           VITE_KEYLESS_AUTHENTICATION_SERVICE_URL: ${{ vars.VITE_KEYLESS_AUTHENTICATION_SERVICE_URL }}
           VITE_IMAGE_ENCRYPTION_PUBLIC_KEY: ${{ vars.VITE_IMAGE_ENCRYPTION_PUBLIC_KEY }}
           VITE_IMAGE_ENCRYPTION_KEY_ID: ${{ vars.VITE_IMAGE_ENCRYPTION_KEY_ID }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
