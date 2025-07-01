@@ -125,7 +125,7 @@ function IdosProfile() {
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
-        <main className="flex-1 p-8 pt-16 flex items-center justify-center text-idos-seasalt">
+        <main className="flex-1 p-8 pt-16 flex items-start justify-start text-idos-seasalt">
           {hasProfile ? (
             <div className="container mx-auto px-4 py-8">
               <CredentialsCard />

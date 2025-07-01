@@ -9,8 +9,8 @@ export default function PersonIcon({
 }) {
   return (
     <svg
-      width={props.width || '22'}
-      height={props.height || '21'}
+      width={props.width || '25'}
+      height={props.height || '25'}
       className={className}
       viewBox="0 0 22 21"
       fill="none"

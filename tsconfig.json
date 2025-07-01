@@ -29,7 +29,10 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/icons/*": ["./src/components/icons/*"],
+      "@/hooks/*": ["./src/hooks/*"]
     }
   }
 }
