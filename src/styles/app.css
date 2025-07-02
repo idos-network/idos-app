@@ -5,7 +5,7 @@
 
 @layer base {
   html {
-    color-scheme: light dark;
+    color-scheme: dark;
   }
 
   * {
@@ -14,7 +14,7 @@
 
   html,
   body {
-    @apply font-body bg-gray-50 text-gray-900 dark:bg-ui-background-dark dark:text-gray-200;
+    @apply font-body bg-ui-background-dark text-gray-200;
   }
 
   .using-mouse * {

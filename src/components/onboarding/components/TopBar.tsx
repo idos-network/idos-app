@@ -120,14 +120,14 @@ export default function TopBar({ activeStep }: { activeStep?: string }) {
         }
       />
 
-      <div className="h-px flex-1 bg-neutral-600" />
+      <div className="h-px flex-1 bg-neutral-500" />
 
       <HumanVerificationStep
         isActive={activeStep === 'step-three'}
         isDone={activeStep === 'step-four' || activeStep === 'step-five'}
       />
 
-      <div className="h-px flex-1 bg-neutral-600" />
+      <div className="h-px flex-1 bg-neutral-500" />
 
       <CredentialStep
         isActive={activeStep === 'step-four'}

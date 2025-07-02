@@ -20,7 +20,7 @@ import { GraphIcon } from '../icons/graph';
 
 function StepOne({ onNext }: { onNext: () => void }) {
   return (
-    <div className="relative w-[900px] h-[900px] rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden top-[12px]">
+    <div className="relative w-[900px] h-[900px] rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
       <div className="h-full w-full bg-idos-grey1/90 flex flex-col gap-10 p-14 rounded-[40px]">
         <img
           src="/idOS-cubes-1.png"
