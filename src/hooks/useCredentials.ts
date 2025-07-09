@@ -3,7 +3,7 @@ import type { idOSCredential } from '@idos-network/client';
 import { useEffect, useState } from 'react';
 
 export function useCredentials() {
-  const idOSClient = useIdOS();
+  const { idOSClient } = useIdOS();
   const [credentials, setCredentials] = useState<idOSCredential[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);

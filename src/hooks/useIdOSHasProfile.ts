@@ -2,12 +2,12 @@ import { useIdOS } from '@/providers/idos/idos-client';
 import React from 'react';
 
 export function useIdOSLoginStatus() {
-  const client = useIdOS();
+  const { idOSClient } = useIdOS();
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   React.useEffect(() => {
     async function checkLoginStatus() {
-      if (client.state !== 'logged-in') {
+      if (idOSClient.state !== 'logged-in') {
         setIsLoggedIn(false);
         return;
       }
@@ -15,7 +15,7 @@ export function useIdOSLoginStatus() {
     }
 
     checkLoginStatus();
-  }, [client]);
+  }, [idOSClient]);
 
   return isLoggedIn;
 }

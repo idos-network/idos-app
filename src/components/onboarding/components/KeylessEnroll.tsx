@@ -4,12 +4,14 @@ import Spinner from './Spinner';
 import StepperButton from './StepperButton';
 
 interface KeylessEnrollProps {
+  userId: string;
   onError: (error: any) => void;
   onFinished: (result: any) => void;
   onCancel?: () => void;
 }
 
 export default function KeylessEnroll({
+  userId,
   onError,
   onFinished,
   onCancel,
@@ -163,7 +165,7 @@ export default function KeylessEnroll({
         lang="en"
         size="300"
         theme="dark"
-        username={env.VITE_CUSTOMER_NAME + '_' + Date.now()}
+        username={userId}
         ws-url={env.VITE_KEYLESS_AUTHENTICATION_SERVICE_URL}
       >
         <div slot="lottie-spinner">

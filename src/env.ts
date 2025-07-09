@@ -16,6 +16,8 @@ export const env = createEnv({
     VITE_KEYLESS_AUTHENTICATION_SERVICE_URL: z.string().min(1),
     VITE_IMAGE_ENCRYPTION_PUBLIC_KEY: z.string().min(1),
     VITE_IMAGE_ENCRYPTION_KEY_ID: z.string().min(1),
+    VITE_OWNERSHIP_PROOF_MESSAGE: z.string().min(1),
+    VITE_RECAPTCHA_SITE_KEY: z.string().min(1),
   },
 
   /**

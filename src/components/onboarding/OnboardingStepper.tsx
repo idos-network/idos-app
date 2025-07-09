@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 import { useSignMessage } from 'wagmi';
 
@@ -17,6 +18,13 @@ import CredentialIcon from '@/icons/credential';
 import PersonIcon from '@/icons/person';
 import KeyIcon from '@/icons/key';
 import { GraphIcon } from '../icons/graph';
+import { useIdOS } from '@/providers/idos/idos-client';
+import { useEthersSigner } from '@/hooks/useEthersSigner';
+import { getCurrentUser, updateUserState } from '@/storage/idos-profile';
+import { createIdOSProfile, verifyRecaptcha } from '@/api/idos-profile';
+import { env } from '@/env';
+import { handleCreateAccount } from '@/utils/idos-profile';
+import useRecaptcha from '@/hooks/useRecaptcha';
 
 function StepOne({ onNext }: { onNext: () => void }) {
   return (
@@ -71,26 +79,21 @@ function StepOne({ onNext }: { onNext: () => void }) {
 
 function StepTwo({ onNext }: { onNext: () => void }) {
   const [state, setState] = useState('idle');
-
-  const { isError, isSuccess, signMessage } = useSignMessage();
-
-  async function handleCreateAccount() {
-    try {
-      setState('creating');
-      signMessage({ message: 'Create idOS key' });
-    } catch (error) {
-      console.error('Account creation failed:', error);
-      setState('idle');
-    }
-  }
+  const { withSigner } = useIdOS();
+  const [loading, setLoading] = useState(false);
+  const [error] = useState<string | null>(null);
+  const signer = useEthersSigner();
+  // const { isError, isSuccess, signMessage } = useSignMessage();
 
   useEffect(() => {
-    if (isSuccess) {
-      onNext();
-    } else if (isError) {
+    handleCreateAccount(setState, setLoading, withSigner, signer, onNext);
+  }, [onNext, signer, withSigner]);
+
+  useEffect(() => {
+    if (error) {
       setState('idle');
     }
-  }, [isSuccess, isError, onNext]);
+  }, [error]);
 
   return (
     <div className="flex flex-col gap-14 h-[675px] w-[700px]">
@@ -118,16 +121,26 @@ function StepTwo({ onNext }: { onNext: () => void }) {
             />
           </div>
           <div className="flex justify-center mt-auto">
-            <StepperButton onClick={handleCreateAccount}>
-              Create idOS Key
-            </StepperButton>
+            <StepperButton className="bg-none"></StepperButton>
           </div>
         </div>
       )}
       {state === 'creating' && (
         <>
           <div className="flex justify-center flex-1 items-center">
-            <Spinner />
+            {loading && <Spinner />}
+            {error && <div className="text-red-500">{error}</div>}
+          </div>
+          <div className="flex justify-center">
+            {/* <StepperButton>Creating your idOS key...</StepperButton> */}
+          </div>
+        </>
+      )}
+      {state === 'waiting_signature' && (
+        <>
+          <div className="flex justify-center flex-1 items-center">
+            {loading && <Spinner />}
+            {error && <div className="text-red-500">{error}</div>}
           </div>
           <div className="flex justify-center">
             <StepperButton>Waiting for signature...</StepperButton>
@@ -140,16 +153,19 @@ function StepTwo({ onNext }: { onNext: () => void }) {
 
 function StepThree({ onNext }: { onNext: () => void }) {
   const [state, setState] = useState('idle');
+  const { captchaToken, setCaptchaToken, recaptchaRef, handleRecaptcha } =
+    useRecaptcha();
+
+  const currentUser = getCurrentUser();
+  const userId = currentUser?.id || '';
+  const userAddress = currentUser?.mainAddress || '';
 
   useEffect(() => {
     if (state === 'verified') {
+      updateUserState(userAddress, { humanVerified: true });
       onNext();
     }
-  }, [state, onNext]);
-  // Temporarily skip verification - automatically proceed to next step
-  //   onNext();
-  // }, [onNext]);
-  //
+  }, [state, onNext, userAddress]);
 
   async function handleProofOfHumanity() {
     setState('verifying');
@@ -160,8 +176,7 @@ function StepThree({ onNext }: { onNext: () => void }) {
     setState('idle');
   }
 
-  function handleKeylessFinished(result: any) {
-    console.log('Keyless enrollment successful:', result);
+  function handleKeylessFinished() {
     setState('verified');
   }
 
@@ -169,11 +184,45 @@ function StepThree({ onNext }: { onNext: () => void }) {
     setState('idle');
   }
 
+  function handleRecaptchaExpired() {
+    console.log('reCAPTCHA expired');
+    setCaptchaToken('');
+  }
+
+  function handleRecaptchaError(error: any) {
+    console.error('reCAPTCHA error:', error);
+    setCaptchaToken('');
+  }
+
+  async function handleRecaptchaSubmit() {
+    if (!captchaToken) {
+      alert('Please complete the reCAPTCHA verification.');
+      return;
+    }
+
+    try {
+      const response = await verifyRecaptcha(captchaToken);
+
+      if (response.success) {
+        updateUserState(userAddress, { humanVerified: true });
+        onNext();
+      } else {
+        throw new Error(response.message || 'Verification failed');
+      }
+    } catch (error) {
+      console.error('reCAPTCHA verification failed:', error);
+      alert('Verification failed. Please try again.');
+      if (recaptchaRef.current) {
+        recaptchaRef.current.reset();
+      }
+      setCaptchaToken('');
+    }
+  }
+
   return (
     <div className="flex flex-col gap-14 h-[675px] w-[700px]">
       <TopBar activeStep="step-three" />
-
-      {state === 'idle' && (
+      {state !== 'verifying' && (
         <div className="flex flex-col gap-14 flex-1">
           <TextBlock
             title="Verify you are a human"
@@ -199,13 +248,51 @@ function StepThree({ onNext }: { onNext: () => void }) {
               description="Future authentication will work across any of your linked devices"
             />
           </div>
+        </div>
+      )}
+      {state === 'idle' && (
+        <>
           <div className="flex justify-center mt-auto">
             <div className="flex flex-col items-center gap-3">
               <StepperButton onClick={handleProofOfHumanity}>
                 Verify you are human
               </StepperButton>
-              <StepperButton className="bg-none text-aquamarine-50 hover:text-aquamarine-200">
+              <StepperButton
+                className="bg-none text-aquamarine-50 hover:text-aquamarine-200"
+                onClick={() => setState('recaptcha')}
+              >
                 Choose another method
+              </StepperButton>
+            </div>
+          </div>
+        </>
+      )}
+
+      {state === 'recaptcha' && (
+        <div className="flex flex-col gap-14 flex-1">
+          <div className="flex flex-col items-center gap-6">
+            <div className="flex justify-center border-6 rounded-lg border-aquamarine-400">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={env.VITE_RECAPTCHA_SITE_KEY}
+                onChange={handleRecaptcha}
+                onExpired={handleRecaptchaExpired}
+                onError={handleRecaptchaError}
+                theme="dark"
+              />
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <StepperButton
+                onClick={handleRecaptchaSubmit}
+                disabled={captchaToken === ''}
+              >
+                Verify with reCAPTCHA
+              </StepperButton>
+              <StepperButton
+                className="bg-none text-aquamarine-50 hover:text-aquamarine-200"
+                onClick={() => setState('idle')}
+              >
+                Back to options
               </StepperButton>
             </div>
           </div>
@@ -219,6 +306,7 @@ function StepThree({ onNext }: { onNext: () => void }) {
             subtitle="Please follow the instructions to complete your biometric enrollment."
           />
           <KeylessEnroll
+            userId={userId}
             onError={handleKeylessError}
             onFinished={handleKeylessFinished}
             onCancel={handleKeylessCancel}
@@ -231,8 +319,13 @@ function StepThree({ onNext }: { onNext: () => void }) {
 
 function StepFour() {
   const [state, setState] = useState('idle');
-
   const { isError, isSuccess, signMessage } = useSignMessage();
+
+  const currentUser = getCurrentUser();
+  const userId = currentUser?.id || '';
+  const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
+  const userAddress = currentUser?.mainAddress || '';
+  const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
 
   useEffect(() => {
     if (isSuccess) {
@@ -251,6 +344,13 @@ function StepFour() {
   async function handleCreateCredential() {
     try {
       setState('creating');
+      await createIdOSProfile(
+        userId,
+        userEncryptionPublicKey,
+        userAddress,
+        env.VITE_OWNERSHIP_PROOF_MESSAGE,
+        ownershipProofSignature,
+      );
       signMessage({ message: 'Create an idOS Credential' });
     } catch (error) {
       console.error('Account creation failed:', error);
@@ -316,6 +416,18 @@ export default function OnboardingStepper() {
     { id: 'step-three', component: StepThree },
     { id: 'step-four', component: StepFour },
   ];
+
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+
+    if (currentUser) {
+      if (currentUser.humanVerified) {
+        setActiveStep('step-four');
+      } else if (currentUser.idosKey) {
+        setActiveStep('step-three');
+      }
+    }
+  }, []);
 
   function getCurrentStepComponent() {
     const currentStep = steps.find((step) => step.id === activeStep);

@@ -1,5 +1,9 @@
 ## Development
 
+This project uses [Netlify Functions](https://docs.netlify.com/functions/overview/) for serverless backend logic.
+
+### Quick Start (Frontend Only)
+
 From your terminal:
 
 ```sh
@@ -7,4 +11,63 @@ npm install
 npm run dev
 ```
 
-This starts your app in development mode, rebuilding assets on file changes.
+This starts your app in development mode using Vite, rebuilding assets on file changes. **Note:** This will not run Netlify Functions locally.
+
+### Full Local Development (Frontend + Netlify Functions)
+
+To run both the frontend and Netlify Functions locally, use the Netlify CLI:
+
+1. Install the Netlify CLI (if you haven't already):
+   ```sh
+   npm install -g netlify-cli
+   ```
+2. Start the local Netlify dev environment:
+   ```sh
+   netlify dev
+   ```
+
+This will serve your frontend and serverless functions together, emulating the production environment as closely as possible.
+
+Access the app at:
+
+http://localhost:8888
+
+## Key Generation for idOS Issuer
+
+To act as an idOS Issuer, you need to generate a signing and encryption key pair. This is required for the Netlify Function at `functions/idosprofile.ts`.
+
+### Generating Keys
+
+Run the provided script:
+
+```sh
+node scripts/generate-keys.ts
+```
+
+This will output four keys:
+
+- `signingKeyPair.secretKey` (hex)
+- `signingKeyPair.publicKey` (hex)
+- `encryptionKeyPair.secretKey` (hex)
+- `encryptionKeyPair.publicKey` (hex)
+
+### What to do with the keys
+
+- **Provide the `signingKeyPair.publicKey` (hex) to the idOS team** to be added as an authorized Issuer. This is your public identity as an issuer.
+- **Keep all secret keys safe and never share them.**
+
+### Environment Variables
+
+Add the following to your environment (e.g., in your Netlify dashboard or `.env` file):
+
+```
+ISSUER_SIGNING_SECRET_KEY=<signingKeyPair.secretKey>
+ISSUER_ENCRYPTION_SECRET_KEY=<encryptionKeyPair.secretKey>
+KWIL_NODE_URL=<your-kwil-node-url>
+```
+
+- `ISSUER_SIGNING_SECRET_KEY`: The secret key (hex) from `signingKeyPair.secretKey`.
+- `ISSUER_ENCRYPTION_SECRET_KEY`: The secret key (hex) from `encryptionKeyPair.secretKey`.
+- `KWIL_NODE_URL`: The URL of the Kwil node to use (ask your admin or see project docs).
+
+The Netlify Function will use these environment variables to initialize the issuer and perform secure operations.

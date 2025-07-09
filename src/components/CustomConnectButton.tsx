@@ -6,12 +6,12 @@ import WalletIcon from './icons/wallet';
 
 // TODO maybe update the openaccountmodal to use wallet.disconnectAll() instead
 export default function CustomConnectButton() {
-  const client = useIdOS();
+  const { idOSClient } = useIdOS();
   const [hasProfile, setHasProfile] = useState(false);
 
   useEffect(() => {
     async function checkProfile() {
-      if (client.state !== 'logged-in') {
+      if (idOSClient.state !== 'logged-in') {
         setHasProfile(false);
         return;
       }
@@ -19,7 +19,7 @@ export default function CustomConnectButton() {
     }
 
     checkProfile();
-  }, [client]);
+  }, [idOSClient]);
 
   return (
     <ConnectButton.Custom>

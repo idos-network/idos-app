@@ -11,7 +11,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  check:
+  frontend-check:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Configure npm token
         run: sed -i "s/\${NPM_TOKEN}/${{ secrets.NPM_TOKEN }}/g" .npmrc

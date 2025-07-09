@@ -1,4 +1,8 @@
-import { createIDOSClient, type idOSClient } from '@idos-network/client';
+import {
+  createIDOSClient,
+  type idOSClient,
+  idOSClientWithUserSigner,
+} from '@idos-network/client';
 import {
   type PropsWithChildren,
   createContext,
@@ -14,7 +18,15 @@ const _idOSClient = createIDOSClient({
   enclaveOptions: { container: '#idOS-enclave' },
 });
 
-export const IDOSClientContext = createContext<idOSClient>(_idOSClient);
+type IdOSContextType = {
+  idOSClient: idOSClient;
+  withSigner: idOSClientWithUserSigner;
+  isLoading: boolean;
+};
+
+export const IDOSClientContext = createContext<IdOSContextType | undefined>(
+  undefined,
+);
 
 export const useIdOS = () => {
   const context = useContext(IDOSClientContext);
@@ -30,7 +42,8 @@ export const useUnsafeIdOS = () => {
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true);
-  const [client, setClient] = useState<idOSClient>(_idOSClient);
+  const [idOSClient, setClient] = useState<idOSClient>(_idOSClient);
+  const [withSigner, setWithSigner] = useState<idOSClientWithUserSigner>();
   const evmSigner = useEthersSigner();
 
   useEffect(() => {
@@ -38,26 +51,27 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
       setIsLoading(true);
 
       try {
-        // Always start with a fresh client
         const newClient = await _idOSClient.createClient();
         if (!evmSigner) {
           setClient(newClient);
+          setWithSigner(undefined);
           setIsLoading(false);
           return;
         }
 
-        const withSigner = await newClient.withUserSigner(evmSigner);
+        const _withSigner = await newClient.withUserSigner(evmSigner);
+        setWithSigner(_withSigner);
 
-        // Check if the user has a profile and log in if they do
-        if (await withSigner.hasProfile()) {
-          setClient(await withSigner.logIn());
+        if (await _withSigner.hasProfile()) {
+          setClient(await _withSigner.logIn());
         } else {
-          setClient(withSigner);
+          setClient(_withSigner);
         }
       } catch (error) {
         console.error('Failed to initialize idOS client:', error);
         const newClient = await _idOSClient.createClient();
         setClient(newClient);
+        setWithSigner(undefined);
       } finally {
         setIsLoading(false);
       }
@@ -66,7 +80,6 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     setupClient();
   }, [evmSigner]);
 
-  // While loading, show a message
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -75,9 +88,10 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     );
   }
 
-  // Otherwise, render the children with the client context
   return (
-    <IDOSClientContext.Provider value={client}>
+    <IDOSClientContext.Provider
+      value={{ idOSClient: idOSClient, withSigner: withSigner!, isLoading }}
+    >
       {children}
     </IDOSClientContext.Provider>
   );
