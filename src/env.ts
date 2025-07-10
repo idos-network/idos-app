@@ -18,6 +18,8 @@ export const env = createEnv({
     VITE_IMAGE_ENCRYPTION_KEY_ID: z.string().min(1),
     VITE_OWNERSHIP_PROOF_MESSAGE: z.string().min(1),
     VITE_RECAPTCHA_SITE_KEY: z.string().min(1),
+    VITE_GRANTEE_WALLET_ADDRESS: z.string().min(1),
+    VITE_ISSUER_SIGNING_PUBLIC_KEY: z.string().min(1),
   },
 
   /**

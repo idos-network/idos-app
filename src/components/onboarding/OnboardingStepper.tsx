@@ -20,11 +20,25 @@ import KeyIcon from '@/icons/key';
 import { GraphIcon } from '../icons/graph';
 import { useIdOS } from '@/providers/idos/idos-client';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
-import { getCurrentUser, updateUserState } from '@/storage/idos-profile';
-import { createIdOSProfile, verifyRecaptcha } from '@/api/idos-profile';
+import {
+  clearUserData,
+  getCurrentUser,
+  updateUserState,
+} from '@/storage/idos-profile';
+import { verifyRecaptcha } from '@/api/idos-profile';
 import { env } from '@/env';
-import { handleCreateAccount } from '@/utils/idos-profile';
+import {
+  handleCreateIdOSProfile,
+  handleSaveIdOSProfile,
+} from '@/handlers/idos-profile';
 import useRecaptcha from '@/hooks/useRecaptcha';
+import { useCredentials } from '@/hooks/useCredentials';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import {
+  handleDWGCredential,
+  handleCreateIdOSCredential,
+} from '@/handlers/idos-credential';
+import type { IdosDWG } from '@/interfaces/idos-credential';
 
 function StepOne({ onNext }: { onNext: () => void }) {
   return (
@@ -86,7 +100,7 @@ function StepTwo({ onNext }: { onNext: () => void }) {
   // const { isError, isSuccess, signMessage } = useSignMessage();
 
   useEffect(() => {
-    handleCreateAccount(setState, setLoading, withSigner, signer, onNext);
+    handleSaveIdOSProfile(setState, setLoading, withSigner, signer, onNext);
   }, [onNext, signer, withSigner]);
 
   useEffect(() => {
@@ -159,15 +173,40 @@ function StepThree({ onNext }: { onNext: () => void }) {
   const currentUser = getCurrentUser();
   const userId = currentUser?.id || '';
   const userAddress = currentUser?.mainAddress || '';
+  const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
+  const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
 
   useEffect(() => {
     if (state === 'verified') {
       updateUserState(userAddress, { humanVerified: true });
-      onNext();
+      const handleProfile = async () => {
+        setState('creating');
+        const response = await handleCreateIdOSProfile(
+          userId,
+          userEncryptionPublicKey,
+          userAddress,
+          env.VITE_OWNERSHIP_PROOF_MESSAGE,
+          ownershipProofSignature,
+        );
+        if (!response) {
+          setState('idle');
+        } else {
+          console.log('onNext');
+          onNext();
+        }
+      };
+      handleProfile();
     }
-  }, [state, onNext, userAddress]);
+  }, [
+    state,
+    onNext,
+    userAddress,
+    userId,
+    userEncryptionPublicKey,
+    ownershipProofSignature,
+  ]);
 
-  async function handleProofOfHumanity() {
+  function handleProofOfHumanity() {
     setState('verifying');
   }
 
@@ -204,8 +243,7 @@ function StepThree({ onNext }: { onNext: () => void }) {
       const response = await verifyRecaptcha(captchaToken);
 
       if (response.success) {
-        updateUserState(userAddress, { humanVerified: true });
-        onNext();
+        setState('verified');
       } else {
         throw new Error(response.message || 'Verification failed');
       }
@@ -267,7 +305,6 @@ function StepThree({ onNext }: { onNext: () => void }) {
           </div>
         </>
       )}
-
       {state === 'recaptcha' && (
         <div className="flex flex-col gap-14 flex-1">
           <div className="flex flex-col items-center gap-6">
@@ -292,13 +329,12 @@ function StepThree({ onNext }: { onNext: () => void }) {
                 className="bg-none text-aquamarine-50 hover:text-aquamarine-200"
                 onClick={() => setState('idle')}
               >
-                Back to options
+                Choose another method
               </StepperButton>
             </div>
           </div>
         </div>
       )}
-
       {state === 'verifying' && (
         <div className="flex flex-col gap-14 flex-1">
           <TextBlock
@@ -313,19 +349,24 @@ function StepThree({ onNext }: { onNext: () => void }) {
           />
         </div>
       )}
+      {state === 'creating' && (
+        <>
+          <div className="flex justify-center">
+            <StepperButton>Creating your idOS profile...</StepperButton>
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
 function StepFour() {
   const [state, setState] = useState('idle');
-  const { isError, isSuccess, signMessage } = useSignMessage();
-
-  const currentUser = getCurrentUser();
-  const userId = currentUser?.id || '';
-  const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
-  const userAddress = currentUser?.mainAddress || '';
-  const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
+  const [loading, setLoading] = useState(false);
+  const [error] = useState<string | null>(null);
+  const { withSigner } = useIdOS();
+  const signer = useEthersSigner();
+  const { isError, isSuccess } = useSignMessage();
 
   useEffect(() => {
     if (isSuccess) {
@@ -341,19 +382,34 @@ function StepFour() {
     }
   }, [state]);
 
-  async function handleCreateCredential() {
+  async function handleAddCredential() {
+    const withSignerLoggedIn = await withSigner.logIn();
     try {
       setState('creating');
-      await createIdOSProfile(
-        userId,
-        userEncryptionPublicKey,
-        userAddress,
-        env.VITE_OWNERSHIP_PROOF_MESSAGE,
-        ownershipProofSignature,
+      const idOSDWG: IdosDWG = await handleDWGCredential(
+        setState,
+        setLoading,
+        withSignerLoggedIn,
+        signer,
       );
-      signMessage({ message: 'Create an idOS Credential' });
+      if (!idOSDWG) {
+        setState('idle');
+        return;
+      }
+
+      setState('creating');
+      const response = await handleCreateIdOSCredential(
+        idOSDWG,
+        withSignerLoggedIn.user.recipient_encryption_public_key,
+        withSignerLoggedIn.user.id,
+      );
+      if (response) {
+        setState('created');
+      } else {
+        setState('idle');
+      }
     } catch (error) {
-      console.error('Account creation failed:', error);
+      console.error('Credential creation failed:', error);
       setState('idle');
     }
   }
@@ -387,7 +443,7 @@ function StepFour() {
             />
           </div>
           <div className="flex justify-center mt-auto">
-            <StepperButton onClick={handleCreateCredential}>
+            <StepperButton onClick={handleAddCredential}>
               Add Credential
             </StepperButton>
           </div>
@@ -403,12 +459,26 @@ function StepFour() {
           </div>
         </>
       )}
+      {state === 'waiting_signature' && (
+        <>
+          <div className="flex justify-center flex-1 items-center">
+            {loading && <Spinner />}
+            {error && <div className="text-red-500">{error}</div>}
+          </div>
+          <div className="flex justify-center">
+            <StepperButton>Waiting for signature...</StepperButton>
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
 export default function OnboardingStepper() {
-  const [activeStep, setActiveStep] = useState('step-one');
+  const [activeStep, setActiveStep] = useState<string | null>(null);
+  const { credentials, isLoading } = useCredentials();
+  const signer = useEthersSigner();
+  const hasProfile = useIdOSLoginStatus();
 
   const steps = [
     { id: 'step-one', component: StepOne },
@@ -418,34 +488,51 @@ export default function OnboardingStepper() {
   ];
 
   useEffect(() => {
+    if (isLoading) return;
+
     const currentUser = getCurrentUser();
 
     if (currentUser) {
-      if (currentUser.humanVerified) {
+      if (currentUser.mainAddress !== signer?.address && !hasProfile) {
+        setActiveStep('step-one');
+        clearUserData();
+        return;
+      } else if (hasProfile) {
         setActiveStep('step-four');
+        return;
+      }
+
+      if (currentUser.humanVerified) {
+        if (credentials.length === 0) {
+          setActiveStep('step-four');
+          return;
+        }
       } else if (currentUser.idosKey) {
         setActiveStep('step-three');
+        return;
       }
+    } else if (hasProfile) {
+      setActiveStep('step-four');
+      return;
     }
-  }, []);
+
+    setActiveStep('step-one');
+  }, [credentials, isLoading, hasProfile, signer?.address]);
 
   function getCurrentStepComponent() {
     const currentStep = steps.find((step) => step.id === activeStep);
-
-    if (!currentStep) {
-      return null;
-    }
-
+    if (!currentStep) return null;
     const StepComponent = currentStep.component;
-
     return <StepComponent onNext={handleNext} />;
   }
 
   function handleNext() {
+    if (!activeStep) return;
     const currentIndex = steps.findIndex((step) => step.id === activeStep);
-
-    setActiveStep(steps[currentIndex + 1].id);
+    setActiveStep(steps[currentIndex + 1]?.id ?? null);
   }
+
+  if (!activeStep) return null;
 
   return (
     <div className="w-[900px] h-[750px] rounded-[20px] bg-neutral-950 flex flex-col items-center justify-center gap-24">

@@ -1,0 +1,144 @@
+import type { Context } from '@netlify/functions';
+// @ts-ignore
+import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
+import { type IdosDWG } from '@/interfaces/idos-credential';
+import { encode as utf8Encode } from '@stablelib/utf8';
+import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
+import nacl from 'tweetnacl';
+
+export default async (request: Request, _context: Context) => {
+  if (request.method !== 'POST') {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'Method not allowed. Use POST.',
+      }),
+    );
+  }
+
+  const { idOSDWG, userEncryptionPublicKey, userId } =
+    (await request.json()) as {
+      idOSDWG: IdosDWG;
+      userEncryptionPublicKey: string;
+      userId: string;
+    };
+
+  const idOSIssuer = await idOSIssuerClass.init({
+    nodeUrl: process.env.KWIL_NODE_URL as string,
+    signingKeyPair: nacl.sign.keyPair.fromSecretKey(
+      Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
+    ),
+    encryptionSecretKey: Buffer.from(
+      process.env.ISSUER_ENCRYPTION_SECRET_KEY as string,
+      'hex',
+    ),
+  });
+
+  const id = process.env.CREDENTIAL_ID as string;
+  const issuerDomain = process.env.ISSUER_DOMAIN as string;
+
+  const credentialFields = {
+    id: `https://idOS-staking/credentials/${id}`,
+    level: 'human',
+    issued: new Date(),
+    approvedAt: new Date(),
+  };
+
+  const credentialId = crypto.randomUUID();
+
+  const credentialSubject = {
+    id: `https://idOS-staking/subjects/${credentialId}`,
+    firstName: 'Cristiano',
+    familyName: 'Ronaldo',
+    dateOfBirth: new Date(),
+    placeOfBirth: 'Funchal',
+    idDocumentCountry: 'PT',
+    idDocumentNumber: '293902002',
+    idDocumentType: 'PASSPORT',
+    idDocumentDateOfIssue: new Date(),
+    idDocumentFrontFile: Buffer.from('SOME_IMAGE'),
+    selfieFile: Buffer.from('SOME_IMAGE'),
+    residentialAddress: {
+      street: 'Main St',
+      houseNumber: '123',
+      additionalAddressInfo: 'Apt 1',
+      city: 'Funchal',
+      postalCode: '10001',
+      country: 'PT',
+    },
+    residentialAddressProofFile: Buffer.from('SOME_IMAGE'),
+    residentialAddressProofCategory: 'UTILITY_BILL',
+    residentialAddressProofDateOfIssue: new Date(),
+  };
+
+  const multibaseSigningKeyPair = await Ed25519VerificationKey2020.generate({
+    id: `${issuerDomain}/keys/1`,
+    controller: `${issuerDomain}/issuers/1`,
+  });
+
+  const issuer = {
+    id: `${issuerDomain}/keys/1`,
+    controller: `${issuerDomain}/issuers/1`,
+    publicKeyMultibase: multibaseSigningKeyPair.publicKeyMultibase,
+    privateKeyMultibase: multibaseSigningKeyPair.privateKeyMultibase,
+  };
+
+  const credential = await idOSIssuer.buildCredentials(
+    credentialFields,
+    credentialSubject,
+    issuer,
+  );
+  const publicNotesId = crypto.randomUUID();
+
+  const credentialsPublicNotes = {
+    // `id` is required to make `editCredential` work.
+    id: publicNotesId,
+    type: 'PoP',
+    level: 'human',
+    status: 'approved',
+    issuer: 'idOS',
+  };
+
+  const credentialContent = JSON.stringify(credential);
+
+  if (!userEncryptionPublicKey) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'User encryption public key is required.',
+      }),
+      { status: 400 },
+    );
+  }
+
+  const recipientEncryptionPublicKey = Buffer.from(
+    userEncryptionPublicKey,
+    'base64',
+  );
+
+  const credentialPayload = {
+    id: crypto.randomUUID(),
+    user_id: userId,
+    plaintextContent: utf8Encode(credentialContent),
+    recipientEncryptionPublicKey: recipientEncryptionPublicKey,
+    publicNotes: JSON.stringify(credentialsPublicNotes),
+  };
+
+  const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
+    credentialPayload,
+    {
+      id: idOSDWG.delegatedWriteGrant.id,
+      ownerWalletIdentifier:
+        idOSDWG.delegatedWriteGrant.owner_wallet_identifier,
+      consumerWalletIdentifier:
+        idOSDWG.delegatedWriteGrant.grantee_wallet_identifier,
+      issuerPublicKey: idOSDWG.delegatedWriteGrant.issuer_public_key,
+      accessGrantTimelock: idOSDWG.delegatedWriteGrant.access_grant_timelock,
+      notUsableBefore: idOSDWG.delegatedWriteGrant.not_usable_before,
+      notUsableAfter: idOSDWG.delegatedWriteGrant.not_usable_after,
+      signature: idOSDWG.signature,
+    },
+  );
+
+  return new Response(JSON.stringify(result), { status: 200 });
+};

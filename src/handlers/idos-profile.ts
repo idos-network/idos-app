@@ -1,7 +1,8 @@
+import { createIdOSProfile } from '@/api/idos-profile';
 import { env } from '@/env';
 import { saveNewUser } from '@/storage/idos-profile';
 
-export async function handleCreateAccount(
+export async function handleSaveIdOSProfile(
   setState: (state: string) => void,
   setLoading: (loading: boolean) => void,
   withSigner: any,
@@ -16,6 +17,9 @@ export async function handleCreateAccount(
 
     const userEncryptionPublicKey =
       await withSigner.getUserEncryptionPublicKey(userId);
+
+    console.log('userId', userId);
+    console.log('userEncryptionPublicKey', userEncryptionPublicKey);
 
     setState('waiting_signature');
 
@@ -33,22 +37,21 @@ export async function handleCreateAccount(
       });
     } catch (err: any) {
       if (err.code === 4001) {
-        handleCreateAccount(setState, setLoading, withSigner, signer, onNext);
+        handleSaveIdOSProfile(setState, setLoading, withSigner, signer, onNext);
         return;
       } else {
         throw err;
       }
     }
 
-    await saveNewUser({
+    const savedUser = await saveNewUser({
       id: userId,
       mainAddress: signer.address,
       userEncryptionPublicKey: userEncryptionPublicKey,
       ownershipProofSignature: ownershipProofSignature,
     });
 
-    const result = { success: true };
-    if (result?.success) {
+    if (savedUser) {
       onNext();
     } else {
       setState('idle');
@@ -57,5 +60,32 @@ export async function handleCreateAccount(
     console.error('Account creation failed:', error);
     setState('idle');
     setLoading(false);
+  }
+}
+
+export async function handleCreateIdOSProfile(
+  userId: string,
+  userEncryptionPublicKey: string,
+  userAddress: string,
+  ownershipProofMessage: string,
+  ownershipProofSignature: string,
+) {
+  try {
+    const response = await createIdOSProfile(
+      userId,
+      userEncryptionPublicKey,
+      userAddress,
+      ownershipProofMessage,
+      ownershipProofSignature,
+    );
+
+    if (response) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('IdOS profile creation failed:', error);
+    return false;
   }
 }

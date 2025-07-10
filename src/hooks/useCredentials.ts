@@ -32,3 +32,19 @@ export function useCredentials() {
 
   return { credentials, isLoading, error };
 }
+
+export function useSpecificCredential(issuerAuthPublicKey: string) {
+  const { credentials, isLoading, error } = useCredentials();
+
+  const specificCredential = credentials.find(
+    (cred) => cred.issuer_auth_public_key === issuerAuthPublicKey,
+  );
+  const hasCredential = !!specificCredential;
+
+  return {
+    hasCredential,
+    credential: specificCredential,
+    isLoading,
+    error,
+  };
+}

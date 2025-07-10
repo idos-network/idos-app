@@ -18,12 +18,13 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import * as React from 'react';
 import { Suspense } from 'react';
-import { z } from 'zod';
 import { NearWalletProvider } from './providers/wallet-providers/near-provider';
 import { WalletConnectorProvider } from './providers/wallet-providers/wallet-connector';
 import OnboardingStepper from './components/onboarding/OnboardingStepper';
 import { useIdOSLoginStatus } from './hooks/useIdOSHasProfile';
 import { StellarWalletProvider } from './providers/wallet-providers/stellar-provider';
+import { useSpecificCredential } from './hooks/useCredentials';
+import { env } from './env';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -105,28 +106,18 @@ export const idosProfileRoute = createRoute({
   component: IdosProfile,
 });
 
-export const CredentialPublicNotesSchema = z.object({
-  level: z.string(),
-  type: z.string(),
-  status: z.string(),
-  issuer: z.string(),
-  id: z.string(),
-  shares: z.union([z.string(), z.number()]).optional(),
-});
-
-export type CredentialPublicNotes = z.infer<typeof CredentialPublicNotesSchema>;
-
 function IdosProfile() {
   const hasProfile = useIdOSLoginStatus();
   useWalletGate();
-
+  const { hasCredential: hasStakingCredential, isLoading } =
+    useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
   return (
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
         <main className="flex-1 p-8 pt-16 flex items-start justify-start text-idos-seasalt">
-          {hasProfile ? (
+          {hasProfile && !isLoading && hasStakingCredential ? (
             <div className="container mx-auto px-4 py-8">
               <CredentialsCard />
             </div>

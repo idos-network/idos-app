@@ -39,20 +39,6 @@ export const updateUserState = async (
   return updatedUser;
 };
 
-export const getUserByAddress = async (address: string) => {
-  const userData = localStorage.getItem('idosUser');
-  if (!userData) {
-    return null;
-  }
-
-  const user = JSON.parse(userData);
-  if (user.mainAddress === address) {
-    return user;
-  }
-
-  return null;
-};
-
 export const getCurrentUser = (): IdosUser | null => {
   const userData = localStorage.getItem('idosUser');
   if (!userData) {
