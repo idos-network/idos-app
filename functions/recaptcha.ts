@@ -40,7 +40,6 @@ export default async (request: Request, _context: Context) => {
       },
     );
   }
-  console.log('secret', process.env.RECAPTCHA_SECRET_KEY);
 
   try {
     const verificationResponse = await fetch(

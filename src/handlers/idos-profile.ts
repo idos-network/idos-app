@@ -18,9 +18,6 @@ export async function handleSaveIdOSProfile(
     const userEncryptionPublicKey =
       await withSigner.getUserEncryptionPublicKey(userId);
 
-    console.log('userId', userId);
-    console.log('userEncryptionPublicKey', userEncryptionPublicKey);
-
     setState('waiting_signature');
 
     const ownershipProofMessage = env.VITE_OWNERSHIP_PROOF_MESSAGE;

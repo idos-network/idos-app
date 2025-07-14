@@ -32,6 +32,12 @@
   z-index: 9999 !important;
 }
 
+#idOS-enclave.visible.loading {
+  top: 70% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
 #idOS-enclave.visible iframe {
   position: absolute !important;
   top: 50% !important;

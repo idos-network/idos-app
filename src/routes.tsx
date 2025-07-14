@@ -3,7 +3,7 @@ import { NotFound } from '@/components/NotFound';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import WalletGate from '@/components/WalletGate';
-import { CredentialsCard } from '@/components/profile/CredentialsCard';
+import { CredentialsCard } from '@/components/profile';
 import { IDOSClientProvider } from '@/providers/idos/idos-client';
 import * as TanstackQueryProvider from '@/providers/tanstack-query/root-provider';
 import * as RainbowKitProvider from '@/providers/wallet-providers/rainbow-kit';
@@ -116,9 +116,17 @@ function IdosProfile() {
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
-        <main className="flex-1 p-8 pt-16 flex items-start justify-start text-idos-seasalt">
+        <main className="flex-1 pt-16 flex items-start justify-start text-idos-seasalt">
           {hasProfile && !isLoading && hasStakingCredential ? (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-32 flex flex-col">
+              <div className="gap-3 flex flex-col mb-10">
+                <div className="text-2xl font-medium text-neutral-50">
+                  idOS Profile
+                </div>
+                <p className="text-neutral-200 text-base font-['Inter']">
+                  View and manage your idOS identity and credentials
+                </p>
+              </div>
               <CredentialsCard />
             </div>
           ) : (

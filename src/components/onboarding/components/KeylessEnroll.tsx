@@ -103,7 +103,6 @@ export default function KeylessEnroll({
       };
       const handleFinished = (event: any) => {
         const result = event.detail;
-        console.log('Keyless enrollment finished:', result);
         onFinished(result);
       };
 

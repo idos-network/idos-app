@@ -191,7 +191,6 @@ function StepThree({ onNext }: { onNext: () => void }) {
         if (!response) {
           setState('idle');
         } else {
-          console.log('onNext');
           onNext();
         }
       };
@@ -224,7 +223,7 @@ function StepThree({ onNext }: { onNext: () => void }) {
   }
 
   function handleRecaptchaExpired() {
-    console.log('reCAPTCHA expired');
+    console.warn('reCAPTCHA expired');
     setCaptchaToken('');
   }
 
