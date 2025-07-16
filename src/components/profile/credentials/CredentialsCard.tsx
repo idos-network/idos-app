@@ -20,7 +20,7 @@ const CredentialPublicNotesSchema = z.object({
 type CredentialPublicNotes = z.infer<typeof CredentialPublicNotesSchema>;
 
 export default function CredentialsCard() {
-  const { credentials, isLoading, error } = useCredentials();
+  const { credentials, isLoading, error, refetch } = useCredentials();
   const [selectedCredentialId, setSelectedCredentialId] = useState<
     string | null
   >(null);
@@ -139,6 +139,8 @@ export default function CredentialsCard() {
         }}
         position={actionModalPosition}
         credentialId={selectedCredentialId || undefined}
+        credentials={credentials}
+        refetch={refetch}
       />
 
       {/* Credential Details Modal */}

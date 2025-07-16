@@ -50,74 +50,6 @@ const createWallet = async (
   return insertedWallet;
 };
 
-type WalletPayload = {
-  address: string;
-  public_key?: string;
-  signature: string;
-  message: string;
-};
-
-const openWalletPopup = (): Promise<WalletPayload> => {
-  return new Promise((resolve, reject) => {
-    const url = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
-    if (!url) {
-      reject(new Error('VITE_EMBEDDED_WALLET_APP_URL is not set'));
-      return;
-    }
-
-    const popupWidth = 400;
-    const popupHeight = 620;
-    const left = (window.screen.width - popupWidth) / 2;
-    const top = (window.screen.height - popupHeight) / 2;
-    const popup = window.open(
-      url,
-      'wallet-connection',
-      `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=no`,
-    );
-
-    if (!popup) {
-      reject(
-        new Error('Please allow popups for this site to connect your wallet'),
-      );
-      return;
-    }
-
-    let resolved = false;
-
-    // Listen for wallet signature
-    const handleMessage = (event: MessageEvent) => {
-      const allowedOrigin = url;
-      const allowedOriginUrl = new URL(allowedOrigin);
-      if (event.origin !== allowedOriginUrl.origin) return;
-      if (event.data?.type === 'WALLET_SIGNATURE') {
-        resolved = true;
-        cleanup();
-        resolve(event.data.data);
-      }
-    };
-
-    // Check if popup is closed
-    const checkPopupClosed = setInterval(() => {
-      if (popup.closed) {
-        if (!resolved) {
-          cleanup();
-          reject(
-            new Error('Popup was closed before completing wallet connection'),
-          );
-        }
-      }
-    }, 500);
-
-    // Cleanup function
-    function cleanup() {
-      window.removeEventListener('message', handleMessage);
-      clearInterval(checkPopupClosed);
-    }
-
-    window.addEventListener('message', handleMessage);
-  });
-};
-
 export default function WalletAddButton({
   onWalletAdded,
 }: WalletAddButtonProps) {
@@ -198,16 +130,29 @@ export default function WalletAddButton({
   }, [walletPayload, refetch, onWalletAdded, withSigner]);
 
   // Open the embedded wallet popup
-  const handleOpenWalletPopup = async () => {
+  const handleOpenWalletPopup = () => {
     setError(null);
     setSuccess(null);
+    const url = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
+    invariant(url, 'VITE_EMBEDDED_WALLET_APP_URL is not set');
     setIsLoading(true);
-    try {
-      const payload = await openWalletPopup();
-      setWalletPayload(payload); // triggers the rest of your flow
-    } catch (err: any) {
-      setError(err.message || 'Failed to connect wallet');
-    } finally {
+    const popupWidth = 400;
+    const popupHeight = 620;
+    const left = (window.screen.width - popupWidth) / 2;
+    const top = (window.screen.height - popupHeight) / 2;
+    const popup = window.open(
+      url,
+      'wallet-connection',
+      `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=no`,
+    );
+    if (popup) {
+      setPopupWindow(popup);
+      if (popup.closed || typeof popup.closed === 'undefined') {
+        setError('Please allow popups for this site to connect your wallet');
+        setIsLoading(false);
+      }
+    } else {
+      setError('Please allow popups for this site to connect your wallet');
       setIsLoading(false);
     }
   };

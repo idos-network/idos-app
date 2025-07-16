@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CredentialGrantsModal } from './CredentialGrantsModal';
 import { CredentialDeleteModal } from './CredentialDeleteModal';
-import { useCredentials } from '@/hooks/useCredentials';
 
 interface CredentialActionModalProps {
   isOpen: boolean;
@@ -9,6 +8,8 @@ interface CredentialActionModalProps {
   onViewDetails: () => void;
   position: { x: number; y: number } | null;
   credentialId?: string;
+  credentials: any[];
+  refetch: () => void;
 }
 
 export function CredentialActionModal({
@@ -17,11 +18,12 @@ export function CredentialActionModal({
   onViewDetails,
   position,
   credentialId,
+  credentials,
+  refetch,
 }: CredentialActionModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isGrantsModalOpen, setIsGrantsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { credentials, refetch } = useCredentials();
 
   const selectedCredential = credentials.find(
     (cred) => cred.id === credentialId,
@@ -125,6 +127,7 @@ export function CredentialActionModal({
               // Refresh credentials after successful deletion
               refetch();
             }}
+            refetch={refetch}
           />
         </>
       )}

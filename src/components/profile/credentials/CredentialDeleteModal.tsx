@@ -11,6 +11,7 @@ interface CredentialDeleteModalProps {
   credential: idOSCredential | null;
   onClose: () => void;
   onSuccess?: () => void;
+  refetch: () => void;
 }
 
 export function CredentialDeleteModal({
@@ -18,6 +19,7 @@ export function CredentialDeleteModal({
   credential,
   onClose,
   onSuccess,
+  refetch,
 }: CredentialDeleteModalProps) {
   const { idOSClient } = useIdOS();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -108,10 +110,9 @@ export function CredentialDeleteModal({
           'removeCredential method not available in current idOS client version',
         );
       }
+      await refetch();
       onSuccess?.();
       onClose();
-
-      window.location.reload();
     } catch (err) {
       setError('Failed to delete credential. Please try again.');
     } finally {
