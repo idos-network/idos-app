@@ -30,7 +30,7 @@ function PrivateKeyStep({
         )}
       </div>
       <span
-        className={`font-inter ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
+        className={`font-['Inter'] ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
       >
         Private key
       </span>
@@ -65,7 +65,7 @@ function HumanVerificationStep({
         )}
       </div>
       <span
-        className={`font-inter ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
+        className={`font-['Inter'] ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
       >
         Human verification
       </span>
@@ -100,7 +100,7 @@ function CredentialStep({
         )}
       </div>
       <span
-        className={`font-inter ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
+        className={`font-['Inter'] ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
       >
         Add a credential
       </span>

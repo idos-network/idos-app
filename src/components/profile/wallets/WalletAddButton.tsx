@@ -1,0 +1,229 @@
+import { useState, useEffect } from 'react';
+import SmallPrimaryButton from '@/components/SmallPrimaryButton';
+import AddIcon from '@/components/icons/add';
+import { useFetchWallets } from '@/hooks/useFetchWallets';
+import { useIdOS } from '@/providers/idos/idos-client';
+import { verifySignature } from '@/utils/verify-signatures';
+import type { idOSWallet } from '@idos-network/client';
+import invariant from 'tiny-invariant';
+
+interface WalletAddButtonProps {
+  onWalletAdded?: () => void;
+}
+
+const createWalletParamsFactory = ({
+  address,
+  public_key,
+  signature,
+  message,
+}: {
+  address: string;
+  public_key?: string;
+  signature: string;
+  message: string;
+}) => ({
+  id: crypto.randomUUID() as string,
+  address,
+  public_key: public_key ?? null,
+  message,
+  signature,
+});
+
+const createWallet = async (
+  idOSClient: any,
+  params: {
+    address: string;
+    public_key?: string;
+    signature: string;
+    message: string;
+  },
+): Promise<idOSWallet> => {
+  const walletParams = createWalletParamsFactory(params);
+  await idOSClient.addWallet(walletParams);
+  const insertedWallet = (await idOSClient.getWallets()).find(
+    (w: any) => w.id === walletParams.id,
+  );
+  invariant(
+    insertedWallet,
+    '`insertedWallet` is `undefined`, `idOSClient.addWallet` must have failed',
+  );
+  return insertedWallet;
+};
+
+type WalletPayload = {
+  address: string;
+  public_key?: string;
+  signature: string;
+  message: string;
+};
+
+const openWalletPopup = (): Promise<WalletPayload> => {
+  return new Promise((resolve, reject) => {
+    const url = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
+    if (!url) {
+      reject(new Error('VITE_EMBEDDED_WALLET_APP_URL is not set'));
+      return;
+    }
+
+    const popupWidth = 400;
+    const popupHeight = 620;
+    const left = (window.screen.width - popupWidth) / 2;
+    const top = (window.screen.height - popupHeight) / 2;
+    const popup = window.open(
+      url,
+      'wallet-connection',
+      `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=no`,
+    );
+
+    if (!popup) {
+      reject(
+        new Error('Please allow popups for this site to connect your wallet'),
+      );
+      return;
+    }
+
+    let resolved = false;
+
+    // Listen for wallet signature
+    const handleMessage = (event: MessageEvent) => {
+      const allowedOrigin = url;
+      const allowedOriginUrl = new URL(allowedOrigin);
+      if (event.origin !== allowedOriginUrl.origin) return;
+      if (event.data?.type === 'WALLET_SIGNATURE') {
+        resolved = true;
+        cleanup();
+        resolve(event.data.data);
+      }
+    };
+
+    // Check if popup is closed
+    const checkPopupClosed = setInterval(() => {
+      if (popup.closed) {
+        if (!resolved) {
+          cleanup();
+          reject(
+            new Error('Popup was closed before completing wallet connection'),
+          );
+        }
+      }
+    }, 500);
+
+    // Cleanup function
+    function cleanup() {
+      window.removeEventListener('message', handleMessage);
+      clearInterval(checkPopupClosed);
+    }
+
+    window.addEventListener('message', handleMessage);
+  });
+};
+
+export default function WalletAddButton({
+  onWalletAdded,
+}: WalletAddButtonProps) {
+  const [walletPayload, setWalletPayload] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [popupWindow, setPopupWindow] = useState<Window | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const { refetch } = useFetchWallets();
+  const { withSigner } = useIdOS();
+
+  // Listen for wallet signature messages from the popup
+  useEffect(() => {
+    const abortController = new AbortController();
+    const handleMessage = (event: MessageEvent) => {
+      const allowedOrigin = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
+      if (!allowedOrigin) return;
+      const allowedOriginUrl = new URL(allowedOrigin);
+      if (event.origin !== allowedOriginUrl.origin) return;
+      if (event.data?.type === 'WALLET_SIGNATURE') {
+        setWalletPayload(event.data.data);
+        setIsLoading(false);
+      }
+    };
+    window.addEventListener('message', handleMessage, {
+      signal: abortController.signal,
+    });
+    return () => abortController.abort();
+  }, []);
+
+  // Close popup if user closes it manually
+  useEffect(() => {
+    if (!popupWindow) return;
+    const checkPopupClosed = setInterval(() => {
+      if (popupWindow.closed) {
+        setIsLoading(false);
+        setPopupWindow(null);
+        clearInterval(checkPopupClosed);
+      }
+    }, 1000);
+    return () => clearInterval(checkPopupClosed);
+  }, [popupWindow]);
+
+  // When a wallet payload is received, verify and add wallet
+  useEffect(() => {
+    if (!walletPayload) return;
+    (async () => {
+      setIsLoading(true);
+      setError(null);
+      setSuccess(null);
+      const isValid = await verifySignature(walletPayload);
+      if (!isValid) {
+        setError('The signature does not match the wallet address');
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const idOSClient = await withSigner.logIn();
+        await createWallet(idOSClient, {
+          address: walletPayload.address || 'unknown',
+          public_key: walletPayload.public_key,
+          signature: walletPayload.signature,
+          message:
+            walletPayload.message ||
+            'Sign this message to prove you own this wallet',
+        });
+        setSuccess('The wallet has been added to your idOS profile');
+        setError(null);
+        refetch();
+        onWalletAdded?.();
+      } catch (error) {
+        setError('Failed to add wallet to your idOS profile');
+        setSuccess(null);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [walletPayload, refetch, onWalletAdded, withSigner]);
+
+  // Open the embedded wallet popup
+  const handleOpenWalletPopup = async () => {
+    setError(null);
+    setSuccess(null);
+    setIsLoading(true);
+    try {
+      const payload = await openWalletPopup();
+      setWalletPayload(payload); // triggers the rest of your flow
+    } catch (err: any) {
+      setError(err.message || 'Failed to connect wallet');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2 items-start">
+      <SmallPrimaryButton
+        icon={<AddIcon />}
+        onClick={handleOpenWalletPopup}
+        disabled={isLoading}
+        className="bg-aquamarine-400 text-neutral-950 hover:bg-aquamarine-600"
+      >
+        {isLoading ? 'Connecting...' : 'Add Wallet'}
+      </SmallPrimaryButton>
+      {error && <div className="text-red-400 text-xs mt-1">{error}</div>}
+      {success && <div className="text-green-400 text-xs mt-1">{success}</div>}
+    </div>
+  );
+}
