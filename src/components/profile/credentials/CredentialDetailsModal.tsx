@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import SmallPrimaryButton from '@/components/SmallPrimaryButton';
-import { DownloadIcon } from '@/components/icons/download';
+import DownloadIcon from '@/components/icons/download';
 import SmallCopyButton from '@/components/SmallCopyButton';
-import { CloseIcon } from '@/components/icons/close';
+import CloseIcon from '@/components/icons/close';
 
 interface ModalProps {
   isOpen: boolean;

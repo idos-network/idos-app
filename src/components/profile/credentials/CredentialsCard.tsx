@@ -19,7 +19,15 @@ const CredentialPublicNotesSchema = z.object({
 
 type CredentialPublicNotes = z.infer<typeof CredentialPublicNotesSchema>;
 
-export default function CredentialsCard() {
+interface CredentialsCardProps {
+  onError?: (error: string) => void;
+  onSuccess?: (message: string) => void;
+}
+
+export default function CredentialsCard({
+  onError,
+  onSuccess,
+}: CredentialsCardProps) {
   const { credentials, isLoading, error, refetch } = useCredentials();
   const [selectedCredentialId, setSelectedCredentialId] = useState<
     string | null
@@ -37,6 +45,16 @@ export default function CredentialsCard() {
     isLoading: detailsLoading,
     error: detailsError,
   } = useCredentialDetails(isModalOpen ? selectedCredentialId : null);
+
+  // Call onError if error occurs in fetching credentials
+  useEffect(() => {
+    if (error) onError?.(error.message);
+  }, [error, onError]);
+
+  // Call onError if error occurs in fetching credential details
+  useEffect(() => {
+    if (detailsError) onError?.(detailsError.message);
+  }, [detailsError, onError]);
 
   const processedCredentials = useMemo(() => {
     if (credentials instanceof Promise) return [];
@@ -68,7 +86,7 @@ export default function CredentialsCard() {
   }, [detailsLoading]);
 
   if (isLoading) return <div>Loading credentials...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  // Removed inline error display
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
@@ -141,6 +159,8 @@ export default function CredentialsCard() {
         credentialId={selectedCredentialId || undefined}
         credentials={credentials}
         refetch={refetch}
+        onError={onError}
+        onSuccess={onSuccess}
       />
 
       {/* Credential Details Modal */}
@@ -170,14 +190,7 @@ export default function CredentialsCard() {
       >
         {detailsLoading ? (
           <Spinner />
-        ) : detailsError ? (
-          <div className="space-y-4">
-            <div className="rounded-lg bg-red-900/20 border border-red-500/20 p-4">
-              <h3 className="mb-2 font-semibold text-red-400">Error</h3>
-              <p className="text-red-300">{detailsError.message}</p>
-            </div>
-          </div>
-        ) : detailedCredential ? (
+        ) : detailsError ? null : detailedCredential ? (
           <div className="space-y-4">
             {decryptedContent && (
               <div className="bg-idos-grey2 p-4">

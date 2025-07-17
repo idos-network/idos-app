@@ -39,6 +39,7 @@ import {
   handleCreateIdOSCredential,
 } from '@/handlers/idos-credential';
 import type { IdosDWG } from '@/interfaces/idos-credential';
+import { useToast } from '@/hooks/useToast';
 
 function StepOne({ onNext }: { onNext: () => void }) {
   return (
@@ -366,6 +367,7 @@ function StepFour() {
   const { withSigner } = useIdOS();
   const signer = useEthersSigner();
   const { isError, isSuccess } = useSignMessage();
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (isSuccess) {
@@ -404,11 +406,23 @@ function StepFour() {
       );
       if (response) {
         setState('created');
+        localStorage.setItem(
+          'showToast',
+          JSON.stringify({
+            type: 'success',
+            message: 'Your credential has been added to your profile.',
+          }),
+        );
+        window.location.reload();
       } else {
         setState('idle');
       }
     } catch (error) {
       console.error('Credential creation failed:', error);
+      showToast({
+        type: 'error',
+        message: 'Something went wrong. Please try again.',
+      });
       setState('idle');
     }
   }

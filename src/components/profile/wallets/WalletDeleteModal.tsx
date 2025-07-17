@@ -1,6 +1,6 @@
 import { useIdOS } from '@/providers/idos/idos-client';
 import { useEffect, useRef, useState } from 'react';
-import { CloseIcon } from '@/components/icons/close';
+import CloseIcon from '@/components/icons/close';
 import Spinner from '@/components/onboarding/components/Spinner';
 import { type IdosWallet } from '@/interfaces/idos-profile';
 
@@ -10,20 +10,19 @@ interface WalletDeleteModalProps {
   onClose: () => void;
   onSuccess?: () => void;
   onWalletDeleted?: () => void;
-  refetch: () => void;
+  onError?: (error: string) => void;
 }
 
 export function WalletDeleteModal({
   isOpen,
   wallet,
   onClose,
-  onSuccess,
   onWalletDeleted,
-  refetch,
+  onError,
 }: WalletDeleteModalProps) {
   const { idOSClient } = useIdOS();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,11 +59,11 @@ export function WalletDeleteModal({
       } else {
         throw new Error('Wallet removal method not available');
       }
-      await refetch();
-      onSuccess?.();
-      onWalletDeleted?.(); // <-- call this after success
+      onWalletDeleted?.();
     } catch (err) {
-      setError('Failed to delete wallet. Please try again.');
+      const errorMsg = 'Failed to delete wallet. Please try again.';
+      setError(errorMsg);
+      onError?.(errorMsg);
     } finally {
       setIsDeleting(false);
     }
@@ -120,21 +119,18 @@ export function WalletDeleteModal({
                 <div className="px-3 py-2 rounded-md bg-neutral-800 text-sm font-mono text-neutral-300">
                   {wallet.address}
                 </div>
-                {error && (
-                  <div className="text-red-400 text-xs mt-1">{error}</div>
-                )}
               </div>
               <div className="flex justify-end gap-2 pt-4">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 rounded-md bg-neutral-700 text-neutral-200 hover:bg-neutral-600"
+                  className="px-4 py-2 bg-idos-grey2 hover:bg-idos-grey3 text-idos-seasalt rounded-lg transition-colors"
                   disabled={isDeleting}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteWallet}
-                  className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-neutral-700/70 text-[#EA8E8F] hover:bg-neutral-700 rounded-lg transition-colors"
                   disabled={isDeleting}
                 >
                   Delete

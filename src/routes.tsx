@@ -17,7 +17,7 @@ import {
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import * as React from 'react';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { NearWalletProvider } from './providers/wallet-providers/near-provider';
 import { WalletConnectorProvider } from './providers/wallet-providers/wallet-connector';
 import OnboardingStepper from './components/onboarding/OnboardingStepper';
@@ -25,6 +25,8 @@ import { useIdOSLoginStatus } from './hooks/useIdOSHasProfile';
 import { StellarWalletProvider } from './providers/wallet-providers/stellar-provider';
 import { useSpecificCredential } from './hooks/useCredentials';
 import { env } from './env';
+import { ToastProvider } from '@/providers/toast/toast-provider';
+import { useToast } from '@/hooks/useToast';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -44,23 +46,25 @@ export const rootRoute = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <RootDocument>
-      <TanstackQueryProvider.Provider>
-        <RainbowKitProvider.Provider>
-          <NearWalletProvider>
-            <StellarWalletProvider>
-              <WalletConnectorProvider>
-                <IDOSClientProvider>
-                  <Outlet />
-                  <Suspense>
-                    <TanStackRouterDevtools position="bottom-right" />
-                    <ReactQueryDevtools buttonPosition="bottom-left" />
-                  </Suspense>
-                </IDOSClientProvider>
-              </WalletConnectorProvider>
-            </StellarWalletProvider>
-          </NearWalletProvider>
-        </RainbowKitProvider.Provider>
-      </TanstackQueryProvider.Provider>
+      <ToastProvider>
+        <TanstackQueryProvider.Provider>
+          <RainbowKitProvider.Provider>
+            <NearWalletProvider>
+              <StellarWalletProvider>
+                <WalletConnectorProvider>
+                  <IDOSClientProvider>
+                    <Outlet />
+                    <Suspense>
+                      <TanStackRouterDevtools position="bottom-right" />
+                      <ReactQueryDevtools buttonPosition="bottom-left" />
+                    </Suspense>
+                  </IDOSClientProvider>
+                </WalletConnectorProvider>
+              </StellarWalletProvider>
+            </NearWalletProvider>
+          </RainbowKitProvider.Provider>
+        </TanstackQueryProvider.Provider>
+      </ToastProvider>
     </RootDocument>
   );
 }
@@ -111,12 +115,27 @@ function IdosProfile() {
   useWalletGate();
   const { hasCredential: hasStakingCredential, isLoading } =
     useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    const toastData = localStorage.getItem('showToast');
+    if (toastData) {
+      try {
+        const { type, message } = JSON.parse(toastData);
+        showToast({ type, message: message });
+      } catch (e) {
+        // ignore parse errors
+      }
+      localStorage.removeItem('showToast');
+    }
+  }, [showToast]);
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
-        <main className="flex-1 pt-16 flex items-start justify-start text-idos-seasalt">
+        <main className="flex-1 pt-14 flex items-start justify-start text-idos-seasalt">
           {hasProfile && !isLoading && hasStakingCredential ? (
             <div className="container mx-auto flex flex-col px-32">
               <div className="gap-3 flex flex-col mb-10">
@@ -128,7 +147,12 @@ function IdosProfile() {
                 </p>
               </div>
               <div className="flex flex-col gap-8">
-                <CredentialsCard />
+                <CredentialsCard
+                  onError={(err) => showToast({ type: 'error', message: err })}
+                  onSuccess={(msg) =>
+                    showToast({ type: 'success', message: msg })
+                  }
+                />
                 <WalletsCard />
               </div>
             </div>

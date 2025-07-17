@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { WalletDeleteModal } from './WalletDeleteModal';
 import { type IdosWallet } from '@/interfaces/idos-profile';
+import { useToast } from '@/hooks/useToast';
 
 interface WalletActionModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function WalletActionModal({
 }: WalletActionModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { showToast } = useToast();
 
   const selectedWallet: IdosWallet | undefined = wallets.find(
     (wallet) => wallet.id === walletId,
@@ -96,8 +98,12 @@ export function WalletActionModal({
             onWalletDeleted={() => {
               setIsDeleteModalOpen(false);
               refetch();
+              showToast({
+                type: 'success',
+                message: 'The wallet has been deleted from your idOS profile',
+              });
             }}
-            refetch={refetch}
+            onError={(err) => showToast({ type: 'error', message: err })}
           />
         </>
       )}

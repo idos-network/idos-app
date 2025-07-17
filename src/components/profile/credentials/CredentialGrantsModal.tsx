@@ -5,12 +5,14 @@ import {
 } from '@/hooks/useGrants';
 import { timelockToMs, timelockToDate } from '@/utils/time';
 import Spinner from '@/components/onboarding/components/Spinner';
-import { CloseIcon } from '@/components/icons/close';
+import CloseIcon from '@/components/icons/close';
 
 type CredentialGrantsModalProps = {
   credentialId: string;
   isOpen: boolean;
   onClose: () => void;
+  onError?: (error: string) => void;
+  onSuccess?: (msg: string) => void;
 };
 
 function generateGrantId(grant: idOSGrant): string {
@@ -18,7 +20,17 @@ function generateGrantId(grant: idOSGrant): string {
   return [id, data_id, ag_grantee_wallet_identifier, locked_until].join('-');
 }
 
-const Shares = ({ grants }: { grants: idOSGrant[] }) => {
+const Shares = ({
+  grants,
+  onError,
+  onSuccess,
+  onClose,
+}: {
+  grants: idOSGrant[];
+  onError?: (error: string) => void;
+  onSuccess?: (msg: string) => void;
+  onClose: () => void;
+}) => {
   const revokeGrant = useRevokeGrant();
 
   if (grants.length === 0) {
@@ -34,7 +46,10 @@ const Shares = ({ grants }: { grants: idOSGrant[] }) => {
   const onRevoke = async (grant: idOSGrant) => {
     try {
       await revokeGrant.mutate(grant);
+      onSuccess?.('Grant revoked successfully');
+      onClose();
     } catch (error) {
+      if (onError) onError('Failed to revoke grant. Please try again.');
       console.error('Failed to revoke grant:', error);
     }
   };
@@ -103,6 +118,8 @@ export function CredentialGrantsModal({
   credentialId,
   isOpen,
   onClose,
+  onError,
+  onSuccess,
 }: CredentialGrantsModalProps) {
   const grants = useFetchGrants({ credentialId });
 
@@ -152,7 +169,12 @@ export function CredentialGrantsModal({
               </button>
             </div>
           ) : grants.isSuccess ? (
-            <Shares grants={grants.data} />
+            <Shares
+              grants={grants.data}
+              onError={onError}
+              onSuccess={onSuccess}
+              onClose={onClose}
+            />
           ) : null}
         </div>
       </div>

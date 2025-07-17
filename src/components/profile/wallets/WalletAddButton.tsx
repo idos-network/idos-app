@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import SmallPrimaryButton from '@/components/SmallPrimaryButton';
 import AddIcon from '@/components/icons/add';
-import { useFetchWallets } from '@/hooks/useFetchWallets';
 import { useIdOS } from '@/providers/idos/idos-client';
 import { verifySignature } from '@/utils/verify-signatures';
 import type { idOSWallet } from '@idos-network/client';
@@ -9,6 +8,8 @@ import invariant from 'tiny-invariant';
 
 interface WalletAddButtonProps {
   onWalletAdded?: () => void;
+  onError?: (error: string) => void;
+  onSuccess?: (message: string) => void;
 }
 
 const createWalletParamsFactory = ({
@@ -52,13 +53,12 @@ const createWallet = async (
 
 export default function WalletAddButton({
   onWalletAdded,
+  onError,
+  onSuccess,
 }: WalletAddButtonProps) {
   const [walletPayload, setWalletPayload] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [popupWindow, setPopupWindow] = useState<Window | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const { refetch } = useFetchWallets();
   const { withSigner } = useIdOS();
 
   // Listen for wallet signature messages from the popup
@@ -98,12 +98,11 @@ export default function WalletAddButton({
     if (!walletPayload) return;
     (async () => {
       setIsLoading(true);
-      setError(null);
-      setSuccess(null);
       const isValid = await verifySignature(walletPayload);
       if (!isValid) {
-        setError('The signature does not match the wallet address');
+        onError?.('The signature does not match the wallet address');
         setIsLoading(false);
+        setWalletPayload(null);
         return;
       }
       try {
@@ -116,23 +115,19 @@ export default function WalletAddButton({
             walletPayload.message ||
             'Sign this message to prove you own this wallet',
         });
-        setSuccess('The wallet has been added to your idOS profile');
-        setError(null);
-        refetch();
+        onSuccess?.('The wallet has been added to your idOS profile');
         onWalletAdded?.();
       } catch (error) {
-        setError('Failed to add wallet to your idOS profile');
-        setSuccess(null);
+        onError?.('Failed to add wallet to your idOS profile');
       } finally {
         setIsLoading(false);
+        setWalletPayload(null);
       }
     })();
-  }, [walletPayload, refetch, onWalletAdded, withSigner]);
+  }, [walletPayload, onWalletAdded, onError, onSuccess, withSigner]);
 
   // Open the embedded wallet popup
   const handleOpenWalletPopup = () => {
-    setError(null);
-    setSuccess(null);
     const url = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
     invariant(url, 'VITE_EMBEDDED_WALLET_APP_URL is not set');
     setIsLoading(true);
@@ -148,11 +143,11 @@ export default function WalletAddButton({
     if (popup) {
       setPopupWindow(popup);
       if (popup.closed || typeof popup.closed === 'undefined') {
-        setError('Please allow popups for this site to connect your wallet');
+        onError?.('Please allow popups for this site to connect your wallet');
         setIsLoading(false);
       }
     } else {
-      setError('Please allow popups for this site to connect your wallet');
+      onError?.('Please allow popups for this site to connect your wallet');
       setIsLoading(false);
     }
   };
@@ -167,8 +162,6 @@ export default function WalletAddButton({
       >
         {isLoading ? 'Connecting...' : 'Add Wallet'}
       </SmallPrimaryButton>
-      {error && <div className="text-red-400 text-xs mt-1">{error}</div>}
-      {success && <div className="text-green-400 text-xs mt-1">{success}</div>}
     </div>
   );
 }

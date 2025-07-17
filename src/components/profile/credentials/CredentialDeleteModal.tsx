@@ -3,7 +3,7 @@ import { useFetchGrants, useRevokeGrant } from '@/hooks/useGrants';
 import { timelockToMs } from '@/utils/time';
 import type { idOSCredential } from '@idos-network/client';
 import { useEffect, useRef, useState } from 'react';
-import { CloseIcon } from '@/components/icons/close';
+import CloseIcon from '@/components/icons/close';
 import Spinner from '@/components/onboarding/components/Spinner';
 
 interface CredentialDeleteModalProps {
@@ -11,7 +11,7 @@ interface CredentialDeleteModalProps {
   credential: idOSCredential | null;
   onClose: () => void;
   onSuccess?: () => void;
-  refetch: () => void;
+  onError?: (error: string) => void;
 }
 
 export function CredentialDeleteModal({
@@ -19,12 +19,12 @@ export function CredentialDeleteModal({
   credential,
   onClose,
   onSuccess,
-  refetch,
+  onError,
 }: CredentialDeleteModalProps) {
   const { idOSClient } = useIdOS();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRevoking, setIsRevoking] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const grants = useFetchGrants({
@@ -74,7 +74,9 @@ export function CredentialDeleteModal({
         await revokeGrant.mutate(grant);
       }
     } catch (err) {
-      setError('Failed to revoke grants. Please try again.');
+      const msg = 'Failed to revoke grants. Please try again.';
+      setError(msg);
+      onError?.(msg);
       setIsRevoking(false);
       return;
     }
@@ -86,9 +88,10 @@ export function CredentialDeleteModal({
     if (!credential) return;
 
     if (hasTimeLock) {
-      setError(
-        "This credential has a locked grant. You can't delete it until the grant locked until date is passed.",
-      );
+      const msg =
+        "This credential has a locked grant. You can't delete it until the grant locked until date is passed.";
+      setError(msg);
+      onError?.(msg);
       return;
     }
 
@@ -110,11 +113,12 @@ export function CredentialDeleteModal({
           'removeCredential method not available in current idOS client version',
         );
       }
-      await refetch();
       onSuccess?.();
       onClose();
     } catch (err) {
-      setError('Failed to delete credential. Please try again.');
+      const msg = 'Failed to delete credential. Please try again.';
+      setError(msg);
+      onError?.(msg);
     } finally {
       setIsDeleting(false);
     }
@@ -200,11 +204,6 @@ export function CredentialDeleteModal({
                   action cannot be undone.
                 </p>
               </div>
-              {error && (
-                <div className="text-center py-4">
-                  <p className="text-red-400 mb-4">{error}</p>
-                </div>
-              )}
             </div>
           )}
         </div>

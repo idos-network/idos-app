@@ -5,6 +5,7 @@ import { addressGradient } from '@/utils/gradient';
 import WalletAddButton from './WalletAddButton';
 import { useState } from 'react';
 import { WalletActionModal } from './WalletActionModal';
+import { useToast } from '@/hooks/useToast';
 
 export default function WalletsCard() {
   const { wallets, isLoading, error, refetch } = useFetchWallets();
@@ -15,6 +16,7 @@ export default function WalletsCard() {
   } | null>(null);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const { showToast } = useToast();
 
   if (isLoading) return <div>Loading wallets...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -30,7 +32,11 @@ export default function WalletsCard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <span className="text-xl font-normal text-neutral-50">Wallets</span>
-        <WalletAddButton onWalletAdded={refetch} />
+        <WalletAddButton
+          onWalletAdded={refetch}
+          onError={(err) => showToast({ type: 'error', message: err })}
+          onSuccess={(msg) => showToast({ type: 'success', message: msg })}
+        />
       </div>
       {/* Table Section */}
       <div className="flex-grow overflow-x-auto">

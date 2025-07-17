@@ -1,4 +1,4 @@
-export function DownloadIcon({
+export default function DownloadIcon({
   className,
   ...props
 }: {

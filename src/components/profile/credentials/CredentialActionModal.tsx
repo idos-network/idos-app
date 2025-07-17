@@ -10,6 +10,8 @@ interface CredentialActionModalProps {
   credentialId?: string;
   credentials: any[];
   refetch: () => void;
+  onError?: (error: string) => void;
+  onSuccess?: (message: string) => void;
 }
 
 export function CredentialActionModal({
@@ -20,6 +22,8 @@ export function CredentialActionModal({
   credentialId,
   credentials,
   refetch,
+  onError,
+  onSuccess,
 }: CredentialActionModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isGrantsModalOpen, setIsGrantsModalOpen] = useState(false);
@@ -116,6 +120,11 @@ export function CredentialActionModal({
             onClose={() => {
               setIsGrantsModalOpen(false);
             }}
+            onError={onError}
+            onSuccess={(msg) => {
+              onSuccess?.(msg);
+              refetch();
+            }}
           />
           <CredentialDeleteModal
             credential={selectedCredential || null}
@@ -124,10 +133,10 @@ export function CredentialActionModal({
               setIsDeleteModalOpen(false);
             }}
             onSuccess={() => {
-              // Refresh credentials after successful deletion
+              onSuccess?.('Credential deleted successfully');
               refetch();
             }}
-            refetch={refetch}
+            onError={onError}
           />
         </>
       )}

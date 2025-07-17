@@ -8,7 +8,7 @@ export default function Header() {
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
 
   return (
-    <header className="flex justify-end gap-2 border-gray-800 border-b p-4 text-idos-seasalt">
+    <header className="flex justify-end gap-2 border-gray-800 border-b p-4 text-idos-seasalt h-20">
       {wallet && wallet.type === 'ethereum' && <CustomConnectButton />}
       {wallet && wallet.type === 'near' && <NearHeader />}
       {wallet && wallet.type === 'stellar' && <StellarHeader />}

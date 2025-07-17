@@ -1,4 +1,4 @@
-export function CloseIcon({
+export default function CloseIcon({
   className,
   ...props
 }: {
