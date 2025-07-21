@@ -3,8 +3,9 @@ import { useFetchGrants, useRevokeGrant } from '@/hooks/useGrants';
 import { timelockToMs } from '@/utils/time';
 import type { idOSCredential } from '@idos-network/client';
 import { useEffect, useRef, useState } from 'react';
-import CloseIcon from '@/components/icons/close';
+import CloseButton from '@/components/CloseButton';
 import Spinner from '@/components/onboarding/components/Spinner';
+import SmallSecondaryButton from '@/components/SmallSecondaryButton';
 
 interface CredentialDeleteModalProps {
   isOpen: boolean;
@@ -139,7 +140,7 @@ export function CredentialDeleteModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-sm"
+        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-[1px]"
         onClick={onClose}
       />
 
@@ -157,12 +158,7 @@ export function CredentialDeleteModal({
                 ? 'Deleting credential'
                 : 'Delete credential'}
           </h2>
-          <button
-            onClick={onClose}
-            className="rounded-md p-2 text-neutral-200 hover:bg-idos-grey2"
-          >
-            <CloseIcon className="w-3 h-3" />
-          </button>
+          <CloseButton onClose={onClose} />
         </div>
 
         {/* Body */}
@@ -212,19 +208,16 @@ export function CredentialDeleteModal({
         {!(isRevoking || isDeleting) && (
           <div className="px-6 pb-6 bg-neutral-800/60">
             <div className="flex justify-end gap-3 pt-4">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-idos-grey2 hover:bg-idos-grey3 text-idos-seasalt rounded-lg transition-colors"
-              >
+              <SmallSecondaryButton onClick={onClose}>
                 Cancel
-              </button>
-              <button
+              </SmallSecondaryButton>
+              <SmallSecondaryButton
                 onClick={handleDeleteCredential}
                 disabled={isRevoking || isDeleting}
-                className="px-4 py-2 bg-neutral-700/70 text-[#EA8E8F] hover:bg-neutral-700 rounded-lg transition-colors"
+                danger={true}
               >
                 Delete
-              </button>
+              </SmallSecondaryButton>
             </div>
           </div>
         )}

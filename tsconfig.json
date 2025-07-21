@@ -32,6 +32,7 @@
       "@/*": ["./src/*"],
       "@/components/*": ["./src/components/*"],
       "@/icons/*": ["./src/components/icons/*"],
+      "@/layout/*": ["./src/components/layout/*"],
       "@/hooks/*": ["./src/hooks/*"]
     }
   }

@@ -75,7 +75,7 @@ export function WalletDeleteModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-sm"
+        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-[1px]"
         onClick={onClose}
       />
       {/* Modal */}

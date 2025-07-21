@@ -5,8 +5,8 @@ import z from 'zod';
 import { useState, useEffect, useMemo } from 'react';
 import { CredentialDetailsModal } from '@/components/profile/credentials/CredentialDetailsModal';
 import { CredentialActionModal } from '@/components/profile/credentials/CredentialActionModal';
-import Spinner from '@/components/onboarding/components/Spinner';
 import { MoreVertIcon } from '@/components/icons/more-vert';
+import CredentialAccessModal from './CredentialAccessModal';
 
 const CredentialPublicNotesSchema = z.object({
   level: z.string(),
@@ -85,8 +85,23 @@ export default function CredentialsCard({
     }
   }, [detailsLoading]);
 
+  useEffect(() => {
+    const enclaveElement = document.getElementById('idOS-enclave');
+    if (enclaveElement) {
+      if (isModalOpen) {
+        enclaveElement.style.display = '';
+      } else {
+        enclaveElement.style.display = 'none';
+      }
+    }
+  }, [isModalOpen]);
+
   if (isLoading) return <div>Loading credentials...</div>;
-  // Removed inline error display
+
+  const handleDetailsModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedCredentialId(null);
+  };
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
@@ -132,7 +147,7 @@ export default function CredentialsCard({
                         setSelectedCredentialId(cred.id);
                         setIsActionModalOpen(true);
                       }}
-                      className="rounded-md p-2 text-neutral-200 hover:bg-idos-grey2"
+                      className="rounded-md p-2 text-neutral-200 hover:bg-idos-grey2 cursor-pointer"
                       title="View details"
                     >
                       <MoreVertIcon className="w-4 h-4" />
@@ -166,11 +181,7 @@ export default function CredentialsCard({
       {/* Credential Details Modal */}
       <CredentialDetailsModal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedCredentialId(null);
-          setTimeout(() => window.location.reload(), 10);
-        }}
+        onClose={handleDetailsModalClose}
         loading={detailsLoading}
         downloadData={
           detailedCredential && !detailsLoading && !detailsError
@@ -189,8 +200,20 @@ export default function CredentialsCard({
         }
       >
         {detailsLoading ? (
-          <Spinner />
-        ) : detailsError ? null : detailedCredential ? (
+          <CredentialAccessModal
+            isOpen={true}
+            onClose={handleDetailsModalClose}
+            title="Secure Access Required"
+            subtitle="To protect your credentials, please unlock your account before viewing the details."
+          />
+        ) : detailsError ? (
+          <CredentialAccessModal
+            isOpen={true}
+            onClose={handleDetailsModalClose}
+            title="Error loading credential details"
+            subtitle="Please try again later."
+          />
+        ) : detailedCredential ? (
           <div className="space-y-4">
             {decryptedContent && (
               <div className="bg-idos-grey2 p-4">

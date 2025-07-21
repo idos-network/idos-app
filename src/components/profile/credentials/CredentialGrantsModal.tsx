@@ -5,7 +5,8 @@ import {
 } from '@/hooks/useGrants';
 import { timelockToMs, timelockToDate } from '@/utils/time';
 import Spinner from '@/components/onboarding/components/Spinner';
-import CloseIcon from '@/components/icons/close';
+import CloseButton from '@/components/CloseButton';
+import SmallSecondaryButton from '@/components/SmallSecondaryButton';
 
 type CredentialGrantsModalProps = {
   credentialId: string;
@@ -92,18 +93,19 @@ const Shares = ({
                     : 'No timelock'}
                 </td>
                 <td className="p-4 text-right">
-                  <button
-                    disabled={timelockToMs(+grant.locked_until) >= Date.now()}
-                    onClick={() => onRevoke(grant)}
-                    className={`px-3 py-1.5 text-sm rounded-md w-[73px] transition-colors ${
-                      revokeGrant.isPending &&
-                      revokeGrant.variables?.id === grant.id
-                        ? 'bg-neutral-400 text-neutral-700 cursor-not-allowed pointer-events-none'
-                        : 'bg-neutral-700/70 text-[#EA8E8F] hover:bg-neutral-700'
-                    }`}
-                  >
-                    Revoke
-                  </button>
+                  <div className="flex justify-end">
+                    <SmallSecondaryButton
+                      disabled={
+                        timelockToMs(+grant.locked_until) >= Date.now() ||
+                        (revokeGrant.isPending &&
+                          revokeGrant.variables?.id === grant.id)
+                      }
+                      onClick={() => onRevoke(grant)}
+                      danger={true}
+                    >
+                      Revoke
+                    </SmallSecondaryButton>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -131,7 +133,7 @@ export function CredentialGrantsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-sm"
+        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-[1px]"
         onClick={onClose}
       />
 
@@ -142,12 +144,7 @@ export function CredentialGrantsModal({
           <h2 className="text-xl leading-7 font-normal text-neutral-50">
             Grants Center
           </h2>
-          <button
-            onClick={onClose}
-            className="rounded-md p-2 text-neutral-200 hover:bg-idos-grey2"
-          >
-            <CloseIcon className="w-3 h-3" />
-          </button>
+          <CloseButton onClose={onClose} />
         </div>
 
         {/* Body */}

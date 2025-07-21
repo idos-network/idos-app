@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import SmallPrimaryButton from '@/components/SmallPrimaryButton';
 import DownloadIcon from '@/components/icons/download';
 import SmallCopyButton from '@/components/SmallCopyButton';
-import CloseIcon from '@/components/icons/close';
+import CloseButton from '@/components/CloseButton';
 
 interface ModalProps {
   isOpen: boolean;
@@ -56,7 +56,7 @@ export function CredentialDetailsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-neutral-900/50 backdrop-blur-[1px]"
         onClick={onClose}
       />
 
@@ -74,12 +74,7 @@ export function CredentialDetailsModal({
               <h2 className="text-xl font-normal text-neutral-50">
                 Credential Details
               </h2>
-              <button
-                onClick={onClose}
-                className="rounded-md p-2 text-neutral-200 hover:bg-idos-grey2"
-              >
-                <CloseIcon className="w-3 h-3" />
-              </button>
+              <CloseButton onClose={onClose} />
             </div>
 
             {/* Content */}

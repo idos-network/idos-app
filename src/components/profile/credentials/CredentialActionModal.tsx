@@ -86,7 +86,7 @@ export function CredentialActionModal({
                 onViewDetails();
                 onClose();
               }}
-              className="w-full px-3 text-left text-neutral-50 hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10"
+              className="w-full px-3 text-left text-neutral-50 hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10 cursor-pointer"
             >
               View Details
             </button>
@@ -95,7 +95,7 @@ export function CredentialActionModal({
                 setIsGrantsModalOpen(true);
                 onClose();
               }}
-              className="w-full px-3 text-left text-neutral-50 hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10"
+              className="w-full px-3 text-left text-neutral-50 hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10 cursor-pointer"
             >
               Manage grants
             </button>
@@ -104,7 +104,7 @@ export function CredentialActionModal({
                 setIsDeleteModalOpen(true);
                 onClose();
               }}
-              className="w-full px-3 text-left text-[#EB9595] hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10"
+              className="w-full px-3 text-left text-[#EB9595] hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10 cursor-pointer"
             >
               Delete
             </button>

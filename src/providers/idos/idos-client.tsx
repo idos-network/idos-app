@@ -82,7 +82,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-neutral-950">
         <h1>initializing idOS...</h1>
       </div>
     );

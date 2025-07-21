@@ -43,7 +43,7 @@ import { useToast } from '@/hooks/useToast';
 
 function StepOne({ onNext }: { onNext: () => void }) {
   return (
-    <div className="relative w-[900px] h-[900px] rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
+    <div className="relative w-[900px] h-full rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
       <div className="h-full w-full bg-idos-grey1/90 flex flex-col gap-10 p-14 rounded-[40px]">
         <img
           src="/idOS-cubes-1.png"
@@ -84,7 +84,7 @@ function StepOne({ onNext }: { onNext: () => void }) {
             subtitle="Add a credential to your idOS Profile"
           />
         </div>
-        <div className="flex justify-center z-10 mt-auto">
+        <div className="flex justify-center z-10">
           <StepperButton onClick={onNext}>Create idOS profile</StepperButton>
         </div>
       </div>
@@ -158,7 +158,9 @@ function StepTwo({ onNext }: { onNext: () => void }) {
             {error && <div className="text-red-500">{error}</div>}
           </div>
           <div className="flex justify-center">
-            <StepperButton>Waiting for signature...</StepperButton>
+            <StepperButton disabled={true}>
+              Waiting for signature...
+            </StepperButton>
           </div>
         </>
       )}
@@ -176,6 +178,35 @@ function StepThree({ onNext }: { onNext: () => void }) {
   const userAddress = currentUser?.mainAddress || '';
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
   const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
+
+  // Button group for both states
+  function ButtonGroup({
+    primaryText,
+    primaryOnClick,
+    primaryDisabled = false,
+    secondaryText,
+    secondaryOnClick,
+  }: {
+    primaryText: string;
+    primaryOnClick: () => void;
+    primaryDisabled?: boolean;
+    secondaryText: string;
+    secondaryOnClick: () => void;
+  }) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 mt-auto">
+        <StepperButton onClick={primaryOnClick} disabled={primaryDisabled}>
+          {primaryText}
+        </StepperButton>
+        <StepperButton
+          className="bg-none text-aquamarine-50 hover:text-aquamarine-200"
+          onClick={secondaryOnClick}
+        >
+          {secondaryText}
+        </StepperButton>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (state === 'verified') {
@@ -260,81 +291,106 @@ function StepThree({ onNext }: { onNext: () => void }) {
   return (
     <div className="flex flex-col gap-14 h-[675px] w-[700px]">
       <TopBar activeStep="step-three" />
-      {state !== 'verifying' && (
-        <div className="flex flex-col gap-14 flex-1">
-          <TextBlock
-            title="Verify you are a human"
-            subtitle="In a moment, we'll ask you to follow some instructions for a liveness check. This will let us know that this is you, without exposing your identity."
-          />
-          <div className="w-full h-full flex flex-row gap-5">
-            <StepperCards
-              icon={<DevicesIcon color="var(--color-aquamarine-400)" />}
-              description="Biometric check happens on your device."
-            />
-            <StepperCards
-              icon={<FrameIcon color="var(--color-aquamarine-400)" />}
-              description="Pictures of your face are never stored."
-            />
-            <StepperCards
-              icon={
-                <PersonIcon
-                  color="var(--color-aquamarine-400)"
-                  width="36"
-                  height="36"
-                />
-              }
-              description="Future authentication will work across any of your linked devices"
-            />
-          </div>
-        </div>
-      )}
-      {state === 'idle' && (
-        <>
-          <div className="flex justify-center mt-auto">
-            <div className="flex flex-col items-center gap-3">
-              <StepperButton onClick={handleProofOfHumanity}>
-                Verify you are human
-              </StepperButton>
-              <StepperButton
-                className="bg-none text-aquamarine-50 hover:text-aquamarine-200"
-                onClick={() => setState('recaptcha')}
-              >
-                Choose another method
-              </StepperButton>
-            </div>
-          </div>
-        </>
-      )}
-      {state === 'recaptcha' && (
-        <div className="flex flex-col gap-14 flex-1">
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex justify-center border-6 rounded-lg border-aquamarine-400">
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={env.VITE_RECAPTCHA_SITE_KEY}
-                onChange={handleRecaptcha}
-                onExpired={handleRecaptchaExpired}
-                onError={handleRecaptchaError}
-                theme="dark"
+      {/* Main content area, always flex-1, column, justify-between */}
+      <div className="flex flex-col flex-1 justify-between">
+        {/* Top content: cards or recaptcha */}
+        {state !== 'verifying' && state !== 'recaptcha' && (
+          <>
+            <div className="flex flex-col gap-14">
+              <TextBlock
+                title="Verify you are a human"
+                subtitle="In a moment, we'll ask you to follow some instructions for a liveness check. This will let us know that this is you, without exposing your identity."
               />
+              <div className="w-full h-full flex flex-row gap-5 min-h-[120px]">
+                <StepperCards
+                  icon={<DevicesIcon color="var(--color-aquamarine-400)" />}
+                  description="Biometric check happens on your device."
+                />
+                <StepperCards
+                  icon={<FrameIcon color="var(--color-aquamarine-400)" />}
+                  description="Pictures of your face are never stored."
+                />
+                <StepperCards
+                  icon={
+                    <PersonIcon
+                      color="var(--color-aquamarine-400)"
+                      width="36"
+                      height="36"
+                    />
+                  }
+                  description="Future authentication will work across any of your linked devices"
+                />
+              </div>
             </div>
-            <div className="flex flex-col items-center gap-3">
-              <StepperButton
-                onClick={handleRecaptchaSubmit}
-                disabled={captchaToken === ''}
-              >
-                Verify with reCAPTCHA
-              </StepperButton>
-              <StepperButton
-                className="bg-none text-aquamarine-50 hover:text-aquamarine-200"
-                onClick={() => setState('idle')}
-              >
-                Choose another method
-              </StepperButton>
+          </>
+        )}
+        {state === 'recaptcha' && (
+          <div className="flex flex-col gap-14 min-h-[220px]">
+            <TextBlock
+              title="Verify you are a human"
+              subtitle="Prove your humanity to acess the decentralized identity system."
+            />
+            <div className="flex flex-col items-center justify-center flex-1">
+              <div className="recaptcha-wrapper">
+                <ReCAPTCHA
+                  className="g-recaptcha"
+                  ref={recaptchaRef}
+                  sitekey={env.VITE_RECAPTCHA_SITE_KEY}
+                  onChange={handleRecaptcha}
+                  onExpired={handleRecaptchaExpired}
+                  onError={handleRecaptchaError}
+                  theme="dark"
+                />
+                <div className="rc-anchor-checkbox-label">I'm not a robot</div>
+                <div className="recaptcha-info"></div>
+                <div className="rc-anchor-logo-text">reCAPTCHA</div>
+                <div className="rc-anchor-pt">
+                  <a
+                    href="https://www.google.com/intl/en/policies/privacy/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Privacy
+                  </a>
+                  <span aria-hidden="true" role="presentation">
+                    {' '}
+                    -{' '}
+                  </span>
+                  <a
+                    href="https://www.google.com/intl/en/policies/terms/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Terms
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+        {/* Button group, always at the bottom */}
+        {state === 'idle' && (
+          <div className="flex flex-col items-center justify-center gap-3 mt-auto">
+            <ButtonGroup
+              primaryText="Verify you are human"
+              primaryOnClick={handleProofOfHumanity}
+              secondaryText="Choose another method"
+              secondaryOnClick={() => setState('recaptcha')}
+            />
+          </div>
+        )}
+        {state === 'recaptcha' && (
+          <div className="flex flex-col items-center justify-center gap-3 mt-auto">
+            <ButtonGroup
+              primaryText="Verify with reCAPTCHA"
+              primaryOnClick={handleRecaptchaSubmit}
+              primaryDisabled={captchaToken === ''}
+              secondaryText="Choose another method"
+              secondaryOnClick={() => setState('idle')}
+            />
+          </div>
+        )}
+      </div>
       {state === 'verifying' && (
         <div className="flex flex-col gap-14 flex-1">
           <TextBlock
@@ -352,7 +408,9 @@ function StepThree({ onNext }: { onNext: () => void }) {
       {state === 'creating' && (
         <>
           <div className="flex justify-center">
-            <StepperButton>Creating your idOS profile...</StepperButton>
+            <StepperButton disabled={true}>
+              Creating your idOS profile...
+            </StepperButton>
           </div>
         </>
       )}
@@ -468,7 +526,9 @@ function StepFour() {
             <Spinner />
           </div>
           <div className="flex justify-center">
-            <StepperButton>Waiting for confirmation...</StepperButton>
+            <StepperButton disabled={true}>
+              Waiting for confirmation...
+            </StepperButton>
           </div>
         </>
       )}
@@ -479,7 +539,9 @@ function StepFour() {
             {error && <div className="text-red-500">{error}</div>}
           </div>
           <div className="flex justify-center">
-            <StepperButton>Waiting for signature...</StepperButton>
+            <StepperButton disabled={true}>
+              Waiting for signature...
+            </StepperButton>
           </div>
         </>
       )}
@@ -548,7 +610,7 @@ export default function OnboardingStepper() {
   if (!activeStep) return null;
 
   return (
-    <div className="w-[900px] h-[750px] rounded-[20px] bg-neutral-950 flex flex-col items-center justify-center gap-24">
+    <div className="w-[900px] h-[750px] rounded-[20px] bg-neutral-950 flex flex-col items-center  gap-24">
       {getCurrentStepComponent()}
     </div>
   );

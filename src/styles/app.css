@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 @import '@rainbow-me/rainbowkit/styles.css';
+@import './idos-enclave.css';
+@import './recaptcha.css';
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
@@ -22,38 +24,13 @@
   }
 }
 
-#idOS-enclave.visible {
-  position: absolute !important;
-  top: 78.9% !important;
-  left: 47.3% !important;
-  width: 348px !important;
-  height: 52px !important;
-  overflow: visible !important;
-  z-index: 9999 !important;
-}
-
-#idOS-enclave.visible.loading {
-  top: 70% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-}
-
-#idOS-enclave.visible iframe {
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  width: 348px !important;
-  max-width: 600px !important;
-  height: 52px !important;
-  max-height: 500px !important;
-  border-radius: 8px !important;
-}
-
 @theme {
   --font-body: 'Urbanist', sans-serif;
   --font-heading: 'Urbanist', sans-serif;
   --font-mono: 'Urbanist', sans-serif;
+
+  /* Neutral colors override */
+  --color-neutral-950: #090909;
 
   /* idOS colors */
   --color-idos-dark-mode: #0a090c;
@@ -84,7 +61,7 @@
 
   /* UI colors */
   --color-ui-background-light: #f8f8f8;
-  --color-ui-background-dark: #0a090c;
+  --color-ui-background-dark: #090909;
 
   --color-ui-text-light: #3b3b3b;
   --color-ui-text-dark: #f8f8f8;

@@ -2,7 +2,7 @@ import { useIdOS } from '@/providers/idos/idos-client';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import WalletIcon from './icons/wallet';
+import WalletIcon from '@/icons/wallet';
 
 // TODO maybe update the openaccountmodal to use wallet.disconnectAll() instead
 export default function CustomConnectButton() {

@@ -87,7 +87,7 @@ export default function WalletsCard() {
                       className={`rounded-md p-2 transition-colors ${
                         isConnected
                           ? 'text-neutral-500 cursor-not-allowed'
-                          : 'text-neutral-200 hover:bg-idos-grey2'
+                          : 'text-neutral-200 hover:bg-idos-grey2 cursor-pointer'
                       }`}
                       disabled={isConnected}
                     >

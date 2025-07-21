@@ -1,0 +1,27 @@
+#idOS-enclave.visible {
+  position: absolute !important;
+  top: 775px !important;
+  left: 47.3% !important;
+  width: 348px !important;
+  height: 52px !important;
+  overflow: visible !important;
+  z-index: 99 !important;
+}
+
+#idOS-enclave.visible.loading {
+  top: 659px !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+#idOS-enclave.visible iframe {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 348px !important;
+  max-width: 600px !important;
+  height: 52px !important;
+  max-height: 500px !important;
+  border-radius: 8px !important;
+}

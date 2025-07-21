@@ -79,7 +79,7 @@ export function WalletActionModal({
                 setIsDeleteModalOpen(true);
                 onClose();
               }}
-              className="w-full px-3 text-left text-[#EB9595] hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10"
+              className="w-full px-3 text-left text-[#EB9595] hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10 cursor-pointer"
             >
               Delete
             </button>
