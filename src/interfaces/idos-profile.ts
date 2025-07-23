@@ -5,6 +5,7 @@ export const idosUserSchema = z.object({
   mainAddress: z.string(),
   userEncryptionPublicKey: z.string(),
   ownershipProofSignature: z.string(),
+  publicKey: z.string(),
   idosKey: z.boolean().optional(),
   humanVerified: z.boolean().optional(),
   idosStakingCredential: z.boolean().optional(),

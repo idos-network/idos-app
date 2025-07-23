@@ -5,6 +5,7 @@ export default function SmallSecondaryButton({
   disabled,
   icon,
   iconColor,
+  height = 'h-9',
   width = 'w-fit',
   danger,
 }: {
@@ -14,13 +15,14 @@ export default function SmallSecondaryButton({
   disabled?: boolean;
   icon?: React.ReactNode;
   iconColor?: string;
+  height?: string;
   width?: string;
   danger?: boolean;
 }) {
   return (
     <button
       type="button"
-      className={`font-['Inter'] flex items-center justify-center gap-2 text-sm font-medium self-stretch h-9 px-4 py-3 ${width} rounded-lg ${
+      className={`font-['Inter'] flex items-center justify-center gap-2 text-sm font-medium self-stretch px-4 py-3 ${height} ${width} rounded-lg ${
         disabled
           ? 'cursor-not-allowed bg-neutral-400 text-neutral-700'
           : `cursor-pointer ${className || 'bg-neutral-700/50 hover:bg-neutral-700'} ${

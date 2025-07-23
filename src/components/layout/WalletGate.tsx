@@ -1,4 +1,4 @@
-import { WalletConnector } from './WalletConnector';
+import { WalletConnector } from '@/components/wallets/WalletConnector';
 
 export default function WalletGate() {
   return (

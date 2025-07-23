@@ -35,19 +35,19 @@ export function WalletConnector() {
       <WalletConnectorButton
         onClick={() => walletConnector.connectEthereum()}
         label="Connect a EVM Wallet"
-        iconSrc="/wallet-connect-icon.png"
+        iconSrc="/ethereum.png"
       />
 
       <WalletConnectorButton
         onClick={() => walletConnector.connectNear()}
         label="Connect with NEAR"
-        iconSrc="/near-mobile.png"
+        iconSrc="/near.png"
       />
 
       <WalletConnectorButton
         onClick={() => walletConnector.connectStellar()}
         label="Connect with Stellar"
-        iconSrc="/stellar-icon.png"
+        iconSrc="/stellar.png"
       />
     </div>
   );

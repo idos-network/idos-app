@@ -12,6 +12,7 @@ import {
 } from 'react';
 
 import { useEthersSigner } from '@/hooks/useEthersSigner';
+import { WalletConnectorContext } from '@/providers/wallet-providers/wallet-connector';
 
 const _idOSClient = createIDOSClient({
   nodeUrl: 'https://nodes.playground.idos.network/',
@@ -22,6 +23,7 @@ type IdOSContextType = {
   idOSClient: idOSClient;
   withSigner: idOSClientWithUserSigner;
   isLoading: boolean;
+  signer: any; // Export the current active signer
 };
 
 export const IDOSClientContext = createContext<IdOSContextType | undefined>(
@@ -40,28 +42,56 @@ export const useUnsafeIdOS = () => {
   return useContext(IDOSClientContext);
 };
 
+async function createStellarSigner(address: string, kit: any) {
+  // TODO: Implement stellar signer
+  return { address, kit };
+}
+
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true);
   const [idOSClient, setClient] = useState<idOSClient>(_idOSClient);
   const [withSigner, setWithSigner] = useState<idOSClientWithUserSigner>();
+  const [signer, setSigner] = useState<any>(); // Track the current signer
   const evmSigner = useEthersSigner();
+  const walletConnector = useContext(WalletConnectorContext);
 
   useEffect(() => {
     const setupClient = async () => {
       setIsLoading(true);
-
       try {
         const newClient = await _idOSClient.createClient();
-        if (!evmSigner) {
+        let _signer: any = undefined;
+        if (walletConnector?.connectedWallet) {
+          if (walletConnector.connectedWallet.type === 'ethereum') {
+            _signer = evmSigner;
+          } else if (walletConnector.connectedWallet.type === 'near') {
+            const nearWallet = walletConnector.nearWallet;
+            if (nearWallet?.selector.isSignedIn()) {
+              _signer = await nearWallet.selector.wallet();
+            }
+          } else if (walletConnector.connectedWallet.type === 'stellar') {
+            const stellarWallet = walletConnector.stellarWallet;
+            if (
+              stellarWallet?.isConnected &&
+              stellarWallet.address &&
+              stellarWallet.kit
+            ) {
+              _signer = await createStellarSigner(
+                stellarWallet.address,
+                stellarWallet.kit,
+              );
+            }
+          }
+        }
+        setSigner(_signer); // Save the signer to state
+        if (!_signer) {
           setClient(newClient);
           setWithSigner(undefined);
           setIsLoading(false);
           return;
         }
-
-        const _withSigner = await newClient.withUserSigner(evmSigner);
+        const _withSigner = await newClient.withUserSigner(_signer);
         setWithSigner(_withSigner);
-
         if (await _withSigner.hasProfile()) {
           setClient(await _withSigner.logIn());
         } else {
@@ -72,13 +102,18 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         const newClient = await _idOSClient.createClient();
         setClient(newClient);
         setWithSigner(undefined);
+        setSigner(undefined);
       } finally {
         setIsLoading(false);
       }
     };
-
     setupClient();
-  }, [evmSigner]);
+  }, [
+    evmSigner,
+    walletConnector?.connectedWallet,
+    walletConnector?.nearWallet,
+    walletConnector?.stellarWallet,
+  ]);
 
   if (isLoading) {
     return (
@@ -90,7 +125,12 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
   return (
     <IDOSClientContext.Provider
-      value={{ idOSClient: idOSClient, withSigner: withSigner!, isLoading }}
+      value={{
+        idOSClient: idOSClient,
+        withSigner: withSigner!,
+        isLoading,
+        signer,
+      }}
     >
       {children}
     </IDOSClientContext.Provider>

@@ -1,9 +1,11 @@
 import type { Account, WalletSelector } from '@near-wallet-selector/core';
 import { setupWalletSelector } from '@near-wallet-selector/core';
-import { setupSender } from '@near-wallet-selector/sender';
-import type { WalletSelectorModal } from '@near-wallet-selector/modal-ui';
-import { setupModal } from '@near-wallet-selector/modal-ui';
-import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
+import {
+  setupModal,
+  type WalletSelectorModal,
+} from '@near-wallet-selector/modal-ui';
+import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
+import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import '@near-wallet-selector/modal-ui/styles.css';
 import type { PropsWithChildren } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -38,13 +40,14 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
   const initializeWalletSelector = useCallback(async () => {
     try {
       const walletSelector = await setupWalletSelector({
-        network: import.meta.env.DEV ? 'testnet' : 'mainnet',
+        // network: import.meta.env.DEV ? 'testnet' : 'mainnet',
+        network: 'testnet',
         debug: import.meta.env.DEV,
-        modules: [setupSender(), setupMyNearWallet()],
+        modules: [setupMeteorWallet(), setupHereWallet()],
       });
 
       const walletModal = setupModal(walletSelector, {
-        contractId: 'your-contract-id.near', // Replace with actual contract ID or remove if not needed
+        contractId: '', // Replace with actual contract ID or remove if not needed
         methodNames: [],
       });
 

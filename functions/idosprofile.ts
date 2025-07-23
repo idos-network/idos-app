@@ -1,6 +1,5 @@
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import nacl from 'tweetnacl';
-import { ethers } from 'ethers';
 import type { Context } from '@netlify/functions';
 
 export default async (request: Request, _context: Context) => {
@@ -33,12 +32,16 @@ export default async (request: Request, _context: Context) => {
     address,
     ownershipProofMessage,
     ownershipProofSignature,
+    publicKey,
+    walletType,
   } = (await request.json()) as {
     userId: string;
     userEncryptionPublicKey: string;
     address: string;
     ownershipProofMessage: string;
     ownershipProofSignature: string;
+    publicKey: string;
+    walletType: string;
   };
   const idOSIssuerInstance = await idOSIssuer;
 
@@ -49,13 +52,10 @@ export default async (request: Request, _context: Context) => {
 
   const wallet = {
     address,
-    wallet_type: 'EVM',
+    wallet_type: walletType === 'ethereum' ? 'EVM' : walletType.toUpperCase(),
     message: ownershipProofMessage,
     signature: ownershipProofSignature,
-    public_key: ethers.SigningKey.recoverPublicKey(
-      ethers.id(ownershipProofMessage),
-      ownershipProofSignature,
-    ),
+    public_key: publicKey,
   };
 
   await idOSIssuerInstance.createUser(user, wallet);

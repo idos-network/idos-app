@@ -1,25 +1,35 @@
-import CustomConnectButton from './CustomConnectButton';
+import WalletBar from '@/components/wallets/WalletBar';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
-import { NearHeader } from './NearHeader';
-import { StellarHeader } from './StellarHeader';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
 
 export default function Header() {
+  const hasProfile = useIdOSLoginStatus();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
 
   return (
-    <header className="flex justify-end gap-2 border-gray-800 border-b p-4 text-idos-seasalt h-20">
-      {wallet && wallet.type === 'ethereum' && <CustomConnectButton />}
-      {wallet && wallet.type === 'near' && <NearHeader />}
-      {wallet && wallet.type === 'stellar' && <StellarHeader />}
-
-      {/* TODO remove once Near modal is correctly implemented and rainbowkit modal uses walletConnect.disconnectAll*/}
-      <button
-        onClick={walletConnector.disconnect}
-        className="flex items-center gap-2 rounded-md border border-idos-grey4 bg-idos-grey1 px-2 py-1 font-semibold text-idos-seasalt text-sm"
-      >
-        Sign out
-      </button>
+    <header className="flex justify-end gap-2 border-gray-800 border-b items-center text-idos-seasalt h-20 pr-6">
+      {wallet && wallet.type === 'ethereum' && (
+        <WalletBar
+          network="ethereum"
+          address={wallet.address}
+          profileStatus={hasProfile ? 'verified' : 'notVerified'}
+        />
+      )}
+      {wallet && wallet.type === 'near' && (
+        <WalletBar
+          network="near"
+          address={wallet.address}
+          profileStatus={hasProfile ? 'verified' : 'notVerified'}
+        />
+      )}
+      {wallet && wallet.type === 'stellar' && (
+        <WalletBar
+          network="stellar"
+          address={wallet.address}
+          profileStatus={hasProfile ? 'verified' : 'notVerified'}
+        />
+      )}
     </header>
   );
 }

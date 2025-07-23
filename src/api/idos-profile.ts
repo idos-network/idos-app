@@ -6,6 +6,8 @@ export const createIdOSProfile = async (
   address?: string,
   ownershipProofMessage?: string,
   ownershipProofSignature?: string,
+  publicKey?: string,
+  walletType?: string,
 ) => {
   const response = await axiosInstance.post('/idosprofile', {
     userId,
@@ -13,6 +15,8 @@ export const createIdOSProfile = async (
     address,
     ownershipProofMessage,
     ownershipProofSignature,
+    publicKey,
+    walletType,
   });
   return response.data;
 };

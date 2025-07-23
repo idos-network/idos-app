@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 
-import { useSignMessage } from 'wagmi';
-
 import TopBar from './components/TopBar';
 import StepperButton from './components/StepperButton';
 import TextBlock from './components/TextBlock';
@@ -17,9 +15,8 @@ import ShieldIcon from '@/icons/shield';
 import CredentialIcon from '@/icons/credential';
 import PersonIcon from '@/icons/person';
 import KeyIcon from '@/icons/key';
-import { GraphIcon } from '../icons/graph';
+import { GraphIcon } from '@/icons/graph';
 import { useIdOS } from '@/providers/idos/idos-client';
-import { useEthersSigner } from '@/hooks/useEthersSigner';
 import {
   clearUserData,
   getCurrentUser,
@@ -27,10 +24,7 @@ import {
 } from '@/storage/idos-profile';
 import { verifyRecaptcha } from '@/api/idos-profile';
 import { env } from '@/env';
-import {
-  handleCreateIdOSProfile,
-  handleSaveIdOSProfile,
-} from '@/handlers/idos-profile';
+import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
 import useRecaptcha from '@/hooks/useRecaptcha';
 import { useCredentials } from '@/hooks/useCredentials';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
@@ -40,6 +34,18 @@ import {
 } from '@/handlers/idos-credential';
 import type { IdosDWG } from '@/interfaces/idos-credential';
 import { useToast } from '@/hooks/useToast';
+import { useWalletConnector } from '@/hooks/useWalletConnector';
+import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
+import { useNearWallet } from '@/hooks/useNearWallet';
+import { ButtonGroup } from './components/ButtonGroup';
+
+function useStepState(initial = 'idle') {
+  const [state, setState] = useState(initial);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  return { state, setState, loading, setLoading, error, setError };
+}
 
 function StepOne({ onNext }: { onNext: () => void }) {
   return (
@@ -93,22 +99,22 @@ function StepOne({ onNext }: { onNext: () => void }) {
 }
 
 function StepTwo({ onNext }: { onNext: () => void }) {
-  const [state, setState] = useState('idle');
+  const { state, setState, loading, setLoading, error } = useStepState();
   const { withSigner } = useIdOS();
-  const [loading, setLoading] = useState(false);
-  const [error] = useState<string | null>(null);
-  const signer = useEthersSigner();
-  // const { isError, isSuccess, signMessage } = useSignMessage();
+  const walletConnector = useWalletConnector();
+  const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const handleSaveIdOSProfile = useHandleSaveIdOSProfile();
 
   useEffect(() => {
-    handleSaveIdOSProfile(setState, setLoading, withSigner, signer, onNext);
-  }, [onNext, signer, withSigner]);
+    handleSaveIdOSProfile(setState, setLoading, withSigner, wallet, onNext);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setState, setLoading, withSigner, wallet, onNext]);
 
   useEffect(() => {
     if (error) {
       setState('idle');
     }
-  }, [error]);
+  }, [error, setState]);
 
   return (
     <div className="flex flex-col gap-14 h-[675px] w-[700px]">
@@ -146,9 +152,7 @@ function StepTwo({ onNext }: { onNext: () => void }) {
             {loading && <Spinner />}
             {error && <div className="text-red-500">{error}</div>}
           </div>
-          <div className="flex justify-center">
-            {/* <StepperButton>Creating your idOS key...</StepperButton> */}
-          </div>
+          <div className="flex justify-center"></div>
         </>
       )}
       {state === 'waiting_signature' && (
@@ -169,44 +173,19 @@ function StepTwo({ onNext }: { onNext: () => void }) {
 }
 
 function StepThree({ onNext }: { onNext: () => void }) {
-  const [state, setState] = useState('idle');
+  const { state, setState } = useStepState();
   const { captchaToken, setCaptchaToken, recaptchaRef, handleRecaptcha } =
     useRecaptcha();
+  const walletConnector = useWalletConnector();
+  const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const walletType = (wallet && wallet.type) || '';
 
   const currentUser = getCurrentUser();
   const userId = currentUser?.id || '';
   const userAddress = currentUser?.mainAddress || '';
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
   const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
-
-  // Button group for both states
-  function ButtonGroup({
-    primaryText,
-    primaryOnClick,
-    primaryDisabled = false,
-    secondaryText,
-    secondaryOnClick,
-  }: {
-    primaryText: string;
-    primaryOnClick: () => void;
-    primaryDisabled?: boolean;
-    secondaryText: string;
-    secondaryOnClick: () => void;
-  }) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 mt-auto">
-        <StepperButton onClick={primaryOnClick} disabled={primaryDisabled}>
-          {primaryText}
-        </StepperButton>
-        <StepperButton
-          className="bg-none text-aquamarine-50 hover:text-aquamarine-200"
-          onClick={secondaryOnClick}
-        >
-          {secondaryText}
-        </StepperButton>
-      </div>
-    );
-  }
+  const publicKey = currentUser?.publicKey || '';
 
   useEffect(() => {
     if (state === 'verified') {
@@ -219,8 +198,11 @@ function StepThree({ onNext }: { onNext: () => void }) {
           userAddress,
           env.VITE_OWNERSHIP_PROOF_MESSAGE,
           ownershipProofSignature,
+          publicKey,
+          walletType,
         );
         if (!response) {
+          updateUserState(userAddress, { humanVerified: false });
           setState('idle');
         } else {
           onNext();
@@ -230,11 +212,14 @@ function StepThree({ onNext }: { onNext: () => void }) {
     }
   }, [
     state,
+    setState,
     onNext,
     userAddress,
     userId,
     userEncryptionPublicKey,
     ownershipProofSignature,
+    publicKey,
+    walletType,
   ]);
 
   function handleProofOfHumanity() {
@@ -419,27 +404,21 @@ function StepThree({ onNext }: { onNext: () => void }) {
 }
 
 function StepFour() {
-  const [state, setState] = useState('idle');
-  const [loading, setLoading] = useState(false);
-  const [error] = useState<string | null>(null);
+  const { state, setState, loading, setLoading, error } = useStepState();
   const { withSigner } = useIdOS();
-  const signer = useEthersSigner();
-  const { isError, isSuccess } = useSignMessage();
   const { showToast } = useToast();
+  const { selector } = useNearWallet();
 
-  useEffect(() => {
-    if (isSuccess) {
-      setState('created');
-    } else if (isError) {
-      setState('idle');
-    }
-  }, [isSuccess, isError]);
+  const walletConnector = useWalletConnector();
+  const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
 
   useEffect(() => {
     if (state === 'created') {
       window.location.href = '/';
+    } else if (error) {
+      setState('idle');
     }
-  }, [state]);
+  }, [state, error, setState]);
 
   async function handleAddCredential() {
     const withSignerLoggedIn = await withSigner.logIn();
@@ -449,21 +428,24 @@ function StepFour() {
         setState,
         setLoading,
         withSignerLoggedIn,
-        signer,
+        wallet,
+        wallet && wallet.type === 'near' ? await selector.wallet() : undefined,
       );
       if (!idOSDWG) {
         setState('idle');
         return;
       }
-
       setState('creating');
+
       const response = await handleCreateIdOSCredential(
         idOSDWG,
         withSignerLoggedIn.user.recipient_encryption_public_key,
         withSignerLoggedIn.user.id,
       );
+
       if (response) {
         setState('created');
+        clearUserData();
         localStorage.setItem(
           'showToast',
           JSON.stringify({
@@ -536,7 +518,7 @@ function StepFour() {
         <>
           <div className="flex justify-center flex-1 items-center">
             {loading && <Spinner />}
-            {error && <div className="text-red-500">{error}</div>}
+            {error && <div className="text-red-500">Error</div>}
           </div>
           <div className="flex justify-center">
             <StepperButton disabled={true}>
@@ -552,8 +534,9 @@ function StepFour() {
 export default function OnboardingStepper() {
   const [activeStep, setActiveStep] = useState<string | null>(null);
   const { credentials, isLoading } = useCredentials();
-  const signer = useEthersSigner();
   const hasProfile = useIdOSLoginStatus();
+  const walletConnector = useWalletConnector();
+  const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
 
   const steps = [
     { id: 'step-one', component: StepOne },
@@ -568,9 +551,12 @@ export default function OnboardingStepper() {
     const currentUser = getCurrentUser();
 
     if (currentUser) {
-      if (currentUser.mainAddress !== signer?.address && !hasProfile) {
-        setActiveStep('step-one');
+      if (
+        currentUser.mainAddress !== (wallet && wallet.address) &&
+        !hasProfile
+      ) {
         clearUserData();
+        setActiveStep('step-one');
         return;
       } else if (hasProfile) {
         setActiveStep('step-four');
@@ -592,7 +578,7 @@ export default function OnboardingStepper() {
     }
 
     setActiveStep('step-one');
-  }, [credentials, isLoading, hasProfile, signer?.address]);
+  }, [credentials, isLoading, hasProfile, wallet]);
 
   function getCurrentStepComponent() {
     const currentStep = steps.find((step) => step.id === activeStep);

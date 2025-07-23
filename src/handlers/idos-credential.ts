@@ -2,12 +2,18 @@ import { env } from '@/env';
 import { createIdOSCredential } from '@/api/idos-credential';
 import type { IdosDWG } from '@/interfaces/idos-credential';
 import type { idOSClientLoggedIn } from '@idos-network/client';
+import type { Wallet as NearWallet } from '@near-wallet-selector/core';
+import {
+  getNearFullAccessPublicKeys,
+  signNearMessage,
+} from '@/utils/near/near-signature';
 
 export async function handleDWGCredential(
   setState: (state: string) => void,
   setLoading: (loading: boolean) => void,
   withSigner: idOSClientLoggedIn,
-  signer: any,
+  wallet: any,
+  nearWallet: NearWallet | undefined,
 ) {
   try {
     setState('idle');
@@ -16,8 +22,11 @@ export async function handleDWGCredential(
     const currentTimestamp = Date.now();
     const currentDate = new Date(currentTimestamp);
     const notUsableAfter = new Date(currentTimestamp + 24 * 60 * 60 * 1000);
+    const publicKey = await getNearFullAccessPublicKeys(wallet.address);
+
     const delegatedWriteGrant = {
-      owner_wallet_identifier: await signer.getAddress(),
+      owner_wallet_identifier:
+        wallet.type === 'near' ? publicKey?.[0] : wallet.address,
       grantee_wallet_identifier: env.VITE_GRANTEE_WALLET_ADDRESS,
       issuer_public_key: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
       id: crypto.randomUUID(),
@@ -33,21 +42,18 @@ export async function handleDWGCredential(
 
     let signature;
     try {
-      signature = await window.ethereum.request({
-        method: 'personal_sign',
-        params: [message, signer.address],
-      });
-    } catch (err: any) {
-      if (err.code === 4001) {
-        return await handleDWGCredential(
-          setState,
-          setLoading,
-          withSigner,
-          signer,
-        );
-      } else {
-        throw err;
+      if (wallet.type === 'ethereum') {
+        signature = await window.ethereum.request({
+          method: 'personal_sign',
+          params: [message, wallet.address],
+        });
+      } else if (wallet.type === 'near') {
+        signature = await signNearMessage(nearWallet!, message);
       }
+    } catch (err: any) {
+      setState('idle');
+      setLoading(false);
+      throw err;
     }
 
     const idOSDWG: IdosDWG = {
