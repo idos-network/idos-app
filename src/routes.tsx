@@ -137,7 +137,7 @@ function IdosProfile() {
         <Header />
         <main className="flex-1 pt-18 flex items-start justify-start text-idos-seasalt">
           {hasProfile && !isLoading && hasStakingCredential ? (
-            <div className="container mx-auto max-w-[1000px] flex flex-col px-32">
+            <div className="container mx-auto max-w-[1050px] flex flex-col px-32">
               <div className="gap-3 flex flex-col mb-10">
                 <div className="text-2xl font-medium text-neutral-50">
                   idOS Profile

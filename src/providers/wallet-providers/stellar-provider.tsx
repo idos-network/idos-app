@@ -1,9 +1,6 @@
 import {
-  FREIGHTER_ID,
   type ISupportedWallet,
   StellarWalletsKit,
-  WalletNetwork,
-  allowAllModules,
 } from '@creit.tech/stellar-wallets-kit';
 import type { PropsWithChildren } from 'react';
 import React, {
@@ -13,26 +10,17 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-
-declare global {
-  interface Window {
-    stellarKit: StellarWalletsKit;
-  }
-}
+import { derivePublicKey, stellarKit } from '@/utils/stellar/stellar-signature';
 
 interface StellarWalletContextValue {
   kit: StellarWalletsKit;
   address: string | null;
+  publicKey: string | null;
   isConnected: boolean;
   isLoading: boolean;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
-  signTransaction: (xdr: string) => Promise<string>;
 }
-
-const STELLAR_NETWORK = import.meta.env.DEV
-  ? WalletNetwork.TESTNET
-  : WalletNetwork.PUBLIC;
 
 const StellarWalletContext =
   React.createContext<StellarWalletContextValue | null>(null);
@@ -52,26 +40,22 @@ export function useStellarWallet() {
 export function StellarWalletProvider({ children }: PropsWithChildren) {
   const [kit, setKit] = useState<StellarWalletsKit | null>(null);
   const [address, setAddress] = useState<string | null>(null);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const initializeStellarKit = useCallback(async () => {
     try {
-      const stellarKit = new StellarWalletsKit({
-        network: STELLAR_NETWORK,
-        selectedWalletId: FREIGHTER_ID,
-        modules: allowAllModules(),
-      });
-
       setKit(stellarKit);
 
       const storedAddress = localStorage.getItem('stellar-address');
       const storedWalletId = localStorage.getItem('stellar-wallet-id');
+      const storedPublicKey = localStorage.getItem('stellar-public-key');
 
-      if (storedAddress && storedWalletId) {
+      if (storedAddress && storedWalletId && storedPublicKey) {
         setAddress(storedAddress);
         setIsConnected(true);
-        // Restored Stellar wallet connection (will validate on use)
+        setPublicKey(storedPublicKey);
       }
     } catch (error) {
       console.error('Failed to initialize Stellar Wallets Kit:', error);
@@ -97,14 +81,16 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
       await kit.openModal({
         onWalletSelected: async (option: ISupportedWallet) => {
           kit.setWallet(option.id);
-          const { address: walletAddress } = await kit.getAddress();
+          const { address } = await kit.getAddress();
+          const publicKey = await derivePublicKey(address);
 
-          setAddress(walletAddress);
+          setAddress(address);
+          setPublicKey(publicKey);
           setIsConnected(true);
-          localStorage.setItem('stellar-address', walletAddress);
-          localStorage.setItem('stellar-wallet-id', option.id);
 
-          // Connected to Stellar wallet
+          localStorage.setItem('stellar-address', address);
+          localStorage.setItem('stellar-wallet-id', option.id);
+          localStorage.setItem('stellar-public-key', publicKey);
         },
         onClosed: (error?: Error) => {
           if (error) {
@@ -121,33 +107,12 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
   }, [kit]);
 
   const disconnect = useCallback(async () => {
-    // Clear local state - most Stellar wallets don't support programmatic disconnection
     setAddress(null);
     setIsConnected(false);
     localStorage.removeItem('stellar-address');
     localStorage.removeItem('stellar-wallet-id');
+    localStorage.removeItem('stellar-public-key');
   }, []);
-
-  const signTransaction = useCallback(
-    async (xdr: string) => {
-      if (!kit || !isConnected || !address) {
-        throw new Error('Stellar wallet not connected');
-      }
-
-      try {
-        const { signedTxXdr } = await kit.signTransaction(xdr, {
-          address,
-          networkPassphrase: STELLAR_NETWORK,
-        });
-
-        return signedTxXdr;
-      } catch (error) {
-        console.error('Failed to sign transaction:', error);
-        throw error;
-      }
-    },
-    [kit, isConnected, address],
-  );
 
   const contextValue = useMemo<StellarWalletContextValue | null>(() => {
     if (!kit) {
@@ -157,21 +122,13 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
     return {
       kit,
       address,
+      publicKey,
       isConnected,
       isLoading,
       connect,
       disconnect,
-      signTransaction,
     };
-  }, [
-    kit,
-    address,
-    isConnected,
-    isLoading,
-    connect,
-    disconnect,
-    signTransaction,
-  ]);
+  }, [kit, address, publicKey, isConnected, isLoading, connect, disconnect]);
 
   if (isLoading) {
     return <div>loading</div>;

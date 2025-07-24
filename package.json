@@ -1,5 +1,5 @@
 {
-  "name": "tanstack-start-example-basic-react-query",
+  "name": "idos-staking",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -23,6 +23,7 @@
     "@idos-network/issuer": "1.0.0-rc.1.0",
     "@keyless/sdk-web": "^1.2.3",
     "@keyless/sdk-web-components": "^1.2.3",
+    "@kwilteam/kwil-js": "^0.9.4",
     "@lottiefiles/dotlottie-web": "^0.47.0",
     "@near-wallet-selector/core": "^9.1.0",
     "@near-wallet-selector/here-wallet": "^9.1.0",

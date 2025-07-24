@@ -13,6 +13,7 @@ import {
 
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import { WalletConnectorContext } from '@/providers/wallet-providers/wallet-connector';
+import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 
 const _idOSClient = createIDOSClient({
   nodeUrl: 'https://nodes.playground.idos.network/',
@@ -23,7 +24,7 @@ type IdOSContextType = {
   idOSClient: idOSClient;
   withSigner: idOSClientWithUserSigner;
   isLoading: boolean;
-  signer: any; // Export the current active signer
+  signer: any;
 };
 
 export const IDOSClientContext = createContext<IdOSContextType | undefined>(
@@ -42,16 +43,11 @@ export const useUnsafeIdOS = () => {
   return useContext(IDOSClientContext);
 };
 
-async function createStellarSigner(address: string, kit: any) {
-  // TODO: Implement stellar signer
-  return { address, kit };
-}
-
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true);
   const [idOSClient, setClient] = useState<idOSClient>(_idOSClient);
   const [withSigner, setWithSigner] = useState<idOSClientWithUserSigner>();
-  const [signer, setSigner] = useState<any>(); // Track the current signer
+  const [signer, setSigner] = useState<any>();
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
 
@@ -77,19 +73,20 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
               stellarWallet.kit
             ) {
               _signer = await createStellarSigner(
-                stellarWallet.address,
-                stellarWallet.kit,
+                stellarWallet.publicKey as string,
+                stellarWallet.address as string,
               );
             }
           }
         }
-        setSigner(_signer); // Save the signer to state
+        setSigner(_signer);
         if (!_signer) {
           setClient(newClient);
           setWithSigner(undefined);
           setIsLoading(false);
           return;
         }
+
         const _withSigner = await newClient.withUserSigner(_signer);
         setWithSigner(_withSigner);
         if (await _withSigner.hasProfile()) {

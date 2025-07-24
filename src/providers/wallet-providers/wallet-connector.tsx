@@ -8,6 +8,7 @@ export type WalletType = 'ethereum' | 'near' | 'stellar';
 export interface ConnectedWallet {
   type: WalletType;
   address: string;
+  publicKey: string | null;
   disconnect: () => Promise<void> | void;
 }
 
@@ -60,12 +61,14 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
       connectedWallet = {
         type: 'ethereum',
         address: ethereumWallet.address,
+        publicKey: ethereumWallet.address,
         disconnect: ethereumWallet.disconnect,
       };
     } else if (nearWallet.selector.isSignedIn() && nearWallet.accountId) {
       connectedWallet = {
         type: 'near',
         address: nearWallet.accountId,
+        publicKey: nearWallet.publicKey,
         disconnect: async () => {
           const wallet = await nearWallet.selector.wallet();
           await wallet.signOut();
@@ -75,6 +78,7 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
       connectedWallet = {
         type: 'stellar',
         address: stellarWallet.address,
+        publicKey: stellarWallet.publicKey,
         disconnect: stellarWallet.disconnect,
       };
     }

@@ -408,7 +408,6 @@ function StepFour() {
   const { withSigner } = useIdOS();
   const { showToast } = useToast();
   const { selector } = useNearWallet();
-
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
 

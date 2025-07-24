@@ -3,10 +3,8 @@ import { createIdOSCredential } from '@/api/idos-credential';
 import type { IdosDWG } from '@/interfaces/idos-credential';
 import type { idOSClientLoggedIn } from '@idos-network/client';
 import type { Wallet as NearWallet } from '@near-wallet-selector/core';
-import {
-  getNearFullAccessPublicKeys,
-  signNearMessage,
-} from '@/utils/near/near-signature';
+import { signNearMessage } from '@/utils/near/near-signature';
+import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 
 export async function handleDWGCredential(
   setState: (state: string) => void,
@@ -22,11 +20,9 @@ export async function handleDWGCredential(
     const currentTimestamp = Date.now();
     const currentDate = new Date(currentTimestamp);
     const notUsableAfter = new Date(currentTimestamp + 24 * 60 * 60 * 1000);
-    const publicKey = await getNearFullAccessPublicKeys(wallet.address);
 
     const delegatedWriteGrant = {
-      owner_wallet_identifier:
-        wallet.type === 'near' ? publicKey?.[0] : wallet.address,
+      owner_wallet_identifier: wallet.publicKey,
       grantee_wallet_identifier: env.VITE_GRANTEE_WALLET_ADDRESS,
       issuer_public_key: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
       id: crypto.randomUUID(),
@@ -49,6 +45,8 @@ export async function handleDWGCredential(
         });
       } else if (wallet.type === 'near') {
         signature = await signNearMessage(nearWallet!, message);
+      } else if (wallet.type === 'stellar') {
+        signature = await signStellarMessage(wallet, message);
       }
     } catch (err: any) {
       setState('idle');

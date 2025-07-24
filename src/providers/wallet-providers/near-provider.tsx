@@ -9,6 +9,7 @@ import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import '@near-wallet-selector/modal-ui/styles.css';
 import type { PropsWithChildren } from 'react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getNearFullAccessPublicKeys } from '@/utils/near/near-signature';
 
 // Reference docs : https://docs.near.org/tools/wallet-selector
 
@@ -26,6 +27,7 @@ interface NearWalletContextValue {
   accountId: string | null;
   setAccounts: (accounts: Account[]) => void;
   isLoading: boolean;
+  publicKey: string | null;
 }
 
 export const NearWalletContext =
@@ -36,6 +38,7 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
   const [modal, setModal] = useState<WalletSelectorModal | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
 
   const initializeWalletSelector = useCallback(async () => {
     try {
@@ -102,7 +105,12 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
 
     const signInSubscription = selector.on(
       'signedIn',
-      ({ accounts: signedInAccounts }) => {
+      async ({ accounts: signedInAccounts }) => {
+        const publicKey =
+          (
+            await getNearFullAccessPublicKeys(signedInAccounts[0]?.accountId)
+          )?.[0] || '';
+        setPublicKey(publicKey);
         setAccounts(signedInAccounts);
       },
     );
@@ -129,8 +137,9 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
       accountId: accounts[0]?.accountId ?? null,
       setAccounts,
       isLoading,
+      publicKey,
     };
-  }, [selector, modal, accounts, isLoading]);
+  }, [selector, modal, accounts, isLoading, publicKey]);
 
   if (isLoading) {
     return <div>Loading</div>;

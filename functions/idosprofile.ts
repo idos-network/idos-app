@@ -50,9 +50,15 @@ export default async (request: Request, _context: Context) => {
     recipient_encryption_public_key: userEncryptionPublicKey,
   };
 
+  const walletTypeMap: Record<string, string> = {
+    ethereum: 'EVM',
+    near: 'NEAR',
+    stellar: 'Stellar',
+  };
+
   const wallet = {
     address,
-    wallet_type: walletType === 'ethereum' ? 'EVM' : walletType.toUpperCase(),
+    wallet_type: walletTypeMap[walletType],
     message: ownershipProofMessage,
     signature: ownershipProofSignature,
     public_key: publicKey,

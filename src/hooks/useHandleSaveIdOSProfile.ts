@@ -1,10 +1,8 @@
 import { useNearWallet } from './useNearWallet';
 import { env } from '@/env';
 import { saveNewUser } from '@/storage/idos-profile';
-import {
-  getNearFullAccessPublicKeys,
-  signNearMessage,
-} from '@/utils/near/near-signature';
+import { signNearMessage } from '@/utils/near/near-signature';
+import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 import { verifySignature } from '@/utils/verify-signatures';
 import { ethers } from 'ethers';
 
@@ -42,8 +40,8 @@ export function useHandleSaveIdOSProfile() {
       }
 
       let ownershipProofSignature;
+      let walletPayload: WalletPayload | null = null;
       let publicKey;
-      let walletPayload: WalletPayload;
       try {
         if (wallet.type === 'near') {
           const nearWallet = await selector.wallet();
@@ -51,19 +49,14 @@ export function useHandleSaveIdOSProfile() {
             nearWallet,
             ownershipProofMessage,
           );
+          publicKey = wallet.publicKey;
           if (ownershipProofSignature) {
-            publicKey =
-              (await getNearFullAccessPublicKeys(wallet.address))?.[0] || '';
             walletPayload = {
               address: wallet.address,
               signature: ownershipProofSignature,
               public_key: [publicKey],
               message: ownershipProofMessage,
             };
-            const verification = await verifySignature(walletPayload);
-            if (!verification) {
-              throw new Error('Ownership proof signature is invalid');
-            }
           }
         } else if (wallet.type === 'ethereum') {
           ownershipProofSignature = await window.ethereum.request({
@@ -81,11 +74,29 @@ export function useHandleSaveIdOSProfile() {
               public_key: [publicKey],
               message: ownershipProofMessage,
             };
-            const verification = await verifySignature(walletPayload);
-            if (!verification) {
-              throw new Error('Ownership proof signature is invalid');
-            }
           }
+        } else if (wallet.type === 'stellar') {
+          ownershipProofSignature = await signStellarMessage(
+            wallet,
+            ownershipProofMessage,
+          );
+          if (ownershipProofSignature) {
+            publicKey = wallet.publicKey;
+            walletPayload = {
+              address: wallet.address,
+              signature: ownershipProofSignature,
+              public_key: [publicKey],
+              message: ownershipProofMessage,
+            };
+          }
+        }
+
+        if (!walletPayload) {
+          throw new Error('Failed to create wallet payload');
+        }
+        const verification = await verifySignature(walletPayload);
+        if (!verification) {
+          throw new Error('Ownership proof signature is invalid');
         }
       } catch (err: any) {
         if (err || err.code === 4001) {
