@@ -1,10 +1,12 @@
 import { useNearWallet } from './useNearWallet';
 import { env } from '@/env';
+import { ethers } from 'ethers';
+import * as GemWallet from '@gemwallet/api';
 import { saveNewUser } from '@/storage/idos-profile';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 import { verifySignature } from '@/utils/verify-signatures';
-import { ethers } from 'ethers';
+import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
 
 export type WalletPayload = {
   address: string;
@@ -58,7 +60,7 @@ export function useHandleSaveIdOSProfile() {
               message: ownershipProofMessage,
             };
           }
-        } else if (wallet.type === 'ethereum') {
+        } else if (wallet.type === 'evm') {
           ownershipProofSignature = await window.ethereum.request({
             method: 'personal_sign',
             params: [ownershipProofMessage, wallet.address],
@@ -78,6 +80,20 @@ export function useHandleSaveIdOSProfile() {
         } else if (wallet.type === 'stellar') {
           ownershipProofSignature = await signStellarMessage(
             wallet,
+            ownershipProofMessage,
+          );
+          if (ownershipProofSignature) {
+            publicKey = wallet.publicKey;
+            walletPayload = {
+              address: wallet.address,
+              signature: ownershipProofSignature,
+              public_key: [publicKey],
+              message: ownershipProofMessage,
+            };
+          }
+        } else if (wallet.type === 'xrpl') {
+          ownershipProofSignature = await signGemWalletTx(
+            GemWallet,
             ownershipProofMessage,
           );
           if (ownershipProofSignature) {

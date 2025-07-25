@@ -27,6 +27,7 @@ import { useSpecificCredential } from './hooks/useCredentials';
 import { env } from './env';
 import { ToastProvider } from '@/providers/toast/toast-provider';
 import { useToast } from '@/hooks/useToast';
+import { XrplWalletProvider } from './providers/wallet-providers/xrpl-provider';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -51,15 +52,17 @@ function RootComponent() {
           <RainbowKitProvider.Provider>
             <NearWalletProvider>
               <StellarWalletProvider>
-                <WalletConnectorProvider>
-                  <IDOSClientProvider>
-                    <Outlet />
-                    <Suspense>
-                      <TanStackRouterDevtools position="bottom-right" />
-                      <ReactQueryDevtools buttonPosition="bottom-left" />
-                    </Suspense>
-                  </IDOSClientProvider>
-                </WalletConnectorProvider>
+                <XrplWalletProvider>
+                  <WalletConnectorProvider>
+                    <IDOSClientProvider>
+                      <Outlet />
+                      <Suspense>
+                        <TanStackRouterDevtools position="bottom-right" />
+                        <ReactQueryDevtools buttonPosition="bottom-left" />
+                      </Suspense>
+                    </IDOSClientProvider>
+                  </WalletConnectorProvider>
+                </XrplWalletProvider>
               </StellarWalletProvider>
             </NearWalletProvider>
           </RainbowKitProvider.Provider>

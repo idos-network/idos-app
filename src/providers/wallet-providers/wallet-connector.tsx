@@ -1,9 +1,10 @@
 import { type PropsWithChildren, createContext, useMemo } from 'react';
-import { useRainbowKit } from '../../hooks/useRainbowKit';
-import { useNearWallet } from '../../hooks/useNearWallet';
+import { useRainbowKit } from '@/hooks/useRainbowKit';
+import { useNearWallet } from '@/hooks/useNearWallet';
 import { useStellarWallet } from './stellar-provider';
+import { useXrplWallet } from '@/hooks/useXRPLWallet';
 
-export type WalletType = 'ethereum' | 'near' | 'stellar';
+export type WalletType = 'evm' | 'near' | 'stellar' | 'xrpl';
 
 export interface ConnectedWallet {
   type: WalletType;
@@ -19,28 +20,30 @@ export interface WalletConnectorContextValue {
   connectEthereum: () => Promise<void>;
   connectNear: () => Promise<void>;
   connectStellar: () => Promise<void>;
-
+  connectXRPL: () => Promise<void>;
   disconnect: () => Promise<void>;
 
-  ethereumWallet: ReturnType<typeof useRainbowKit>;
+  evmWallet: ReturnType<typeof useRainbowKit>;
   nearWallet: ReturnType<typeof useNearWallet>;
   stellarWallet: ReturnType<typeof useStellarWallet>;
+  xrplWallet: ReturnType<typeof useXrplWallet>;
 }
 
 export const WalletConnectorContext =
   createContext<WalletConnectorContextValue | null>(null);
 
 export function WalletConnectorProvider({ children }: PropsWithChildren) {
-  const ethereumWallet = useRainbowKit();
+  const evmWallet = useRainbowKit();
   const nearWallet = useNearWallet();
   const stellarWallet = useStellarWallet();
+  const xrplWallet = useXrplWallet();
 
   const contextValue = useMemo<WalletConnectorContextValue>(() => {
     const disconnectAll = async () => {
       const promises: Promise<void>[] = [];
 
-      if (ethereumWallet.isConnected) {
-        promises.push(Promise.resolve(ethereumWallet.disconnect()));
+      if (evmWallet.isConnected) {
+        promises.push(Promise.resolve(evmWallet.disconnect()));
       }
 
       if (nearWallet.selector.isSignedIn()) {
@@ -53,16 +56,20 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
         promises.push(stellarWallet.disconnect());
       }
 
+      if (xrplWallet.isConnected) {
+        promises.push(xrplWallet.disconnect());
+      }
+
       await Promise.all(promises);
     };
     let connectedWallet: ConnectedWallet | null = null;
 
-    if (ethereumWallet.isConnected && ethereumWallet.address) {
+    if (evmWallet.isConnected && evmWallet.address) {
       connectedWallet = {
-        type: 'ethereum',
-        address: ethereumWallet.address,
-        publicKey: ethereumWallet.address,
-        disconnect: ethereumWallet.disconnect,
+        type: 'evm',
+        address: evmWallet.address,
+        publicKey: evmWallet.address,
+        disconnect: evmWallet.disconnect,
       };
     } else if (nearWallet.selector.isSignedIn() && nearWallet.accountId) {
       connectedWallet = {
@@ -81,15 +88,21 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
         publicKey: stellarWallet.publicKey,
         disconnect: stellarWallet.disconnect,
       };
+    } else if (xrplWallet.isConnected && xrplWallet.address) {
+      connectedWallet = {
+        type: 'xrpl',
+        address: xrplWallet.address,
+        publicKey: xrplWallet.publicKey,
+        disconnect: xrplWallet.disconnect,
+      };
     }
 
     return {
       connectedWallet,
-      isConnected: connectedWallet !== null,
-
+      isConnected: !!connectedWallet,
       connectEthereum: async () => {
         await disconnectAll();
-        ethereumWallet.openConnectModal?.();
+        evmWallet.openConnectModal?.();
       },
       connectNear: async () => {
         await disconnectAll();
@@ -99,14 +112,17 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
         await disconnectAll();
         await stellarWallet.connect();
       },
-
+      connectXRPL: async () => {
+        await disconnectAll();
+        await xrplWallet.connect();
+      },
       disconnect: disconnectAll,
-
-      ethereumWallet,
+      evmWallet,
       nearWallet,
       stellarWallet,
+      xrplWallet,
     };
-  }, [ethereumWallet, nearWallet, stellarWallet]);
+  }, [evmWallet, nearWallet, stellarWallet, xrplWallet]);
 
   return (
     <WalletConnectorContext.Provider value={contextValue}>

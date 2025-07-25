@@ -10,6 +10,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import * as GemWallet from '@gemwallet/api';
 
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import { WalletConnectorContext } from '@/providers/wallet-providers/wallet-connector';
@@ -24,7 +25,6 @@ type IdOSContextType = {
   idOSClient: idOSClient;
   withSigner: idOSClientWithUserSigner;
   isLoading: boolean;
-  signer: any;
 };
 
 export const IDOSClientContext = createContext<IdOSContextType | undefined>(
@@ -47,7 +47,6 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true);
   const [idOSClient, setClient] = useState<idOSClient>(_idOSClient);
   const [withSigner, setWithSigner] = useState<idOSClientWithUserSigner>();
-  const [signer, setSigner] = useState<any>();
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
 
@@ -58,7 +57,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         const newClient = await _idOSClient.createClient();
         let _signer: any = undefined;
         if (walletConnector?.connectedWallet) {
-          if (walletConnector.connectedWallet.type === 'ethereum') {
+          if (walletConnector.connectedWallet.type === 'evm') {
             _signer = evmSigner;
           } else if (walletConnector.connectedWallet.type === 'near') {
             const nearWallet = walletConnector.nearWallet;
@@ -77,9 +76,13 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
                 stellarWallet.address as string,
               );
             }
+          } else if (walletConnector.connectedWallet.type === 'xrpl') {
+            const xrplWallet = walletConnector.xrplWallet;
+            if (xrplWallet?.isConnected && xrplWallet.address) {
+              _signer = GemWallet;
+            }
           }
         }
-        setSigner(_signer);
         if (!_signer) {
           setClient(newClient);
           setWithSigner(undefined);
@@ -99,17 +102,19 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         const newClient = await _idOSClient.createClient();
         setClient(newClient);
         setWithSigner(undefined);
-        setSigner(undefined);
       } finally {
         setIsLoading(false);
       }
     };
     setupClient();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     evmSigner,
     walletConnector?.connectedWallet,
     walletConnector?.nearWallet,
     walletConnector?.stellarWallet,
+    // Removing xrplWallet from dependencies to prevent reinitialization on connection failures
+    // walletConnector?.xrplWallet,
   ]);
 
   if (isLoading) {
@@ -126,7 +131,6 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         idOSClient: idOSClient,
         withSigner: withSigner!,
         isLoading,
-        signer,
       }}
     >
       {children}

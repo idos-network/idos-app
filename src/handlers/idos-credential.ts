@@ -5,6 +5,8 @@ import type { idOSClientLoggedIn } from '@idos-network/client';
 import type { Wallet as NearWallet } from '@near-wallet-selector/core';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
+import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
+import * as GemWallet from '@gemwallet/api';
 
 export async function handleDWGCredential(
   setState: (state: string) => void,
@@ -22,7 +24,8 @@ export async function handleDWGCredential(
     const notUsableAfter = new Date(currentTimestamp + 24 * 60 * 60 * 1000);
 
     const delegatedWriteGrant = {
-      owner_wallet_identifier: wallet.publicKey,
+      owner_wallet_identifier:
+        wallet.type === 'xrpl' ? wallet.address : wallet.publicKey,
       grantee_wallet_identifier: env.VITE_GRANTEE_WALLET_ADDRESS,
       issuer_public_key: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
       id: crypto.randomUUID(),
@@ -38,7 +41,7 @@ export async function handleDWGCredential(
 
     let signature;
     try {
-      if (wallet.type === 'ethereum') {
+      if (wallet.type === 'evm') {
         signature = await window.ethereum.request({
           method: 'personal_sign',
           params: [message, wallet.address],
@@ -47,6 +50,8 @@ export async function handleDWGCredential(
         signature = await signNearMessage(nearWallet!, message);
       } else if (wallet.type === 'stellar') {
         signature = await signStellarMessage(wallet, message);
+      } else if (wallet.type === 'xrpl') {
+        signature = await signGemWalletTx(GemWallet, message);
       }
     } catch (err: any) {
       setState('idle');

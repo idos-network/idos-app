@@ -9,9 +9,9 @@ export default function Header() {
 
   return (
     <header className="flex justify-end gap-2 border-gray-800 border-b items-center text-idos-seasalt h-20 pr-6">
-      {wallet && wallet.type === 'ethereum' && (
+      {wallet && wallet.type === 'evm' && (
         <WalletBar
-          network="ethereum"
+          network="evm"
           address={wallet.address}
           profileStatus={hasProfile ? 'verified' : 'notVerified'}
         />
@@ -26,6 +26,13 @@ export default function Header() {
       {wallet && wallet.type === 'stellar' && (
         <WalletBar
           network="stellar"
+          address={wallet.address}
+          profileStatus={hasProfile ? 'verified' : 'notVerified'}
+        />
+      )}
+      {wallet && wallet.type === 'xrpl' && (
+        <WalletBar
+          network="xrpl"
           address={wallet.address}
           profileStatus={hasProfile ? 'verified' : 'notVerified'}
         />

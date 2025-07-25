@@ -5,6 +5,14 @@ import { type IdosDWG } from '@/interfaces/idos-credential';
 import { encode as utf8Encode } from '@stablelib/utf8';
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import nacl from 'tweetnacl';
+import { z } from 'zod';
+
+export const IDDocumentTypeSchema = z.enum([
+  'PASSPORT',
+  'DRIVERS',
+  'ID_CARD',
+] as const);
+export type IDDocumentType = z.infer<typeof IDDocumentTypeSchema>;
 
 export default async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
@@ -54,7 +62,7 @@ export default async (request: Request, _context: Context) => {
     placeOfBirth: 'Funchal',
     idDocumentCountry: 'PT',
     idDocumentNumber: '293902002',
-    idDocumentType: 'PASSPORT',
+    idDocumentType: 'PASSPORT' as const,
     idDocumentDateOfIssue: new Date(),
     idDocumentFrontFile: Buffer.from('SOME_IMAGE'),
     selfieFile: Buffer.from('SOME_IMAGE'),

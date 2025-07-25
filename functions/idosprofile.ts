@@ -51,9 +51,10 @@ export default async (request: Request, _context: Context) => {
   };
 
   const walletTypeMap: Record<string, string> = {
-    ethereum: 'EVM',
+    evm: 'EVM',
     near: 'NEAR',
     stellar: 'Stellar',
+    xrpl: 'XRPL',
   };
 
   const wallet = {
@@ -63,7 +64,6 @@ export default async (request: Request, _context: Context) => {
     signature: ownershipProofSignature,
     public_key: publicKey,
   };
-
   await idOSIssuerInstance.createUser(user, wallet);
 
   return new Response(
