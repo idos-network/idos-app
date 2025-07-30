@@ -1,5 +1,4 @@
 import {
-  createContext,
   useCallback,
   useEffect,
   useMemo,
@@ -9,19 +8,10 @@ import {
 import * as GemWallet from '@gemwallet/api';
 import { getGemWalletPublicKey } from '@/utils/xrpl/xrpl-signature';
 import GemWalletInstallModal from '@/components/wallets/GemWalletInstallModal';
-
-interface XrplWalletContextValue {
-  address: string | null;
-  publicKey: string | null;
-  isConnected: boolean;
-  isLoading: boolean;
-  connect: () => Promise<void>;
-  disconnect: () => Promise<void>;
-}
-
-export const XrplWalletContext = createContext<XrplWalletContextValue | null>(
-  null,
-);
+import {
+  XrplWalletContext,
+  type XrplWalletContextValue,
+} from '@/context/xrpl-context';
 
 export function XrplWalletProvider({ children }: PropsWithChildren) {
   const [address, setAddress] = useState<string | null>(null);
@@ -116,5 +106,3 @@ export function XrplWalletProvider({ children }: PropsWithChildren) {
     </XrplWalletContext.Provider>
   );
 }
-
-export type { XrplWalletContextValue };

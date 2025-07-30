@@ -1,4 +1,4 @@
-import { useIdOS } from '@/providers/idos/idos-client';
+import { useIdOS } from '@/context/idos-context';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState } from 'react';
 import { useEffect } from 'react';

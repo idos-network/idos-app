@@ -1,4 +1,4 @@
-import { WalletConnectorContext } from '@/providers/wallet-providers/wallet-connector';
+import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { useContext } from 'react';
 
 export function useWalletConnector() {

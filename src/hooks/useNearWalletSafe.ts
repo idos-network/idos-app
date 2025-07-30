@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { NearWalletContext } from '@/providers/wallet-providers/near-provider';
+import { NearWalletContext } from '@/context/near-context';
 
 export function useNearWalletSafe() {
   const context = useContext(NearWalletContext);

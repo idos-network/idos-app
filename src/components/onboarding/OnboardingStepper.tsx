@@ -13,7 +13,7 @@ import PersonIcon from '@/icons/person';
 import KeyIcon from '@/icons/key';
 import EncryptedIcon from '@/icons/encrypted';
 import GraphIcon from '@/icons/graph';
-import { useIdOS } from '@/providers/idos/idos-client';
+import { useIdOS } from '@/context/idos-context';
 import {
   clearUserData,
   getCurrentUser,

@@ -7,9 +7,18 @@ import {
 import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
 import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import '@near-wallet-selector/modal-ui/styles.css';
-import type { PropsWithChildren } from 'react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { getNearFullAccessPublicKeys } from '@/utils/near/near-signature';
+import {
+  NearWalletContext,
+  type NearWalletContextValue,
+} from '@/context/near-context';
 
 // Reference docs : https://docs.near.org/tools/wallet-selector
 
@@ -19,19 +28,6 @@ declare global {
     nearModal: WalletSelectorModal;
   }
 }
-
-interface NearWalletContextValue {
-  selector: WalletSelector;
-  modal: WalletSelectorModal;
-  accounts: Account[];
-  accountId: string | null;
-  setAccounts: (accounts: Account[]) => void;
-  isLoading: boolean;
-  publicKey: string | null;
-}
-
-export const NearWalletContext =
-  React.createContext<NearWalletContextValue | null>(null);
 
 export function NearWalletProvider({ children }: PropsWithChildren) {
   const [selector, setSelector] = useState<WalletSelector | null>(null);
@@ -177,5 +173,3 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
     </NearWalletContext.Provider>
   );
 }
-
-export type { NearWalletContextValue };

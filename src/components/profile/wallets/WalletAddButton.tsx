@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import SmallPrimaryButton from '@/components/SmallPrimaryButton';
 import AddIcon from '@/components/icons/add';
-import { useIdOS } from '@/providers/idos/idos-client';
+import { useIdOS } from '@/context/idos-context';
 import { verifySignature } from '@/utils/verify-signatures';
 import type { idOSWallet } from '@idos-network/client';
 import invariant from 'tiny-invariant';

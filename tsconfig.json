@@ -35,7 +35,9 @@
       "@/layout/*": ["./src/components/layout/*"],
       "@/wallet/*": ["src/components/wallets/*"],
       "@/hooks/*": ["./src/hooks/*"],
-      "@/utils/*": ["./src/utils/*"]
+      "@/utils/*": ["./src/utils/*"],
+      "@/context/*": ["./src/context/*"],
+      "@/providers/*": ["./src/providers/*"]
     }
   }
 }

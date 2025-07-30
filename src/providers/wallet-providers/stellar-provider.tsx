@@ -2,40 +2,18 @@ import {
   type ISupportedWallet,
   StellarWalletsKit,
 } from '@creit.tech/stellar-wallets-kit';
-import type { PropsWithChildren } from 'react';
-import React, {
+import {
+  type PropsWithChildren,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { derivePublicKey, stellarKit } from '@/utils/stellar/stellar-signature';
-
-interface StellarWalletContextValue {
-  kit: StellarWalletsKit;
-  address: string | null;
-  publicKey: string | null;
-  isConnected: boolean;
-  isLoading: boolean;
-  connect: () => Promise<void>;
-  disconnect: () => Promise<void>;
-}
-
-const StellarWalletContext =
-  React.createContext<StellarWalletContextValue | null>(null);
-
-export function useStellarWallet() {
-  const context = useContext(StellarWalletContext);
-
-  if (!context) {
-    throw new Error(
-      '`useStellarWallet` must be used within a `StellarWalletProvider`',
-    );
-  }
-
-  return context;
-}
+import {
+  StellarWalletContext,
+  type StellarWalletContextValue,
+} from '@/context/stellar-context';
 
 export function StellarWalletProvider({ children }: PropsWithChildren) {
   const [kit, setKit] = useState<StellarWalletsKit | null>(null);
@@ -144,5 +122,3 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
     </StellarWalletContext.Provider>
   );
 }
-
-export type { StellarWalletContextValue };

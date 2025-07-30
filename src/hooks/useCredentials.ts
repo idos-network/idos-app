@@ -1,4 +1,4 @@
-import { useIdOS } from '@/providers/idos/idos-client';
+import { useIdOS } from '@/context/idos-context';
 import type { idOSCredential } from '@idos-network/client';
 import { useEffect, useState, useCallback } from 'react';
 

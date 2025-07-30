@@ -1,4 +1,4 @@
-import type { ConnectedWallet } from '@/providers/wallet-providers/wallet-connector';
+import type { ConnectedWallet } from '@/context/wallet-connector-context';
 import {
   FREIGHTER_ID,
   FreighterModule,

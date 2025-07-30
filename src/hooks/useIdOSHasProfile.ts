@@ -1,4 +1,4 @@
-import { useIdOS } from '@/providers/idos/idos-client';
+import { useIdOS } from '@/context/idos-context';
 import React from 'react';
 
 export function useIdOSLoginStatus() {

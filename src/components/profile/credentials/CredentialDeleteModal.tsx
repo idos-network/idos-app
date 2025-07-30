@@ -1,4 +1,4 @@
-import { useIdOS } from '@/providers/idos/idos-client';
+import { useIdOS } from '@/context/idos-context';
 import { useFetchGrants, useRevokeGrant } from '@/hooks/useGrants';
 import { timelockToMs } from '@/utils/time';
 import type { idOSCredential } from '@idos-network/client';

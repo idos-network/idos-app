@@ -3,45 +3,18 @@ import {
   type idOSClient,
   idOSClientWithUserSigner,
 } from '@idos-network/client';
-import {
-  type PropsWithChildren,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { type PropsWithChildren, useContext, useEffect, useState } from 'react';
 import * as GemWallet from '@gemwallet/api';
 
 import { useEthersSigner } from '@/hooks/useEthersSigner';
-import { WalletConnectorContext } from '@/providers/wallet-providers/wallet-connector';
+import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
+import { IDOSClientContext } from '@/context/idos-context';
 
 const _idOSClient = createIDOSClient({
   nodeUrl: 'https://nodes.playground.idos.network/',
   enclaveOptions: { container: '#idOS-enclave' },
 });
-
-type IdOSContextType = {
-  idOSClient: idOSClient;
-  withSigner: idOSClientWithUserSigner;
-  isLoading: boolean;
-};
-
-export const IDOSClientContext = createContext<IdOSContextType | undefined>(
-  undefined,
-);
-
-export const useIdOS = () => {
-  const context = useContext(IDOSClientContext);
-  if (!context) {
-    throw new Error('useIdOS must be used within an IdOSProvider');
-  }
-  return context;
-};
-
-export const useUnsafeIdOS = () => {
-  return useContext(IDOSClientContext);
-};
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true);

@@ -1,4 +1,4 @@
-import { useIdOS } from '@/providers/idos/idos-client';
+import { useIdOS } from '@/context/idos-context';
 import { useEffect, useState, useCallback } from 'react';
 import { type IdosWallet } from '@/interfaces/idos-profile';
 

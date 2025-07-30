@@ -1,4 +1,4 @@
-import { XrplWalletContext } from '@/providers/wallet-providers/xrpl-provider';
+import { XrplWalletContext } from '@/context/xrpl-context';
 import { useContext } from 'react';
 
 export function useXrplWallet() {

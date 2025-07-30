@@ -1,4 +1,4 @@
-import { useIdOS } from '@/providers/idos/idos-client';
+import { useIdOS } from '@/context/idos-context';
 import { useEffect, useRef, useState } from 'react';
 import CloseIcon from '@/components/icons/close';
 import Spinner from '@/components/onboarding/components/Spinner';
