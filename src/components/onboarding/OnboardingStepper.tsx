@@ -4,7 +4,6 @@ import TopBar from './components/TopBar';
 import StepperButton from './components/StepperButton';
 import TextBlock from './components/TextBlock';
 import Spinner from './components/Spinner';
-import KeylessEnroll from './components/KeylessEnroll';
 import GetStartedTextBlock from './components/GetStartedCards';
 import StepperCards from './components/StepperCards';
 import FrameIcon from '@/icons/frame';
@@ -223,21 +222,19 @@ function StepThree({ onNext }: { onNext: () => void }) {
     walletType,
   ]);
 
+  // Auto-advance after 3 seconds when verifying
+  useEffect(() => {
+    if (state === 'verifying') {
+      const timer = setTimeout(() => {
+        setState('verified');
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [state, setState]);
+
   function handleProofOfHumanity() {
     setState('verifying');
-  }
-
-  function handleKeylessError(error: any) {
-    console.error('Keyless enrollment failed:', error);
-    setState('idle');
-  }
-
-  function handleKeylessFinished() {
-    setState('verified');
-  }
-
-  function handleKeylessCancel() {
-    setState('idle');
   }
 
   return (
@@ -284,12 +281,14 @@ function StepThree({ onNext }: { onNext: () => void }) {
             title="Verify you are a human"
             subtitle="Please follow the instructions to complete your biometric enrollment."
           />
-          <KeylessEnroll
-            userId={userId}
-            onError={handleKeylessError}
-            onFinished={handleKeylessFinished}
-            onCancel={handleKeylessCancel}
-          />
+          <div className="flex justify-center flex-1 items-center">
+            <Spinner />
+          </div>
+          <div className="flex justify-center">
+            <StepperButton disabled={true}>
+              Waiting for verification...
+            </StepperButton>
+          </div>
         </div>
       )}
       {state === 'creating' && (

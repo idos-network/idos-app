@@ -15,17 +15,12 @@
     "check:fix": "npm run format:fix && npm run lint:fix"
   },
   "dependencies": {
-    "@aracna/icons-material-symbols-rounded-os20-fill": "^1.0.7",
-    "@aracna/web-components": "^1.1.5",
     "@creit.tech/stellar-wallets-kit": "^1.7.5",
     "@digitalbazaar/ed25519-verification-key-2020": "^4.2.0",
     "@gemwallet/api": "^3.8.0",
     "@idos-network/client": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/client@88f6cb0",
     "@idos-network/issuer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/issuer@88f6cb0",
-    "@keyless/sdk-web": "^1.2.3",
-    "@keyless/sdk-web-components": "^1.2.3",
     "@kwilteam/kwil-js": "^0.9.4",
-    "@lottiefiles/dotlottie-web": "^0.47.0",
     "@near-wallet-selector/core": "^9.1.0",
     "@near-wallet-selector/here-wallet": "^9.1.0",
     "@near-wallet-selector/meteor-wallet": "^9.1.0",

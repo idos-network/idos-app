@@ -27,9 +27,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
-      - name: Configure npm token
-        run: sed -i "s/\${NPM_TOKEN}/${{ secrets.NPM_TOKEN }}/g" .npmrc
-
       - name: Install dependencies
         run: npm ci
 

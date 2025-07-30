@@ -12,12 +12,7 @@ export const env = createEnv({
 
   client: {
     VITE_WALLET_CONNECT_PROJECT_ID: z.string().min(1),
-    VITE_CUSTOMER_NAME: z.string().min(1),
-    VITE_KEYLESS_AUTHENTICATION_SERVICE_URL: z.string().min(1),
-    VITE_IMAGE_ENCRYPTION_PUBLIC_KEY: z.string().min(1),
-    VITE_IMAGE_ENCRYPTION_KEY_ID: z.string().min(1),
     VITE_OWNERSHIP_PROOF_MESSAGE: z.string().min(1),
-    VITE_RECAPTCHA_SITE_KEY: z.string().min(1),
     VITE_GRANTEE_WALLET_ADDRESS: z.string().min(1),
     VITE_ISSUER_SIGNING_PUBLIC_KEY: z.string().min(1),
     VITE_EMBEDDED_WALLET_APP_URL: z.string().min(1),
