@@ -49,7 +49,7 @@ export default function CredentialAccessModal({
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-60">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-neutral-900/50 backdrop-blur-[1px] p-6"
+        className="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm p-6"
         onClick={onClose}
       />
       {/* Modal */}

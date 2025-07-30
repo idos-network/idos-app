@@ -20,8 +20,3 @@ export const createIdOSProfile = async (
   });
   return response.data;
 };
-
-export const verifyRecaptcha = async (token: string) => {
-  const response = await axiosInstance.post('/recaptcha', { token });
-  return response.data;
-};

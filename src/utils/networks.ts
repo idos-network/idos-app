@@ -4,8 +4,12 @@ export const networks = [
     icon: 'near',
   },
   {
-    name: 'EVM',
-    icon: 'evm',
+    name: 'Ethereum',
+    icon: 'ethereum',
+  },
+  {
+    name: 'Arbitrum',
+    icon: 'arbitrum',
   },
   {
     name: 'XRPL',

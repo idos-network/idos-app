@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import copy from 'copy-to-clipboard';
 import SmallSecondaryButton from './SmallSecondaryButton';
-import { CopyIcon } from './icons/copy';
-import CheckIcon from './icons/check';
+import CopyIcon from '@/icons/copy';
+import CheckIcon from '@/icons/check';
 
 interface CopyButtonProps {
   content: string;

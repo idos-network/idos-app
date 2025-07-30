@@ -65,6 +65,21 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
           if (wallet && typeof wallet.getAccounts === 'function') {
             const existingAccounts = await wallet.getAccounts();
             setAccounts(existingAccounts);
+
+            // Restore public key for existing session
+            if (existingAccounts.length > 0) {
+              try {
+                const publicKey =
+                  (
+                    await getNearFullAccessPublicKeys(
+                      existingAccounts[0]?.accountId,
+                    )
+                  )?.[0] || '';
+                setPublicKey(publicKey);
+              } catch (error) {
+                console.error('Failed to restore NEAR public key:', error);
+              }
+            }
           }
         } catch (error) {
           console.error('Failed to restore existing accounts:', error);
@@ -106,17 +121,24 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
     const signInSubscription = selector.on(
       'signedIn',
       async ({ accounts: signedInAccounts }) => {
-        const publicKey =
-          (
-            await getNearFullAccessPublicKeys(signedInAccounts[0]?.accountId)
-          )?.[0] || '';
-        setPublicKey(publicKey);
-        setAccounts(signedInAccounts);
+        try {
+          const publicKey =
+            (
+              await getNearFullAccessPublicKeys(signedInAccounts[0]?.accountId)
+            )?.[0] || '';
+          setPublicKey(publicKey);
+          setAccounts(signedInAccounts);
+        } catch (error) {
+          console.error('Failed to get NEAR public key on sign in:', error);
+          // Still set accounts even if public key fails
+          setAccounts(signedInAccounts);
+        }
       },
     );
 
     const signOutSubscription = selector.on('signedOut', () => {
       setAccounts([]);
+      setPublicKey(null);
     });
 
     return () => {

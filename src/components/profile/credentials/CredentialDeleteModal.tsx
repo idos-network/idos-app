@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import CloseButton from '@/components/CloseButton';
 import Spinner from '@/components/onboarding/components/Spinner';
 import SmallSecondaryButton from '@/components/SmallSecondaryButton';
+import WarningIcon from '@/components/icons/warning';
+import truncateAddress from '@/utils/address';
 
 interface CredentialDeleteModalProps {
   isOpen: boolean;
@@ -140,37 +142,42 @@ export function CredentialDeleteModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-[1px]"
+        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-lg mx-4 bg-neutral-950 gap-8 rounded-2xl border border-neutral-800 overflow-hidden"
+        className="relative w-[366px] max-w-lg mx-4 bg-neutral-950 gap-8 rounded-2xl border border-neutral-800 overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 bg-neutral-800/60 border-neutral-700 rounded-t-2xl">
-          <h2 className="text-xl leading-7 font-normal text-neutral-50">
+        <div className="flex flex-col items-center justify-between px-6 pt-6 bg-neutral-800/60 border-neutral-700 rounded-t-2xl">
+          <CloseButton className="absolute top-6 right-6" onClose={onClose} />
+          <div className="rounded-full w-14 h-14 bg-idos-grey2 flex items-center justify-center mt-8">
+            <WarningIcon className="w-8 h-8" />
+          </div>
+          <h2 className="pt-4 text-xl leading-7 font-normal text-neutral-50">
             {isRevoking
               ? 'Revoking grants'
               : isDeleting
                 ? 'Deleting credential'
                 : 'Delete credential'}
           </h2>
-          <CloseButton onClose={onClose} />
         </div>
 
         {/* Body */}
-        <div className="px-6 pb-6 pt-8 bg-neutral-800/60">
+        <div className="px-6 pb-6 pt-4 bg-neutral-800/60">
           {isRevoking ? (
-            <div className="space-y-4">
-              <p className="text-neutral-200 mb-1">
+            <div className="space-y-4 flex flex-col items-center">
+              <p className="text-neutral-200 mb-1 text-center">
                 Revoking grant for consumer:
               </p>
-              <div className="px-3 py-2 rounded-md bg-neutral-800 text-sm font-mono text-neutral-300">
-                {currentRevokingGrant?.ag_grantee_wallet_identifier ||
-                  'Unknown'}
+              <div className="px-3 py-2 rounded-md bg-neutral-800 text-sm items-center justify-center font-mono text-neutral-300 w-fit">
+                {truncateAddress(
+                  currentRevokingGrant?.ag_grantee_wallet_identifier ||
+                    'Unknown',
+                )}
               </div>
               <div className="flex justify-center py-8">
                 <Spinner />
@@ -178,11 +185,12 @@ export function CredentialDeleteModal({
             </div>
           ) : isDeleting ? (
             <div className="space-y-4">
-              <p className="text-neutral-200">
+              <p className="text-neutral-200 text-center">
                 Deleting credential of type{' '}
                 <span className="text-green-200 font-semibold">
                   {parsedMeta?.type || 'Unknown'}
                 </span>{' '}
+                <br />
                 from issuer{' '}
                 <span className="text-green-200 font-semibold">
                   {parsedMeta?.issuer || 'Unknown'}
@@ -194,10 +202,10 @@ export function CredentialDeleteModal({
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="gap-2 flex flex-col">
-                <p className="text-neutral-400 text-sm font-['Inter']">
-                  Do you want to delete this credential from the idOS? This
-                  action cannot be undone.
+              <div className="flex flex-col">
+                <p className="text-neutral-400 text-sm font-['Inter'] text-center">
+                  You’re going to delete your credential. <br />
+                  This action cannot be undone.
                 </p>
               </div>
             </div>
@@ -207,16 +215,17 @@ export function CredentialDeleteModal({
         {/* Footer */}
         {!(isRevoking || isDeleting) && (
           <div className="px-6 pb-6 bg-neutral-800/60">
-            <div className="flex justify-end gap-3 pt-4">
-              <SmallSecondaryButton onClick={onClose}>
-                Cancel
+            <div className="flex justify-center gap-3 w-full">
+              <SmallSecondaryButton onClick={onClose} width="flex-1">
+                No, keep it
               </SmallSecondaryButton>
               <SmallSecondaryButton
                 onClick={handleDeleteCredential}
                 disabled={isRevoking || isDeleting}
                 danger={true}
+                width="flex-1"
               >
-                Delete
+                Yes, delete
               </SmallSecondaryButton>
             </div>
           </div>

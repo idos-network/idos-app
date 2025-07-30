@@ -1,4 +1,4 @@
-export function CopyIcon({
+export default function CopyIcon({
   className,
   ...props
 }: {

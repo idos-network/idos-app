@@ -11,6 +11,7 @@ export interface ConnectedWallet {
   address: string;
   publicKey: string | null;
   disconnect: () => Promise<void> | void;
+  network?: number;
 }
 
 export interface WalletConnectorContextValue {
@@ -70,6 +71,7 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
         address: evmWallet.address,
         publicKey: evmWallet.address,
         disconnect: evmWallet.disconnect,
+        network: evmWallet.chainId,
       };
     } else if (nearWallet.selector.isSignedIn() && nearWallet.accountId) {
       connectedWallet = {

@@ -1,4 +1,4 @@
-export function MoreVertIcon({
+export default function MoreVertIcon({
   className,
   ...props
 }: {

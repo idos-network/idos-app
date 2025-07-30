@@ -1,4 +1,4 @@
-import { MoreVertIcon } from '@/components/icons/more-vert';
+import MoreVertIcon from '@/icons/more-vert';
 import { useFetchWallets } from '@/hooks/useFetchWallets';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import { addressGradient } from '@/utils/gradient';
@@ -18,7 +18,7 @@ export default function WalletsCard() {
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const { showToast } = useToast();
 
-  if (isLoading) return <div>Loading wallets...</div>;
+  if (isLoading) return null;
   if (error) return <div>Error: {error.message}</div>;
 
   const isWalletConnected = (wallet: any) => {

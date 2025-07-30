@@ -28,6 +28,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
           fontStack: 'system',
           overlayBlur: 'small',
         })}
+        initialChain={mainnet}
       >
         {children}
       </RainbowKitProvider>

@@ -16,7 +16,7 @@ export default function StepperCards({
           title ? 'gap-8' : 'gap-4'
         } bg-idos-grey1/90`}
       >
-        <div className="w-10 h-10 flex items-center justify-start">{icon}</div>
+        <div className="w-8 h-8 flex items-center justify-start">{icon}</div>
         <div className="flex flex-col gap-4">
           {title && (
             <span className="text-xl font-semibold text-neutral-50">

@@ -9,12 +9,13 @@ export function useRainbowKit() {
   const { openConnectModal } = useConnectModal();
   const { openAccountModal } = useAccountModal();
   const { openChainModal } = useChainModal();
-  const { address, isConnected, status } = useAccount();
+  const { address, isConnected, status, chainId } = useAccount();
   const { disconnect } = useDisconnect();
 
   return {
     address,
     isConnected,
+    chainId,
     isConnecting: status === 'connecting',
     openConnectModal,
     openAccountModal,

@@ -8,10 +8,16 @@ export default function Header() {
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
 
   return (
-    <header className="flex justify-end gap-2 border-gray-800 border-b items-center text-idos-seasalt h-20 pr-6">
+    <header className="flex justify-end gap-2 border-gray-800 border-b items-center text-idos-seasalt h-18 pr-6 sticky top-0 z-10 backdrop-blur-sm bg-neutral-950/60">
       {wallet && wallet.type === 'evm' && (
         <WalletBar
-          network="evm"
+          network={
+            wallet.network === 1
+              ? 'ethereum'
+              : wallet.network === 42161
+                ? 'arbitrum'
+                : 'ethereum'
+          }
           address={wallet.address}
           profileStatus={hasProfile ? 'verified' : 'notVerified'}
         />

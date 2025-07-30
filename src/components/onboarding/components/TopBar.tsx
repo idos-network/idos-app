@@ -67,7 +67,7 @@ function HumanVerificationStep({
       <span
         className={`font-['Inter'] ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
       >
-        Human verification
+        Verify identity
       </span>
     </div>
   );

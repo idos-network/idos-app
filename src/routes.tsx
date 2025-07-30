@@ -18,16 +18,16 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import * as React from 'react';
 import { Suspense, useEffect } from 'react';
-import { NearWalletProvider } from './providers/wallet-providers/near-provider';
-import { WalletConnectorProvider } from './providers/wallet-providers/wallet-connector';
-import OnboardingStepper from './components/onboarding/OnboardingStepper';
-import { useIdOSLoginStatus } from './hooks/useIdOSHasProfile';
-import { StellarWalletProvider } from './providers/wallet-providers/stellar-provider';
-import { useSpecificCredential } from './hooks/useCredentials';
-import { env } from './env';
+import { NearWalletProvider } from '@/providers/wallet-providers/near-provider';
+import { WalletConnectorProvider } from '@/providers/wallet-providers/wallet-connector';
+import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { StellarWalletProvider } from '@/providers/wallet-providers/stellar-provider';
+import { useSpecificCredential } from '@/hooks/useCredentials';
+import { env } from '@/env';
 import { ToastProvider } from '@/providers/toast/toast-provider';
 import { useToast } from '@/hooks/useToast';
-import { XrplWalletProvider } from './providers/wallet-providers/xrpl-provider';
+import { XrplWalletProvider } from '@/providers/wallet-providers/xrpl-provider';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -58,7 +58,7 @@ function RootComponent() {
                       <Outlet />
                       <Suspense>
                         <TanStackRouterDevtools position="bottom-right" />
-                        <ReactQueryDevtools buttonPosition="bottom-left" />
+                        <ReactQueryDevtools buttonPosition="bottom-right" />
                       </Suspense>
                     </IDOSClientProvider>
                   </WalletConnectorProvider>
@@ -136,11 +136,11 @@ function IdosProfile() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col ml-64">
         <Header />
-        <main className="flex-1 pt-18 flex items-start justify-start text-idos-seasalt">
+        <main className="flex-1 flex items-start justify-center text-idos-seasalt">
           {hasProfile && !isLoading && hasStakingCredential ? (
-            <div className="container mx-auto max-w-[1050px] flex flex-col px-32">
+            <div className="container mx-auto max-w-[1050px] flex flex-col px-32 pt-18">
               <div className="gap-3 flex flex-col mb-10">
                 <div className="text-2xl font-medium text-neutral-50">
                   idOS Profile
@@ -160,7 +160,7 @@ function IdosProfile() {
               </div>
             </div>
           ) : (
-            <div className="container mx-auto flex justify-center">
+            <div className="container mx-auto flex justify-center pt-18">
               <OnboardingStepper />
             </div>
           )}
@@ -171,22 +171,22 @@ function IdosProfile() {
 }
 
 // Native Staking route
-export const nativeStakingRoute = createRoute({
+export const idosStakingRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/native-staking',
-  component: NativeStaking,
+  path: '/idos-staking',
+  component: IdosStaking,
 });
 
-function NativeStaking() {
+function IdosStaking() {
   useWalletGate();
 
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col ml-64">
         <Header />
         <main className="flex-1 p-8 text-idos-seasalt">
-          <div>Hello "/native-staking"!</div>
+          <div>Hello "/idos-staking"!</div>
         </main>
       </div>
     </div>
@@ -206,7 +206,7 @@ function StakingEvent() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col ml-64">
         <Header />
         <main className="flex-1 p-8 text-idos-seasalt">
           <div>Hello "/staking-event"!</div>
@@ -220,6 +220,6 @@ function StakingEvent() {
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   idosProfileRoute,
-  nativeStakingRoute,
+  idosStakingRoute,
   stakingEventRoute,
 ]);

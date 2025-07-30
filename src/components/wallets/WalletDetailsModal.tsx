@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import { useToast } from '@/hooks/useToast';
 import {
@@ -6,10 +7,11 @@ import {
   profileStatusTexts,
 } from '@/utils/profile-status';
 import CloseButton from '@/components/CloseButton';
-import { CopyIcon } from '@/icons/copy';
-import { LogoutIcon } from '@/icons/logout';
+import CopyIcon from '@/icons/copy';
+import LogoutIcon from '@/icons/logout';
 import SmallSecondaryButton from '@/components/SmallSecondaryButton';
 import { addressGradient } from '@/utils/gradient';
+import truncateAddress from '@/utils/address';
 
 interface WalletDetailsModalProps {
   isOpen: boolean;
@@ -17,13 +19,6 @@ interface WalletDetailsModalProps {
   address: string;
   profileStatus: string;
   onClose: () => void;
-}
-
-function truncateAddress(address: string): string {
-  if (address.length <= 10) {
-    return address;
-  }
-  return `${address.slice(0, 5)}...${address.slice(-5)}`;
 }
 
 export default function WalletDetailsModal({
@@ -85,11 +80,11 @@ export default function WalletDetailsModal({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-neutral-900/50 rounded-2xl backdrop-blur-sm"
+        className="absolute inset-0 bg-neutral-900/50 backdrop-blur-sm"
         onClick={onClose}
       />
       {/* Modal */}
@@ -121,7 +116,7 @@ export default function WalletDetailsModal({
               {/* Status */}
             </div>
             <div
-              className={`flex font-['Inter'] text-[13px] h-[21px] font-medium items-center px-[5px] rounded-sm ${profileStatusStyle}`}
+              className={`flex font-['Inter'] text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm ${profileStatusStyle}`}
             >
               {profileStatusText}
             </div>
@@ -149,6 +144,7 @@ export default function WalletDetailsModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

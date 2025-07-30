@@ -1,4 +1,4 @@
-export function DevicesIcon({
+export default function DevicesIcon({
   className,
   ...props
 }: {

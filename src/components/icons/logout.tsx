@@ -1,4 +1,4 @@
-export function LogoutIcon({
+export default function LogoutIcon({
   className,
   ...props
 }: {

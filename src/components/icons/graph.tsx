@@ -1,4 +1,4 @@
-export function GraphIcon({
+export default function GraphIcon({
   className,
   ...props
 }: {

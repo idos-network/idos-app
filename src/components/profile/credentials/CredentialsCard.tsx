@@ -5,7 +5,7 @@ import z from 'zod';
 import { useState, useEffect, useMemo } from 'react';
 import { CredentialDetailsModal } from '@/components/profile/credentials/CredentialDetailsModal';
 import { CredentialActionModal } from '@/components/profile/credentials/CredentialActionModal';
-import { MoreVertIcon } from '@/components/icons/more-vert';
+import MoreVertIcon from '@/icons/more-vert';
 import CredentialAccessModal from './CredentialAccessModal';
 
 const CredentialPublicNotesSchema = z.object({
@@ -96,7 +96,7 @@ export default function CredentialsCard({
     }
   }, [isModalOpen]);
 
-  if (isLoading) return <div>Loading credentials...</div>;
+  if (isLoading) return null;
 
   const handleDetailsModalClose = () => {
     setIsModalOpen(false);

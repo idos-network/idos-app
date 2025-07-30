@@ -5,13 +5,7 @@ import {
   profileStatusStyles,
   profileStatusTexts,
 } from '@/utils/profile-status';
-
-function truncateAddress(address: string): string {
-  if (address.length <= 10) {
-    return address;
-  }
-  return `${address.slice(0, 5)}...${address.slice(-5)}`;
-}
+import truncateAddress from '@/utils/address';
 
 export default function WalletBar({
   network,
@@ -21,6 +15,7 @@ export default function WalletBar({
   network: string;
   address: string;
   profileStatus: string;
+  chainId?: number;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const selectedNetwork =
