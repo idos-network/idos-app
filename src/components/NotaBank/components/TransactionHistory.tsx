@@ -1,10 +1,10 @@
-import { TokenETH, TokenUSDC } from "@web3icons/react";
-import { Card, CardContent } from "@/components/ui/card";
-import { ReceiveIcon, SendIcon, SwapIcon } from "@/components/icons";
+import { TokenETH, TokenUSDC } from '@web3icons/react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ReceiveIcon, SendIcon, SwapIcon } from '@/components/icons';
 
 interface Transaction {
   id: string;
-  type: "buy" | "sell" | "swap";
+  type: 'buy' | 'sell' | 'swap';
   currency: string;
   amount: string;
   value: string;
@@ -14,53 +14,53 @@ interface Transaction {
 
 const transactions: Transaction[] = [
   {
-    id: "1",
-    type: "buy",
-    currency: "USDC",
-    amount: "3.956 USDC",
-    value: "$100.00",
-    change: "-1.55%",
+    id: '1',
+    type: 'buy',
+    currency: 'USDC',
+    amount: '3.956 USDC',
+    value: '$100.00',
+    change: '-1.55%',
     isPositive: false,
   },
   {
-    id: "2",
-    type: "swap",
-    currency: "USI",
-    amount: "3.956 USDC",
-    value: "$100.00",
-    change: "-1.55%",
+    id: '2',
+    type: 'swap',
+    currency: 'USI',
+    amount: '3.956 USDC',
+    value: '$100.00',
+    change: '-1.55%',
     isPositive: false,
   },
   {
-    id: "3",
-    type: "swap",
-    currency: "USDC",
-    amount: "3.956 USDC",
-    value: "$100.00",
-    change: "-1.55%",
+    id: '3',
+    type: 'swap',
+    currency: 'USDC',
+    amount: '3.956 USDC',
+    value: '$100.00',
+    change: '-1.55%',
     isPositive: false,
   },
   {
-    id: "4",
-    type: "buy",
-    currency: "USDC",
-    amount: "3.956 USDC",
-    value: "$100.00",
-    change: "-1.55%",
+    id: '4',
+    type: 'buy',
+    currency: 'USDC',
+    amount: '3.956 USDC',
+    value: '$100.00',
+    change: '-1.55%',
     isPositive: false,
   },
 ];
 
 export default function TransactionsPanel() {
   const iconProps = {
-    className: "text-green-400",
+    className: 'text-green-400',
     size: 12,
   };
   const getTransactionIcon = (type: string) => {
     switch (type) {
-      case "buy":
+      case 'buy':
         return <SendIcon {...iconProps} />;
-      case "swap":
+      case 'swap':
         return <SwapIcon {...iconProps} size={19} />;
       default:
         return <ReceiveIcon {...iconProps} />;
@@ -88,9 +88,9 @@ export default function TransactionsPanel() {
                     <div
                       className="absolute inset-0 bg-white"
                       style={{
-                        clipPath: "circle(15px at center)",
-                        width: "48px",
-                        height: "48px",
+                        clipPath: 'circle(15px at center)',
+                        width: '48px',
+                        height: '48px',
                       }}
                     />
                     {/* USDC icon on top */}
@@ -108,15 +108,21 @@ export default function TransactionsPanel() {
 
                 {/* Transaction Details */}
                 <div className="flex-1">
-                  <div className="font-medium text-white">{transaction.currency}</div>
-                  <div className="text-gray-400 text-sm">{transaction.amount}</div>
+                  <div className="font-medium text-white">
+                    {transaction.currency}
+                  </div>
+                  <div className="text-gray-400 text-sm">
+                    {transaction.amount}
+                  </div>
                 </div>
 
                 {/* Value and Change */}
                 <div className="text-right">
-                  <div className="font-medium text-green-400">{transaction.value}</div>
+                  <div className="font-medium text-green-400">
+                    {transaction.value}
+                  </div>
                   <div
-                    className={`text-sm ${transaction.isPositive ? "text-neobank-primary" : "text-gray-400"}`}
+                    className={`text-sm ${transaction.isPositive ? 'text-neobank-primary' : 'text-gray-400'}`}
                   >
                     {transaction.change}
                   </div>
@@ -124,12 +130,12 @@ export default function TransactionsPanel() {
               </div>
 
               {/* Separator line */}
-              {index < transactions.length - 1 && <div className="border-gray-700 border-b" />}
+              {index < transactions.length - 1 && (
+                <div className="border-gray-700 border-b" />
+              )}
             </div>
           ))}
         </div>
-
-       
       </CardContent>
     </Card>
   );

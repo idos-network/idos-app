@@ -1,8 +1,14 @@
-import type { IconProps } from "./types";
+import type { IconProps } from './types';
 
 export function IdosIcon({ className }: IconProps) {
   return (
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 13 13"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <title>Idos Icon</title>
       <path
         d="M9.87613 3.53589H3.62012V9.54649H9.87613V3.53589Z"

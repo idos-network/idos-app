@@ -1,27 +1,25 @@
-;
-
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
 const checkboxVariants = cva(
-  "flex items-center justify-center border border-border-muted transition-all cursor-pointer border border-muted-foreground",
+  'flex items-center justify-center border border-border-muted transition-all cursor-pointer border border-muted-foreground',
   {
     variants: {
       variant: {
-        default: "rounded-full",
-        active: "rounded-full border-transparent bg-muted-foreground",
+        default: 'rounded-full',
+        active: 'rounded-full border-transparent bg-muted-foreground',
       },
       size: {
-        sm: "min-h-4 min-w-4",
-        default: "min-h-5 min-w-5",
-        lg: "min-h-6 min-w-6",
+        sm: 'min-h-4 min-w-4',
+        default: 'min-h-5 min-w-5',
+        lg: 'min-h-6 min-w-6',
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      variant: 'default',
+      size: 'default',
     },
-  }
+  },
 );
 
 export interface CheckboxProps
@@ -41,16 +39,20 @@ const Checkbox = ({
 }: CheckboxProps) => {
   return (
     <div
-      className={cn(checkboxVariants({ variant: checked ? "active" : "default", size, className }))}
+      className={cn(
+        checkboxVariants({
+          variant: checked ? 'active' : 'default',
+          size,
+          className,
+        }),
+      )}
       onClick={() => onCheckedChange?.(!checked)}
       {...props}
     >
-      {checked && (
-        <div className="h-3 w-3 rounded-full bg-primary" />
-      )}
+      {checked && <div className="h-3 w-3 rounded-full bg-primary" />}
     </div>
   );
 };
 
 // @todo: move this to ./index.ts
-export { Checkbox, checkboxVariants }; 
+export { Checkbox, checkboxVariants };

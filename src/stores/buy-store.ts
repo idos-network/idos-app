@@ -1,5 +1,8 @@
-import { create } from "zustand";
-import { currencies, tokens } from "@/components/NotaBank/components/TokenAmountInput";
+import { create } from 'zustand';
+import {
+  currencies,
+  tokens,
+} from '@/components/NotaBank/components/TokenAmountInput';
 
 export const useBuyStore = create<{
   spendAmount: string;
@@ -12,29 +15,29 @@ export const useBuyStore = create<{
   setSelectedCurrency: (selectedCurrency: string) => void;
   selectedToken: string;
   setSelectedToken: (selectedToken: string) => void;
-  lastChanged: "spend" | "buy";
-  setLastChanged: (field: "spend" | "buy") => void;
+  lastChanged: 'spend' | 'buy';
+  setLastChanged: (field: 'spend' | 'buy') => void;
 }>((set) => ({
-  spendAmount: "",
-  buyAmount: "",
+  spendAmount: '',
+  buyAmount: '',
   setBuyAmount: (buyAmount) => {
     const rate = useBuyStore.getState().rate || 1;
     const spendAmount = +buyAmount / +rate;
-    set({ buyAmount, spendAmount: spendAmount.toString(), lastChanged: "buy" });
+    set({ buyAmount, spendAmount: spendAmount.toString(), lastChanged: 'buy' });
   },
   setSpendAmount: (spendAmount) => {
     const rate = useBuyStore.getState().rate || 1;
     const buyAmount = +spendAmount * +rate;
-    set({ spendAmount, buyAmount: buyAmount.toString(), lastChanged: "spend" });
+    set({ spendAmount, buyAmount: buyAmount.toString(), lastChanged: 'spend' });
   },
-  rate: "",
+  rate: '',
   setRate: (rate: string) => {
     const { spendAmount, buyAmount, lastChanged } = useBuyStore.getState();
     let newSpendAmount = spendAmount;
     let newBuyAmount = buyAmount;
-    if (lastChanged === "spend") {
+    if (lastChanged === 'spend') {
       newBuyAmount = (+spendAmount * +rate).toString();
-    } else if (lastChanged === "buy") {
+    } else if (lastChanged === 'buy') {
       newSpendAmount = (+buyAmount / +rate).toString();
     }
     set({ rate, spendAmount: newSpendAmount, buyAmount: newBuyAmount });
@@ -43,6 +46,6 @@ export const useBuyStore = create<{
   setSelectedCurrency: (selectedCurrency) => set({ selectedCurrency }),
   selectedToken: tokens[0].value,
   setSelectedToken: (selectedToken) => set({ selectedToken }),
-  lastChanged: "spend",
+  lastChanged: 'spend',
   setLastChanged: (field) => set({ lastChanged: field }),
 }));

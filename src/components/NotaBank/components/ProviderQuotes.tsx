@@ -1,20 +1,20 @@
-import { useQueries } from "@tanstack/react-query";
-import { useBuyStore } from "@/stores/buy-store";
-import { OptionButton } from "@/components/ui/option-button";
-import { Tag } from "@/components/ui/tag";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useQueries } from '@tanstack/react-query';
+import { useBuyStore } from '@/stores/buy-store';
+import { OptionButton } from '@/components/ui/option-button';
+import { Tag } from '@/components/ui/tag';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export type OnRampProvider = "transak" | "noah" | "hifi" | null;
-export type KycProvider = "sumsub" | "persona" | null;
+export type OnRampProvider = 'transak' | 'noah' | 'hifi' | null;
+export type KycProvider = 'sumsub' | 'persona' | null;
 export type FlowStep =
-  | "select-provider"
-  | "kyc-check"
-  | "credential-check"
-  | "select-kyc"
-  | "kyc-flow"
-  | "provider-flow"
-  | "complete"
-  | "error";
+  | 'select-provider'
+  | 'kyc-check'
+  | 'credential-check'
+  | 'select-kyc'
+  | 'kyc-flow'
+  | 'provider-flow'
+  | 'complete'
+  | 'error';
 
 interface Provider {
   id: string;
@@ -28,30 +28,30 @@ interface Provider {
 
 const providers: Provider[] = [
   {
-    id: "hifi",
-    name: "HiFi",
+    id: 'hifi',
+    name: 'HiFi',
     isBestRate: true,
     isMostReliable: true,
-    usdc: "100 USDC",
-    usd: "$101.07 USD",
+    usdc: '100 USDC',
+    usd: '$101.07 USD',
     img: <img src="/hifi.svg" alt="HiFi" width={100} height={100} />,
   },
   {
-    id: "transak",
-    name: "Transak",
+    id: 'transak',
+    name: 'Transak',
     isBestRate: false,
     isMostReliable: false,
-    usdc: "100 USDC",
-    usd: "$101.07 USD",
+    usdc: '100 USDC',
+    usd: '$101.07 USD',
     img: <img src="/transak.svg" alt="Transak" width={100} height={100} />,
   },
   {
-    id: "noah",
-    name: "Noah",
+    id: 'noah',
+    name: 'Noah',
     isBestRate: false,
     isMostReliable: false,
-    usdc: "100 USDC",
-    usd: "$101.07 USD",
+    usdc: '100 USDC',
+    usd: '$101.07 USD',
     img: <img src="/noah.svg" alt="Noah" width={100} height={100} />,
   },
 ];
@@ -106,7 +106,9 @@ const Provider = ({
               </div>
             ) : (
               <>
-                {Number(((+spendAmount || 100) * +quote?.rate).toFixed(2)).toFixed(2)}{" "}
+                {Number(
+                  ((+spendAmount || 100) * +quote?.rate).toFixed(2),
+                ).toFixed(2)}{' '}
                 {selectedToken}
                 <div className="text-green-400 text-xs">
                   {Number(spendAmount || 100).toFixed(2)} USD
@@ -121,8 +123,8 @@ const Provider = ({
 };
 
 export default function ProviderQuotes() {
-  const selectedOnRampProvider = "hifi"
-  const setOnRampProvider = () => { }
+  const selectedOnRampProvider = 'hifi';
+  const setOnRampProvider = () => {};
   // @todo: check if u can bring back appStore
   // const { selectedOnRampProvider, setOnRampProvider } = useAppStore();
 
@@ -131,8 +133,9 @@ export default function ProviderQuotes() {
   // Fetch all quotes in parallel
   const queries = useQueries({
     queries: providerIds.map((id) => ({
-      queryKey: ["quote", id],
-      queryFn: () => fetch(`/api/quotes?provider=${id}`).then((res) => res.json()),
+      queryKey: ['quote', id],
+      queryFn: () =>
+        fetch(`/api/quotes?provider=${id}`).then((res) => res.json()),
     })),
   });
 
@@ -148,13 +151,17 @@ export default function ProviderQuotes() {
     quote: queries[idx].data,
     isBestRate: idx === bestProviderIndex && bestRate > 0,
   }));
-  const sortedProviders = [...providersWithRates].sort((a, b) => (b.rate || 0) - (a.rate || 0));
+  const sortedProviders = [...providersWithRates].sort(
+    (a, b) => (b.rate || 0) - (a.rate || 0),
+  );
 
   return (
     <div className="mx-auto max-w-2xl flex-1 rounded-2xl bg-card p-6 text-white">
       <div className="mb-2">
         <h1 className="mb-6 font-medium text-3xl">Provider quotes</h1>
-        <p className="font-medium text-muted text-xs">Compare rates from these providers.</p>
+        <p className="font-medium text-muted text-xs">
+          Compare rates from these providers.
+        </p>
       </div>
       <div className="flex flex-col gap-4">
         {sortedProviders.map((provider, idx) => (

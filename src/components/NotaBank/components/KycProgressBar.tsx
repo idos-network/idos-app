@@ -1,5 +1,10 @@
-import { Children, cloneElement, isValidElement, useMemo } from "react";
-import { CompletedIcon, IdentityVerificationIcon, IdosIcon, WelcomeIcon } from "@/components/icons";
+import { Children, cloneElement, isValidElement, useMemo } from 'react';
+import {
+  CompletedIcon,
+  IdentityVerificationIcon,
+  IdosIcon,
+  WelcomeIcon,
+} from '@/components/icons';
 // import { useAppStore } from "@/stores/app-store";
 
 const StepIcon = ({
@@ -15,7 +20,7 @@ const StepIcon = ({
     if (isValidElement(child)) {
       return cloneElement(child, {
         // @ts-ignore
-        className: isActive ? "fill-black" : "fill-icon-inactive",
+        className: isActive ? 'fill-black' : 'fill-icon-inactive',
       });
     }
     return child;
@@ -24,8 +29,9 @@ const StepIcon = ({
     <div className="flex items-center">
       {showLine && <div className="h-[1px] w-8 bg-divider" />}
       <div
-        className={`flex h-[25px] w-[25px] items-center justify-center rounded-full ${isActive ? "bg-primary" : "bg-gray-500"
-          }`}
+        className={`flex h-[25px] w-[25px] items-center justify-center rounded-full ${
+          isActive ? 'bg-primary' : 'bg-gray-500'
+        }`}
       >
         {iconWithProps}
       </div>
@@ -48,7 +54,7 @@ const ProgressStep = ({
     <div className="flex items-center gap-2">
       <StepIcon icon={icon} showLine={showLine} isActive={isActive} />
       <span
-        className={`whitespace-pre font-medium text-sm ${isActive ? "text-primary" : "text-secondary"}`}
+        className={`whitespace-pre font-medium text-sm ${isActive ? 'text-primary' : 'text-secondary'}`}
       >
         {title}
       </span>
@@ -57,34 +63,37 @@ const ProgressStep = ({
 };
 
 export const KycProgressBar = () => {
-  const currentStep = "select-provider"
+  const currentStep = 'select-provider';
   const steps = useMemo(
     () => [
       {
-        title: "Welcome",
+        title: 'Welcome',
         icon: <WelcomeIcon />,
-        isActive: currentStep === "select-provider",
+        isActive: currentStep === 'select-provider',
       },
       {
-        title: "Identity Verification",
+        title: 'Identity Verification',
         icon: <IdentityVerificationIcon />,
-        isActive: currentStep === "kyc-flow",
+        isActive: currentStep === 'kyc-flow',
       },
       {
-        title: "idOS Setup",
+        title: 'idOS Setup',
         icon: <IdosIcon />,
-        isActive: currentStep === "credential-check",
+        isActive: currentStep === 'credential-check',
       },
       {
-        title: "Conclusion",
+        title: 'Conclusion',
         icon: <CompletedIcon />,
-        isActive: currentStep === "complete",
+        isActive: currentStep === 'complete',
       },
     ],
     [currentStep],
   );
 
-  const activeStep = useMemo(() => steps.findIndex((step) => step.isActive), [steps]);
+  const activeStep = useMemo(
+    () => steps.findIndex((step) => step.isActive),
+    [steps],
+  );
 
   return (
     <div className="flex w-fit items-center gap-2 rounded-full bg-black p-4">

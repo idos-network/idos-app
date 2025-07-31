@@ -1,8 +1,13 @@
-;
-
-import type React from "react";
-import { BridgeIcon, BuyIcon, ReceiveIcon, SellIcon, SendIcon, SwapIcon, } from "@/components/icons"
-import { Link } from "@tanstack/react-router";
+import type React from 'react';
+import {
+  BridgeIcon,
+  BuyIcon,
+  ReceiveIcon,
+  SellIcon,
+  SendIcon,
+  SwapIcon,
+} from '@/components/icons';
+import { Link } from '@tanstack/react-router';
 
 interface ActionButton {
   id: string;
@@ -14,14 +19,14 @@ interface ActionButton {
 
 const actionButtons: ActionButton[] = [
   {
-    id: "buy",
-    label: "Buy",
+    id: 'buy',
+    label: 'Buy',
     icon: <BuyIcon />,
     isActive: true,
   },
   {
-    id: "sell",
-    label: "Sell",
+    id: 'sell',
+    label: 'Sell',
     icon: <SellIcon />,
   },
   // {
@@ -35,13 +40,13 @@ const actionButtons: ActionButton[] = [
   //   icon: <BridgeIcon />,
   // },
   {
-    id: "send",
-    label: "Send",
+    id: 'send',
+    label: 'Send',
     icon: <SendIcon />,
   },
   {
-    id: "receive",
-    label: "Receive",
+    id: 'receive',
+    label: 'Receive',
     icon: <ReceiveIcon />,
   },
 ];
@@ -57,8 +62,8 @@ export default function ActionToolbar() {
               to={`/notabank`}
               className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-medium text-sm transition-all duration-200 hover:scale-105 ${
                 action.isActive
-                  ? "bg-green-400 text-black hover:bg-green-500"
-                  : "bg-white/90 text-black hover:bg-white"
+                  ? 'bg-green-400 text-black hover:bg-green-500'
+                  : 'bg-white/90 text-black hover:bg-white'
               }`}
             >
               {action.icon}

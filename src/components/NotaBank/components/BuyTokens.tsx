@@ -1,8 +1,12 @@
-import { useNavigate } from "@tanstack/react-router";
-import { useBuyStore } from "@/stores/buy-store";
-import { currencies, TokenAmountInput, tokens } from "@/components/NotaBank/components/TokenAmountInput";
-import { PaymentMethod } from "./PaymentMethod";
-import { Button } from "@/components/ui/button";
+import { useNavigate } from '@tanstack/react-router';
+import { useBuyStore } from '@/stores/buy-store';
+import {
+  currencies,
+  TokenAmountInput,
+  tokens,
+} from '@/components/NotaBank/components/TokenAmountInput';
+import { PaymentMethod } from './PaymentMethod';
+import { Button } from '@/components/ui/button';
 
 export function BuyTokens() {
   const {
@@ -42,9 +46,11 @@ export function BuyTokens() {
       <PaymentMethod />
 
       <Button
-        disabled={!+spendAmount || !+buyAmount || !selectedCurrency || !selectedToken}
+        disabled={
+          !+spendAmount || !+buyAmount || !selectedCurrency || !selectedToken
+        }
         className="h-12 w-full rounded-full bg-secondary"
-        onClick={() => navigate({ to: "/notabank" })}
+        onClick={() => navigate({ to: '/notabank' })}
       >
         Continue
       </Button>

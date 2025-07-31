@@ -53,9 +53,7 @@ export const notabankRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/notabank',
   component: () => {
-    return (
-      <Landing />
-    )
+    return <Landing />;
   },
 });
 

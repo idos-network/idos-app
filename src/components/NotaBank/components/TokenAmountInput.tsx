@@ -1,50 +1,50 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 export const currencies = [
   {
-    value: "USD",
-    label: "USD",
-    prefix: "$",
+    value: 'USD',
+    label: 'USD',
+    prefix: '$',
   },
   {
-    value: "EUR",
-    label: "EUR",
+    value: 'EUR',
+    label: 'EUR',
     disabled: true,
-    prefix: "€",
+    prefix: '€',
   },
   {
-    value: "GBP",
-    label: "GBP",
+    value: 'GBP',
+    label: 'GBP',
     disabled: true,
-    prefix: "£",
+    prefix: '£',
   },
 ];
 
 export const tokens = [
   {
-    value: "USDC",
-    label: "USDC",
-    prefix: "$",
+    value: 'USDC',
+    label: 'USDC',
+    prefix: '$',
   },
   {
-    value: "USDT",
-    label: "USDT",
+    value: 'USDT',
+    label: 'USDT',
     disabled: true,
-    prefix: "$",
+    prefix: '$',
   },
   {
-    value: "ETH",
-    label: "ETH",
+    value: 'ETH',
+    label: 'ETH',
     disabled: true,
-    prefix: "ETH",
+    prefix: 'ETH',
   },
 ];
 
@@ -91,7 +91,11 @@ export function TokenAmountInput({
           </SelectTrigger>
           <SelectContent className="absolute top-4 left-[100%] w-[50px]">
             {selectOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                disabled={option.disabled}
+              >
                 {option.label}
               </SelectItem>
             ))}

@@ -1,16 +1,26 @@
-import { NotaBankWrapper } from '@/routes/NotaBank'
-import HeroCard from '../components/HeroCard'
-import UserBalance from '../components/UserBalance'
-import ActionToolbar from '../components/ActionToolbar'
-import TransactionHistory from '../components/TransactionHistory'
-import PerformanceChart from '../components/PerformanceChart'
+import { NotaBankWrapper } from '@/routes/NotaBank';
+import HeroCard from '../components/HeroCard';
+import UserBalance from '../components/UserBalance';
+import ActionToolbar from '../components/ActionToolbar';
+import TransactionHistory from '../components/TransactionHistory';
+import PerformanceChart from '../components/PerformanceChart';
 
 export default function Landing() {
   return (
     <NotaBankWrapper>
       <div className="flex flex-wrap items-center gap-2">
-        <HeroCard title="NotaCard" subtitle="Your digital bank" buttonText="Get Card" buttonLink="/" />
-        <HeroCard title="NotaWallet" subtitle="Your digital wallet" buttonText="Get Wallet" buttonLink="/" />
+        <HeroCard
+          title="NotaCard"
+          subtitle="Your digital bank"
+          buttonText="Get Card"
+          buttonLink="/"
+        />
+        <HeroCard
+          title="NotaWallet"
+          subtitle="Your digital wallet"
+          buttonText="Get Wallet"
+          buttonLink="/"
+        />
       </div>
       <div className="flex justify-between items-center mt-10 md:px-20">
         <UserBalance />
@@ -22,5 +32,5 @@ export default function Landing() {
         <PerformanceChart />
       </div>
     </NotaBankWrapper>
-  )
+  );
 }

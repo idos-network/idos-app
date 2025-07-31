@@ -1,4 +1,4 @@
-import type { IconProps } from "./types";
+import type { IconProps } from './types';
 
 export function SendIcon({ className, size = 14 }: IconProps) {
   return (
