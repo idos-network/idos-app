@@ -1,4 +1,3 @@
-import { NotaBankWrapper } from '@/routes/NotaBank';
 import HeroCard from '../components/HeroCard';
 import UserBalance from '../components/UserBalance';
 import ActionToolbar from '../components/ActionToolbar';
@@ -7,7 +6,7 @@ import PerformanceChart from '../components/PerformanceChart';
 
 export default function Landing() {
   return (
-    <NotaBankWrapper>
+    <>
       <div className="flex flex-wrap items-center gap-2">
         <HeroCard
           title="NotaCard"
@@ -31,6 +30,6 @@ export default function Landing() {
         <TransactionHistory />
         <PerformanceChart />
       </div>
-    </NotaBankWrapper>
+    </>
   );
 }

@@ -25,7 +25,7 @@ const actionButtons: ActionButton[] = [
     isActive: true,
   },
   {
-    id: 'sell',
+    id: 'buy',
     label: 'Sell',
     icon: <SellIcon />,
   },
@@ -59,12 +59,11 @@ export default function ActionToolbar() {
           {actionButtons.map((action) => (
             <Link
               key={action.id}
-              to={`/notabank`}
-              className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-medium text-sm transition-all duration-200 hover:scale-105 ${
-                action.isActive
+              to={`/notabank/${action.id as "buy"}`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-medium text-sm transition-all duration-200 hover:scale-105 ${action.isActive
                   ? 'bg-green-400 text-black hover:bg-green-500'
                   : 'bg-white/90 text-black hover:bg-white'
-              }`}
+                }`}
             >
               {action.icon}
               <span>{action.label}</span>

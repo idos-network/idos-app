@@ -46,6 +46,15 @@ const providers: Provider[] = [
     img: <img src="/transak.svg" alt="Transak" width={100} height={100} />,
   },
   {
+    id: 'monerium',
+    name: 'Monerium',
+    isBestRate: false,
+    isMostReliable: false,
+    usdc: '100 USDC',
+    usd: '$101.07 USD',
+    img: <img src="/monerium.svg" alt="Monerium" width={100} height={100} />,
+  },
+  {
     id: 'noah',
     name: 'Noah',
     isBestRate: false,
@@ -111,7 +120,7 @@ const Provider = ({
                 ).toFixed(2)}{' '}
                 {selectedToken}
                 <div className="text-green-400 text-xs">
-                  {Number(spendAmount || 100).toFixed(2)} USD
+                  {Number(100).toFixed(2)} USD
                 </div>
               </>
             )}
@@ -156,7 +165,7 @@ export default function ProviderQuotes() {
   );
 
   return (
-    <div className="mx-auto max-w-2xl flex-1 rounded-2xl bg-card p-6 text-white">
+    <div className="mx-auto max-w-2xl flex-1 rounded-2xl bg-card p-6 text-white bg-[#26262699]">
       <div className="mb-2">
         <h1 className="mb-6 font-medium text-3xl">Provider quotes</h1>
         <p className="font-medium text-muted text-xs">
@@ -172,7 +181,7 @@ export default function ProviderQuotes() {
             selected={selectedOnRampProvider === provider.id}
             onClick={() => setOnRampProvider(provider.id as OnRampProvider)}
             quote={provider.quote}
-            isBestRate={provider.isBestRate}
+            isBestRate={!idx}
           />
         ))}
       </div>

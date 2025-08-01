@@ -83,13 +83,13 @@ export function TokenAmountInput({
           placeholder="0"
           value={+spendAmount ? +(+spendAmount).toFixed(2) : spendAmount}
           onChange={(e) => setSpendAmount(e.target.value)}
-          className="h-16 border-0 bg-gray-200 pr-40 pl-6 font-medium text-black text-xl placeholder:text-gray-500"
+          className="h-16 border-0 bg-[#26262699] pr-40 pl-6 font-medium text-white text-xl placeholder:text-gray-500 ring-0"
         />
         <Select value={selectedValue} onValueChange={setSelectedValue}>
-          <SelectTrigger className="absolute top-2 right-2 min-h-[50px] w-24 border-0 bg-transparent font-medium text-black">
+          <SelectTrigger className="absolute top-2 right-2 min-h-[50px] w-24 border-0 bg-transparent font-medium text-white">
             <SelectValue placeholder="Select" />
           </SelectTrigger>
-          <SelectContent className="absolute top-4 left-[100%] w-[50px]">
+          <SelectContent className="absolute top-4 left-[100%] w-[50px] text-white bg-black/70">
             {selectOptions.map((option) => (
               <SelectItem
                 key={option.value}

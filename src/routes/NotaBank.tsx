@@ -1,7 +1,11 @@
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
+import Buy from '@/components/NotaBank/views/Buy';
+import Landing from '@/components/NotaBank/views/Landing';
+import { notabankRoute } from '@/routes';
+import { createRoute } from '@tanstack/react-router';
 
-export function NotaBankWrapper({ children }: { children: React.ReactNode }) {
+export function PageLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -12,3 +16,19 @@ export function NotaBankWrapper({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+
+
+// Landing route for /notabank
+export const notabankIndexRoute = createRoute({
+  getParentRoute: () => notabankRoute,
+  path: '/',
+  component: Landing,
+});
+
+// Buy route for /notabank/buy
+export const notabankBuyRoute = createRoute({
+  getParentRoute: () => notabankRoute,
+  path: '/buy',
+  component: Buy,
+});
