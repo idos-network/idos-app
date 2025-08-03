@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "name": "create_idos_profile",
+    "pointsReward": 10,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 2,
+    "name": "complete_kyc",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 3,
+    "name": "add_credential",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 4,
+    "name": "follow_on_x",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 5,
+    "name": "join_telegram",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 6,
+    "name": "add_face_as_signer",
+    "pointsReward": 10,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 7,
+    "name": "add_eth_to_idos_wallet",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 8,
+    "name": "share_authorization_grant",
+    "pointsReward": 30,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 9,
+    "name": "participate_staking_event",
+    "pointsReward": 100,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 10,
+    "name": "participate_ico_event",
+    "pointsReward": 100,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 11,
+    "name": "referral_program",
+    "pointsReward": 5,
+    "isActive": true,
+    "isRepeatable": true
+  },
+  {
+    "id": 12,
+    "name": "daily_login",
+    "pointsReward": 1,
+    "isActive": false,
+    "isRepeatable": true
+  }
+]

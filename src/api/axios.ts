@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: `${window.location.origin}/.netlify/functions`,
+  baseURL: `${window.location.origin}/`,
   timeout: 10000,
   withCredentials: true,
 });

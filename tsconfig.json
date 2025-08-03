@@ -19,6 +19,7 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    "resolveJsonModule": true,
 
     /* Linting */
     "skipLibCheck": true,
@@ -37,7 +38,8 @@
       "@/hooks/*": ["./src/hooks/*"],
       "@/utils/*": ["./src/utils/*"],
       "@/context/*": ["./src/context/*"],
-      "@/providers/*": ["./src/providers/*"]
+      "@/providers/*": ["./src/providers/*"],
+      "@/db/*": ["./db/*"]
     }
   }
 }

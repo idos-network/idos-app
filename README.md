@@ -36,7 +36,33 @@ http://localhost:8888
 
 To act as an idOS Issuer, you need to generate a signing and encryption key pair. This is required for the Netlify Function at `functions/idosprofile.ts`.
 
-### Generating Keys
+## Database Scripts
+
+Runs pending migrations using the official Drizzle Kit migrate command with Netlify environment.
+
+```sh
+npm run db:migrate
+```
+
+Opens Drizzle Studio - a visual database browser for development.
+
+```sh
+npm run db:studio
+```
+
+Seeds the database with predefined quests. Safe to run multiple times - won't create duplicates.
+
+```sh
+npm run db:seed
+```
+
+Complete database setup - generates migrations, runs them, and seeds the database.
+
+```sh
+npm run db:setup
+```
+
+## Generating Keys
 
 Run the provided script:
 
