@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: `${window.location.origin}/`,
+  baseURL: `${window.location.origin}/api`,
   timeout: 10000,
   withCredentials: true,
 });

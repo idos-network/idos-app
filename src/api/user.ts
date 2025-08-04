@@ -12,17 +12,17 @@ const idOSUserResponseSchema = z.object({
 });
 
 export const saveUser = async (userData: idOSUser): Promise<void> => {
-  const response = await axiosInstance.post('/api/user/save', userData);
+  const response = await axiosInstance.post('/user/save', userData);
   return response.data;
 };
 
 export const updateUser = async (userData: idOSUser): Promise<void> => {
-  const response = await axiosInstance.post('/api/user/update', userData);
+  const response = await axiosInstance.post('/user/update', userData);
   return response.data;
 };
 
 export const getUserById = async (id: string): Promise<idOSUser[]> => {
-  const response = await axiosInstance.get('/api/user', {
+  const response = await axiosInstance.get('/user', {
     params: { id },
   });
   return parseWithSchema(response.data, z.array(idOSUserResponseSchema));
@@ -31,14 +31,14 @@ export const getUserById = async (id: string): Promise<idOSUser[]> => {
 export const getUserByReferralCode = async (
   referralCode: string,
 ): Promise<idOSUser[]> => {
-  const response = await axiosInstance.get('/api/user', {
+  const response = await axiosInstance.get('/user', {
     params: { referralCode },
   });
   return parseWithSchema(response.data, z.array(idOSUserResponseSchema));
 };
 
 export const getUserTotalPoints = async (id: string): Promise<number> => {
-  const response = await axiosInstance.get(`/api/user/${id}/points`);
+  const response = await axiosInstance.get(`/user/${id}/points`);
   const parsed = parseWithSchema(
     response.data,
     z.object({ totalPoints: z.number() }),
@@ -47,7 +47,7 @@ export const getUserTotalPoints = async (id: string): Promise<number> => {
 };
 
 export const getUserReferralCode = async (userId: string): Promise<string> => {
-  const response = await axiosInstance.get('/api/user/referral-code', {
+  const response = await axiosInstance.get('/user/referral-code', {
     params: { userId },
   });
   const parsed = parseWithSchema(

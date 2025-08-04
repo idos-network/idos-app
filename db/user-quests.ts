@@ -7,7 +7,7 @@ export const userQuestSchema = z.object({
   id: z.number().optional(),
   userId: z.string(),
   questId: z.number(),
-  completionCount: z.number().default(0),
+  completionCount: z.number(),
   lastCompletedAt: z.date().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
@@ -15,11 +15,7 @@ export const userQuestSchema = z.object({
 
 export type UserQuest = z.infer<typeof userQuestSchema>;
 
-export const saveUserQuest = async (userQuest: UserQuest) => {
-  return await db.insert(userQuests).values(userQuest).onConflictDoNothing();
-};
-
-export const completeUserQuest = async (questId: number, userId: string) => {
+export const completeUserQuest = async (userId: string, questId: number) => {
   // First check if the quest is repeatable
   const questData = await db
     .select({ isRepeatable: quests.isRepeatable })

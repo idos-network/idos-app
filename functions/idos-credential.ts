@@ -1,4 +1,4 @@
-import type { Context } from '@netlify/functions';
+import type { Config, Context } from '@netlify/functions';
 // @ts-ignore
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 import { type IdosDWG } from '@/interfaces/idos-credential';
@@ -149,4 +149,9 @@ export default async (request: Request, _context: Context) => {
   );
 
   return new Response(JSON.stringify(result), { status: 200 });
+};
+
+export const config: Config = {
+  path: '/api/idos-credential',
+  method: 'POST',
 };

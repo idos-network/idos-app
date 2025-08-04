@@ -1,6 +1,6 @@
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import nacl from 'tweetnacl';
-import type { Context } from '@netlify/functions';
+import type { Config, Context } from '@netlify/functions';
 
 export default async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
@@ -74,4 +74,9 @@ export default async (request: Request, _context: Context) => {
       status: 200,
     },
   );
+};
+
+export const config: Config = {
+  path: '/api/idos-profile',
+  method: 'POST',
 };

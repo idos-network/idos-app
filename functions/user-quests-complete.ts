@@ -20,7 +20,7 @@ export default async (request: Request, _context: Context) => {
       );
     }
 
-    const result = await completeUserQuest(questId, userId);
+    const result = await completeUserQuest(userId, questId);
     return new Response(JSON.stringify(result), { status: 200 });
   } catch (error) {
     console.error('Complete user quest error:', error);
