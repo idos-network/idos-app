@@ -7,5 +7,5 @@ export default function Kyc() {
     <div>
       <iframe src={url} className="w-full" style={{ height: '85vh' }} />
     </div>
-  )
+  );
 }

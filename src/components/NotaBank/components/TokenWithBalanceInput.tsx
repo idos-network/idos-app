@@ -1,36 +1,34 @@
-import GasIcon from '@/components/icons/Gas'
-import { TokenAmountInput, tokens } from './TokenAmountInput'
+import GasIcon from '@/components/icons/Gas';
+import { TokenAmountInput, tokens } from './TokenAmountInput';
 
-const emptySet = () => { }
+const emptySet = () => {};
 
 export default function TokenWithBalanceInput() {
-    const balance = 12340.56
-    const token = tokens[0]
-    return (
-        <div className='flex flex-col'>
-            <TokenAmountInput
-                selectOptions={tokens}
-                value={''}
-                onValueChange={emptySet}
-                selectedValue={tokens[0].value}
-                setSelectedValue={emptySet}
-                label="Amount"
-            />
-            <div className='flex flex-col gap-2 mt-2'>
-                <span className='text-sm font-medium'>
-                    Balance: ${balance} {token.label}
-                </span>
-                <div className="w-full flex justify-between items-center mt-2">
-                    <span className='text-sm font-medium'>
-                        Estimated Gas Fee
-                    </span>
-                    <div className="flex items-center gap-1 text-sm font-medium">
-                        <GasIcon />
-                        <span>$0.73 {token.label}</span>
-                        <span className='text-sm text-neutral-400'>(0,00024 ETH)</span>
-                    </div>
-                </div>
-            </div>
+  const balance = 12340.56;
+  const token = tokens[0];
+  return (
+    <div className="flex flex-col">
+      <TokenAmountInput
+        selectOptions={tokens}
+        value={''}
+        onValueChange={emptySet}
+        selectedValue={tokens[0].value}
+        setSelectedValue={emptySet}
+        label="Amount"
+      />
+      <div className="flex flex-col gap-2 mt-2">
+        <span className="text-sm font-medium">
+          Balance: ${balance} {token.label}
+        </span>
+        <div className="w-full flex justify-between items-center mt-2">
+          <span className="text-sm font-medium">Estimated Gas Fee</span>
+          <div className="flex items-center gap-1 text-sm font-medium">
+            <GasIcon />
+            <span>$0.73 {token.label}</span>
+            <span className="text-sm text-neutral-400">(0,00024 ETH)</span>
+          </div>
         </div>
-    )
+      </div>
+    </div>
+  );
 }

@@ -14,8 +14,9 @@ export const LandingCoreUI = () => (
     <div className="flex justify-between mt-10 md:px-20 gap-5">
       <TransactionHistory />
       <PerformanceChart />
-    </div></>
-)
+    </div>
+  </>
+);
 
 export default function Landing() {
   return (

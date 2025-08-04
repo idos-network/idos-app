@@ -1,9 +1,4 @@
-export function BankIcon({
-  isActive,
-  ...props
-}: {
-  isActive?: boolean;
-}) {
+export function BankIcon({ isActive, ...props }: { isActive?: boolean }) {
   return (
     <svg
       width="20"
@@ -15,9 +10,9 @@ export function BankIcon({
     >
       <title>Bank</title>
       <path
-       fill={
-        isActive ? 'var(--color-aquamarine-400)' : 'var(--color-neutral-200)'
-      }
+        fill={
+          isActive ? 'var(--color-aquamarine-400)' : 'var(--color-neutral-200)'
+        }
         d="M3.74998 16V8.49999H5.24998V16H3.74998ZM9.24998 16V8.49999H10.75V16H9.24998ZM0.769226 19.5V18H19.2307V19.5H0.769226ZM14.75 16V8.49999H16.25V16H14.75ZM0.769226 6.49999V5.07699L9.99998 0.557739L19.2307 5.07699V6.49999H0.769226ZM4.31523 4.99999H15.6847L9.99998 2.24999L4.31523 4.99999Z"
       />
     </svg>

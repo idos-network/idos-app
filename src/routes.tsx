@@ -10,7 +10,13 @@ import { Home } from './routes/Home';
 import { IdosProfile } from './routes/IdosProfile';
 import { IdosStaking } from './routes/IdosStaking';
 import { StakingEvent } from './routes/StakingEvent';
-import { notabankIndexRoute, notabankBuyRoute, PageLayout, notabankKycRoute, notabankNotaCardRoute } from './routes/NotaBank';
+import {
+  notabankIndexRoute,
+  notabankBuyRoute,
+  PageLayout,
+  notabankKycRoute,
+  notabankNotaCardRoute,
+} from './routes/NotaBank';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -53,9 +59,13 @@ export const stakingEventRoute = createRoute({
 export const notabankRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/notabank',
-  component: () => <PageLayout> <Outlet /> </PageLayout>, // This will render child routes
+  component: () => (
+    <PageLayout>
+      {' '}
+      <Outlet />{' '}
+    </PageLayout>
+  ), // This will render child routes
 });
-
 
 // Create route tree
 export const routeTree = rootRoute.addChildren([

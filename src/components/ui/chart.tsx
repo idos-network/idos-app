@@ -124,7 +124,6 @@ function ChartTooltipContent({
     nameKey?: string;
     labelKey?: string;
   } & {
-    // @ts-ignore
     payload?: any;
     label?: any;
   }) {

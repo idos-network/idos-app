@@ -1,4 +1,10 @@
-import { Children, cloneElement, isValidElement, useMemo, useState } from 'react';
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useMemo,
+  useState,
+} from 'react';
 import {
   CompletedIcon,
   IdentityVerificationIcon,
@@ -18,8 +24,7 @@ const StepIcon = ({
 }) => {
   const iconWithProps = Children.map(icon, (child) => {
     if (isValidElement(child)) {
-      return cloneElement(child, {
-        // @ts-ignore
+      return cloneElement(child as React.ReactElement<any>, {
         className: isActive ? 'fill-black' : 'fill-icon-inactive',
       });
     }
@@ -29,8 +34,9 @@ const StepIcon = ({
     <div className="flex items-center">
       {showLine && <div className="h-[1px] w-8 bg-divider" />}
       <div
-        className={`flex h-[25px] w-[25px] items-center justify-center rounded-full ${isActive ? 'bg-primary' : 'bg-gray-500'
-          }`}
+        className={`flex h-[25px] w-[25px] items-center justify-center rounded-full ${
+          isActive ? 'bg-primary' : 'bg-gray-500'
+        }`}
       >
         {iconWithProps}
       </div>
@@ -62,7 +68,7 @@ const ProgressStep = ({
 };
 
 export const KycProgressBar = () => {
-  const [currentStep,] = useState<FlowStep>("select-provider");
+  const [currentStep] = useState<FlowStep>('select-provider');
   const steps = useMemo(
     () => [
       {
