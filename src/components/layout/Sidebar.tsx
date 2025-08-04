@@ -3,7 +3,7 @@ import CalendarIcon from '@/components/icons/calendar';
 import UserIcon from '@/components/icons/user';
 import LayersIcon from '@/components/icons/layers';
 import XIcon from '../icons/x-icon';
-import BankIcon from '../icons/neobank';
+import { BankIcon } from '../icons/bank';
 
 export default function Sidebar() {
   return (

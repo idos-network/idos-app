@@ -12,7 +12,6 @@ export const currencies = [
   {
     value: 'USD',
     label: 'USD',
-    prefix: '$',
   },
   {
     value: 'EUR',
@@ -32,19 +31,16 @@ export const tokens = [
   {
     value: 'USDC',
     label: 'USDC',
-    prefix: '$',
   },
   {
     value: 'USDT',
     label: 'USDT',
     disabled: true,
-    prefix: '$',
   },
   {
     value: 'ETH',
     label: 'ETH',
     disabled: true,
-    prefix: 'ETH',
   },
 ];
 
@@ -55,7 +51,6 @@ export function TokenAmountInput({
   setSelectedValue,
   label,
   selectOptions,
-  prefix,
 }: {
   value: string;
   onValueChange: (value: string) => void;
@@ -67,23 +62,17 @@ export function TokenAmountInput({
     label: string;
     disabled?: boolean;
   }[];
-  prefix?: string;
 }) {
   return (
     <div className="space-y-2">
-      <Label className="font-medium text-muted text-xs">{label}</Label>
+      <Label className="font-medium text-muted text-neutral-400">{label}</Label>
       <div className="relative rounded-2xl bg-muted-foreground">
-        {prefix && (
-          <span className="-translate-y-1/2 absolute top-1/2 left-[2%] z-10 transform font-medium text-black">
-            {prefix}
-          </span>
-        )}
         <Input
           type="text"
           placeholder="0"
           value={+spendAmount ? +(+spendAmount).toFixed(2) : spendAmount}
           onChange={(e) => setSpendAmount(e.target.value)}
-          className="h-16 border-0 bg-[#26262699] pr-40 pl-6 font-medium text-white text-xl placeholder:text-gray-500 ring-0"
+          className="h-16 border-0 bg-[#26262699] pr-40 pl-6 font-medium text-white text-xl placeholder:text-gray-500 focus-outline-none focus-visible:ring-0"
         />
         <Select value={selectedValue} onValueChange={setSelectedValue}>
           <SelectTrigger className="absolute top-2 right-2 min-h-[50px] w-24 border-0 bg-transparent font-medium text-white">

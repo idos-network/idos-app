@@ -10,4 +10,4 @@ export * from './send';
 export * from './swap';
 export * from './visibility';
 export * from './welcome';
-export * from './neobank';
+export * from './neobank-logo';
