@@ -21,9 +21,9 @@ export const updateUser = async (userData: idOSUser): Promise<void> => {
   return response.data;
 };
 
-export const getUserById = async (id: string): Promise<idOSUser[]> => {
+export const getUserById = async (userId: string): Promise<idOSUser[]> => {
   const response = await axiosInstance.get('/user', {
-    params: { id },
+    params: { id: userId },
   });
   return parseWithSchema(response.data, z.array(idOSUserResponseSchema));
 };
@@ -47,12 +47,14 @@ export const getUserTotalPoints = async (id: string): Promise<number> => {
 };
 
 export const getUserReferralCode = async (userId: string): Promise<string> => {
-  const response = await axiosInstance.get('/user/referral-code', {
-    params: { userId },
+  const response = await axiosInstance.get('/user', {
+    params: { id: userId },
   });
-  const parsed = parseWithSchema(
-    response.data,
-    z.object({ referralCode: z.string() }),
-  );
-  return parsed.referralCode;
+  const users = parseWithSchema(response.data, z.array(idOSUserResponseSchema));
+
+  if (users.length === 0) {
+    throw new Error('User not found');
+  }
+
+  return users[0].referralCode;
 };
