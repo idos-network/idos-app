@@ -15,6 +15,7 @@ import {
   notabankBuyRoute,
   notabankKycRoute,
   notabankNotaCardRoute,
+  notabankNotaCardTermsAndConditionsRoute,
 } from './routes/NotaBank';
 import AppLayout from './components/layout/AppLayout';
 

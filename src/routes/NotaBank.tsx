@@ -1,3 +1,4 @@
+import NotaCardTermsAndConditions from '@/components/NotaBank/components/NotaCardTermsAndConditions';
 import Buy from '@/components/NotaBank/views/Buy';
 import Kyc from '@/components/NotaBank/views/Kyc';
 import Landing from '@/components/NotaBank/views/Landing';
@@ -37,4 +38,10 @@ export const notabankNotaCardRoute = createRoute({
   getParentRoute: () => notabankRoute,
   path: '/notacard',
   component: NotaCard,
+});
+
+export const notabankNotaCardTermsAndConditionsRoute = createRoute({
+  getParentRoute: () => notabankRoute,
+  path: '/notacard/terms-and-conditions',
+  component: NotaCardTermsAndConditions,
 });
