@@ -3,6 +3,7 @@ import CalendarIcon from '@/components/icons/calendar';
 import UserIcon from '@/components/icons/user';
 import LayersIcon from '@/components/icons/layers';
 import XIcon from '../icons/x-icon';
+import { BankIcon } from '../icons/bank';
 
 export default function Sidebar() {
   return (
@@ -46,6 +47,18 @@ export default function Sidebar() {
             >
               <LayersIcon className="h-6 w-6" isActive={isActive} /> idOS
               Staking
+            </div>
+          )}
+        </Link>
+        <Link
+          to="/notabank"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30"
+        >
+          {({ isActive }) => (
+            <div
+              className={`flex items-center gap-4 w-full rounded-xl px-3 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+            >
+              <BankIcon isActive={isActive} /> NotaBank
             </div>
           )}
         </Link>

@@ -3,12 +3,20 @@ import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   createRoute,
+  Outlet,
 } from '@tanstack/react-router';
 import { RootComponent } from './routes/RootComponent';
 import { Home } from './routes/Home';
 import { IdosProfile } from './routes/IdosProfile';
 import { IdosStaking } from './routes/IdosStaking';
 import { StakingEvent } from './routes/StakingEvent';
+import {
+  notabankIndexRoute,
+  notabankBuyRoute,
+  PageLayout,
+  notabankKycRoute,
+  notabankNotaCardRoute,
+} from './routes/NotaBank';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -47,10 +55,27 @@ export const stakingEventRoute = createRoute({
   component: StakingEvent,
 });
 
+// NotaBank main route that catches all /notabank/* paths
+export const notabankRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/notabank',
+  component: () => (
+    <PageLayout>
+      {' '}
+      <Outlet />{' '}
+    </PageLayout>
+  ), // This will render child routes
+});
+
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   idosProfileRoute,
   idosStakingRoute,
   stakingEventRoute,
+  notabankRoute,
+  notabankIndexRoute,
+  notabankBuyRoute,
+  notabankKycRoute,
+  notabankNotaCardRoute,
 ]);
