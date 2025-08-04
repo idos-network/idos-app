@@ -1,15 +1,18 @@
 import { Button } from '@/components/ui/button';
+import { useNavigate } from '@tanstack/react-router';
 
 export default function HeroCard({
   title,
   subtitle,
   buttonText,
+  buttonLink,
 }: {
   title: string;
   subtitle: string;
   buttonText: string;
   buttonLink: string;
 }) {
+  const navigate = useNavigate();
   return (
     <div className="mx-auto flex-1">
       <div
@@ -61,6 +64,7 @@ export default function HeroCard({
               <Button
                 className="bg-green-400 hover:bg-green-300 text-green-900 font-semibold px-8 py-6 text-lg rounded-2xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-green-400/25"
                 size="lg"
+                onClick={() => navigate({ to: buttonLink })}
               >
                 {buttonText}
               </Button>

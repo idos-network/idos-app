@@ -1,11 +1,9 @@
 import type React from 'react';
 import {
-  BridgeIcon,
   BuyIcon,
   ReceiveIcon,
   SellIcon,
   SendIcon,
-  SwapIcon,
 } from '@/components/icons';
 import { Link } from '@tanstack/react-router';
 import { SendTokensDialog } from './SendTokensDialog';

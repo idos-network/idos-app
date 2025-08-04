@@ -1,4 +1,3 @@
-import { useNavigate } from '@tanstack/react-router';
 import { useBuyStore } from '@/stores/buy-store';
 import {
   currencies,
@@ -6,7 +5,7 @@ import {
   tokens,
 } from '@/components/NotaBank/components/TokenAmountInput';
 import { PaymentMethod } from './PaymentMethod';
-import { Button } from '@/components/ui/button';
+import KycSubmitDisclaimer from './KycSubmitDisclaimer';
 
 export function BuyTokens() {
   const {
@@ -19,8 +18,6 @@ export function BuyTokens() {
     selectedToken,
     setSelectedToken,
   } = useBuyStore();
-
-  const navigate = useNavigate();
 
   return (
     <div className="flex max-w-[500px] flex-1 flex-col gap-6 rounded-2xl bg-card p-6 bg-[#26262699]">
@@ -46,15 +43,12 @@ export function BuyTokens() {
 
       <PaymentMethod />
 
-      <Button
-        disabled={
-          !+spendAmount || !+buyAmount || !selectedCurrency || !selectedToken
-        }
-        className="h-12 w-full rounded-lg bg-[#74FB5B] text-black"
-        onClick={() => navigate({ to: '/notabank' })}
-      >
-        Continue
-      </Button>
+      <KycSubmitDisclaimer
+        spendAmount={+spendAmount}
+        buyAmount={+buyAmount}
+        selectedCurrency={selectedCurrency}
+        selectedToken={selectedToken}
+      />
     </div>
   );
 }

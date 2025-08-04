@@ -4,6 +4,19 @@ import ActionToolbar from '../components/ActionToolbar';
 import TransactionHistory from '../components/TransactionHistory';
 import PerformanceChart from '../components/PerformanceChart';
 
+export const LandingCoreUI = () => (
+  <>
+    <div className="flex justify-between items-center mt-10 md:px-20">
+      <UserBalance />
+      <ActionToolbar />
+    </div>
+
+    <div className="flex justify-between mt-10 md:px-20 gap-5">
+      <TransactionHistory />
+      <PerformanceChart />
+    </div></>
+)
+
 export default function Landing() {
   return (
     <>
@@ -12,7 +25,7 @@ export default function Landing() {
           title="NotaCard"
           subtitle="Your digital bank"
           buttonText="Get Card"
-          buttonLink="/"
+          buttonLink="/notabank/notacard"
         />
         <HeroCard
           title="NotaWallet"
@@ -21,15 +34,7 @@ export default function Landing() {
           buttonLink="/"
         />
       </div>
-      <div className="flex justify-between items-center mt-10 md:px-20">
-        <UserBalance />
-        <ActionToolbar />
-      </div>
-
-      <div className="flex justify-between mt-10 md:px-20 gap-5">
-        <TransactionHistory />
-        <PerformanceChart />
-      </div>
+      <LandingCoreUI />
     </>
   );
 }

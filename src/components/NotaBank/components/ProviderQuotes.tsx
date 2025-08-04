@@ -133,7 +133,9 @@ const Provider = ({
 
 export default function ProviderQuotes() {
   const selectedOnRampProvider = 'hifi';
-  const setOnRampProvider = () => {};
+  const setOnRampProvider = (provider: "hifi" | "transak" | "monerium" | "noah") => {
+    console.log({ provider });
+  };
   // @todo: check if u can bring back appStore
   // const { selectedOnRampProvider, setOnRampProvider } = useAppStore();
 
@@ -179,7 +181,7 @@ export default function ProviderQuotes() {
             {...provider}
             loading={queries[idx].isLoading}
             selected={selectedOnRampProvider === provider.id}
-            onClick={() => setOnRampProvider(provider.id as OnRampProvider)}
+            onClick={() => setOnRampProvider(provider.id as "hifi" | "transak" | "monerium" | "noah")}
             quote={provider.quote}
             isBestRate={!idx}
           />

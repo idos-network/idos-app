@@ -1,11 +1,11 @@
-import { Children, cloneElement, isValidElement, useMemo } from 'react';
+import { Children, cloneElement, isValidElement, useMemo, useState } from 'react';
 import {
   CompletedIcon,
   IdentityVerificationIcon,
   IdosIcon,
   WelcomeIcon,
 } from '@/components/icons';
-// import { useAppStore } from "@/stores/app-store";
+import type { FlowStep } from './ProviderQuotes';
 
 const StepIcon = ({
   icon,
@@ -29,9 +29,8 @@ const StepIcon = ({
     <div className="flex items-center">
       {showLine && <div className="h-[1px] w-8 bg-divider" />}
       <div
-        className={`flex h-[25px] w-[25px] items-center justify-center rounded-full ${
-          isActive ? 'bg-primary' : 'bg-gray-500'
-        }`}
+        className={`flex h-[25px] w-[25px] items-center justify-center rounded-full ${isActive ? 'bg-primary' : 'bg-gray-500'
+          }`}
       >
         {iconWithProps}
       </div>
@@ -63,7 +62,7 @@ const ProgressStep = ({
 };
 
 export const KycProgressBar = () => {
-  const currentStep = 'select-provider';
+  const [currentStep,] = useState<FlowStep>("select-provider");
   const steps = useMemo(
     () => [
       {
@@ -74,7 +73,7 @@ export const KycProgressBar = () => {
       {
         title: 'Identity Verification',
         icon: <IdentityVerificationIcon />,
-        isActive: currentStep === 'kyc-flow',
+        isActive: currentStep === 'kyc-check',
       },
       {
         title: 'idOS Setup',

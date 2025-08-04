@@ -1,7 +1,7 @@
 import GasIcon from '@/components/icons/Gas'
 import { TokenAmountInput, tokens } from './TokenAmountInput'
 
-const emptySet = (amt: string) => { }
+const emptySet = () => { }
 
 export default function TokenWithBalanceInput() {
     const balance = 12340.56

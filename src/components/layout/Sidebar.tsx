@@ -58,7 +58,7 @@ export default function Sidebar() {
             <div
               className={`flex items-center gap-4 w-full rounded-xl px-3 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
             >
-              <BankIcon className="h-6 w-6" isActive={isActive} /> NotaBank
+              <BankIcon isActive={isActive} /> NotaBank
             </div>
           )}
         </Link>
