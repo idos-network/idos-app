@@ -1,12 +1,13 @@
 import { db } from './index';
-import { userQuests, quests } from './schema';
+import { userQuests } from './schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { z } from 'zod';
+import { getQuestByName } from '@/utils/quests';
 
 export const userQuestSchema = z.object({
   id: z.number().optional(),
   userId: z.string(),
-  questId: z.number(),
+  questName: z.string(),
   completionCount: z.number(),
   lastCompletedAt: z.date().optional(),
   createdAt: z.date().optional(),
@@ -15,25 +16,38 @@ export const userQuestSchema = z.object({
 
 export type UserQuest = z.infer<typeof userQuestSchema>;
 
-export const completeUserQuest = async (userId: string, questId: number) => {
-  // First check if the quest is repeatable
-  const questData = await db
-    .select({ isRepeatable: quests.isRepeatable })
-    .from(quests)
-    .where(eq(quests.id, questId))
-    .limit(1);
+export type CompleteUserQuestResult =
+  | { success: true; data: any }
+  | {
+      success: false;
+      error: string;
+      code: 'QUEST_NOT_FOUND' | 'QUEST_NOT_REPEATABLE';
+    };
 
-  if (!questData.length) {
-    throw new Error('Quest not found');
+export const completeUserQuest = async (
+  userId: string,
+  questName: string,
+): Promise<CompleteUserQuestResult> => {
+  // First check if the quest exists and is repeatable
+  const quest = await getQuestByName(questName);
+
+  if (!quest) {
+    return {
+      success: false,
+      error: 'Quest not found',
+      code: 'QUEST_NOT_FOUND',
+    };
   }
 
-  const { isRepeatable } = questData[0];
+  const { isRepeatable } = quest;
 
   // Check if user quest record exists
   const existingUserQuest = await db
     .select()
     .from(userQuests)
-    .where(and(eq(userQuests.userId, userId), eq(userQuests.questId, questId)))
+    .where(
+      and(eq(userQuests.userId, userId), eq(userQuests.questName, questName)),
+    )
     .limit(1);
 
   if (existingUserQuest.length > 0) {
@@ -41,11 +55,15 @@ export const completeUserQuest = async (userId: string, questId: number) => {
 
     // If quest is not repeatable and already completed once, don't allow
     if (!isRepeatable && currentCount && currentCount > 0) {
-      throw new Error('Quest is not repeatable and already completed');
+      return {
+        success: false,
+        error: 'Quest is not repeatable and already completed',
+        code: 'QUEST_NOT_REPEATABLE',
+      };
     }
 
     // Update existing record - increment completion count
-    return await db
+    const result = await db
       .update(userQuests)
       .set({
         completionCount: (currentCount || 0) + 1,
@@ -53,16 +71,20 @@ export const completeUserQuest = async (userId: string, questId: number) => {
         updatedAt: new Date(),
       })
       .where(
-        and(eq(userQuests.questId, questId), eq(userQuests.userId, userId)),
+        and(eq(userQuests.questName, questName), eq(userQuests.userId, userId)),
       );
+
+    return { success: true, data: result };
   } else {
     // Create new record with count = 1
-    return await db.insert(userQuests).values({
+    const result = await db.insert(userQuests).values({
       userId,
-      questId,
+      questName,
       completionCount: 1,
       lastCompletedAt: new Date(),
     });
+
+    return { success: true, data: result };
   }
 };
 

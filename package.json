@@ -16,8 +16,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "netlify dev:exec drizzle-kit migrate",
     "db:studio": "netlify dev:exec drizzle-kit studio",
-    "db:seed": "netlify dev:exec tsx scripts/seed-quests.ts",
-    "db:setup": "npm run db:generate && npm run db:migrate && npm run db:seed"
+    "db:setup": "npm run db:generate && npm run db:migrate"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.7.5",

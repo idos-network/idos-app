@@ -1,6 +1,6 @@
 import type { Config, Context } from '@netlify/functions';
 import { saveUser, type idOSUser } from '@/db/user';
-import { generateReferralCode } from '@/utils/referral-code';
+import { generateReferralCode } from '@/utils/quests';
 
 export default async (request: Request, _context: Context) => {
   try {

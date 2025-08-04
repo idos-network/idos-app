@@ -6,7 +6,7 @@ import { z } from 'zod';
 const userQuestResponseSchema = z.object({
   id: z.number().optional(),
   userId: z.string(),
-  questId: z.number(),
+  questName: z.string(),
   completionCount: z.number(),
   lastCompletedAt: z.date().optional(),
   createdAt: z.date().optional(),
@@ -15,10 +15,10 @@ const userQuestResponseSchema = z.object({
 
 export const completeUserQuest = async (
   userId: string,
-  questId: number,
+  questName: string,
 ): Promise<void> => {
   const response = await axiosInstance.post('/user-quests/complete', {
-    questId,
+    questName,
     userId,
   });
   return response.data;

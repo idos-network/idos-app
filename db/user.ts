@@ -1,8 +1,8 @@
 import { db } from './index';
-import { users, quests, userQuests } from './schema';
-import { eq, sql } from 'drizzle-orm';
+import { users, userQuests } from './schema';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { generateReferralCode } from '@/utils/referral-code';
+import { questsConfig } from '@/utils/quests';
 
 export const idOSUserSchema = z.object({
   id: z.string(),
@@ -38,18 +38,19 @@ export async function getUserReferralCount(id: string) {
 }
 
 export async function getUserTotalPoints(id: string): Promise<number> {
-  const result = await db
-    .select({
-      totalPoints: sql<number>`sum(${userQuests.completionCount} * ${quests.pointsReward})`,
-    })
+  const userQuestResults = await db
+    .select()
     .from(userQuests)
-    .innerJoin(quests, eq(userQuests.questId, quests.id))
     .where(eq(userQuests.userId, id));
 
-  return Number(result[0]?.totalPoints) || 0;
-}
+  let totalPoints = 0;
 
-export async function generateUserReferralCode(userId: string): Promise<void> {
-  const referralCode = generateReferralCode(userId);
-  await db.update(users).set({ referralCode }).where(eq(users.id, userId));
+  for (const userQuest of userQuestResults) {
+    const quest = questsConfig.find((q) => q.name === userQuest.questName);
+    if (quest && userQuest.completionCount) {
+      totalPoints += userQuest.completionCount * quest.pointsReward;
+    }
+  }
+
+  return totalPoints;
 }

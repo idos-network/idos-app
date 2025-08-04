@@ -2,40 +2,45 @@ import type { Config, Context } from '@netlify/functions';
 import { completeUserQuest } from '@/db/user-quests';
 
 interface CompleteUserQuestRequest {
-  questId: number;
+  questName: string;
   userId: string;
 }
 
 export default async (request: Request, _context: Context) => {
   try {
-    const { questId, userId } =
+    const { questName, userId } =
       (await request.json()) as CompleteUserQuestRequest;
 
-    if (!questId || !userId) {
+    if (!questName || !userId) {
       return new Response(
         JSON.stringify({
-          error: 'questId and userId are required',
+          error: 'questName and userId are required',
         }),
         { status: 400 },
       );
     }
 
-    const result = await completeUserQuest(userId, questId);
-    return new Response(JSON.stringify(result), { status: 200 });
+    const result = await completeUserQuest(userId, questName);
+
+    if (!result.success) {
+      if (result.code === 'QUEST_NOT_FOUND') {
+        return new Response(JSON.stringify({ error: result.error }), {
+          status: 404,
+        });
+      }
+      if (result.code === 'QUEST_NOT_REPEATABLE') {
+        return new Response(JSON.stringify({ error: result.error }), {
+          status: 409,
+        });
+      }
+      return new Response(JSON.stringify({ error: result.error }), {
+        status: 500,
+      });
+    }
+
+    return new Response(JSON.stringify(result.data), { status: 200 });
   } catch (error) {
     console.error('Complete user quest error:', error);
-
-    if (error instanceof Error && error.message.includes('not repeatable')) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 409,
-      });
-    }
-    if (error instanceof Error && error.message.includes('not found')) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 404,
-      });
-    }
-
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
     });
