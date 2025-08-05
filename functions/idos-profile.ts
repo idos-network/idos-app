@@ -34,15 +34,17 @@ export default async (request: Request, _context: Context) => {
     ownershipProofSignature,
     publicKey,
     walletType,
-  } = (await request.json()) as {
-    userId: string;
-    userEncryptionPublicKey: string;
-    address: string;
-    ownershipProofMessage: string;
-    ownershipProofSignature: string;
-    publicKey: string;
-    walletType: string;
-  };
+  } =
+    // TODO: use zod schema
+    (await request.json()) as {
+      userId: string;
+      userEncryptionPublicKey: string;
+      address: string;
+      ownershipProofMessage: string;
+      ownershipProofSignature: string;
+      publicKey: string;
+      walletType: string;
+    };
   const idOSIssuerInstance = await idOSIssuer;
 
   const user = {

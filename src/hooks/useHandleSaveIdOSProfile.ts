@@ -134,6 +134,7 @@ export function useHandleSaveIdOSProfile() {
         mainAddress: wallet.address,
         userEncryptionPublicKey: userEncryptionPublicKey,
         ownershipProofSignature: ownershipProofSignature,
+        // TODO: look into if this can be empty
         publicKey: publicKey || '',
       });
 

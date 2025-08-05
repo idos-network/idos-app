@@ -3,6 +3,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { z } from 'zod';
 import { getQuestByName } from '@/utils/quests';
 
+// TODO: maybe delete?
 export const userQuestSchema = z.object({
   id: z.number().optional(),
   userId: z.string(),
@@ -25,10 +26,10 @@ export type UserQuestSummary = z.infer<typeof userQuestSummarySchema>;
 export type CompleteUserQuestResult =
   | { success: true; data: any }
   | {
-      success: false;
-      error: string;
-      code: 'QUEST_NOT_FOUND' | 'QUEST_NOT_REPEATABLE';
-    };
+    success: false;
+    error: string;
+    code: 'QUEST_NOT_FOUND' | 'QUEST_NOT_REPEATABLE';
+  };
 
 export const completeUserQuest = async (
   userId: string,
@@ -99,6 +100,7 @@ export const getUserQuestsSummary = async (
         firstCompletedAt: completedAtDate,
       });
     } else {
+      // TODO: keep in mind that non-repetable quests may be duplicate in the db
       existing.completionCount += 1;
       existing.firstCompletedAt = completedAtDate;
     }
