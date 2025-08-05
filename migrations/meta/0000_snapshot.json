@@ -1,5 +1,5 @@
 {
-  "id": "b4a0c3ea-a23a-4a8c-a4d1-068259c356cc",
+  "id": "8c69d7d3-4b51-4118-abc4-53e4cd8e69b5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -37,56 +37,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "completionCount": {
-          "name": "completionCount",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "lastCompletedAt": {
-          "name": "lastCompletedAt",
+        "completedAt": {
+          "name": "completedAt",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
       "indexes": {
-        "user_quest_unique_idx": {
-          "name": "user_quest_unique_idx",
-          "columns": [
-            {
-              "expression": "userId",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "questName",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "user_quests_user_id_idx": {
           "name": "user_quests_user_id_idx",
           "columns": [
@@ -117,11 +76,17 @@
           "method": "btree",
           "with": {}
         },
-        "user_quests_completion_count_idx": {
-          "name": "user_quests_completion_count_idx",
+        "user_quests_user_quest_idx": {
+          "name": "user_quests_user_quest_idx",
           "columns": [
             {
-              "expression": "completionCount",
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "questName",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -157,20 +122,6 @@
           "notNull": false,
           "default": "''"
         },
-        "referralCode": {
-          "name": "referralCode",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "''"
-        },
-        "referralCount": {
-          "name": "referralCount",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
         "referrerCode": {
           "name": "referrerCode",
           "type": "varchar",
@@ -194,26 +145,26 @@
         }
       },
       "indexes": {
-        "referral_code_idx": {
-          "name": "referral_code_idx",
-          "columns": [
-            {
-              "expression": "referralCode",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "main_evm_idx": {
           "name": "main_evm_idx",
           "columns": [
             {
               "expression": "mainEvm",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "referrer_code_idx": {
+          "name": "referrer_code_idx",
+          "columns": [
+            {
+              "expression": "referrerCode",
               "isExpression": false,
               "asc": true,
               "nulls": "last"

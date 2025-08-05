@@ -23,3 +23,9 @@ yarn.lock
 
 # Local Netlify folder
 .netlify
+
+# Local development database
+local.db
+local.db-journal
+local.db-wal
+migrations-local/

@@ -1,24 +1,23 @@
-import { db } from './index';
-import { users, userQuests } from './schema';
-import { eq } from 'drizzle-orm';
+import { db, users, userQuests } from './index';
+import { eq, count } from 'drizzle-orm';
 import { z } from 'zod';
 import { questsConfig } from '@/utils/quests';
 
 export const idOSUserSchema = z.object({
   id: z.string(),
   mainEvm: z.string(),
-  referralCode: z.string(),
-  referralCount: z.number().default(0),
-  referrerCode: z.string().default(''),
+  referrerCode: z.string().optional(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
-export type idOSUser = z.infer<typeof idOSUserSchema>;
+export type IdOSUser = z.infer<typeof idOSUserSchema>;
 
-export async function saveUser(user: idOSUser) {
+export async function saveUser(user: IdOSUser) {
   return await db.insert(users).values(user).onConflictDoNothing();
 }
 
-export async function updateUser(user: idOSUser) {
+export async function updateUser(user: IdOSUser) {
   return await db.update(users).set(user).where(eq(users.id, user.id));
 }
 
@@ -26,15 +25,15 @@ export async function getUserById(id: string) {
   return await db.select().from(users).where(eq(users.id, id));
 }
 
-export async function getUserByReferralCode(referralCode: string) {
-  return await db
-    .select()
+export async function getUserReferralCount(
+  referralCode: string,
+): Promise<number> {
+  const result = await db
+    .select({ count: count() })
     .from(users)
-    .where(eq(users.referralCode, referralCode));
-}
+    .where(eq(users.referrerCode, referralCode));
 
-export async function getUserReferralCount(id: string) {
-  return await db.select().from(users).where(eq(users.id, id));
+  return result[0].count;
 }
 
 export async function getUserTotalPoints(id: string): Promise<number> {
@@ -47,8 +46,8 @@ export async function getUserTotalPoints(id: string): Promise<number> {
 
   for (const userQuest of userQuestResults) {
     const quest = questsConfig.find((q) => q.name === userQuest.questName);
-    if (quest && userQuest.completionCount) {
-      totalPoints += userQuest.completionCount * quest.pointsReward;
+    if (quest) {
+      totalPoints += quest.pointsReward;
     }
   }
 

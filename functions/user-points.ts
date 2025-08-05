@@ -7,7 +7,7 @@ export default async (_request: Request, context: Context) => {
   try {
     if (!userId) {
       return new Response(JSON.stringify({ error: 'User ID is required' }), {
-        status: 400,
+        status: 404,
       });
     }
 

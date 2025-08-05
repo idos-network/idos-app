@@ -1,5 +1,5 @@
 import axiosInstance from './axios';
-import type { UserQuest } from '@/db/user-quests';
+import type { UserQuest, UserQuestSummary } from '@/db/user-quests';
 import { parseWithSchema } from './parser';
 import { z } from 'zod';
 
@@ -7,10 +7,15 @@ const userQuestResponseSchema = z.object({
   id: z.number().optional(),
   userId: z.string(),
   questName: z.string(),
+  completedAt: z.coerce.date(),
+});
+
+const userQuestSummaryResponseSchema = z.object({
+  userId: z.string(),
+  questName: z.string(),
   completionCount: z.number(),
-  lastCompletedAt: z.date().optional(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  lastCompletedAt: z.coerce.date(),
+  firstCompletedAt: z.coerce.date(),
 });
 
 export const completeUserQuest = async (
@@ -31,12 +36,14 @@ export const getUserQuests = async (userId: string): Promise<UserQuest[]> => {
   return parseWithSchema(response.data, z.array(userQuestResponseSchema));
 };
 
-export const getUserQuestById = async (
+export const getUserQuestsSummary = async (
   userId: string,
-  id: number,
-): Promise<UserQuest[]> => {
-  const response = await axiosInstance.get('/user-quests', {
-    params: { userId, id },
+): Promise<UserQuestSummary[]> => {
+  const response = await axiosInstance.get('/user-quests/summary', {
+    params: { userId },
   });
-  return parseWithSchema(response.data, z.array(userQuestResponseSchema));
+  return parseWithSchema(
+    response.data,
+    z.array(userQuestSummaryResponseSchema),
+  );
 };

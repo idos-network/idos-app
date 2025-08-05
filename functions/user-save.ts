@@ -1,14 +1,11 @@
 import type { Config, Context } from '@netlify/functions';
-import { saveUser, type idOSUser } from '@/db/user';
-import { generateReferralCode } from '@/utils/quests';
+import { saveUser, type IdOSUser } from '@/db/user';
 
 export default async (request: Request, _context: Context) => {
   try {
-    const userData = (await request.json()) as idOSUser;
+    const userData = (await request.json()) as IdOSUser;
 
-    userData.referralCode = generateReferralCode(userData.id);
-
-    const result = await saveUser(userData as idOSUser);
+    const result = await saveUser(userData);
     return new Response(JSON.stringify(result), { status: 200 });
   } catch (error) {
     console.error('Save user error:', error);

@@ -1,18 +1,21 @@
 import type { Config, Context } from '@netlify/functions';
-import { getUserById } from '@/db/user';
+import { getUserReferralCount } from '@/db/user';
 
 export default async (request: Request, _context: Context) => {
   const url = new URL(request.url);
-  const id = url.searchParams.get('id');
+  const referralCode = url.searchParams.get('referralCode');
 
   try {
-    if (!id) {
-      return new Response(JSON.stringify({ error: 'User ID is required' }), {
-        status: 404,
-      });
+    if (!referralCode) {
+      return new Response(
+        JSON.stringify({ error: 'Referral code is required' }),
+        {
+          status: 404,
+        },
+      );
     }
 
-    const user = await getUserById(id);
+    const user = await getUserReferralCount(referralCode);
     return new Response(JSON.stringify(user), { status: 200 });
   } catch (error) {
     console.error('Get user error:', error);
@@ -23,6 +26,6 @@ export default async (request: Request, _context: Context) => {
 };
 
 export const config: Config = {
-  path: '/api/user',
+  path: '/api/user/referral-count',
   method: 'GET',
 };

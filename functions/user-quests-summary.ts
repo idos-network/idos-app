@@ -1,5 +1,5 @@
 import type { Config, Context } from '@netlify/functions';
-import { getUserQuests } from '@/db/user-quests';
+import { getUserQuestsSummary } from '@/db/user-quests';
 
 export default async (request: Request, _context: Context) => {
   const url = new URL(request.url);
@@ -12,10 +12,10 @@ export default async (request: Request, _context: Context) => {
       });
     }
 
-    const userQuests = await getUserQuests(userId);
-    return new Response(JSON.stringify(userQuests), { status: 200 });
+    const userQuestsSummary = await getUserQuestsSummary(userId);
+    return new Response(JSON.stringify(userQuestsSummary), { status: 200 });
   } catch (error) {
-    console.error('Get user quests error:', error);
+    console.error('Get user quests summary error:', error);
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
     });
@@ -23,6 +23,6 @@ export default async (request: Request, _context: Context) => {
 };
 
 export const config: Config = {
-  path: '/api/user-quests',
+  path: '/api/user-quests/summary',
   method: 'GET',
 };

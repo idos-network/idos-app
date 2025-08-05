@@ -1,9 +1,3 @@
-import { neon } from '@netlify/neon';
-import { drizzle } from 'drizzle-orm/neon-http';
-
-import * as schema from './schema';
-
-export const db = drizzle({
-  schema,
-  client: neon(),
-});
+// Export the database connection that chooses
+// between SQLite (local) and PostgreSQL (Netlify)
+export { db, schema, users, userQuests } from './connection';
