@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useAccount } from 'wagmi';
-import Tag from './Tag';
+import AppTag from './Tag';
 
 const trimAddress = (addr: string | undefined) => {
   if (!addr) return '';
@@ -41,9 +41,9 @@ export default function GrantAccessDialog() {
               <span>idOS Profile</span>
             </div>
             <span className="text-neutral-400">{trimAddress(address)}</span>
-            <Tag variant="success">
+            <AppTag variant="success" className="text-xs!">
               <span>Verified</span>
-            </Tag>
+            </AppTag>
           </div>
           <div className="">
             <p className="text-sm text-neutral-400 text-center">

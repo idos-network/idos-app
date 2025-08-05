@@ -82,6 +82,7 @@ export const routeTree = rootRoute.addChildren([
       notabankBuyRoute,
       notabankKycRoute,
       notabankNotaCardRoute,
+      notabankNotaCardTermsAndConditionsRoute,
     ]),
   ]),
 ]);

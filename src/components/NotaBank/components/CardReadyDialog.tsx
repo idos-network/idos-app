@@ -40,7 +40,7 @@ export default function CardReadyDialog() {
         </DialogHeader>
         <DialogDescription>
           {/* Card Preview */}
-          <div className="bg-white rounded-2xl p-6 mb-8 text-black">
+          <div className="bg-white rounded-2xl px-6 py-3 mb-8 text-black">
             <div className="mb-6">
               <h2 className="text-2xl font-bold">NeoBankCard</h2>
             </div>

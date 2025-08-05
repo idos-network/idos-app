@@ -1,5 +1,5 @@
 export const profileStatusStyles: Record<string, string> = {
-  verified: 'bg-[#00FFB933] text-[#00FFB9]',
+  verified: 'bg-[#043102] text-[#74FB5B]',
   pending: 'bg-[#FFBB3333] text-[#FFBB33]',
   notVerified: 'bg-[#FF78114D] text-[#FF7811]',
   error: 'bg-[#E2363633] text-[#E23636]',
