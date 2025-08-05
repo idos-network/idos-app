@@ -11,24 +11,7 @@ npm install
 npm run dev
 ```
 
-This starts your app in development mode using Vite, rebuilding assets on file changes. **Note:** This will not run Netlify Functions locally.
-
-### Full Local Development (Frontend + Netlify Functions)
-
-To run both the frontend and Netlify Functions locally, use the Netlify CLI:
-
-1. Install the Netlify CLI (if you haven't already):
-   ```sh
-   npm install -g netlify-cli
-   ```
-2. Start the local Netlify dev environment:
-   ```sh
-   netlify dev
-   ```
-
-This will serve your frontend and serverless functions together, emulating the production environment as closely as possible.
-
-Access the app at:
+This starts your app in development mode using Vite, rebuilding assets on file changes. Access the app at:
 
 http://localhost:8888
 

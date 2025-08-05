@@ -1,9 +1,9 @@
 import type { Config, Context } from '@netlify/functions';
-import { updateUser, type IdOSUser } from '@/db/user';
+import { updateUser, idOSUserSchema } from '@/db/user';
 
 export default async (request: Request, _context: Context) => {
   try {
-    const userData = (await request.json()) as IdOSUser;
+    const userData = idOSUserSchema.parse(await request.json());
 
     const result = await updateUser(userData);
     return new Response(JSON.stringify(result), { status: 200 });

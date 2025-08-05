@@ -13,11 +13,15 @@ export const idOSUserSchema = z.object({
 
 export type IdOSUser = z.infer<typeof idOSUserSchema>;
 
-export async function saveUser(user: IdOSUser) {
+export async function saveUser(data: any) {
+  const user = idOSUserSchema.parse(data);
+
   return await db.insert(users).values(user).onConflictDoNothing();
 }
 
-export async function updateUser(user: IdOSUser) {
+export async function updateUser(data: any) {
+  const user = idOSUserSchema.parse(data);
+
   return await db.update(users).set(user).where(eq(users.id, user.id));
 }
 

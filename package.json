@@ -4,7 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "netlify dev",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src --ext .ts,.tsx",
@@ -14,14 +14,9 @@
     "check": "npx tsc --noEmit && npm run lint && npm run format",
     "check:fix": "npm run format:fix && npm run lint:fix",
     "db:generate": "drizzle-kit generate",
-    "db:generate:local": "drizzle-kit generate --config=drizzle.local.config.ts",
-    "db:migrate": "netlify dev:exec drizzle-kit migrate",
-    "db:migrate:local": "drizzle-kit migrate --config=drizzle.local.config.ts",
+    "db:migrate": "npx drizzle-kit migrate",
     "db:studio": "netlify dev:exec drizzle-kit studio",
-    "db:studio:local": "drizzle-kit studio --config=drizzle.local.config.ts",
-    "db:setup": "npm run db:generate && npm run db:migrate",
-    "db:setup:local": "npm run db:generate:local && npm run db:migrate:local",
-    "db:reset:local": "rm -f local.db && npm run db:setup:local"
+    "db:setup": "createdb idos_dev && npm run db:generate && npm run db:migrate"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.7.5",
@@ -56,7 +51,6 @@
     "@tanstack/react-router-with-query": "^1.120.13",
     "@web3icons/react": "^4.0.19",
     "axios": "^1.10.0",
-    "better-sqlite3": "^9.4.3",
     "borsh": "^2.0.0",
     "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
@@ -64,6 +58,7 @@
     "drizzle-orm": "^0.44.4",
     "lucide-react": "^0.535.0",
     "near-api-js": "^5.1.1",
+    "postgres": "^3.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^3.1.0",
@@ -76,7 +71,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.15.29",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -89,6 +83,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
+    "netlify-cli": "^23.1.1",
     "postcss": "^8.5.4",
     "prettier": "^3.4.2",
     "tailwindcss": "^4.1.8",
