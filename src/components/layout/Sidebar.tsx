@@ -7,7 +7,7 @@ import { BankIcon } from '../icons/bank';
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col gap-14 border-gray-800 border-r px-6 pt-8">
+    <aside className="fixed left-0 top-0 h-screen w-64 flex-col gap-14 border-gray-800 border-r px-6 pt-8 hidden z-30 lg:flex">
       <div className="p-4">
         <img src="/idos-logo.png" width="141" />
       </div>

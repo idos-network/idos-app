@@ -13,10 +13,10 @@ import { StakingEvent } from './routes/StakingEvent';
 import {
   notabankIndexRoute,
   notabankBuyRoute,
-  PageLayout,
   notabankKycRoute,
   notabankNotaCardRoute,
 } from './routes/NotaBank';
+import AppLayout from './components/layout/AppLayout';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -25,6 +25,13 @@ export const rootRoute = createRootRouteWithContext<{
   errorComponent: () => <RootComponent />,
   notFoundComponent: () => <NotFound />,
   component: RootComponent,
+});
+
+// Layout route
+export const layoutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: 'layout',
+  component: AppLayout,
 });
 
 // Home route
@@ -36,46 +43,44 @@ export const indexRoute = createRoute({
 
 // idOS Profile route
 export const idosProfileRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => layoutRoute,
   path: '/idos-profile',
   component: IdosProfile,
 });
 
 // Native Staking route
 export const idosStakingRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => layoutRoute,
   path: '/idos-staking',
   component: IdosStaking,
 });
 
 // Staking Event route
 export const stakingEventRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => layoutRoute,
   path: '/staking-event',
   component: StakingEvent,
 });
 
 // NotaBank main route that catches all /notabank/* paths
 export const notabankRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => layoutRoute,
   path: '/notabank',
-  component: () => (
-    <PageLayout>
-      {' '}
-      <Outlet />{' '}
-    </PageLayout>
-  ), // This will render child routes
+  component: () => <Outlet />,
 });
 
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
-  idosProfileRoute,
-  idosStakingRoute,
-  stakingEventRoute,
-  notabankRoute,
-  notabankIndexRoute,
-  notabankBuyRoute,
-  notabankKycRoute,
-  notabankNotaCardRoute,
+  layoutRoute.addChildren([
+    idosProfileRoute,
+    idosStakingRoute,
+    stakingEventRoute,
+    notabankRoute.addChildren([
+      notabankIndexRoute,
+      notabankBuyRoute,
+      notabankKycRoute,
+      notabankNotaCardRoute,
+    ]),
+  ]),
 ]);
