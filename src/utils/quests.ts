@@ -17,11 +17,11 @@ export type Quest = z.infer<typeof questSchema>;
 
 export const questsConfig: readonly Quest[] = questsData;
 
-export async function getActiveQuests(): Promise<Quest[]> {
+export function getActiveQuests(): Quest[] {
   return questsConfig.filter((quest) => quest.isActive);
 }
 
-export async function getQuestByName(name: string): Promise<Quest | null> {
+export function getQuestByName(name: string): Quest | null {
   return questsConfig.find((quest) => quest.name === name) || null;
 }
 

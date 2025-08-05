@@ -1,48 +1,17 @@
 import { db, userQuests } from './index';
-import { eq, and, desc } from 'drizzle-orm';
-import { z } from 'zod';
-import { getQuestByName } from '@/utils/quests';
-
-// TODO: maybe delete?
-export const userQuestSchema = z.object({
-  id: z.number().optional(),
-  userId: z.string(),
-  questName: z.string(),
-  completedAt: z.coerce.date(),
-});
-
-export type UserQuest = z.infer<typeof userQuestSchema>;
-
-export const userQuestSummarySchema = z.object({
-  userId: z.string(),
-  questName: z.string(),
-  completionCount: z.number(),
-  lastCompletedAt: z.coerce.date(),
-  firstCompletedAt: z.coerce.date(),
-});
-
-export type UserQuestSummary = z.infer<typeof userQuestSummarySchema>;
-
-export type CompleteUserQuestResult =
-  | { success: true; data: any }
-  | {
-    success: false;
-    error: string;
-    code: 'QUEST_NOT_FOUND' | 'QUEST_NOT_REPEATABLE';
-  };
+import { eq, and, desc, count, min, max } from 'drizzle-orm';
+import { getQuestByName, questsConfig } from '@/utils/quests';
+import { QuestNotFoundError, QuestNotRepeatableError } from '@/utils/errors';
+import type { UserQuestSummary } from '@/interfaces/user-quests';
 
 export const completeUserQuest = async (
   userId: string,
   questName: string,
-): Promise<CompleteUserQuestResult> => {
+): Promise<any> => {
   const quest = await getQuestByName(questName);
 
   if (!quest) {
-    return {
-      success: false,
-      error: 'Quest not found',
-      code: 'QUEST_NOT_FOUND',
-    };
+    throw new QuestNotFoundError(questName);
   }
 
   if (!quest.isRepeatable) {
@@ -55,11 +24,7 @@ export const completeUserQuest = async (
       .limit(1);
 
     if (existingCompletion.length > 0) {
-      return {
-        success: false,
-        error: 'Quest is not repeatable and already completed',
-        code: 'QUEST_NOT_REPEATABLE',
-      };
+      throw new QuestNotRepeatableError(questName);
     }
   }
 
@@ -76,41 +41,37 @@ export const getUserQuests = async (userId: string) => {
     .select()
     .from(userQuests)
     .where(eq(userQuests.userId, userId))
-    .orderBy(desc(userQuests.completedAt));
+    .orderBy(desc(userQuests.createdAt));
 };
 
 export const getUserQuestsSummary = async (
   userId: string,
 ): Promise<UserQuestSummary[]> => {
-  const allCompletions = await getUserQuests(userId);
-
-  const questSummaries = new Map<string, UserQuestSummary>();
-
-  for (const completion of allCompletions) {
-    const existing = questSummaries.get(completion.questName);
-
-    const completedAtDate = new Date(completion.completedAt);
-
-    if (!existing) {
-      questSummaries.set(completion.questName, {
-        userId,
-        questName: completion.questName,
-        completionCount: 1,
-        lastCompletedAt: completedAtDate,
-        firstCompletedAt: completedAtDate,
-      });
-    } else {
-      // TODO: keep in mind that non-repetable quests may be duplicate in the db
-      existing.completionCount += 1;
-      existing.firstCompletedAt = completedAtDate;
-    }
-  }
-  return Array.from(questSummaries.values());
-};
-
-export const getUserQuestById = async (userId: string, id: number) => {
-  return await db
-    .select()
+  const results = await db
+    .select({
+      userId: userQuests.userId,
+      questName: userQuests.questName,
+      completionCount: count(userQuests.id),
+      lastCompletedAt: max(userQuests.createdAt),
+      firstCompletedAt: min(userQuests.createdAt),
+    })
     .from(userQuests)
-    .where(and(eq(userQuests.userId, userId), eq(userQuests.id, id)));
+    .where(eq(userQuests.userId, userId))
+    .groupBy(userQuests.userId, userQuests.questName);
+
+  const questLookup = new Map(questsConfig.map((quest) => [quest.name, quest]));
+
+  return results.map((result) => {
+    const quest = questLookup.get(result.questName);
+    const completionCount =
+      quest && !quest.isRepeatable ? 1 : result.completionCount;
+
+    return {
+      userId: result.userId,
+      questName: result.questName,
+      completionCount,
+      lastCompletedAt: new Date(result.lastCompletedAt!),
+      firstCompletedAt: new Date(result.firstCompletedAt!),
+    };
+  });
 };

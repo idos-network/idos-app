@@ -1,28 +1,25 @@
 import type { Config, Context } from '@netlify/functions';
 import { getUserQuests } from '@/db/user-quests';
+import { InternalServerError, UserNotFoundError } from '@/utils/errors';
 
-export default async (request: Request, _context: Context) => {
-  const url = new URL(request.url);
-  const userId = url.searchParams.get('userId');
+export default async (_request: Request, context: Context) => {
+  const { userId } = context.params;
 
   try {
     if (!userId) {
-      return new Response(JSON.stringify({ error: 'User ID is required' }), {
-        status: 404,
-      });
+      throw new UserNotFoundError(userId);
     }
 
     const userQuests = await getUserQuests(userId);
     return new Response(JSON.stringify(userQuests), { status: 200 });
   } catch (error) {
-    console.error('Get user quests error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-    });
+    throw new InternalServerError(
+      error instanceof Error ? error.message : 'Internal server error',
+    );
   }
 };
 
 export const config: Config = {
-  path: '/api/user-quests',
+  path: '/api/user-quests/:userId',
   method: 'GET',
 };

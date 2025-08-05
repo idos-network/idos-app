@@ -1,31 +1,25 @@
 import type { Config, Context } from '@netlify/functions';
 import { getUserReferralCount } from '@/db/user';
+import { InternalServerError, ValidationError } from '@/utils/errors';
 
-export default async (request: Request, _context: Context) => {
-  const url = new URL(request.url);
-  const referralCode = url.searchParams.get('referralCode');
+export default async (_request: Request, context: Context) => {
+  const { referralCode } = context.params;
 
   try {
     if (!referralCode) {
-      return new Response(
-        JSON.stringify({ error: 'Referral code is required' }),
-        {
-          status: 404,
-        },
-      );
+      throw new ValidationError('Referral code is required');
     }
 
     const user = await getUserReferralCount(referralCode);
     return new Response(JSON.stringify(user), { status: 200 });
   } catch (error) {
-    console.error('Get user error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-    });
+    throw new InternalServerError(
+      error instanceof Error ? error.message : 'Internal server error',
+    );
   }
 };
 
 export const config: Config = {
-  path: '/api/user/referral-count',
+  path: '/api/user/:referralCode/referral-count',
   method: 'GET',
 };

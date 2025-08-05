@@ -30,7 +30,10 @@ export const userQuests = pgTable(
     id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
     userId: varchar('userId', { length: 36 }).notNull(),
     questName: varchar('questName', { length: 255 }).notNull(),
-    completedAt: timestamp('completedAt').defaultNow().notNull(),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     index('user_quests_user_id_idx').on(table.userId),

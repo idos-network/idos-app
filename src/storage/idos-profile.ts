@@ -1,6 +1,6 @@
-import type { IdosUser } from '../interfaces/idos-profile';
+import type { IdosUserProfile } from '@/interfaces/idos-profile';
 
-export const saveNewUser = async (idosUser: IdosUser) => {
+export const saveNewUserToLocalStorage = (idosUser: IdosUserProfile) => {
   const newIdOSUser = {
     ...idosUser,
     idosKey: true,
@@ -15,9 +15,9 @@ export const saveNewUser = async (idosUser: IdosUser) => {
   return newIdOSUser;
 };
 
-export const updateUserState = async (
+export const updateUserStateInLocalStorage = (
   mainAddress: string,
-  fields: Partial<IdosUser>,
+  fields: Partial<IdosUserProfile>,
 ) => {
   const userData = localStorage.getItem('idosUser');
   if (!userData) {
@@ -39,7 +39,7 @@ export const updateUserState = async (
   return updatedUser;
 };
 
-export const getCurrentUser = (): IdosUser | null => {
+export const getCurrentUserFromLocalStorage = (): IdosUserProfile | null => {
   const userData = localStorage.getItem('idosUser');
   if (!userData) {
     return null;
@@ -53,6 +53,6 @@ export const getCurrentUser = (): IdosUser | null => {
   }
 };
 
-export const clearUserData = () => {
+export const clearUserDataFromLocalStorage = () => {
   localStorage.removeItem('idosUser');
 };

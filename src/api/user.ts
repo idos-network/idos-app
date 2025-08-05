@@ -1,15 +1,7 @@
 import axiosInstance from './axios';
-import type { IdOSUser } from '@/db/user';
 import { parseWithSchema } from './parser';
 import { z } from 'zod';
-
-const idOSUserResponseSchema = z.object({
-  id: z.string(),
-  mainEvm: z.string(),
-  referrerCode: z.string().optional(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-});
+import { idOSUserSchema, type IdOSUser } from '@/interfaces/user';
 
 export const saveUser = async (userData: IdOSUser): Promise<void> => {
   const response = await axiosInstance.post('/user/save', userData);
@@ -22,10 +14,8 @@ export const updateUser = async (userData: IdOSUser): Promise<void> => {
 };
 
 export const getUserById = async (userId: string): Promise<IdOSUser[]> => {
-  const response = await axiosInstance.get('/user', {
-    params: { id: userId },
-  });
-  return parseWithSchema(response.data, z.array(idOSUserResponseSchema));
+  const response = await axiosInstance.get(`/user/${userId}`);
+  return parseWithSchema(response.data, z.array(idOSUserSchema));
 };
 
 export const getUserTotalPoints = async (id: string): Promise<number> => {

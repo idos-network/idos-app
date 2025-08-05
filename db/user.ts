@@ -1,17 +1,8 @@
-import { db, users, userQuests } from './index';
+import { db, users } from './index';
 import { eq, count } from 'drizzle-orm';
-import { z } from 'zod';
 import { questsConfig } from '@/utils/quests';
-
-export const idOSUserSchema = z.object({
-  id: z.string(),
-  mainEvm: z.string(),
-  referrerCode: z.string().optional(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-});
-
-export type IdOSUser = z.infer<typeof idOSUserSchema>;
+import { getUserQuestsSummary } from './user-quests';
+import { idOSUserSchema } from '@/interfaces/user';
 
 export async function saveUser(data: any) {
   const user = idOSUserSchema.parse(data);
@@ -25,8 +16,8 @@ export async function updateUser(data: any) {
   return await db.update(users).set(user).where(eq(users.id, user.id));
 }
 
-export async function getUserById(id: string) {
-  return await db.select().from(users).where(eq(users.id, id));
+export async function getUserById(userId: string) {
+  return await db.select().from(users).where(eq(users.id, userId));
 }
 
 export async function getUserReferralCount(
@@ -40,20 +31,16 @@ export async function getUserReferralCount(
   return result[0].count;
 }
 
-export async function getUserTotalPoints(id: string): Promise<number> {
-  const userQuestResults = await db
-    .select()
-    .from(userQuests)
-    .where(eq(userQuests.userId, id));
+export async function getUserTotalPoints(userId: string): Promise<number> {
+  const questSummaries = await getUserQuestsSummary(userId);
 
-  let totalPoints = 0;
+  const questLookup = new Map(questsConfig.map((quest) => [quest.name, quest]));
 
-  for (const userQuest of userQuestResults) {
-    const quest = questsConfig.find((q) => q.name === userQuest.questName);
+  return questSummaries.reduce((totalPoints, summary) => {
+    const quest = questLookup.get(summary.questName);
     if (quest) {
-      totalPoints += quest.pointsReward;
+      totalPoints += quest.pointsReward * summary.completionCount;
     }
-  }
-
-  return totalPoints;
+    return totalPoints;
+  }, 0);
 }
