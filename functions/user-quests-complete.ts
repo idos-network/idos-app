@@ -1,7 +1,6 @@
 import type { Config, Context } from '@netlify/functions';
 import { completeUserQuest } from '@/db/user-quests';
-import { z, ZodError } from 'zod';
-import { InternalServerError, ValidationError } from '@/utils/errors';
+import { z } from 'zod';
 
 const completeUserQuestRequestSchema = z.object({
   questName: z.string().min(1, 'questName is required'),
@@ -21,13 +20,8 @@ export default async (request: Request, _context: Context) => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    if (error instanceof ZodError) {
-      throw new ValidationError(error.message);
-    }
-
-    throw new InternalServerError(
-      error instanceof Error ? error.message : 'Internal server error',
-    );
+    console.error('Error in user-quests-complete:', error);
+    throw error;
   }
 };
 

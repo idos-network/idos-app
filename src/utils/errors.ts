@@ -47,13 +47,3 @@ export class DatabaseError extends Error {
     this.name = 'DatabaseError';
   }
 }
-
-export class InternalServerError extends Error {
-  readonly statusCode = 500;
-  readonly code = 'INTERNAL_SERVER_ERROR';
-
-  constructor(message: string = 'Internal server error') {
-    super(message);
-    this.name = 'InternalServerError';
-  }
-}

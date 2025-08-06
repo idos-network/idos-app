@@ -1,7 +1,6 @@
 import type { Config, Context } from '@netlify/functions';
 import { updateUser } from '@/db/user';
 import { idOSUserSchema } from '@/interfaces/user';
-import { InternalServerError } from '@/utils/errors';
 
 export default async (request: Request, _context: Context) => {
   try {
@@ -10,9 +9,8 @@ export default async (request: Request, _context: Context) => {
     const result = await updateUser(userData);
     return new Response(JSON.stringify(result), { status: 200 });
   } catch (error) {
-    throw new InternalServerError(
-      error instanceof Error ? error.message : 'Internal server error',
-    );
+    console.error('Error in user-update:', error);
+    throw error;
   }
 };
 

@@ -4,8 +4,8 @@ export const idOSUserSchema = z.object({
   id: z.string(),
   mainEvm: z.string(),
   referrerCode: z.string().optional(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
+  updatedAt: z.coerce.date().optional(),
 });
 
 export type IdOSUser = z.infer<typeof idOSUserSchema>;
