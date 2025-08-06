@@ -3,6 +3,7 @@ import { BuyIcon, ReceiveIcon, SellIcon, SendIcon } from '@/components/icons';
 import { Link } from '@tanstack/react-router';
 import { SendTokensDialog } from './SendTokensDialog';
 import { ReceiveTokenDialog } from './ReceiveTokenDialog';
+import { Fragment } from 'react';
 
 interface ActionButton {
   id: string;
@@ -21,20 +22,10 @@ const actionButtons: ActionButton[] = [
     isActive: true,
   },
   {
-    id: 'buy',
+    id: 'sell',
     label: 'Sell',
     icon: <SellIcon />,
   },
-  // {
-  //   id: "swap",
-  //   label: "Swap",
-  //   icon: <SwapIcon />,
-  // },
-  // {
-  //   id: "bridge",
-  //   label: "Bridge",
-  //   icon: <BridgeIcon />,
-  // },
   {
     id: 'send',
     label: 'Send',
@@ -55,12 +46,11 @@ export default function ActionToolbar() {
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center gap-3">
           {actionButtons.map((action) => (
-            <>
+            <Fragment key={action.id}>
               {action.render ? (
-                action.render()
+                  action.render()
               ) : (
                 <Link
-                  key={action.id}
                   to={`/notabank/${action.id as 'buy'}`}
                   className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-medium text-sm transition-all duration-200 hover:scale-105 ${
                     action.isActive
@@ -72,7 +62,7 @@ export default function ActionToolbar() {
                   <span>{action.label}</span>
                 </Link>
               )}
-            </>
+            </Fragment>
           ))}
         </div>
       </div>

@@ -3,6 +3,7 @@ export * from './ActionToolbar';
 export * from './BuyTokens';
 export * from './KycProgressBar';
 export * from './ProviderQuotes';
+export * from './Provider';
 export * from './TokenAmountInput';
 export * from './TransactionHistory';
 export * from './ChartLineInteractive';
