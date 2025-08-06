@@ -2,7 +2,7 @@ import { useNearWallet } from './useNearWallet';
 import { env } from '@/env';
 import { ethers } from 'ethers';
 import * as GemWallet from '@gemwallet/api';
-import { saveNewUser } from '@/storage/idos-profile';
+import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 import { verifySignature } from '@/utils/verify-signatures';
@@ -129,12 +129,12 @@ export function useHandleSaveIdOSProfile() {
         }
       }
 
-      const savedUser = await saveNewUser({
+      const savedUser = await saveNewUserToLocalStorage({
         id: userId,
         mainAddress: wallet.address,
         userEncryptionPublicKey: userEncryptionPublicKey,
         ownershipProofSignature: ownershipProofSignature,
-        publicKey: publicKey || '',
+        publicKey: publicKey,
       });
 
       if (savedUser) {

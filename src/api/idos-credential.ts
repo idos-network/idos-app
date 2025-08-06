@@ -6,7 +6,7 @@ export const createIdOSCredential = async (
   userEncryptionPublicKey: string,
   userId: string,
 ) => {
-  const response = await axiosInstance.post('/idoscredential', {
+  const response = await axiosInstance.post('/idos-credential', {
     idOSDWG,
     userEncryptionPublicKey,
     userId,

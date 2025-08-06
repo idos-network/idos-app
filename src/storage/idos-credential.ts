@@ -1,6 +1,6 @@
 import type { IdosDWG } from '@/interfaces/idos-credential';
 
-export const saveNewDWG = async (dwg: IdosDWG) => {
+export const saveNewDWG = (dwg: IdosDWG) => {
   const newIdOSDWG = {
     ...dwg,
     createdAt: new Date().toUTCString(),

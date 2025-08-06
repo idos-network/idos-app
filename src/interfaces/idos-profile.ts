@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const idosUserSchema = z.object({
+export const idosUserProfileSchema = z.object({
   id: z.string(),
   mainAddress: z.string(),
   userEncryptionPublicKey: z.string(),
@@ -23,5 +23,15 @@ export const idOSWalletSchema = z.object({
   signature: z.string(),
 });
 
-export type IdosUser = z.infer<typeof idosUserSchema>;
+export const idOSProfileRequestSchema = z.object({
+  userId: z.string(),
+  userEncryptionPublicKey: z.string(),
+  address: z.string(),
+  ownershipProofMessage: z.string(),
+  ownershipProofSignature: z.string(),
+  publicKey: z.string(),
+  walletType: z.string(),
+});
+
+export type IdosUserProfile = z.infer<typeof idosUserProfileSchema>;
 export type IdosWallet = z.infer<typeof idOSWalletSchema>;

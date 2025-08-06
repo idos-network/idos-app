@@ -14,9 +14,9 @@ import EncryptedIcon from '@/icons/encrypted';
 import GraphIcon from '@/icons/graph';
 import { useIdOS } from '@/context/idos-context';
 import {
-  clearUserData,
-  getCurrentUser,
-  updateUserState,
+  clearUserDataFromLocalStorage,
+  getCurrentUserFromLocalStorage,
+  updateUserStateInLocalStorage,
 } from '@/storage/idos-profile';
 import { env } from '@/env';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
@@ -180,7 +180,7 @@ function StepThree({ onNext }: { onNext: () => void }) {
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const walletType = (wallet && wallet.type) || '';
 
-  const currentUser = getCurrentUser();
+  const currentUser = getCurrentUserFromLocalStorage();
   const userId = currentUser?.id || '';
   const userAddress = currentUser?.mainAddress || '';
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
@@ -189,7 +189,7 @@ function StepThree({ onNext }: { onNext: () => void }) {
 
   useEffect(() => {
     if (state === 'verified') {
-      updateUserState(userAddress, { humanVerified: true });
+      updateUserStateInLocalStorage(userAddress, { humanVerified: true });
       const handleProfile = async () => {
         setState('creating');
         const response = await handleCreateIdOSProfile(
@@ -202,7 +202,7 @@ function StepThree({ onNext }: { onNext: () => void }) {
           walletType,
         );
         if (!response) {
-          updateUserState(userAddress, { humanVerified: false });
+          updateUserStateInLocalStorage(userAddress, { humanVerified: false });
           setState('idle');
         } else {
           onNext();
@@ -347,7 +347,7 @@ function StepFour() {
 
       if (response) {
         setState('created');
-        clearUserData();
+        clearUserDataFromLocalStorage();
         localStorage.setItem(
           'showToast',
           JSON.stringify({
@@ -450,14 +450,14 @@ export default function OnboardingStepper() {
   useEffect(() => {
     if (isLoading) return;
 
-    const currentUser = getCurrentUser();
+    const currentUser = getCurrentUserFromLocalStorage();
 
     if (currentUser) {
       if (
         currentUser.mainAddress !== (wallet && wallet.address) &&
         !hasProfile
       ) {
-        clearUserData();
+        clearUserDataFromLocalStorage();
         setActiveStep('step-one');
         return;
       } else if (hasProfile) {

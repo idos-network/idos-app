@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "name": "create_idos_profile",
+    "title": "Create an idOS profile",
+    "description": "Create an idOS profile to earn points",
+    "link": "",
+    "pointsReward": 10,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 2,
+    "name": "complete_kyc",
+    "title": "Complete KYC",
+    "description": "Complete KYC to earn points",
+    "link": "",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 3,
+    "name": "add_credential",
+    "title": "Add a credential",
+    "description": "Add a credential to earn points",
+    "link": "",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 4,
+    "name": "follow_on_x",
+    "title": "Follow on X",
+    "description": "Follow on X to earn points",
+    "link": "",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 5,
+    "name": "join_telegram",
+    "title": "Join Telegram",
+    "description": "Join Telegram to earn points",
+    "link": "",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 6,
+    "name": "add_face_as_signer",
+    "title": "Add face as signer",
+    "description": "Add face as signer to earn points",
+    "link": "",
+    "pointsReward": 10,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 7,
+    "name": "add_eth_to_idos_wallet",
+    "title": "Add ETH to idOS wallet",
+    "description": "Add ETH to idOS wallet to earn points",
+    "link": "",
+    "pointsReward": 20,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 8,
+    "name": "share_authorization_grant",
+    "title": "Share authorization grant",
+    "description": "Share authorization grant to earn points",
+    "link": "",
+    "pointsReward": 30,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 9,
+    "name": "participate_staking_event",
+    "title": "Participate in staking event",
+    "description": "Participate in staking event to earn points",
+    "link": "",
+    "pointsReward": 100,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 10,
+    "name": "participate_ico_event",
+    "title": "Participate in ICO event",
+    "description": "Participate in ICO event to earn points",
+    "link": "",
+    "pointsReward": 100,
+    "isActive": true,
+    "isRepeatable": false
+  },
+  {
+    "id": 11,
+    "name": "referral_program",
+    "title": "Referral program",
+    "description": "Referral program to earn points",
+    "link": "",
+    "pointsReward": 5,
+    "isActive": true,
+    "isRepeatable": true
+  },
+  {
+    "id": 12,
+    "name": "daily_login",
+    "title": "Daily login",
+    "description": "Daily login to earn points",
+    "link": "",
+    "pointsReward": 1,
+    "isActive": false,
+    "isRepeatable": true
+  }
+]

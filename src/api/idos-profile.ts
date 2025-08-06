@@ -9,7 +9,7 @@ export const createIdOSProfile = async (
   publicKey?: string,
   walletType?: string,
 ) => {
-  const response = await axiosInstance.post('/idosprofile', {
+  const response = await axiosInstance.post('/idos-profile', {
     userId,
     userEncryptionPublicKey,
     address,

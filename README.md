@@ -1,6 +1,6 @@
 ## Development
 
-This project uses [Netlify Functions](https://docs.netlify.com/functions/overview/) for serverless backend logic.
+This project uses Netlify Functions for serverless backend logic.
 
 ### Quick Start (Frontend Only)
 
@@ -11,24 +11,7 @@ npm install
 npm run dev
 ```
 
-This starts your app in development mode using Vite, rebuilding assets on file changes. **Note:** This will not run Netlify Functions locally.
-
-### Full Local Development (Frontend + Netlify Functions)
-
-To run both the frontend and Netlify Functions locally, use the Netlify CLI:
-
-1. Install the Netlify CLI (if you haven't already):
-   ```sh
-   npm install -g netlify-cli
-   ```
-2. Start the local Netlify dev environment:
-   ```sh
-   netlify dev
-   ```
-
-This will serve your frontend and serverless functions together, emulating the production environment as closely as possible.
-
-Access the app at:
+This starts your app in development mode using Vite, rebuilding assets on file changes. Access the app at:
 
 http://localhost:8888
 
@@ -36,7 +19,21 @@ http://localhost:8888
 
 To act as an idOS Issuer, you need to generate a signing and encryption key pair. This is required for the Netlify Function at `functions/idosprofile.ts`.
 
-### Generating Keys
+## Database Scripts
+
+Complete database setup - generates migrations and runs them.
+
+```sh
+npm run db:setup
+```
+
+Opens Drizzle Studio - a visual database browser for development.
+
+```sh
+npm run db:studio
+```
+
+## Generating Keys
 
 Run the provided script:
 
