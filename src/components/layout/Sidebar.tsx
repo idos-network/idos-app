@@ -4,6 +4,7 @@ import UserIcon from '@/components/icons/user';
 import LayersIcon from '@/components/icons/layers';
 import XIcon from '../icons/x-icon';
 import { BankIcon } from '../icons/bank';
+import AppTag from '../NotaBank/components/Tag';
 
 export default function Sidebar() {
   return (
@@ -56,9 +57,12 @@ export default function Sidebar() {
         >
           {({ isActive }) => (
             <div
-              className={`flex items-center gap-4 w-full rounded-xl px-3 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+              className={`flex items-center justify-between gap-4 w-full rounded-xl px-3 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
             >
               <BankIcon isActive={isActive} /> NotaBank
+              <AppTag variant="success">
+                <span>New</span>
+              </AppTag>
             </div>
           )}
         </Link>
