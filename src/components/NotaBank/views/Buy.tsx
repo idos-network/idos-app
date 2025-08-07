@@ -25,7 +25,6 @@ interface ProviderData {
 
 interface ProviderProps {
   data: ProviderData;
-  selected?: boolean;
   onSelect?: (id: string) => void;
   className?: string;
   children?: ReactNode;
@@ -33,7 +32,7 @@ interface ProviderProps {
 
 function Provider({
   data,
-  selected,
+
   onSelect,
   className = '',
   children,

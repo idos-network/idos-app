@@ -1,10 +1,8 @@
-export * from './UserBalance';
 export * from './ActionToolbar';
-export * from './BuyTokens';
+export * from './ChartLineInteractive';
 export * from './KycProgressBar';
-export * from './ProviderQuotes';
-export * from './Provider';
+export * from './PerformanceChart';
 export * from './TokenAmountInput';
 export * from './TransactionHistory';
-export * from './ChartLineInteractive';
-export * from './PerformanceChart';
+export * from './UserBalance';
+
