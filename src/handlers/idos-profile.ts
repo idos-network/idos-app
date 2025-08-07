@@ -3,6 +3,7 @@ import { createIdOSProfile } from '@/api/idos-profile';
 export async function handleCreateIdOSProfile(
   userId: string,
   userEncryptionPublicKey: string,
+  encryptionPasswordStore: string,
   userAddress: string,
   ownershipProofMessage: string,
   ownershipProofSignature: string,
@@ -13,6 +14,7 @@ export async function handleCreateIdOSProfile(
     const response = await createIdOSProfile(
       userId,
       userEncryptionPublicKey,
+      encryptionPasswordStore,
       userAddress,
       ownershipProofMessage,
       ownershipProofSignature,

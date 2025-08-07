@@ -4,6 +4,7 @@ export const idosUserProfileSchema = z.object({
   id: z.string(),
   mainAddress: z.string(),
   userEncryptionPublicKey: z.string(),
+  encryptionPasswordStore: z.string(),
   ownershipProofSignature: z.string(),
   publicKey: z.string(),
   idosKey: z.boolean().optional(),
@@ -26,6 +27,7 @@ export const idOSWalletSchema = z.object({
 export const idOSProfileRequestSchema = z.object({
   userId: z.string(),
   userEncryptionPublicKey: z.string(),
+  encryptionPasswordStore: z.string(),
   address: z.string(),
   ownershipProofMessage: z.string(),
   ownershipProofSignature: z.string(),

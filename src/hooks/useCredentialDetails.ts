@@ -34,10 +34,8 @@ export function useCredentialDetails(credentialId: string | null) {
         if (cred.content && cred.encryptor_public_key) {
           try {
             // Prepare the enclave provider
-            await idOSClient.enclaveProvider.ready(
-              idOSClient.user.id,
-              idOSClient.user.recipient_encryption_public_key,
-            );
+
+            await idOSClient.enclaveProvider.ensureUserEncryptionProfile();
 
             // Decrypt the content
             const decrypted = await idOSClient.enclaveProvider.decrypt(

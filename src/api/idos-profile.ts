@@ -3,6 +3,7 @@ import axiosInstance from './axios';
 export const createIdOSProfile = async (
   userId?: string,
   userEncryptionPublicKey?: string,
+  encryptionPasswordStore?: string,
   address?: string,
   ownershipProofMessage?: string,
   ownershipProofSignature?: string,
@@ -12,6 +13,7 @@ export const createIdOSProfile = async (
   const response = await axiosInstance.post('/idos-profile', {
     userId,
     userEncryptionPublicKey,
+    encryptionPasswordStore,
     address,
     ownershipProofMessage,
     ownershipProofSignature,

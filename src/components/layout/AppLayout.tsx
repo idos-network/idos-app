@@ -11,7 +11,7 @@ export default function AppLayout() {
       <Sidebar />
       <div className="flex flex-1 flex-col lg:ml-64">
         <Header />
-        <main className="flex-1 p-8 text-idos-seasalt">
+        <main className="flex-1 text-idos-seasalt">
           <Outlet />
         </main>
       </div>

@@ -30,6 +30,7 @@ export default async (request: Request, _context: Context) => {
   const {
     userId,
     userEncryptionPublicKey,
+    encryptionPasswordStore,
     address,
     ownershipProofMessage,
     ownershipProofSignature,
@@ -42,6 +43,7 @@ export default async (request: Request, _context: Context) => {
   const user = {
     id: userId,
     recipient_encryption_public_key: userEncryptionPublicKey,
+    encryption_password_store: encryptionPasswordStore as 'mpc' | 'user',
   };
 
   const walletTypeMap: Record<string, string> = {
