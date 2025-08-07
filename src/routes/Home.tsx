@@ -7,5 +7,6 @@ export function Home() {
   if (!isConnected) {
     return <WalletGate />;
   }
+
   return null;
 }
