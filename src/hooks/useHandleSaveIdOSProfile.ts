@@ -1,12 +1,12 @@
-import { useNearWallet } from './useNearWallet';
 import { env } from '@/env';
-import { ethers } from 'ethers';
-import * as GemWallet from '@gemwallet/api';
 import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 import { verifySignature } from '@/utils/verify-signatures';
 import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
+import * as GemWallet from '@gemwallet/api';
+import { ethers } from 'ethers';
+import { useNearWallet } from './useNearWallet';
 
 export type WalletPayload = {
   address: string;
@@ -30,8 +30,8 @@ export function useHandleSaveIdOSProfile() {
       setLoading(true);
       const userId = crypto.randomUUID();
 
-      const userEncryptionPublicKey =
-        await withSigner.getUserEncryptionPublicKey(userId);
+      const encryptionProfile =
+        await withSigner.createUserEncryptionProfile(userId);
 
       setState('waiting_signature');
 
@@ -129,13 +129,18 @@ export function useHandleSaveIdOSProfile() {
         }
       }
 
-      const savedUser = await saveNewUserToLocalStorage({
+      const userPayload = {
         id: userId,
         mainAddress: wallet.address,
-        userEncryptionPublicKey: userEncryptionPublicKey,
+        userEncryptionPublicKey:
+          encryptionProfile.userEncryptionPublicKey as string,
+        encryptionPasswordStore:
+          encryptionProfile.encryptionPasswordStore as string,
         ownershipProofSignature: ownershipProofSignature,
         publicKey: publicKey,
-      });
+      };
+
+      const savedUser = saveNewUserToLocalStorage(userPayload);
 
       if (savedUser) {
         setState('created');
