@@ -1,17 +1,16 @@
 import {
+  CompletedIcon,
+  IdentityVerificationIcon,
+  IdosIcon,
+  WelcomeIcon,
+} from '@/components/icons';
+import {
   Children,
   cloneElement,
   isValidElement,
   useMemo,
   useState,
 } from 'react';
-import {
-  CompletedIcon,
-  IdentityVerificationIcon,
-  IdosIcon,
-  WelcomeIcon,
-} from '@/components/icons';
-import type { FlowStep } from './ProviderQuotes';
 
 const StepIcon = ({
   icon,
@@ -68,7 +67,7 @@ const ProgressStep = ({
 };
 
 export const KycProgressBar = () => {
-  const [currentStep] = useState<FlowStep>('select-provider');
+  const [currentStep] = useState('select-provider');
   const steps = useMemo(
     () => [
       {

@@ -19,6 +19,7 @@
     "db:setup": "createdb idos_dev && npm run db:generate && npm run db:migrate"
   },
   "dependencies": {
+    "@base-ui-components/react": "^1.0.0-beta.2",
     "@creit.tech/stellar-wallets-kit": "^1.7.5",
     "@digitalbazaar/ed25519-verification-key-2020": "^4.2.0",
     "@gemwallet/api": "^3.8.0",
