@@ -13,47 +13,11 @@ import AmountInput from '../components/AmountInput';
 import { ProviderQuotes } from '../components/ProviderQuotes';
 import UserBalance from '../components/UserBalance';
 
-function BuyModule() {
+function SellModule() {
   return (
     <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
-      <h3 className="text-xl">Buy Tokens</h3>
+      <h3 className="text-xl">Sell Tokens</h3>
       <form className="flex flex-col gap-5">
-        <div className="flex flex-col gap-4">
-          <label
-            className="text-sm text-neutral-400 font-sans"
-            htmlFor="spend-amount"
-          >
-            I want to spend
-          </label>
-          <div className="h-20 flex items-center gap-4 bg-neutral-800 rounded-2xl px-4">
-            <AmountInput id="spend-amount" />
-            <Select>
-              <SelectTrigger className="h-16 w-fit border border-none text-neutral-50 tabular-nums focus:z-1 focus:-outline-offset-0 focus:outline-neutral-600 text-sm px-2">
-                <SelectValue placeholder="Currency" />
-              </SelectTrigger>
-              <SelectContent className="bg-neutral-800 border-none text-sm">
-                <SelectItem
-                  value="usd"
-                  className="hover:bg-neutral-700 text-sm rounded-none"
-                >
-                  <span>USD</span>
-                </SelectItem>
-                <SelectItem
-                  value="eur"
-                  className="hover:bg-neutral-700 border-t border-neutral-700 text-sm rounded-none"
-                >
-                  <span>EUR</span>
-                </SelectItem>
-                <SelectItem
-                  value="gbp"
-                  className="hover:bg-neutral-700 border-t border-neutral-700 text-sm rounded-none"
-                >
-                  <span>GBP</span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
         <div className="flex flex-col gap-4">
           <label
             className="text-sm text-neutral-400 font-sans"
@@ -93,6 +57,43 @@ function BuyModule() {
             </Select>
           </div>
         </div>
+        <div className="flex flex-col gap-4">
+          <label
+            className="text-sm text-neutral-400 font-sans"
+            htmlFor="spend-amount"
+          >
+            I want to spend
+          </label>
+          <div className="h-20 flex items-center gap-4 bg-neutral-800 rounded-2xl px-4">
+            <AmountInput id="spend-amount" />
+            <Select>
+              <SelectTrigger className="h-16 w-fit border border-none text-neutral-50 tabular-nums focus:z-1 focus:-outline-offset-0 focus:outline-neutral-600 text-sm px-2">
+                <SelectValue placeholder="Currency" />
+              </SelectTrigger>
+              <SelectContent className="bg-neutral-800 border-none text-sm">
+                <SelectItem
+                  value="usd"
+                  className="hover:bg-neutral-700 text-sm rounded-none"
+                >
+                  <span>USD</span>
+                </SelectItem>
+                <SelectItem
+                  value="eur"
+                  className="hover:bg-neutral-700 border-t border-neutral-700 text-sm rounded-none"
+                >
+                  <span>EUR</span>
+                </SelectItem>
+                <SelectItem
+                  value="gbp"
+                  className="hover:bg-neutral-700 border-t border-neutral-700 text-sm rounded-none"
+                >
+                  <span>GBP</span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-1">
           <p className="text-sm font-sans">Gas Fee</p>
           <p className="text-sm font-sans flex items-center gap-1 justify-between">
@@ -129,7 +130,7 @@ export default function Buy() {
         <ActionToolbar />
       </div>
       <div className="mt-10 flex justify-between gap-5 w-full max-w-4xl mx-auto">
-        <BuyModule />
+        <SellModule />
         <ProviderQuotes />
       </div>
     </div>
