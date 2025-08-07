@@ -1,15 +1,17 @@
+import * as GemWallet from '@gemwallet/api';
 import {
   createIDOSClient,
   type idOSClient,
   idOSClientWithUserSigner,
 } from '@idos-network/client';
 import { type PropsWithChildren, useContext, useEffect, useState } from 'react';
-import * as GemWallet from '@gemwallet/api';
 
-import { useEthersSigner } from '@/hooks/useEthersSigner';
-import { WalletConnectorContext } from '@/context/wallet-connector-context';
-import { createStellarSigner } from '@/utils/stellar/stellar-signature';
+import { saveUser } from '@/api/user';
+import { completeUserQuest } from '@/api/user-quests';
 import { IDOSClientContext } from '@/context/idos-context';
+import { WalletConnectorContext } from '@/context/wallet-connector-context';
+import { useEthersSigner } from '@/hooks/useEthersSigner';
+import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 
 const _idOSClient = createIDOSClient({
   nodeUrl: 'https://nodes.playground.idos.network/',
@@ -20,8 +22,13 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(true);
   const [idOSClient, setClient] = useState<idOSClient>(_idOSClient);
   const [withSigner, setWithSigner] = useState<idOSClientWithUserSigner>();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
+
+  const refresh = async () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   useEffect(() => {
     const setupClient = async () => {
@@ -66,7 +73,14 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         const _withSigner = await newClient.withUserSigner(_signer);
         setWithSigner(_withSigner);
         if (await _withSigner.hasProfile()) {
-          setClient(await _withSigner.logIn());
+          const client = await _withSigner.logIn();
+          setClient(client);
+          saveUser({
+            id: client.user.id,
+            mainEvm: '',
+            referrerCode: '',
+          });
+          completeUserQuest(client.user.id, 'create_idos_profile');
         } else {
           setClient(_withSigner);
         }
@@ -86,6 +100,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     walletConnector?.connectedWallet,
     walletConnector?.nearWallet,
     walletConnector?.stellarWallet,
+    refreshTrigger,
     // Removing xrplWallet from dependencies to prevent reinitialization on connection failures
     // walletConnector?.xrplWallet,
   ]);
@@ -104,6 +119,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         idOSClient: idOSClient,
         withSigner: withSigner!,
         isLoading,
+        refresh,
       }}
     >
       {children}

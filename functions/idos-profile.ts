@@ -30,6 +30,7 @@ export default async (request: Request, _context: Context) => {
   const {
     userId,
     userEncryptionPublicKey,
+    encryptionPasswordStore,
     address,
     ownershipProofMessage,
     ownershipProofSignature,

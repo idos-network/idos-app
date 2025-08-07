@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
-import { CredentialsCard, WalletsCard } from '@/components/profile';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
-import { useSpecificCredential } from '@/hooks/useCredentials';
-import { useToast } from '@/hooks/useToast';
-import { env } from '@/env';
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
+import { CredentialsCard, WalletsCard } from '@/components/profile';
+import { env } from '@/env';
+import { useSpecificCredential } from '@/hooks/useCredentials';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useToast } from '@/hooks/useToast';
+import { useEffect } from 'react';
 
 export function IdosProfile() {
   const hasProfile = useIdOSLoginStatus();

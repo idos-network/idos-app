@@ -15,7 +15,7 @@ export default function Sidebar() {
       <nav className="flex flex-col gap-2 font-medium text-base">
         <Link
           to="/idos-profile"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
         >
           {({ isActive }) => (
             <div
@@ -27,7 +27,7 @@ export default function Sidebar() {
         </Link>
         <Link
           to="/staking-event"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
         >
           {({ isActive }) => (
             <div
@@ -40,7 +40,7 @@ export default function Sidebar() {
         </Link>
         <Link
           to="/idos-staking"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
         >
           {({ isActive }) => (
             <div

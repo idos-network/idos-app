@@ -1,10 +1,9 @@
-import SmallPrimaryButton from '@/components/SmallPrimaryButton';
-import AddIcon from '@/components/icons/add';
 import { useIdOSLoggedIn } from '@/context/idos-context';
 import { verifySignature } from '@/utils/verify-signatures';
 import type { idOSWallet } from '@idos-network/client';
 import { useEffect, useState } from 'react';
 import invariant from 'tiny-invariant';
+import StepperButton from './StepperButton';
 
 interface WalletAddButtonProps {
   onWalletAdded?: () => void;
@@ -51,7 +50,7 @@ const createWallet = async (
   return insertedWallet;
 };
 
-export default function WalletAddButton({
+export default function EVMWalletAdd({
   onWalletAdded,
   onError,
   onSuccess,
@@ -152,15 +151,8 @@ export default function WalletAddButton({
   };
 
   return (
-    <div className="flex flex-col gap-2 items-start">
-      <SmallPrimaryButton
-        icon={<AddIcon />}
-        onClick={handleOpenWalletPopup}
-        disabled={isLoading}
-        className="bg-aquamarine-400 text-neutral-950 hover:bg-aquamarine-600"
-      >
-        {isLoading ? 'Connecting...' : 'Add Wallet'}
-      </SmallPrimaryButton>
-    </div>
+    <StepperButton onClick={handleOpenWalletPopup} disabled={isLoading}>
+      {isLoading ? 'Connecting...' : 'Add EVM wallet'}
+    </StepperButton>
   );
 }
