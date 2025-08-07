@@ -3,6 +3,7 @@ import Buy from '@/components/NotaBank/views/Buy';
 import Kyc from '@/components/NotaBank/views/Kyc';
 import Landing from '@/components/NotaBank/views/Landing';
 import NotaCard from '@/components/NotaBank/views/NotaCard';
+import Sell from '@/components/NotaBank/views/Sell';
 import { notabankRoute } from '@/routes';
 import { createRoute } from '@tanstack/react-router';
 
@@ -18,6 +19,13 @@ export const notabankBuyRoute = createRoute({
   getParentRoute: () => notabankRoute,
   path: '/buy',
   component: Buy,
+});
+
+// Sell route for /notabank/sell
+export const notabankSellRoute = createRoute({
+  getParentRoute: () => notabankRoute,
+  path: '/sell',
+  component: Sell,
 });
 
 export const notabankKycRoute = createRoute({

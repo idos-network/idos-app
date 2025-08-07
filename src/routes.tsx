@@ -5,19 +5,20 @@ import {
   createRoute,
   Outlet,
 } from '@tanstack/react-router';
-import { RootComponent } from './routes/RootComponent';
+import AppLayout from './components/layout/AppLayout';
 import { Home } from './routes/Home';
 import { IdosProfile } from './routes/IdosProfile';
 import { IdosStaking } from './routes/IdosStaking';
-import { StakingEvent } from './routes/StakingEvent';
 import {
-  notabankIndexRoute,
   notabankBuyRoute,
+  notabankIndexRoute,
   notabankKycRoute,
   notabankNotaCardRoute,
   notabankNotaCardTermsAndConditionsRoute,
+  notabankSellRoute,
 } from './routes/NotaBank';
-import AppLayout from './components/layout/AppLayout';
+import { RootComponent } from './routes/RootComponent';
+import { StakingEvent } from './routes/StakingEvent';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -80,6 +81,7 @@ export const routeTree = rootRoute.addChildren([
     notabankRoute.addChildren([
       notabankIndexRoute,
       notabankBuyRoute,
+      notabankSellRoute,
       notabankKycRoute,
       notabankNotaCardRoute,
       notabankNotaCardTermsAndConditionsRoute,
