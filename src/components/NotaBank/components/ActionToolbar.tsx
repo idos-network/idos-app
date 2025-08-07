@@ -48,7 +48,7 @@ export default function ActionToolbar() {
           {actionButtons.map((action) => (
             <Fragment key={action.id}>
               {action.render ? (
-                  action.render()
+                action.render()
               ) : (
                 <Link
                   to={`/notabank/${action.id as 'buy'}`}
