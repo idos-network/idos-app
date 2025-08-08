@@ -30,7 +30,7 @@ export default function WalletsCard() {
   };
 
   return (
-    <div className="flex h-full flex-col gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
+    <div className="flex h-full flex-col w-fit min-w-full gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <span className="text-xl font-normal text-neutral-50">Wallets</span>

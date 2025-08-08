@@ -30,7 +30,7 @@ const createWalletParamsFactory = ({
 }) => ({
   id,
   address,
-  public_key,
+  public_key: public_key?.toString() ?? null,
   message,
   signature,
   user_id,
@@ -48,12 +48,16 @@ const createWallet = async (
     user_id: string;
     wallet_type: string;
   },
+  setIsLoading: (isLoading: boolean) => void,
 ): Promise<idOSWallet> => {
   const walletParams = createWalletParamsFactory(params);
   try {
+    setIsLoading(true);
     await idOSClient.addWallet(walletParams);
   } catch (error) {
     console.error(error);
+  } finally {
+    setIsLoading(false);
   }
   const insertedWallet = (await idOSClient.getWallets()).find(
     (w: any) => w.id === walletParams.id,
@@ -121,17 +125,21 @@ export default function EVMWalletAdd({
       }
       try {
         const walletAddress = walletPayload.address || 'unknown';
-        await createWallet(idOSLoggedIn!, {
-          id: crypto.randomUUID() as string,
-          address: walletAddress,
-          public_key: walletPayload.public_key?.toString() ?? null,
-          message:
-            walletPayload.message ||
-            'Sign this message to prove you own this wallet',
-          signature: walletPayload.signature,
-          user_id: idOSLoggedIn!.user.id,
-          wallet_type: walletPayload.wallet_type || 'unknown',
-        });
+        await createWallet(
+          idOSLoggedIn!,
+          {
+            id: crypto.randomUUID() as string,
+            address: walletAddress,
+            public_key: walletPayload.public_key,
+            message:
+              walletPayload.message ||
+              'Sign this message to prove you own this wallet',
+            signature: walletPayload.signature,
+            user_id: idOSLoggedIn!.user.id,
+            wallet_type: walletPayload.wallet_type || 'unknown',
+          },
+          setIsLoading,
+        );
         onSuccess?.('The wallet has been added to your idOS profile');
         onWalletAdded?.(walletAddress);
       } catch (error) {
@@ -159,6 +167,7 @@ export default function EVMWalletAdd({
     );
     if (popup) {
       setPopupWindow(popup);
+      setIsLoading(true);
       if (popup.closed || typeof popup.closed === 'undefined') {
         onError?.('Please allow popups for this site to connect your wallet');
         setIsLoading(false);
@@ -171,7 +180,7 @@ export default function EVMWalletAdd({
 
   return (
     <StepperButton onClick={handleOpenWalletPopup} disabled={isLoading}>
-      {isLoading ? 'Connecting...' : 'Add EVM wallet'}
+      {isLoading ? 'Waiting for wallet...' : 'Add EVM wallet'}
     </StepperButton>
   );
 }

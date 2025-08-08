@@ -30,7 +30,7 @@ export function IdosProfile() {
   return (
     <div className="flex items-start justify-center">
       {hasProfile && !isLoading && hasStakingCredential && mainEvm ? (
-        <div className="container mx-auto max-w-[1050px] flex flex-col px-32 pt-10">
+        <div className="mx-auto flex flex-col px-32 pt-10 w-fit min-w-[1050px]">
           <div className="gap-3 flex flex-col mb-10">
             <div className="text-2xl font-medium text-neutral-50">
               idOS Profile

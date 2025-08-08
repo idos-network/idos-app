@@ -1,11 +1,11 @@
-import { useCredentials } from '@/hooks/useCredentials';
-import { useCredentialDetails } from '@/hooks/useCredentialDetails';
-import type { idOSCredential } from '@idos-network/client';
-import z from 'zod';
-import { useState, useEffect, useMemo } from 'react';
-import { CredentialDetailsModal } from '@/components/profile/credentials/CredentialDetailsModal';
 import { CredentialActionModal } from '@/components/profile/credentials/CredentialActionModal';
+import { CredentialDetailsModal } from '@/components/profile/credentials/CredentialDetailsModal';
+import { useCredentialDetails } from '@/hooks/useCredentialDetails';
+import { useCredentials } from '@/hooks/useCredentials';
 import MoreVertIcon from '@/icons/more-vert';
+import type { idOSCredential } from '@idos-network/client';
+import { useEffect, useMemo, useState } from 'react';
+import z from 'zod';
 import CredentialAccessModal from './CredentialAccessModal';
 
 const CredentialPublicNotesSchema = z.object({
@@ -104,7 +104,7 @@ export default function CredentialsCard({
   };
 
   return (
-    <div className="flex h-full flex-col gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
+    <div className="flex h-full flex-col w-fit min-w-full gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
       {/* Header Section */}
       <div className="flex">
         <h1 className="font-normal text-xl text-neutral-50">Credentials</h1>

@@ -9,19 +9,26 @@ export function useUserId() {
 
   useEffect(() => {
     const checkUser = async () => {
-      if (idosLoading || !withSigner) {
-        setIsLoading(false);
+      if (idosLoading) {
+        setIsLoading(true);
         return;
       }
 
       setIsLoading(true);
       try {
-        const userHasProfile = await withSigner.hasProfile();
-        setHasProfile(userHasProfile);
-
-        if (userHasProfile) {
-          const loggedInClient = await withSigner.logIn();
-          setUserId(loggedInClient.user.id);
+        // If the client is already logged in, use it directly
+        if (idOSClient.state === 'logged-in') {
+          setUserId(idOSClient.user.id);
+          setHasProfile(true);
+        } else if (withSigner) {
+          // Only check if user has profile, don't trigger login here
+          // The IDOSClientProvider handles the login
+          const userHasProfile = await withSigner.hasProfile();
+          setHasProfile(userHasProfile);
+          setUserId(null); // Will be set when provider logs in
+        } else {
+          setHasProfile(false);
+          setUserId(null);
         }
       } catch (error) {
         console.error('Error checking user profile:', error);
