@@ -6,6 +6,7 @@ import {
   Outlet,
 } from '@tanstack/react-router';
 import { RootComponent } from './routes/RootComponent';
+import AppLayout from '@/components/layout/AppLayout';
 import { Home } from './routes/Home';
 import { IdosProfile } from './routes/IdosProfile';
 import { IdosStaking } from './routes/IdosStaking';
@@ -17,7 +18,7 @@ import {
   notabankNotaCardRoute,
   notabankNotaCardTermsAndConditionsRoute,
 } from './routes/NotaBank';
-import AppLayout from './components/layout/AppLayout';
+import { Points } from './routes/Points';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -70,6 +71,13 @@ export const notabankRoute = createRoute({
   component: () => <Outlet />,
 });
 
+// Points route
+export const pointsRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/points',
+  component: Points,
+});
+
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -77,6 +85,7 @@ export const routeTree = rootRoute.addChildren([
     idosProfileRoute,
     idosStakingRoute,
     stakingEventRoute,
+    pointsRoute,
     notabankRoute.addChildren([
       notabankIndexRoute,
       notabankBuyRoute,

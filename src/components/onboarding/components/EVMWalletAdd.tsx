@@ -6,27 +6,35 @@ import invariant from 'tiny-invariant';
 import StepperButton from './StepperButton';
 
 interface WalletAddButtonProps {
-  onWalletAdded?: () => void;
+  onWalletAdded?: (walletAddress?: string) => void;
   onError?: (error: string) => void;
   onSuccess?: (message: string) => void;
 }
 
 const createWalletParamsFactory = ({
+  id,
   address,
   public_key,
-  signature,
   message,
+  signature,
+  user_id,
+  wallet_type,
 }: {
+  id: string;
   address: string;
   public_key?: string;
-  signature: string;
   message: string;
+  signature: string;
+  user_id: string;
+  wallet_type: string;
 }) => ({
-  id: crypto.randomUUID() as string,
+  id,
   address,
-  public_key: public_key ?? null,
+  public_key,
   message,
   signature,
+  user_id,
+  wallet_type,
 });
 
 const createWallet = async (
@@ -36,10 +44,17 @@ const createWallet = async (
     public_key?: string;
     signature: string;
     message: string;
+    id: string;
+    user_id: string;
+    wallet_type: string;
   },
 ): Promise<idOSWallet> => {
   const walletParams = createWalletParamsFactory(params);
-  await idOSClient.addWallet(walletParams);
+  try {
+    await idOSClient.addWallet(walletParams);
+  } catch (error) {
+    console.error(error);
+  }
   const insertedWallet = (await idOSClient.getWallets()).find(
     (w: any) => w.id === walletParams.id,
   );
@@ -105,16 +120,20 @@ export default function EVMWalletAdd({
         return;
       }
       try {
+        const walletAddress = walletPayload.address || 'unknown';
         await createWallet(idOSLoggedIn!, {
-          address: walletPayload.address || 'unknown',
-          public_key: walletPayload.public_key,
-          signature: walletPayload.signature,
+          id: crypto.randomUUID() as string,
+          address: walletAddress,
+          public_key: walletPayload.public_key?.toString() ?? null,
           message:
             walletPayload.message ||
             'Sign this message to prove you own this wallet',
+          signature: walletPayload.signature,
+          user_id: idOSLoggedIn!.user.id,
+          wallet_type: walletPayload.wallet_type || 'unknown',
         });
         onSuccess?.('The wallet has been added to your idOS profile');
-        onWalletAdded?.();
+        onWalletAdded?.(walletAddress);
       } catch (error) {
         onError?.('Failed to add wallet to your idOS profile');
       } finally {

@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useRef } from 'react';
 import Toast from '@/components/Toast';
-import { ToastContext } from '@/hooks/useToast';
 import type { ToastOptions } from '@/hooks/useToast';
+import { ToastContext } from '@/hooks/useToast';
+import React, { useCallback, useRef, useState } from 'react';
 
 let toastId = 0;
 
@@ -34,7 +34,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed top-[102px] left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 ml-[105px]">
+      <div className="fixed top-[90px] left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 ml-[105px]">
         {toasts.map((toast) => (
           <Toast
             key={toast.id}

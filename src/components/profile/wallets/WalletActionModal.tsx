@@ -1,7 +1,10 @@
+import { updateUser } from '@/api/user';
+import { useIdOSLoggedIn } from '@/context/idos-context';
+import { useToast } from '@/hooks/useToast';
+import { useUserMainEvm } from '@/hooks/useUserMainEvm';
+import { type IdosWallet } from '@/interfaces/idos-profile';
 import { useEffect, useRef, useState } from 'react';
 import { WalletDeleteModal } from './WalletDeleteModal';
-import { type IdosWallet } from '@/interfaces/idos-profile';
-import { useToast } from '@/hooks/useToast';
 
 interface WalletActionModalProps {
   isOpen: boolean;
@@ -23,10 +26,15 @@ export function WalletActionModal({
   const modalRef = useRef<HTMLDivElement>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { showToast } = useToast();
-
+  const { mainEvm } = useUserMainEvm();
+  const idOSLoggedIn = useIdOSLoggedIn();
   const selectedWallet: IdosWallet | undefined = wallets.find(
     (wallet) => wallet.id === walletId,
   );
+
+  const shouldShowSetPrimaryButton =
+    selectedWallet?.wallet_type?.toLowerCase() === 'evm' &&
+    selectedWallet?.address !== mainEvm;
 
   useEffect(() => {
     if (isOpen) {
@@ -62,6 +70,15 @@ export function WalletActionModal({
     };
   }, [isOpen, onClose]);
 
+  const setAsPrimary = (address: string) => {
+    updateUser({
+      id: idOSLoggedIn!.user.id,
+      mainEvm: address,
+      referrerCode: '', // TODO: make it optional
+    });
+    refetch();
+  };
+
   return (
     <>
       {isOpen && position && (
@@ -74,6 +91,17 @@ export function WalletActionModal({
           }}
         >
           <div className="rounded-lg bg-neutral-800 overflow-hidden divide-y divide-neutral-700">
+            {shouldShowSetPrimaryButton && (
+              <button
+                onClick={() => {
+                  setAsPrimary(selectedWallet?.address);
+                  onClose();
+                }}
+                className="w-full px-3 text-left text-neutral-200 hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10 cursor-pointer"
+              >
+                Set as Primary
+              </button>
+            )}
             <button
               onClick={() => {
                 setIsDeleteModalOpen(true);
