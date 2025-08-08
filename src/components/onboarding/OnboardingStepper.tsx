@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import { getUserById, saveUser, updateUser } from '@/api/user';
 import { completeUserQuest } from '@/api/user-quests';
 import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
@@ -30,6 +28,8 @@ import {
   getCurrentUserFromLocalStorage,
   updateUserStateInLocalStorage,
 } from '@/storage/idos-profile';
+import { useEffect, useState } from 'react';
+import { useSignMessage } from 'wagmi';
 import EVMWalletAdd from './components/EVMWalletAdd';
 import GetStartedTextBlock from './components/GetStartedCards';
 import Spinner from './components/Spinner';
@@ -347,28 +347,44 @@ function StepFour({ onNext }: { onNext: () => void }) {
   const { selector } = useNearWallet();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const { signMessageAsync } = useSignMessage();
 
   useEffect(() => {
-    if (state === 'created' && wallet && wallet.type !== 'evm') {
-      onNext();
-    } else if (state === 'created' && wallet && wallet.type === 'evm') {
-      saveUser({
-        id: idOSLoggedIn!.user.id,
-        mainEvm: wallet.address,
-        referrerCode: '', // TODO: pass referrer code
-      });
-      completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-      localStorage.setItem(
-        'showToast',
-        JSON.stringify({
-          type: 'success',
-          message: 'Onboarding completed successfully.',
-        }),
-      );
+    const saveUserAndCompleteQuest = async () => {
+      if (state === 'created' && wallet && wallet.type !== 'evm') {
+        onNext();
+      } else if (state === 'created' && wallet && wallet.type === 'evm') {
+        // Safeguard against a user that has a profile
+        // but has not been registered on the db
+        const user = await getUserById(idOSLoggedIn!.user.id);
+        if (user[0]) {
+          updateUser({
+            id: idOSLoggedIn!.user.id,
+            mainEvm: wallet.address,
+            referrerCode: '', // TODO: pass referrer code
+          });
+        } else {
+          saveUser({
+            id: idOSLoggedIn!.user.id,
+            mainEvm: wallet.address,
+            referrerCode: '', // TODO: pass referrer code
+          });
+        }
+        completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
+        localStorage.setItem(
+          'showToast',
+          JSON.stringify({
+            type: 'success',
+            message: 'Onboarding completed successfully.',
+          }),
+        );
+        window.location.href = '/';
+      } else if (error) {
+        setState('idle');
+      }
       return;
-    } else if (error) {
-      setState('idle');
-    }
+    };
+    saveUserAndCompleteQuest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, error, refresh]);
 
@@ -381,6 +397,7 @@ function StepFour({ onNext }: { onNext: () => void }) {
         idOSLoggedIn!,
         wallet,
         wallet && wallet.type === 'near' ? await selector.wallet() : undefined,
+        signMessageAsync,
       );
       if (!idOSDWG) {
         setState('idle');
@@ -474,7 +491,7 @@ function StepFour({ onNext }: { onNext: () => void }) {
   );
 }
 
-// Add EVM wallet to your idOS profile
+// Add EVM wallet to idOS profile (default primary wallet)
 function StepFive() {
   const { state, setState, error } = useStepState();
   const { refresh } = useIdOS();
@@ -492,18 +509,20 @@ function StepFive() {
             message: 'Onboarding completed successfully.',
           }),
         );
+        // Safeguard against a user that has a profile and a credential
+        // but has not been registered on the db
         const user = await getUserById(idOSLoggedIn!.user.id);
-        if (user) {
+        if (user[0]) {
           updateUser({
             id: idOSLoggedIn!.user.id,
             mainEvm: walletAddress,
-            referrerCode: '',
+            referrerCode: '', // TODO: pass referrer code
           });
         } else {
           saveUser({
             id: idOSLoggedIn!.user.id,
             mainEvm: walletAddress,
-            referrerCode: '',
+            referrerCode: '', // TODO: pass referrer code
           });
         }
         completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');

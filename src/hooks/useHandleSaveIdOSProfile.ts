@@ -6,6 +6,7 @@ import { verifySignature } from '@/utils/verify-signatures';
 import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
 import * as GemWallet from '@gemwallet/api';
 import { ethers } from 'ethers';
+import { useSignMessage } from 'wagmi';
 import { useNearWallet } from './useNearWallet';
 
 export type WalletPayload = {
@@ -17,6 +18,7 @@ export type WalletPayload = {
 
 export function useHandleSaveIdOSProfile() {
   const { selector } = useNearWallet();
+  const { signMessageAsync } = useSignMessage();
 
   return async function handleSaveIdOSProfile(
     setState: (state: string) => void,
@@ -61,9 +63,8 @@ export function useHandleSaveIdOSProfile() {
             };
           }
         } else if (wallet.type === 'evm') {
-          ownershipProofSignature = await window.ethereum.request({
-            method: 'personal_sign',
-            params: [ownershipProofMessage, wallet.address],
+          ownershipProofSignature = await signMessageAsync({
+            message: ownershipProofMessage,
           });
           if (ownershipProofSignature) {
             publicKey = ethers.SigningKey.recoverPublicKey(
@@ -136,7 +137,7 @@ export function useHandleSaveIdOSProfile() {
           encryptionProfile.userEncryptionPublicKey as string,
         encryptionPasswordStore:
           encryptionProfile.encryptionPasswordStore as string,
-        ownershipProofSignature: ownershipProofSignature,
+        ownershipProofSignature: ownershipProofSignature as string,
         publicKey: publicKey,
       };
 
