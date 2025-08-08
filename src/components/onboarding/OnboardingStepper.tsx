@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { saveUser } from '@/api/user';
+import { getUserById, saveUser, updateUser } from '@/api/user';
 import { completeUserQuest } from '@/api/user-quests';
 import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
 import { env } from '@/env';
@@ -481,25 +481,39 @@ function StepFive() {
   const { showToast } = useToast();
   const idOSLoggedIn = useIdOSLoggedIn();
   const [walletAddress, setWalletAddress] = useState<string>('');
+
   useEffect(() => {
-    if (state === 'created') {
-      localStorage.setItem(
-        'showToast',
-        JSON.stringify({
-          type: 'success',
-          message: 'Onboarding completed successfully.',
-        }),
-      );
-      saveUser({
-        id: idOSLoggedIn!.user.id,
-        mainEvm: walletAddress,
-        referrerCode: '',
-      });
-      completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-      window.location.href = '/';
-    } else if (error) {
-      setState('idle');
-    }
+    const saveUserAndCompleteQuest = async () => {
+      if (state === 'created') {
+        localStorage.setItem(
+          'showToast',
+          JSON.stringify({
+            type: 'success',
+            message: 'Onboarding completed successfully.',
+          }),
+        );
+        const user = await getUserById(idOSLoggedIn!.user.id);
+        if (user) {
+          updateUser({
+            id: idOSLoggedIn!.user.id,
+            mainEvm: walletAddress,
+            referrerCode: '',
+          });
+        } else {
+          saveUser({
+            id: idOSLoggedIn!.user.id,
+            mainEvm: walletAddress,
+            referrerCode: '',
+          });
+        }
+        completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
+        window.location.href = '/';
+      }
+      if (error) {
+        setState('idle');
+      }
+    };
+    saveUserAndCompleteQuest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, error, refresh]);
 
@@ -563,7 +577,6 @@ export default function OnboardingStepper() {
     { id: 'step-four', component: StepFour },
     { id: 'step-five', component: StepFive },
   ];
-
   useEffect(() => {
     if (isLoading) return;
 
