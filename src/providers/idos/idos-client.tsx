@@ -6,8 +6,6 @@ import {
 } from '@idos-network/client';
 import { type PropsWithChildren, useContext, useEffect, useState } from 'react';
 
-import { saveUser } from '@/api/user';
-import { completeUserQuest } from '@/api/user-quests';
 import { IDOSClientContext } from '@/context/idos-context';
 import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
@@ -75,12 +73,6 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         if (await _withSigner.hasProfile()) {
           const client = await _withSigner.logIn();
           setClient(client);
-          saveUser({
-            id: client.user.id,
-            mainEvm: '',
-            referrerCode: '',
-          });
-          completeUserQuest(client.user.id, 'create_idos_profile');
         } else {
           setClient(_withSigner);
         }

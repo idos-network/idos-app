@@ -2,6 +2,7 @@ import { useState } from 'react';
 import WalletBar from '@/components/wallets/WalletBar';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import PointsHeaderFrame from '../points/PointsHeaderFrame';
 import { Link } from '@tanstack/react-router';
 import CalendarIcon from '@/components/icons/calendar';
 import UserIcon from '@/components/icons/user';
@@ -35,6 +36,7 @@ export default function Header() {
 
         {/* Right side items */}
         <div className="flex justify-end gap-5 items-center ml-auto">
+          <PointsHeaderFrame />
           {wallet && wallet.type === 'evm' && (
             <WalletBar
               network={

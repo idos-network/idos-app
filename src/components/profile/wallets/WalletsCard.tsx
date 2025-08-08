@@ -1,15 +1,17 @@
-import MoreVertIcon from '@/icons/more-vert';
 import { useFetchWallets } from '@/hooks/useFetchWallets';
+import { useToast } from '@/hooks/useToast';
+import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
+import MoreVertIcon from '@/icons/more-vert';
 import { addressGradient } from '@/utils/gradient';
-import WalletAddButton from './WalletAddButton';
 import { useState } from 'react';
 import { WalletActionModal } from './WalletActionModal';
-import { useToast } from '@/hooks/useToast';
+import WalletAddButton from './WalletAddButton';
 
 export default function WalletsCard() {
   const { wallets, isLoading, error, refetch } = useFetchWallets();
   const { connectedWallet } = useWalletConnector();
+  const { mainEvm } = useUserMainEvm();
   const [actionModalPosition, setActionModalPosition] = useState<{
     x: number;
     y: number;
@@ -46,6 +48,8 @@ export default function WalletsCard() {
               <th className="w-1/2 px-4 font-normal rounded-l-[20px]">
                 Address
               </th>
+              <th className="w-1/12 px-4 font-normal">Type</th>
+              <th className="w-1/12 px-4 font-normal">Status</th>
               <th className="w-1/12 px-4 font-normal rounded-r-[20px]"></th>
             </tr>
           </thead>
@@ -72,10 +76,30 @@ export default function WalletsCard() {
                       </span>
                     </div>
                   </td>
+                  <td className="w-10/12 px-4">
+                    <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center gap-3">
+                      <span className="flex items-center gap-2 font-normal">
+                        {wallet.wallet_type}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="w-1/12 px-4">
+                    <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center gap-3">
+                      <span className="flex items-center gap-2 font-normal">
+                        {wallet.address === mainEvm ? (
+                          <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#00FFB933] text-[#00FFB9]">
+                            Primary
+                          </div>
+                        ) : (
+                          ''
+                        )}
+                      </span>
+                    </div>
+                  </td>
                   <td className="w-1/12 px-4">
                     <button
                       onClick={(e) => {
-                        if (isConnected) return;
+                        if (isConnected || wallet.address === mainEvm) return;
                         const rect = e.currentTarget.getBoundingClientRect();
                         setActionModalPosition({
                           x: rect.right + 5,
@@ -85,11 +109,11 @@ export default function WalletsCard() {
                         setIsActionModalOpen(true);
                       }}
                       className={`rounded-md p-2 transition-colors ${
-                        isConnected
+                        isConnected || wallet.address === mainEvm
                           ? 'text-neutral-500 cursor-not-allowed'
                           : 'text-neutral-200 hover:bg-idos-grey2 cursor-pointer'
                       }`}
-                      disabled={isConnected}
+                      disabled={isConnected || wallet.address === mainEvm}
                     >
                       <MoreVertIcon className="w-4 h-4" />
                     </button>

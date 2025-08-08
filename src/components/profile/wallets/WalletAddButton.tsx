@@ -2,7 +2,7 @@ import SmallPrimaryButton from '@/components/SmallPrimaryButton';
 import AddIcon from '@/components/icons/add';
 import { useIdOSLoggedIn } from '@/context/idos-context';
 import { verifySignature } from '@/utils/verify-signatures';
-import type { idOSWallet } from '@idos-network/client';
+import type { idOSClientLoggedIn, idOSWallet } from '@idos-network/client';
 import { useEffect, useState } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -13,34 +13,49 @@ interface WalletAddButtonProps {
 }
 
 const createWalletParamsFactory = ({
+  id,
   address,
   public_key,
-  signature,
   message,
+  signature,
+  user_id,
+  wallet_type,
 }: {
+  id: string;
   address: string;
   public_key?: string;
-  signature: string;
   message: string;
+  signature: string;
+  user_id: string;
+  wallet_type: string;
 }) => ({
-  id: crypto.randomUUID() as string,
+  id,
   address,
-  public_key: public_key ?? null,
+  public_key: public_key?.toString() ?? null,
   message,
   signature,
+  user_id,
+  wallet_type,
 });
 
 const createWallet = async (
-  idOSClient: any,
+  idOSClient: idOSClientLoggedIn,
   params: {
     address: string;
     public_key?: string;
     signature: string;
     message: string;
+    id: string;
+    user_id: string;
+    wallet_type: string;
   },
 ): Promise<idOSWallet> => {
   const walletParams = createWalletParamsFactory(params);
-  await idOSClient.addWallet(walletParams);
+  try {
+    await idOSClient.addWallet(walletParams as any);
+  } catch (error) {
+    console.error(error);
+  }
   const insertedWallet = (await idOSClient.getWallets()).find(
     (w: any) => w.id === walletParams.id,
   );
@@ -107,12 +122,15 @@ export default function WalletAddButton({
       }
       try {
         await createWallet(idOSLoggedIn!, {
+          id: crypto.randomUUID(),
           address: walletPayload.address || 'unknown',
           public_key: walletPayload.public_key,
           signature: walletPayload.signature,
           message:
             walletPayload.message ||
             'Sign this message to prove you own this wallet',
+          user_id: idOSLoggedIn!.user.id,
+          wallet_type: walletPayload.wallet_type || 'unknown',
         });
         onSuccess?.('The wallet has been added to your idOS profile');
         onWalletAdded?.();
