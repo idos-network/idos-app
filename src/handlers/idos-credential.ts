@@ -1,19 +1,19 @@
-import { env } from '@/env';
 import { createIdOSCredential } from '@/api/idos-credential';
+import { env } from '@/env';
 import type { IdosDWG } from '@/interfaces/idos-credential';
-import type { idOSClientLoggedIn } from '@idos-network/client';
-import type { Wallet as NearWallet } from '@near-wallet-selector/core';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
 import * as GemWallet from '@gemwallet/api';
-
+import type { idOSClientLoggedIn } from '@idos-network/client';
+import type { Wallet as NearWallet } from '@near-wallet-selector/core';
 export async function handleDWGCredential(
   setState: (state: string) => void,
   setLoading: (loading: boolean) => void,
   withSigner: idOSClientLoggedIn,
   wallet: any,
   nearWallet: NearWallet | undefined,
+  signMessageAsync?: (args: { message: string }) => Promise<string>,
 ) {
   try {
     setState('idle');
@@ -42,9 +42,11 @@ export async function handleDWGCredential(
     let signature;
     try {
       if (wallet.type === 'evm') {
-        signature = await window.ethereum.request({
-          method: 'personal_sign',
-          params: [message, wallet.address],
+        if (!signMessageAsync) {
+          throw new Error('signMessageAsync is required for EVM wallets');
+        }
+        signature = await signMessageAsync({
+          message: message,
         });
       } else if (wallet.type === 'near') {
         signature = await signNearMessage(nearWallet!, message);
@@ -57,6 +59,10 @@ export async function handleDWGCredential(
       setState('idle');
       setLoading(false);
       throw err;
+    }
+
+    if (!signature) {
+      throw new Error('Signature is required');
     }
 
     const idOSDWG: IdosDWG = {
