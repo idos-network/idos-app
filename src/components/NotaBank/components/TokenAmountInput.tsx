@@ -37,7 +37,6 @@ export const tokens = [
     value: 'Tether',
     label: 'USDT',
     disabled: false,
-
   },
   {
     value: 'ETH',
@@ -47,7 +46,7 @@ export const tokens = [
 ] as const;
 
 // infer token info type from tokens
-export type TokenInfo = (typeof tokens)[number]
+export type TokenInfo = (typeof tokens)[number];
 
 export function TokenAmountInput({
   amount,

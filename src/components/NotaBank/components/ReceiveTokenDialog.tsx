@@ -51,7 +51,10 @@ export function ReceiveTokenDialog() {
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button className=" text-white h-12 w-full rounded-lg bg-[#404040B2] flex items-center gap-2 mt-3" disabled={!recipient}>
+              <Button
+                className=" text-white h-12 w-full rounded-lg bg-[#404040B2] flex items-center gap-2 mt-3"
+                disabled={!recipient}
+              >
                 <CopyIcon color="#FFFFFF" />
                 Copy
               </Button>

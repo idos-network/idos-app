@@ -1,7 +1,15 @@
 import GasIcon from '@/components/icons/Gas';
 import { TokenAmountInput, tokens } from './TokenAmountInput';
 
-export default function TokenWithBalanceInput({onAmountChange, onSelect, value}:{onAmountChange: (value: string) => void, value:string, onSelect: (value: string) => void}) {
+export default function TokenWithBalanceInput({
+  onAmountChange,
+  onSelect,
+  value,
+}: {
+  onAmountChange: (value: string) => void;
+  value: string;
+  onSelect: (value: string) => void;
+}) {
   const balance = 12340.56;
   const token = tokens[0];
   return (
@@ -10,7 +18,7 @@ export default function TokenWithBalanceInput({onAmountChange, onSelect, value}:
         selectOptions={[...tokens]}
         amount={value}
         onAmountChange={onAmountChange}
-        selectedValue={tokens[0].value}
+        selectedToken={token}
         onSelect={onSelect}
         label="Amount"
       />

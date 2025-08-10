@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,10 +22,11 @@ import { erc20Abi, parseUnits } from 'viem';
 import { useAccount, useBalance, useWriteContract } from 'wagmi';
 import { TokenAmountInput, tokens, type TokenInfo } from './TokenAmountInput';
 
-const useTokenInfo = (selectedToken: TokenInfo) => useQuery({
-  queryKey: ['token-decimals', selectedToken.value],
-  queryFn: () => getTokenInfo(selectedToken.value, 'ethereum'),
-})
+const useTokenInfo = (selectedToken: TokenInfo) =>
+  useQuery({
+    queryKey: ['token-decimals', selectedToken.value],
+    queryFn: () => getTokenInfo(selectedToken.value, 'ethereum'),
+  });
 
 export function SendTokensDialog() {
   const [selectedToken, setSelectedToken] = useState<TokenInfo>(tokens[0]);
@@ -41,11 +42,16 @@ export function SendTokensDialog() {
     query: {
       enabled: !!address && !!tokenContractInfo?.address,
       refetchInterval: 10000, // Refetch every 10 seconds
-    }
+    },
   });
 
   const transactionConfig = useMemo(() => {
-    if (!tokenContractInfo?.address || !recipient || !amount || !tokenContractInfo?.decimals) {
+    if (
+      !tokenContractInfo?.address ||
+      !recipient ||
+      !amount ||
+      !tokenContractInfo?.decimals
+    ) {
       return undefined;
     }
 
@@ -54,7 +60,10 @@ export function SendTokensDialog() {
         address: tokenContractInfo.address as `0x${string}`,
         abi: erc20Abi,
         functionName: 'transfer' as const,
-        args: [recipient as `0x${string}`, parseUnits(amount, tokenContractInfo.decimals)],
+        args: [
+          recipient as `0x${string}`,
+          parseUnits(amount, tokenContractInfo.decimals),
+        ],
         account: address,
       };
     } catch {
@@ -80,8 +89,11 @@ export function SendTokensDialog() {
       address: tokenContractInfo?.address as `0x${string}`,
       abi: erc20Abi,
       functionName: 'transfer',
-      args: [recipient as `0x${string}`, parseUnits(amount, tokenContractInfo?.decimals as number)],
-    })
+      args: [
+        recipient as `0x${string}`,
+        parseUnits(amount, tokenContractInfo?.decimals as number),
+      ],
+    });
   }, [selectedToken, tokenContractInfo, recipient, amount, writeContractAsync]);
 
   const formattedBalance = useMemo(() => {
@@ -128,14 +140,22 @@ export function SendTokensDialog() {
                 amount={amount}
                 onAmountChange={setAmount}
                 selectedToken={selectedToken}
-                onSelect={(value) => setSelectedToken(tokens.find(token => token.value === value) ?? tokens[0])}
+                onSelect={(value) =>
+                  setSelectedToken(
+                    tokens.find((token) => token.value === value) ?? tokens[0],
+                  )
+                }
                 label="Amount"
               />
               <div className="flex flex-col gap-2 mt-2">
-                <span className={`text-sm font-medium ${hasInsufficientBalance ? 'text-red-400' : ''}`}>
+                <span
+                  className={`text-sm font-medium ${hasInsufficientBalance ? 'text-red-400' : ''}`}
+                >
                   Balance: {formattedBalance} {selectedToken?.label}
                   {hasInsufficientBalance && (
-                    <span className="text-red-400 ml-2">(Insufficient Balance)</span>
+                    <span className="text-red-400 ml-2">
+                      (Insufficient Balance)
+                    </span>
                   )}
                 </span>
                 <div className="w-full flex justify-between items-center mt-2">
@@ -145,10 +165,14 @@ export function SendTokensDialog() {
                     {gasFee && !isGasLoading ? (
                       <>
                         <span>${gasFee.usd.toFixed(2)}</span>
-                        <span className="text-sm text-neutral-400">({gasFee.eth.toFixed(4)} ETH)</span>
+                        <span className="text-sm text-neutral-400">
+                          ({gasFee.eth.toFixed(4)} ETH)
+                        </span>
                       </>
                     ) : (
-                      <span className="text-sm text-neutral-400">Calculating...</span>
+                      <span className="text-sm text-neutral-400">
+                        Calculating...
+                      </span>
                     )}
                   </div>
                 </div>
@@ -158,10 +182,12 @@ export function SendTokensDialog() {
           <DialogFooter>
             <Button
               className="h-12 w-full rounded-lg bg-[#74FB5B] text-black disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isPending || !recipient || !amount || hasInsufficientBalance}
+              disabled={
+                isPending || !recipient || !amount || hasInsufficientBalance
+              }
               onClick={sendTokens}
             >
-              {(isPending && !isError) ? (
+              {isPending && !isError ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
