@@ -1,5 +1,6 @@
 import { ReceiveIcon } from '@/components/icons';
 import CopyIcon from '@/components/icons/copy';
+import NeobankLogoIcon from '@/components/icons/neobank-logo';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,9 +14,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import NeobankLogoIcon from '@/components/icons/neobank-logo';
+import { useState } from 'react';
 
 export function ReceiveTokenDialog() {
+  const [recipient, setRecipient] = useState<string>('');
   return (
     <Dialog>
       <form>
@@ -41,15 +43,15 @@ export function ReceiveTokenDialog() {
             </Label>
             <Input
               type="text"
-              placeholder="0x89421209823492i3u4902u30"
-              value={''}
-              onChange={() => {}}
-              className="h-16 border-0 bg-[#26262699] pr-40 pl-6 font-medium text-white text-xl placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0"
+              placeholder="0x5d4f2C8258f3F77B7365B60745Eb821D696DB777"
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+              className="h-16 border-0 bg-[#26262699] pl-6 font-medium text-white text-xl placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0"
             />
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button className=" text-white h-12 w-full rounded-lg bg-[#404040B2] flex items-center gap-2 mt-3">
+              <Button className=" text-white h-12 w-full rounded-lg bg-[#404040B2] flex items-center gap-2 mt-3" disabled={!recipient}>
                 <CopyIcon color="#FFFFFF" />
                 Copy
               </Button>
