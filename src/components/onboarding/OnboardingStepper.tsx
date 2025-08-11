@@ -189,7 +189,6 @@ function StepThree({ onNext }: { onNext: () => void }) {
   const userId = currentUser?.id || '';
   const userAddress = currentUser?.mainAddress || '';
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
-  const encryptionPasswordStore = currentUser?.encryptionPasswordStore || '';
   const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
   const publicKey = currentUser?.publicKey || '';
   useEffect(() => {
@@ -200,7 +199,6 @@ function StepThree({ onNext }: { onNext: () => void }) {
         const response = await handleCreateIdOSProfile(
           userId,
           userEncryptionPublicKey,
-          encryptionPasswordStore,
           userAddress,
           env.VITE_OWNERSHIP_PROOF_MESSAGE,
           ownershipProofSignature,
@@ -224,7 +222,6 @@ function StepThree({ onNext }: { onNext: () => void }) {
     userAddress,
     userId,
     userEncryptionPublicKey,
-    encryptionPasswordStore,
     ownershipProofSignature,
     publicKey,
     walletType,

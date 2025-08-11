@@ -135,8 +135,7 @@ export function useHandleSaveIdOSProfile() {
         mainAddress: wallet.address,
         userEncryptionPublicKey:
           encryptionProfile.userEncryptionPublicKey as string,
-        encryptionPasswordStore:
-          encryptionProfile.encryptionPasswordStore as string,
+        encryptionPasswordStore: 'user' as const,
         ownershipProofSignature: ownershipProofSignature as string,
         publicKey: publicKey,
       };
