@@ -40,6 +40,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
             key={toast.id}
             type={toast.type}
             message={toast.message}
+            points={toast.points}
             icon={toast.icon}
             close={toast.close}
             onClose={() => removeToast(toast.id)}

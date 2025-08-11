@@ -51,8 +51,6 @@ export const useQuests = () => {
         lastCompletedAt = userQuest.lastCompletedAt;
 
         if (completionCount > 0) {
-          // If it's repeatable, it's always available after completion
-          // If it's not repeatable and completed, it's completed
           status = quest.isRepeatable ? 'Available' : 'Completed';
         }
       }

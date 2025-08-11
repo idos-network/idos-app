@@ -16,16 +16,13 @@ export function useUserId() {
 
       setIsLoading(true);
       try {
-        // If the client is already logged in, use it directly
         if (idOSClient.state === 'logged-in') {
           setUserId(idOSClient.user.id);
           setHasProfile(true);
         } else if (withSigner) {
-          // Only check if user has profile, don't trigger login here
-          // The IDOSClientProvider handles the login
           const userHasProfile = await withSigner.hasProfile();
           setHasProfile(userHasProfile);
-          setUserId(null); // Will be set when provider logs in
+          setUserId(null);
         } else {
           setHasProfile(false);
           setUserId(null);

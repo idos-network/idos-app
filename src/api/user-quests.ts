@@ -1,17 +1,17 @@
-import axiosInstance from './axios';
-import { parseWithSchema } from './parser';
-import { z } from 'zod';
 import {
   userQuestSchema,
   userQuestSummarySchema,
   type UserQuest,
   type UserQuestSummary,
 } from '@/interfaces/user-quests';
+import { z } from 'zod';
+import axiosInstance from './axios';
+import { parseWithSchema } from './parser';
 
 export const completeUserQuest = async (
   userId: string,
   questName: string,
-): Promise<void> => {
+): Promise<{ success: boolean; error?: string }> => {
   const response = await axiosInstance.post('/user-quests/complete', {
     questName,
     userId,
