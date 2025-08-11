@@ -7,6 +7,7 @@ import { createContext, useContext } from 'react';
 
 type IdOSContextType = {
   idOSClient: idOSClient;
+  setIdOSClient: (client: idOSClient) => void;
   withSigner: idOSClientWithUserSigner;
   isLoading: boolean;
   refresh: () => Promise<void>;

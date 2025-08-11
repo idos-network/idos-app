@@ -12,7 +12,7 @@ import { useEthersSigner } from '@/hooks/useEthersSigner';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 
 const _idOSClient = createIDOSClient({
-  nodeUrl: 'https://nodes.playground.idos.network/',
+  nodeUrl: 'https://nodes.staging.idos.network/',
   enclaveOptions: { container: '#idOS-enclave' },
 });
 
@@ -109,6 +109,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     <IDOSClientContext.Provider
       value={{
         idOSClient: idOSClient,
+        setIdOSClient: setClient,
         withSigner: withSigner!,
         isLoading,
         refresh,
