@@ -23,13 +23,14 @@
     "@creit.tech/stellar-wallets-kit": "^1.7.5",
     "@digitalbazaar/ed25519-verification-key-2020": "^4.2.0",
     "@gemwallet/api": "^3.8.0",
-    "@idos-network/client": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/client@88f6cb0",
-    "@idos-network/issuer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/issuer@88f6cb0",
+    "@idos-network/client": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/client@a7b07311528d7fdb96f397cbeaea16c95efd55ac",
+    "@idos-network/issuer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/issuer@a7b07311528d7fdb96f397cbeaea16c95efd55ac",
+    "@idos-network/util": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/utils@a7b07311528d7fdb96f397cbeaea16c95efd55ac",
     "@kwilteam/kwil-js": "^0.9.4",
-    "@near-wallet-selector/core": "^9.1.0",
-    "@near-wallet-selector/here-wallet": "^9.1.0",
-    "@near-wallet-selector/meteor-wallet": "^9.1.0",
-    "@near-wallet-selector/modal-ui": "^9.1.0",
+    "@near-wallet-selector/core": "8.10.2",
+    "@near-wallet-selector/here-wallet": "8.10.2",
+    "@near-wallet-selector/meteor-wallet": "8.10.2",
+    "@near-wallet-selector/modal-ui": "8.10.2",
     "@netlify/functions": "^4.1.9",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
@@ -58,7 +59,7 @@
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.4",
     "lucide-react": "^0.535.0",
-    "near-api-js": "^5.1.1",
+    "near-api-js": "4.0.3",
     "postgres": "^3.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -69,6 +70,11 @@
     "vite-plugin-node-polyfills": "^0.23.0",
     "wagmi": "^2.15.4",
     "zod": "^3.25.48"
+  },
+  "overrides": {
+    "@meteorwallet/sdk": {
+      "near-api-js": "4.0.3"
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
