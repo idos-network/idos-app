@@ -1,12 +1,11 @@
-import { useState } from 'react';
-import WalletBar from '@/components/wallets/WalletBar';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
-import PointsHeaderFrame from '../points/PointsHeaderFrame';
-import { Link } from '@tanstack/react-router';
 import CalendarIcon from '@/components/icons/calendar';
-import UserIcon from '@/components/icons/user';
 import LayersIcon from '@/components/icons/layers';
+import UserIcon from '@/components/icons/user';
+import WalletBar from '@/components/wallets/WalletBar';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useWalletConnector } from '@/hooks/useWalletConnector';
+import { Link } from '@tanstack/react-router';
+import { useState } from 'react';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,7 +35,6 @@ export default function Header() {
 
         {/* Right side items */}
         <div className="flex justify-end gap-5 items-center ml-auto">
-          <PointsHeaderFrame />
           {wallet && wallet.type === 'evm' && (
             <WalletBar
               network={

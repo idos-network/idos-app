@@ -17,7 +17,6 @@ import {
   notabankNotaCardTermsAndConditionsRoute,
   notabankSellRoute,
 } from './routes/NotaBank';
-import { Points } from './routes/Points';
 import { RootComponent } from './routes/RootComponent';
 import { StakingEvent } from './routes/StakingEvent';
 
@@ -72,13 +71,6 @@ export const notabankRoute = createRoute({
   component: () => <Outlet />,
 });
 
-// Points route
-export const pointsRoute = createRoute({
-  getParentRoute: () => layoutRoute,
-  path: '/points',
-  component: Points,
-});
-
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -86,7 +78,6 @@ export const routeTree = rootRoute.addChildren([
     idosProfileRoute,
     idosStakingRoute,
     stakingEventRoute,
-    pointsRoute,
     notabankRoute.addChildren([
       notabankIndexRoute,
       notabankBuyRoute,
