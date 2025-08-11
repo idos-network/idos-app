@@ -1,7 +1,7 @@
-import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
-import nacl from 'tweetnacl';
-import type { Config, Context } from '@netlify/functions';
 import { idOSProfileRequestSchema } from '@/interfaces/idos-profile';
+import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
+import type { Config, Context } from '@netlify/functions';
+import nacl from 'tweetnacl';
 
 export default async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
@@ -42,6 +42,7 @@ export default async (request: Request, _context: Context) => {
   const user = {
     id: userId,
     recipient_encryption_public_key: userEncryptionPublicKey,
+    encryption_password_store: 'user' as const,
   };
 
   const walletTypeMap: Record<string, string> = {
