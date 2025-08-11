@@ -1,7 +1,7 @@
-import { Outlet } from '@tanstack/react-router';
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import { useWalletGate } from '@/hooks/useWalletGate';
+import { Outlet } from '@tanstack/react-router';
 
 export default function AppLayout() {
   useWalletGate();

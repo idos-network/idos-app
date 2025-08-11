@@ -1,21 +1,21 @@
-import { Link } from '@tanstack/react-router';
 import CalendarIcon from '@/components/icons/calendar';
-import UserIcon from '@/components/icons/user';
 import LayersIcon from '@/components/icons/layers';
-import XIcon from '../icons/x-icon';
+import UserIcon from '@/components/icons/user';
+import { Link } from '@tanstack/react-router';
 import { BankIcon } from '../icons/bank';
+import XIcon from '../icons/x-icon';
 import AppTag from '../NotaBank/components/Tag';
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 flex-col gap-14 border-gray-800 border-r px-6 pt-8 hidden z-30 lg:flex">
+    <aside className="fixed left-0 top-0 h-screen w-64 flex-col gap-14 border-gray-800 border-r px-6 pt-8 hidden z-30 bg-ui-background-dark lg:flex">
       <div className="p-4">
         <img src="/idos-logo.png" width="141" />
       </div>
       <nav className="flex flex-col gap-2 font-medium text-base">
         <Link
           to="/idos-profile"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
         >
           {({ isActive }) => (
             <div
@@ -27,7 +27,7 @@ export default function Sidebar() {
         </Link>
         <Link
           to="/staking-event"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
         >
           {({ isActive }) => (
             <div
@@ -40,7 +40,7 @@ export default function Sidebar() {
         </Link>
         <Link
           to="/idos-staking"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
         >
           {({ isActive }) => (
             <div

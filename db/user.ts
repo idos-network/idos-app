@@ -1,8 +1,8 @@
-import { db, users } from './index';
-import { eq, count } from 'drizzle-orm';
-import { questsConfig } from '@/utils/quests';
-import { getUserQuestsSummary } from './user-quests';
 import { idOSUserSchema } from '@/interfaces/user';
+import { questsConfig } from '@/utils/quests';
+import { count, eq } from 'drizzle-orm';
+import { db, users } from './index';
+import { getUserQuestsSummary } from './user-quests';
 
 export async function saveUser(data: any) {
   const user = idOSUserSchema.parse(data);

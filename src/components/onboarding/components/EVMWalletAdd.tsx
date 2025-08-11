@@ -1,13 +1,12 @@
-import SmallPrimaryButton from '@/components/SmallPrimaryButton';
-import AddIcon from '@/components/icons/add';
 import { useIdOSLoggedIn } from '@/context/idos-context';
 import { verifySignature } from '@/utils/verify-signatures';
-import type { idOSClientLoggedIn, idOSWallet } from '@idos-network/client';
+import type { idOSWallet } from '@idos-network/client';
 import { useEffect, useState } from 'react';
 import invariant from 'tiny-invariant';
+import StepperButton from './StepperButton';
 
 interface WalletAddButtonProps {
-  onWalletAdded?: () => void;
+  onWalletAdded?: (walletAddress?: string) => void;
   onError?: (error: string) => void;
   onSuccess?: (message: string) => void;
 }
@@ -39,7 +38,7 @@ const createWalletParamsFactory = ({
 });
 
 const createWallet = async (
-  idOSClient: idOSClientLoggedIn,
+  idOSClient: any,
   params: {
     address: string;
     public_key?: string;
@@ -49,12 +48,16 @@ const createWallet = async (
     user_id: string;
     wallet_type: string;
   },
+  setIsLoading: (isLoading: boolean) => void,
 ): Promise<idOSWallet> => {
   const walletParams = createWalletParamsFactory(params);
   try {
-    await idOSClient.addWallet(walletParams as any);
+    setIsLoading(true);
+    await idOSClient.addWallet(walletParams);
   } catch (error) {
     console.error(error);
+  } finally {
+    setIsLoading(false);
   }
   const insertedWallet = (await idOSClient.getWallets()).find(
     (w: any) => w.id === walletParams.id,
@@ -66,7 +69,7 @@ const createWallet = async (
   return insertedWallet;
 };
 
-export default function WalletAddButton({
+export default function EVMWalletAdd({
   onWalletAdded,
   onError,
   onSuccess,
@@ -121,19 +124,24 @@ export default function WalletAddButton({
         return;
       }
       try {
-        await createWallet(idOSLoggedIn!, {
-          id: crypto.randomUUID(),
-          address: walletPayload.address || 'unknown',
-          public_key: walletPayload.public_key,
-          signature: walletPayload.signature,
-          message:
-            walletPayload.message ||
-            'Sign this message to prove you own this wallet',
-          user_id: idOSLoggedIn!.user.id,
-          wallet_type: walletPayload.wallet_type || 'unknown',
-        });
+        const walletAddress = walletPayload.address || 'unknown';
+        await createWallet(
+          idOSLoggedIn!,
+          {
+            id: crypto.randomUUID() as string,
+            address: walletAddress,
+            public_key: walletPayload.public_key,
+            message:
+              walletPayload.message ||
+              'Sign this message to prove you own this wallet',
+            signature: walletPayload.signature,
+            user_id: idOSLoggedIn!.user.id,
+            wallet_type: walletPayload.wallet_type || 'unknown',
+          },
+          setIsLoading,
+        );
         onSuccess?.('The wallet has been added to your idOS profile');
-        onWalletAdded?.();
+        onWalletAdded?.(walletAddress);
       } catch (error) {
         onError?.('Failed to add wallet to your idOS profile');
       } finally {
@@ -159,6 +167,7 @@ export default function WalletAddButton({
     );
     if (popup) {
       setPopupWindow(popup);
+      setIsLoading(true);
       if (popup.closed || typeof popup.closed === 'undefined') {
         onError?.('Please allow popups for this site to connect your wallet');
         setIsLoading(false);
@@ -170,15 +179,8 @@ export default function WalletAddButton({
   };
 
   return (
-    <div className="flex flex-col gap-2 items-start">
-      <SmallPrimaryButton
-        icon={<AddIcon />}
-        onClick={handleOpenWalletPopup}
-        disabled={isLoading}
-        className="bg-aquamarine-400 text-neutral-950 hover:bg-aquamarine-600"
-      >
-        {isLoading ? 'Connecting...' : 'Add Wallet'}
-      </SmallPrimaryButton>
-    </div>
+    <StepperButton onClick={handleOpenWalletPopup} disabled={isLoading}>
+      {isLoading ? 'Waiting for wallet...' : 'Add EVM wallet'}
+    </StepperButton>
   );
 }

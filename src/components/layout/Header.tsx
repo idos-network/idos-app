@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import WalletBar from '@/components/wallets/WalletBar';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
-import { Link } from '@tanstack/react-router';
 import CalendarIcon from '@/components/icons/calendar';
-import UserIcon from '@/components/icons/user';
 import LayersIcon from '@/components/icons/layers';
+import UserIcon from '@/components/icons/user';
+import WalletBar from '@/components/wallets/WalletBar';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useWalletConnector } from '@/hooks/useWalletConnector';
+import { Link } from '@tanstack/react-router';
+import { useState } from 'react';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

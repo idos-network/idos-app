@@ -1,12 +1,13 @@
-import { useNearWallet } from './useNearWallet';
 import { env } from '@/env';
-import { ethers } from 'ethers';
-import * as GemWallet from '@gemwallet/api';
 import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 import { verifySignature } from '@/utils/verify-signatures';
 import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
+import * as GemWallet from '@gemwallet/api';
+import { ethers } from 'ethers';
+import { useSignMessage } from 'wagmi';
+import { useNearWallet } from './useNearWallet';
 
 export type WalletPayload = {
   address: string;
@@ -17,6 +18,7 @@ export type WalletPayload = {
 
 export function useHandleSaveIdOSProfile() {
   const { selector } = useNearWallet();
+  const { signMessageAsync } = useSignMessage();
 
   return async function handleSaveIdOSProfile(
     setState: (state: string) => void,
@@ -30,8 +32,8 @@ export function useHandleSaveIdOSProfile() {
       setLoading(true);
       const userId = crypto.randomUUID();
 
-      const userEncryptionPublicKey =
-        await withSigner.getUserEncryptionPublicKey(userId);
+      const encryptionProfile =
+        await withSigner.createUserEncryptionProfile(userId);
 
       setState('waiting_signature');
 
@@ -61,9 +63,8 @@ export function useHandleSaveIdOSProfile() {
             };
           }
         } else if (wallet.type === 'evm') {
-          ownershipProofSignature = await window.ethereum.request({
-            method: 'personal_sign',
-            params: [ownershipProofMessage, wallet.address],
+          ownershipProofSignature = await signMessageAsync({
+            message: ownershipProofMessage,
           });
           if (ownershipProofSignature) {
             publicKey = ethers.SigningKey.recoverPublicKey(
@@ -129,13 +130,17 @@ export function useHandleSaveIdOSProfile() {
         }
       }
 
-      const savedUser = await saveNewUserToLocalStorage({
+      const userPayload = {
         id: userId,
         mainAddress: wallet.address,
-        userEncryptionPublicKey: userEncryptionPublicKey,
-        ownershipProofSignature: ownershipProofSignature,
+        userEncryptionPublicKey:
+          encryptionProfile.userEncryptionPublicKey as string,
+        encryptionPasswordStore: 'user' as const,
+        ownershipProofSignature: ownershipProofSignature as string,
         publicKey: publicKey,
-      });
+      };
+
+      const savedUser = saveNewUserToLocalStorage(userPayload);
 
       if (savedUser) {
         setState('created');

@@ -1,36 +1,42 @@
-import { useEffect, useState } from 'react';
-
-import TopBar from './components/TopBar';
-import StepperButton from './components/StepperButton';
-import TextBlock from './components/TextBlock';
-import Spinner from './components/Spinner';
-import GetStartedTextBlock from './components/GetStartedCards';
-import StepperCards from './components/StepperCards';
-import FrameIcon from '@/icons/frame';
+import { getUserById, saveUser, updateUser } from '@/api/user';
+import { completeUserQuest } from '@/api/user-quests';
+import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
+import { env } from '@/env';
+import {
+  handleCreateIdOSCredential,
+  handleDWGCredential,
+} from '@/handlers/idos-credential';
+import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
+import { useSpecificCredential } from '@/hooks/useCredentials';
+import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useNearWallet } from '@/hooks/useNearWallet';
+import { useToast } from '@/hooks/useToast';
+import { useUserMainEvm } from '@/hooks/useUserMainEvm';
+import { useWalletConnector } from '@/hooks/useWalletConnector';
+import AirdropIcon from '@/icons/airdrop';
 import CredentialIcon from '@/icons/credential';
-import PersonIcon from '@/icons/person';
-import KeyIcon from '@/icons/key';
 import EncryptedIcon from '@/icons/encrypted';
+import FrameIcon from '@/icons/frame';
 import GraphIcon from '@/icons/graph';
-import { useIdOS } from '@/context/idos-context';
+import KeyIcon from '@/icons/key';
+import PersonIcon from '@/icons/person';
+import WalletIcon from '@/icons/wallet';
+import type { IdosDWG } from '@/interfaces/idos-credential';
 import {
   clearUserDataFromLocalStorage,
   getCurrentUserFromLocalStorage,
   updateUserStateInLocalStorage,
 } from '@/storage/idos-profile';
-import { env } from '@/env';
-import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
-import { useCredentials } from '@/hooks/useCredentials';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
-import {
-  handleDWGCredential,
-  handleCreateIdOSCredential,
-} from '@/handlers/idos-credential';
-import type { IdosDWG } from '@/interfaces/idos-credential';
-import { useToast } from '@/hooks/useToast';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
-import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
-import { useNearWallet } from '@/hooks/useNearWallet';
+import { useEffect, useState } from 'react';
+import { useSignMessage } from 'wagmi';
+import EVMWalletAdd from './components/EVMWalletAdd';
+import GetStartedTextBlock from './components/GetStartedCards';
+import Spinner from './components/Spinner';
+import StepperButton from './components/StepperButton';
+import StepperCards from './components/StepperCards';
+import TextBlock from './components/TextBlock';
+import TopBar from './components/TopBar';
 
 function useStepState(initial = 'idle') {
   const [state, setState] = useState(initial);
@@ -43,19 +49,17 @@ function useStepState(initial = 'idle') {
 // Get started
 function StepOne({ onNext }: { onNext: () => void }) {
   return (
-    <div className="relative w-[900px] h-full rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden mt-[-10px]">
+    <div className="relative w-[900px] h-full rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
       <div className="h-full w-full bg-idos-grey1/90 flex flex-col gap-10 p-10 rounded-[40px]">
         <img
           src="/idOS-cubes-1.png"
           alt="Cubes 1"
           className="absolute top-4 right-50 w-40 h-40 select-none z-1 scale-80"
-          // style={{ zIndex: 1 }}
         />
         <img
           src="/idOS-cubes-2.png"
           alt="Cubes 2"
           className="absolute top-16 right-6 w-46 h-46 select-none z-1 scale-80"
-          // style={{ zIndex: 1 }}
         />
         <div className="z-5 flex flex-col gap-6 mt-4 mb-4">
           <div className="text-aquamarine-400 text-xl font-normal">
@@ -112,10 +116,10 @@ function StepTwo({ onNext }: { onNext: () => void }) {
   }, [error, setState]);
 
   return (
-    <div className="flex flex-col h-[600px] w-[700px]">
+    <div className="flex flex-col h-[600px] w-[740px]">
       <TopBar activeStep="step-two" />
       {state !== 'created' && (
-        <div className="pt-14 pb-10">
+        <div className="pt-10">
           <TextBlock
             title="Create your private key"
             subtitle="idOS is a self-sovereign solution, where data is only created and shared based on user consent, and encrypted with your key pair."
@@ -123,7 +127,7 @@ function StepTwo({ onNext }: { onNext: () => void }) {
         </div>
       )}
       {state === 'idle' && (
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-10 pt-10">
           <div className="w-full flex flex-col flex-1 items-center">
             <div className="rounded-full bg-[#00382D66] w-39 h-39 flex items-center justify-center">
               <EncryptedIcon color="var(--color-aquamarine-400)" />
@@ -176,6 +180,7 @@ function StepTwo({ onNext }: { onNext: () => void }) {
 // Verify your identity
 function StepThree({ onNext }: { onNext: () => void }) {
   const { state, setState } = useStepState();
+  const { refresh } = useIdOS();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const walletType = (wallet && wallet.type) || '';
@@ -186,7 +191,6 @@ function StepThree({ onNext }: { onNext: () => void }) {
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
   const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
   const publicKey = currentUser?.publicKey || '';
-
   useEffect(() => {
     if (state === 'verified') {
       updateUserStateInLocalStorage(userAddress, { humanVerified: true });
@@ -205,6 +209,7 @@ function StepThree({ onNext }: { onNext: () => void }) {
           updateUserStateInLocalStorage(userAddress, { humanVerified: false });
           setState('idle');
         } else {
+          await refresh();
           onNext();
         }
       };
@@ -238,12 +243,12 @@ function StepThree({ onNext }: { onNext: () => void }) {
   }
 
   return (
-    <div className="flex flex-col gap-14 h-[600px] w-[700px]">
+    <div className="flex flex-col gap-10 h-[600px] w-[740px]">
       <TopBar activeStep="step-three" />
       <div className="flex flex-col flex-1 justify-between">
-        {state !== 'verifying' && (
+        {state !== 'verifying' && state !== 'creating' && (
           <>
-            <div className="flex flex-col gap-14">
+            <div className="flex flex-col gap-8 w-full items-center">
               <TextBlock
                 title="Verify you are a human"
                 subtitle="In a moment, we'll ask you to follow some instructions for a liveness check. This will let us know that this is you, without exposing your identity."
@@ -264,6 +269,20 @@ function StepThree({ onNext }: { onNext: () => void }) {
                   description="Once verified, your Proof of Personhood credential can be reused across other supported platforms."
                 />
               </div>
+              <span className="text-neutral-400 w-[860px] text-base text-center font-medium font-['Urbanist']">
+                For privacy, idOS allows multiple profiles system-wide but lets
+                users prove uniqueness when needed. <br /> This{' '}
+                <a
+                  href="https://app.idos.network/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-aquamarine-600 underline text-base text-center font-semibold font-['Urbanist']"
+                >
+                  app
+                </a>{' '}
+                prevents quest farming and sybil attacks by limiting each human
+                to one idOS profile.
+              </span>
             </div>
           </>
         )}
@@ -274,64 +293,108 @@ function StepThree({ onNext }: { onNext: () => void }) {
             </StepperButton>
           </div>
         )}
+        {state === 'verifying' && (
+          <>
+            <div className="flex flex-col gap-8 w-full items-center">
+              <TextBlock
+                title="Verify you are a human"
+                subtitle="Please follow the instructions to complete your biometric enrollment."
+              />
+            </div>
+            <div className="flex justify-center flex-1 items-center">
+              <Spinner />
+            </div>
+            <div className="flex justify-center">
+              <StepperButton disabled={true}>
+                Waiting for verification...
+              </StepperButton>
+            </div>
+          </>
+        )}
+        {state === 'creating' && (
+          <>
+            <div className="flex flex-col gap-8 w-full items-center">
+              <TextBlock
+                title="Verify you are a human"
+                subtitle="Please follow the instructions to complete your biometric enrollment."
+              />
+            </div>
+            <div className="flex justify-center flex-1 items-center">
+              <Spinner />
+            </div>
+
+            <div className="flex justify-center">
+              <StepperButton disabled={true}>
+                Creating your idOS profile...
+              </StepperButton>
+            </div>
+          </>
+        )}
       </div>
-      {state === 'verifying' && (
-        <div className="flex flex-col gap-14 flex-1">
-          <TextBlock
-            title="Verify you are a human"
-            subtitle="Please follow the instructions to complete your biometric enrollment."
-          />
-          <div className="flex justify-center flex-1 items-center">
-            <Spinner />
-          </div>
-          <div className="flex justify-center">
-            <StepperButton disabled={true}>
-              Waiting for verification...
-            </StepperButton>
-          </div>
-        </div>
-      )}
-      {state === 'creating' && (
-        <>
-          <div className="flex justify-center">
-            <StepperButton disabled={true}>
-              Creating your idOS profile...
-            </StepperButton>
-          </div>
-        </>
-      )}
     </div>
   );
 }
 
 // Add a credential
-function StepFour() {
+function StepFour({ onNext }: { onNext: () => void }) {
   const { state, setState, loading, setLoading, error } = useStepState();
-  const { withSigner } = useIdOS();
+  const { refresh } = useIdOS();
+  const idOSLoggedIn = useIdOSLoggedIn();
   const { showToast } = useToast();
   const { selector } = useNearWallet();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const { signMessageAsync } = useSignMessage();
 
   useEffect(() => {
-    if (state === 'created') {
-      window.location.href = '/';
-    } else if (error) {
-      setState('idle');
-    }
+    const saveUserAndCompleteQuest = async () => {
+      if (state === 'created' && wallet && wallet.type !== 'evm') {
+        onNext();
+      } else if (state === 'created' && wallet && wallet.type === 'evm') {
+        // Safeguard against a user that has a profile
+        // but has not been registered on the db
+        const user = await getUserById(idOSLoggedIn!.user.id);
+        if (user[0]) {
+          updateUser({
+            id: idOSLoggedIn!.user.id,
+            mainEvm: wallet.address,
+            referrerCode: '', // TODO: pass referrer code
+          });
+        } else {
+          saveUser({
+            id: idOSLoggedIn!.user.id,
+            mainEvm: wallet.address,
+            referrerCode: '', // TODO: pass referrer code
+          });
+        }
+        completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
+        localStorage.setItem(
+          'showToast',
+          JSON.stringify({
+            type: 'success',
+            message: 'Onboarding completed successfully.',
+          }),
+        );
+        window.location.href = '/';
+      } else if (error) {
+        setState('idle');
+      }
+      return;
+    };
+    saveUserAndCompleteQuest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, error]);
+  }, [state, error, refresh]);
 
   async function handleAddCredential() {
-    const withSignerLoggedIn = await withSigner.logIn();
     try {
       setState('creating');
       const idOSDWG: IdosDWG = await handleDWGCredential(
         setState,
         setLoading,
-        withSignerLoggedIn,
+        idOSLoggedIn!,
         wallet,
         wallet && wallet.type === 'near' ? await selector.wallet() : undefined,
+        signMessageAsync,
       );
       if (!idOSDWG) {
         setState('idle');
@@ -341,21 +404,13 @@ function StepFour() {
 
       const response = await handleCreateIdOSCredential(
         idOSDWG,
-        withSignerLoggedIn.user.recipient_encryption_public_key,
-        withSignerLoggedIn.user.id,
+        idOSLoggedIn!.user.recipient_encryption_public_key,
+        idOSLoggedIn!.user.id,
       );
 
       if (response) {
         setState('created');
         clearUserDataFromLocalStorage();
-        localStorage.setItem(
-          'showToast',
-          JSON.stringify({
-            type: 'success',
-            message: 'Your credential has been added to your profile.',
-          }),
-        );
-        window.location.reload();
       } else {
         setState('idle');
       }
@@ -370,7 +425,7 @@ function StepFour() {
   }
 
   return (
-    <div className="flex flex-col gap-14 h-[600px] w-[700px]">
+    <div className="flex flex-col gap-10 h-[600px] w-[740px]">
       <TopBar activeStep="step-four" />
       {state !== 'created' && (
         <>
@@ -433,20 +488,111 @@ function StepFour() {
   );
 }
 
+// Add EVM wallet to idOS profile (default primary wallet)
+function StepFive() {
+  const { state, setState, error } = useStepState();
+  const { refresh } = useIdOS();
+  const { showToast } = useToast();
+  const idOSLoggedIn = useIdOSLoggedIn();
+  const [walletAddress, setWalletAddress] = useState<string>('');
+
+  useEffect(() => {
+    const saveUserAndCompleteQuest = async () => {
+      if (state === 'created') {
+        localStorage.setItem(
+          'showToast',
+          JSON.stringify({
+            type: 'success',
+            message: 'Onboarding completed successfully.',
+          }),
+        );
+        // Safeguard against a user that has a profile and a credential
+        // but has not been registered on the db
+        const user = await getUserById(idOSLoggedIn!.user.id);
+        if (user[0]) {
+          updateUser({
+            id: idOSLoggedIn!.user.id,
+            mainEvm: walletAddress,
+            referrerCode: '', // TODO: pass referrer code
+          });
+        } else {
+          saveUser({
+            id: idOSLoggedIn!.user.id,
+            mainEvm: walletAddress,
+            referrerCode: '', // TODO: pass referrer code
+          });
+        }
+        completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
+        window.location.href = '/';
+      }
+      if (error) {
+        setState('idle');
+      }
+    };
+    saveUserAndCompleteQuest();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, error, refresh]);
+
+  return (
+    <div className="flex flex-col gap-10 h-[600px] w-[740px]">
+      <TopBar activeStep="step-five" />
+      {state !== 'created' && (
+        <>
+          <TextBlock
+            title="Set up your primary EVM wallet"
+            subtitle="This is required to receive airdrops and rewards."
+          />
+        </>
+      )}
+      {state === 'idle' && (
+        <div className="flex flex-col gap-14 flex-1">
+          <div className="w-full h-full flex flex-row gap-5">
+            <StepperCards
+              icon={
+                <WalletIcon
+                  color="var(--color-aquamarine-400)"
+                  className="w-8 h-8"
+                />
+              }
+              description="Choose a primary EVM wallet. Once you complete onboarding, you can add more wallets to your idOS profile, and update your primary wallet."
+            />
+            <StepperCards
+              icon={<AirdropIcon color="var(--color-aquamarine-400)" />}
+              description="This will be your default wallet for all token distributions."
+            />
+          </div>
+          <div className="flex justify-center mt-auto">
+            <EVMWalletAdd
+              onWalletAdded={(address) => {
+                if (address) setWalletAddress(address);
+                setState('created');
+              }}
+              onError={(err) => showToast({ type: 'error', message: err })}
+              // onSuccess={(msg) => showToast({ type: 'success', message: msg })}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function OnboardingStepper() {
   const [activeStep, setActiveStep] = useState<string | null>(null);
-  const { credentials, isLoading } = useCredentials();
   const hasProfile = useIdOSLoginStatus();
   const walletConnector = useWalletConnector();
+  const { mainEvm } = useUserMainEvm();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const { hasCredential: hasStakingCredential, isLoading } =
+    useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
 
   const steps = [
     { id: 'step-one', component: StepOne },
     { id: 'step-two', component: StepTwo },
     { id: 'step-three', component: StepThree },
     { id: 'step-four', component: StepFour },
+    { id: 'step-five', component: StepFive },
   ];
-
   useEffect(() => {
     if (isLoading) return;
 
@@ -460,27 +606,25 @@ export default function OnboardingStepper() {
         clearUserDataFromLocalStorage();
         setActiveStep('step-one');
         return;
-      } else if (hasProfile) {
-        setActiveStep('step-four');
-        return;
       }
 
-      if (currentUser.humanVerified) {
-        if (credentials.length === 0) {
-          setActiveStep('step-four');
-          return;
-        }
+      if (currentUser.humanVerified && !hasStakingCredential) {
+        setActiveStep('step-four');
+        return;
       } else if (currentUser.idosKey) {
         setActiveStep('step-three');
         return;
       }
-    } else if (hasProfile) {
+    } else if (hasProfile && !hasStakingCredential) {
       setActiveStep('step-four');
+      return;
+    } else if (hasProfile && hasStakingCredential && !mainEvm) {
+      setActiveStep('step-five');
       return;
     }
 
     setActiveStep('step-one');
-  }, [credentials, isLoading, hasProfile, wallet]);
+  }, [isLoading, hasProfile, wallet, hasStakingCredential, mainEvm]);
 
   function getCurrentStepComponent() {
     const currentStep = steps.find((step) => step.id === activeStep);

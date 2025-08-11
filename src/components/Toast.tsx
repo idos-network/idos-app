@@ -1,8 +1,8 @@
-import React from 'react';
 import type { ToastType } from '@/hooks/useToast';
 import CheckIcon from '@/icons/check';
-import ExclamationIcon from '@/icons/exclamation';
 import CloseToastIcon from '@/icons/close-toast';
+import ExclamationIcon from '@/icons/exclamation';
+import React from 'react';
 
 const typeStyles: Record<ToastType, string> = {
   success: 'bg-[#00624999] text-aquamarine-400',

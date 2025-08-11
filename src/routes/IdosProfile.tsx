@@ -1,15 +1,17 @@
-import { useEffect } from 'react';
-import { CredentialsCard, WalletsCard } from '@/components/profile';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
-import { useSpecificCredential } from '@/hooks/useCredentials';
-import { useToast } from '@/hooks/useToast';
-import { env } from '@/env';
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
+import { CredentialsCard, WalletsCard } from '@/components/profile';
+import { env } from '@/env';
+import { useSpecificCredential } from '@/hooks/useCredentials';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useToast } from '@/hooks/useToast';
+import { useUserMainEvm } from '@/hooks/useUserMainEvm';
+import { useEffect } from 'react';
 
 export function IdosProfile() {
   const hasProfile = useIdOSLoginStatus();
   const { hasCredential: hasStakingCredential, isLoading } =
     useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
+  const { mainEvm } = useUserMainEvm();
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -27,8 +29,8 @@ export function IdosProfile() {
 
   return (
     <div className="flex items-start justify-center">
-      {hasProfile && !isLoading && hasStakingCredential ? (
-        <div className="container mx-auto max-w-[1050px] flex flex-col px-32 pt-18">
+      {hasProfile && !isLoading && hasStakingCredential && mainEvm ? (
+        <div className="mx-auto flex flex-col px-32 pt-10 w-fit min-w-[1050px]">
           <div className="gap-3 flex flex-col mb-10">
             <div className="text-2xl font-medium text-neutral-50">
               idOS Profile
@@ -46,7 +48,7 @@ export function IdosProfile() {
           </div>
         </div>
       ) : (
-        <div className="container mx-auto flex justify-center pt-18">
+        <div className="container mx-auto flex justify-center pt-10">
           <OnboardingStepper />
         </div>
       )}

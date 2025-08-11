@@ -53,7 +53,7 @@ export function WalletConnector() {
     <div className="flex flex-col items-center gap-3 w-80">
       <WalletConnectorButton
         onClick={() => walletConnector.connectEthereum()}
-        label="Connect a EVM Wallet"
+        label="Connect an EVM Wallet"
         evmWallet={true}
       />
 
@@ -71,7 +71,7 @@ export function WalletConnector() {
 
       <WalletConnectorButton
         onClick={() => walletConnector.connectXRPL()}
-        label="Connect with XRP"
+        label="Connect with XRPL"
         iconSrc="/xrpl.png"
       />
     </div>
