@@ -1,9 +1,9 @@
 import { ReceiveIcon } from '@/components/icons';
 import CopyIcon from '@/components/icons/copy';
+import NeobankLogoIcon from '@/components/icons/neobank-logo';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -11,11 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import NeobankLogoIcon from '@/components/icons/neobank-logo';
+import { useWalletConnector } from '@/hooks/useWalletConnector';
+import { useState } from 'react';
 
 export function ReceiveTokenDialog() {
+  const [isCopied, setIsCopied] = useState(false);
+  const { connectedWallet } = useWalletConnector();
+  const recipient = connectedWallet?.address;
   return (
     <Dialog>
       <form>
@@ -39,21 +42,24 @@ export function ReceiveTokenDialog() {
             <Label className="font-medium text-muted text-neutral-400">
               Your wallet address
             </Label>
-            <Input
-              type="text"
-              placeholder="0x89421209823492i3u4902u30"
-              value={''}
-              onChange={() => {}}
-              className="h-16 border-0 bg-[#26262699] pr-40 pl-6 font-medium text-white text-xl placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0"
-            />
+            <div className="flex py-4 px-6 w-full rounded-xl border-0 bg-[#26262699] text-sm text-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0">
+              {recipient}
+            </div>
           </div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button className=" text-white h-12 w-full rounded-lg bg-[#404040B2] flex items-center gap-2 mt-3">
-                <CopyIcon color="#FFFFFF" />
-                Copy
-              </Button>
-            </DialogClose>
+            <Button
+              className=" text-neutral-50 h-12 w-full rounded-lg bg-[#404040B2] flex items-center gap-2 mt-3"
+              onClick={() => {
+                navigator.clipboard.writeText(recipient || '');
+                setIsCopied(true);
+                setTimeout(() => {
+                  setIsCopied(false);
+                }, 2000);
+              }}
+            >
+              <CopyIcon color="#FFFFFF" />
+              {isCopied ? 'Copied' : 'Copy'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </form>

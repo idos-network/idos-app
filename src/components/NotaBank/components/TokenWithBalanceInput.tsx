@@ -1,19 +1,25 @@
 import GasIcon from '@/components/icons/Gas';
 import { TokenAmountInput, tokens } from './TokenAmountInput';
 
-const emptySet = () => {};
-
-export default function TokenWithBalanceInput() {
+export default function TokenWithBalanceInput({
+  onAmountChange,
+  onSelect,
+  value,
+}: {
+  onAmountChange: (value: string) => void;
+  value: string;
+  onSelect: (value: string) => void;
+}) {
   const balance = 12340.56;
   const token = tokens[0];
   return (
     <div className="flex flex-col">
       <TokenAmountInput
-        selectOptions={tokens}
-        value={''}
-        onValueChange={emptySet}
-        selectedValue={tokens[0].value}
-        setSelectedValue={emptySet}
+        selectOptions={[...tokens]}
+        amount={value}
+        onAmountChange={onAmountChange}
+        selectedToken={token}
+        onSelect={onSelect}
         label="Amount"
       />
       <div className="flex flex-col gap-2 mt-2">
