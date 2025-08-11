@@ -36,7 +36,7 @@
     "description": "Add face as signer to earn points",
     "link": "",
     "pointsReward": 10,
-    "isActive": true,
+    "isActive": false,
     "isRepeatable": false
   },
   {
@@ -46,7 +46,7 @@
     "description": "Add ETH to idOS wallet to earn points",
     "link": "",
     "pointsReward": 20,
-    "isActive": true,
+    "isActive": false,
     "isRepeatable": false
   },
   {
@@ -56,7 +56,7 @@
     "description": "Share authorization grant to earn points",
     "link": "",
     "pointsReward": 30,
-    "isActive": true,
+    "isActive": false,
     "isRepeatable": false
   },
   {
@@ -66,7 +66,7 @@
     "description": "Participate in staking event to earn points",
     "link": "",
     "pointsReward": 100,
-    "isActive": true,
+    "isActive": false,
     "isRepeatable": false
   },
   {
@@ -76,7 +76,7 @@
     "description": "Participate in ICO event to earn points",
     "link": "",
     "pointsReward": 100,
-    "isActive": true,
+    "isActive": false,
     "isRepeatable": false
   },
   {

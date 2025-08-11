@@ -6,6 +6,7 @@ import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
+import PointsHeaderFrame from '../points/PointsHeaderFrame';
 
 const evmNetworks = {
   1: 'ethereum',
@@ -39,42 +40,43 @@ export default function Header() {
         </button>
 
         {/* Right side items */}
-        {wallet && (
-          <div className="flex justify-end gap-5 items-center ml-auto">
-            {wallet && wallet.type === 'evm' && (
-              <WalletBar
-                network={
-                  wallet.type === 'evm'
-                    ? evmNetworks[wallet.network as keyof typeof evmNetworks]
-                    : wallet.type
-                }
-                address={wallet.address}
-                profileStatus={hasProfile ? 'verified' : 'notVerified'}
-              />
-            )}
-            {wallet && wallet.type === 'near' && (
-              <WalletBar
-                network="near"
-                address={wallet.address}
-                profileStatus={hasProfile ? 'verified' : 'notVerified'}
-              />
-            )}
-            {wallet && wallet.type === 'stellar' && (
-              <WalletBar
-                network="stellar"
-                address={wallet.address}
-                profileStatus={hasProfile ? 'verified' : 'notVerified'}
-              />
-            )}
-            {wallet && wallet.type === 'xrpl' && (
-              <WalletBar
-                network="xrpl"
-                address={wallet.address}
-                profileStatus={hasProfile ? 'verified' : 'notVerified'}
-              />
-            )}
-          </div>
-        )}
+        <div className="flex justify-end gap-5 items-center ml-auto">
+          <PointsHeaderFrame />
+          {wallet && wallet.type === 'evm' && (
+            <WalletBar
+              network={
+                wallet.network === 1
+                  ? 'ethereum'
+                  : wallet.network === 42161
+                    ? 'arbitrum'
+                    : 'ethereum'
+              }
+              address={wallet.address}
+              profileStatus={hasProfile ? 'verified' : 'notVerified'}
+            />
+          )}
+          {wallet && wallet.type === 'near' && (
+            <WalletBar
+              network="near"
+              address={wallet.address}
+              profileStatus={hasProfile ? 'verified' : 'notVerified'}
+            />
+          )}
+          {wallet && wallet.type === 'stellar' && (
+            <WalletBar
+              network="stellar"
+              address={wallet.address}
+              profileStatus={hasProfile ? 'verified' : 'notVerified'}
+            />
+          )}
+          {wallet && wallet.type === 'xrpl' && (
+            <WalletBar
+              network="xrpl"
+              address={wallet.address}
+              profileStatus={hasProfile ? 'verified' : 'notVerified'}
+            />
+          )}
+        </div>
       </header>
 
       {/* Mobile menu overlay */}
