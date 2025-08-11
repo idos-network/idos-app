@@ -30,8 +30,7 @@ export default function Kyc() {
     (message: MessageEvent) => {
       // React only messages from ID iframe
       if (message.origin === 'https://kraken.staging.sandbox.fractal.id') {
-        if (message.data.error) {
-        } else if (message.data.open) {
+        if (message.data.open) {
           window.open(
             message.data.open,
             message.data.target,
