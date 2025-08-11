@@ -2,10 +2,10 @@ import type { Config, Context } from "@netlify/functions";
 import jwt from "jsonwebtoken";
 import invariant from "tiny-invariant";
 
-const krakenApiUrl = process.env.KRAKEN_API_URL;
-const krakenClientId = process.env.KRAKEN_CLIENT_ID;
-const krakenLevel = process.env.KRAKEN_LEVEL;
-const krakenPrivateKey = process.env.KRAKEN_PRIVATE_KEY;
+const krakenApiUrl = process.env.KRAKEN_API_URL as string;
+const krakenClientId = process.env.KRAKEN_CLIENT_ID as string;
+const krakenLevel = process.env.KRAKEN_LEVEL as string;
+const krakenPrivateKey = process.env.KRAKEN_PRIVATE_KEY as string;
 
 
 export default async (_request: Request, _context: Context) => {
