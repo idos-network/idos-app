@@ -1,5 +1,7 @@
+import axiosInstance from '@/api/axios';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useQueries } from '@tanstack/react-query';
 
 import type { ReactNode } from 'react';
 
@@ -20,7 +22,6 @@ interface ProviderProps {
 
 export function Provider({
   data,
-
   onSelect,
   className = '',
   children,
@@ -60,7 +61,19 @@ export function Provider({
   );
 }
 
+const providers = ['hifi', 'transak', 'monerium', 'noah'];
+
+const useFetchProviderQuotes = () => {
+  return useQueries({
+    queries: providers.map((provider) => ({
+      queryKey: ['provider-quote', provider],
+      queryFn: () => axiosInstance.get(`/provider-quotes?provider=${provider}`),
+    })),
+  });
+};
+
 export function ProviderQuotes() {
+  const { data: quotes } = useFetchProviderQuotes();
   return (
     <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
       <h3 className="text-xl">Provider Quotes</h3>

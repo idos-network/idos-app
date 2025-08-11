@@ -29,7 +29,7 @@ function BuyModule() {
             <AmountInput id="spend-amount" />
             <Select>
               <SelectTrigger className="h-16 w-fit border border-none text-neutral-50 tabular-nums focus:z-1 focus:-outline-offset-0 focus:outline-neutral-600 text-sm px-2">
-                <SelectValue placeholder="Currency" />
+                <SelectValue placeholder="Select currency" />
               </SelectTrigger>
               <SelectContent className="bg-neutral-800 border-none text-sm">
                 <SelectItem
@@ -65,7 +65,7 @@ function BuyModule() {
             <AmountInput id="buy-amount" />
             <Select>
               <SelectTrigger className="h-16 w-fit border border-none text-neutral-50 tabular-nums focus:z-1 focus:-outline-offset-0 focus:outline-neutral-600 text-sm px-2">
-                <SelectValue placeholder="Token" />
+                <SelectValue placeholder="Select token" />
               </SelectTrigger>
               <SelectContent className="bg-neutral-800 border-none">
                 <SelectItem

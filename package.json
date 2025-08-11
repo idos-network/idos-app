@@ -57,6 +57,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.4",
+    "go-try": "^3.0.2",
     "lucide-react": "^0.535.0",
     "near-api-js": "^5.1.1",
     "postgres": "^3.4.7",
