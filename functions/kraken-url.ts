@@ -1,5 +1,3 @@
-"server-only";
-
 import type { Config, Context } from "@netlify/functions";
 import jwt from "jsonwebtoken";
 import invariant from "tiny-invariant";
