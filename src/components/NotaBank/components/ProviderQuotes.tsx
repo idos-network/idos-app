@@ -73,7 +73,8 @@ const useFetchProviderQuotes = () => {
 };
 
 export function ProviderQuotes() {
-  const { data: quotes } = useFetchProviderQuotes();
+  useFetchProviderQuotes();
+
   return (
     <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
       <h3 className="text-xl">Provider Quotes</h3>
