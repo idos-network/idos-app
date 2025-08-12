@@ -26,6 +26,7 @@
     "@idos-network/client": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/client@a7b07311528d7fdb96f397cbeaea16c95efd55ac",
     "@idos-network/issuer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/issuer@a7b07311528d7fdb96f397cbeaea16c95efd55ac",
     "@idos-network/utils": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/utils@a7b07311528d7fdb96f397cbeaea16c95efd55ac",
+    "@idos-network/consumer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/consumer@a7b07311528d7fdb96f397cbeaea16c95efd55ac",
     "@kwilteam/kwil-js": "^0.9.4",
     "@near-wallet-selector/core": "8.10.2",
     "@near-wallet-selector/here-wallet": "8.10.2",

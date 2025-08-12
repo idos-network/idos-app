@@ -1,3 +1,5 @@
+import { getNoahCustomer } from '@/api/noah';
+import { getSharedCredential } from '@/api/shared-credential';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -12,6 +14,11 @@ import ActionToolbar from '../components/ActionToolbar';
 import AmountInput from '../components/AmountInput';
 import { ProviderQuotes } from '../components/ProviderQuotes';
 import UserBalance from '../components/UserBalance';
+
+// @ts-expect-error keep these until tested in prod
+window.getSharedCredential = getSharedCredential;
+// @ts-expect-error keep these until tested in prod
+window.getNoahCustomer = getNoahCustomer;
 
 function BuyModule() {
   return (
