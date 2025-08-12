@@ -45,11 +45,9 @@ export default function Header() {
           {wallet && wallet.type === 'evm' && (
             <WalletBar
               network={
-                wallet.network === 1
-                  ? 'ethereum'
-                  : wallet.network === 42161
-                    ? 'arbitrum'
-                    : 'ethereum'
+                wallet.type === 'evm'
+                  ? evmNetworks[wallet.network as keyof typeof evmNetworks]
+                  : wallet.type
               }
               address={wallet.address}
               profileStatus={hasProfile ? 'verified' : 'notVerified'}

@@ -2,6 +2,7 @@ import { useFetchWallets } from '@/hooks/useFetchWallets';
 import { useToast } from '@/hooks/useToast';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
+import InfoIcon from '@/icons/info';
 import MoreVertIcon from '@/icons/more-vert';
 import { addressGradient } from '@/utils/gradient';
 import { useState } from 'react';
@@ -18,6 +19,12 @@ export default function WalletsCard() {
   } | null>(null);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [tooltipText, setTooltipText] = useState<string>('');
   const { showToast } = useToast();
 
   if (isLoading) return null;
@@ -33,7 +40,32 @@ export default function WalletsCard() {
     <div className="flex h-full flex-col w-fit min-w-full gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="text-xl font-normal text-neutral-50">Wallets</span>
+        <div className="flex items-center gap-2 relative">
+          <span className="text-xl font-normal text-neutral-50">Wallets</span>
+          <div className="relative">
+            <button
+              onMouseEnter={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                setTooltipPosition({
+                  x: rect.left + rect.width / 2,
+                  y: rect.bottom + 8,
+                });
+                setTooltipText(
+                  'Wallets connected to your profile are not publicly visible',
+                );
+                setShowTooltip(true);
+              }}
+              onMouseLeave={() => {
+                setShowTooltip(false);
+                setTooltipPosition(null);
+                setTooltipText('');
+              }}
+              className="flex items-center text-neutral-400 hover:text-neutral-300 transition-colors"
+            >
+              <InfoIcon className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
         <WalletAddButton
           onWalletAdded={refetch}
           onError={(err) => showToast({ type: 'error', message: err })}
@@ -87,8 +119,29 @@ export default function WalletsCard() {
                     <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center gap-3">
                       <span className="flex items-center gap-2 font-normal">
                         {wallet.address === mainEvm ? (
-                          <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#00FFB933] text-[#00FFB9]">
-                            Primary
+                          <div className="relative">
+                            <button
+                              onMouseEnter={(e) => {
+                                const rect =
+                                  e.currentTarget.getBoundingClientRect();
+                                setTooltipPosition({
+                                  x: rect.left + rect.width / 2,
+                                  y: rect.bottom + 8,
+                                });
+                                setTooltipText(
+                                  'Your main wallet for receiving airdrops and making transactions. You can switch it anytime.',
+                                );
+                                setShowTooltip(true);
+                              }}
+                              onMouseLeave={() => {
+                                setShowTooltip(false);
+                                setTooltipPosition(null);
+                                setTooltipText('');
+                              }}
+                              className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#00FFB933] text-[#00FFB9]"
+                            >
+                              Primary
+                            </button>
                           </div>
                         ) : (
                           ''
@@ -135,6 +188,20 @@ export default function WalletsCard() {
         wallets={wallets}
         refetch={refetch}
       />
+
+      {/* Shared tooltip */}
+      {showTooltip && tooltipPosition && (
+        <div
+          className="fixed z-50 bg-neutral-800 rounded-lg p-4 text-neutral-200 drop-shadow-[0_0_10px_rgba(0,0,0,0.7)] w-[240px] pointer-events-none"
+          style={{
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
+            transform: 'translateX(5%)',
+          }}
+        >
+          <div className="text-sm text-neutral-400">{tooltipText}</div>
+        </div>
+      )}
     </div>
   );
 }
