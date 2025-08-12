@@ -33,8 +33,17 @@ export function useCredentialDetails(credentialId: string | null) {
         // Try to decrypt the content if available
         if (cred.content && cred.encryptor_public_key) {
           try {
+            // Prepare the enclave provider
+            await idOSClient.enclaveProvider.ensureUserEncryptionProfile();
+
             // Decrypt the content
-            const content = await idOSClient.getCredentialContent(credentialId);
+            const decrypted = await idOSClient.enclaveProvider.decrypt(
+              Buffer.from(cred.content, 'base64'),
+              Buffer.from(cred.encryptor_public_key, 'base64'),
+            );
+
+            // Convert to UTF-8 string
+            const content = new TextDecoder().decode(decrypted);
             setDecryptedContent(content);
           } catch (decryptError) {
             console.warn('Failed to decrypt credential content:', decryptError);
