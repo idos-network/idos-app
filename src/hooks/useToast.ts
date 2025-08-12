@@ -13,6 +13,7 @@ export interface ToastOptions {
 
 export interface ToastContextType {
   showToast: (options: ToastOptions) => void;
+  setPointsFrameRef: (ref: HTMLElement | null) => void;
 }
 
 export const ToastContext = createContext<ToastContextType | undefined>(

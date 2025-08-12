@@ -3,9 +3,10 @@ import LayersIcon from '@/components/icons/layers';
 import UserIcon from '@/components/icons/user';
 import WalletBar from '@/components/wallets/WalletBar';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import { Link } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PointsHeaderFrame from '../points/PointsHeaderFrame';
 
 const evmNetworks = {
@@ -18,6 +19,14 @@ export default function Header() {
   const hasProfile = useIdOSLoginStatus();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const { setPointsFrameRef } = useToast();
+  const pointsFrameRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    if (pointsFrameRef.current) {
+      setPointsFrameRef(pointsFrameRef.current);
+    }
+  }, [setPointsFrameRef]);
 
   return (
     <>
@@ -41,7 +50,7 @@ export default function Header() {
 
         {/* Right side items */}
         <div className="flex justify-end gap-5 items-center ml-auto">
-          <PointsHeaderFrame />
+          <PointsHeaderFrame ref={pointsFrameRef} />
           {wallet && wallet.type === 'evm' && (
             <WalletBar
               network={
