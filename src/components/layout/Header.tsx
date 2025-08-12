@@ -52,6 +52,27 @@ export default function Header() {
                 profileStatus={hasProfile ? 'verified' : 'notVerified'}
               />
             )}
+            {wallet && wallet.type === 'near' && (
+              <WalletBar
+                network="near"
+                address={wallet.address}
+                profileStatus={hasProfile ? 'verified' : 'notVerified'}
+              />
+            )}
+            {wallet && wallet.type === 'stellar' && (
+              <WalletBar
+                network="stellar"
+                address={wallet.address}
+                profileStatus={hasProfile ? 'verified' : 'notVerified'}
+              />
+            )}
+            {wallet && wallet.type === 'xrpl' && (
+              <WalletBar
+                network="xrpl"
+                address={wallet.address}
+                profileStatus={hasProfile ? 'verified' : 'notVerified'}
+              />
+            )}
           </div>
         )}
       </header>
