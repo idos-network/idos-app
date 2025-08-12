@@ -93,7 +93,7 @@ async function createNoahCustomer(
 ) {
   const noahApiKey = process.env.NOAH_API_KEY;
   const noahAPiUrl = process.env.NOAH_API_URL;
-  console.log({ origin, userAddress });
+  console.log({ origin });
   invariant(noahApiKey, "`NOAH_API_KEY` is not set");
   invariant(noahAPiUrl, "`NOAH_API_URL` is not set");
 
