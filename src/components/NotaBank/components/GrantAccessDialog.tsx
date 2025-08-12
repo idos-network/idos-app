@@ -11,7 +11,7 @@ import {
 import { useAccount } from 'wagmi';
 import AppTag from './Tag';
 
-const trimAddress = (addr: string | undefined) => {
+export const trimAddress = (addr: string | undefined) => {
   if (!addr) return '';
   return `${addr.slice(0, 6)}...${addr.slice(-5)}`;
 };

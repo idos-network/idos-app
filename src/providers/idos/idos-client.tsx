@@ -10,6 +10,7 @@ import { IDOSClientContext } from '@/context/idos-context';
 import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
+import { useQueryClient } from '@tanstack/react-query';
 
 const _idOSClient = createIDOSClient({
   nodeUrl: 'https://nodes.staging.idos.network/',
@@ -17,6 +18,7 @@ const _idOSClient = createIDOSClient({
 });
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(true);
   const [idOSClient, setClient] = useState<idOSClient>(_idOSClient);
   const [withSigner, setWithSigner] = useState<idOSClientWithUserSigner>();
@@ -27,6 +29,12 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const refresh = async () => {
     setRefreshTrigger((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    if (!walletConnector?.isConnected) {
+      queryClient.removeQueries({ queryKey: ['shared-credential'] });
+    }
+  }, [walletConnector?.isConnected, queryClient]);
 
   useEffect(() => {
     const setupClient = async () => {
