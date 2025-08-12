@@ -1,6 +1,7 @@
 import type { QuestWithStatus } from '@/hooks/useQuests';
 import { useQuests } from '@/hooks/useQuests';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import QuestsModal from './QuestsModal';
 
 interface QuestsCardProps {
   onError?: (error: string) => void;
@@ -8,6 +9,10 @@ interface QuestsCardProps {
 
 export default function QuestsCard({ onError }: QuestsCardProps) {
   const { quests, isLoading, error } = useQuests();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedQuest, setSelectedQuest] = useState<QuestWithStatus | null>(
+    null,
+  );
 
   const activeQuests = useMemo(() => {
     return quests.filter(
@@ -62,7 +67,15 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
                     isCompleted ? 'text-neutral-400' : 'text-neutral-200'
                   }`}
                 >
-                  <td className="w-1/3 px-4">{quest.title}</td>
+                  <td
+                    className="w-1/3 px-4 cursor-pointer"
+                    onClick={() => {
+                      setSelectedQuest(quest);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    {quest.title}
+                  </td>
                   <td className="w-1/3 px-4 font-medium">
                     <div className="flex items-center">
                       <img
@@ -101,6 +114,18 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Modal */}
+      {selectedQuest && (
+        <QuestsModal
+          isOpen={isModalOpen}
+          quest={selectedQuest}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedQuest(null);
+          }}
+        />
+      )}
     </div>
   );
 }
