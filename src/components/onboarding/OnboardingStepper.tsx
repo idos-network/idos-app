@@ -6,7 +6,6 @@ import {
   handleDWGCredential,
 } from '@/handlers/idos-credential';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
-import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useSpecificCredential } from '@/hooks/useCredentials';
 import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
@@ -345,7 +344,6 @@ function StepFour({ onNext }: { onNext: () => void }) {
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const { signMessageAsync } = useSignMessage();
-  const { completeQuest } = useCompleteQuest();
 
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
@@ -375,10 +373,7 @@ function StepFour({ onNext }: { onNext: () => void }) {
             message: 'Onboarding completed successfully.',
           }),
         );
-        completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 2000);
+        window.location.href = '/';
       } else if (error) {
         setState('idle');
       }
@@ -500,7 +495,6 @@ function StepFive() {
   const [walletAddress, setWalletAddress] = useState<string>('');
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const { completeQuest } = useCompleteQuest();
 
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
@@ -528,10 +522,7 @@ function StepFive() {
             message: 'Onboarding completed successfully.',
           }),
         );
-        completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 2000);
+        window.location.href = '/';
       }
       if (error) {
         setState('idle');
