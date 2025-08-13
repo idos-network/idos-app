@@ -1,5 +1,4 @@
 import { getUserById, saveUser, updateUser } from '@/api/user';
-import { completeUserQuest } from '@/api/user-quests';
 import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
 import { env } from '@/env';
 import {
@@ -7,6 +6,7 @@ import {
   handleDWGCredential,
 } from '@/handlers/idos-credential';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
+import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useSpecificCredential } from '@/hooks/useCredentials';
 import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
@@ -345,6 +345,7 @@ function StepFour({ onNext }: { onNext: () => void }) {
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const { signMessageAsync } = useSignMessage();
+  const { completeQuest } = useCompleteQuest();
 
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
@@ -367,7 +368,6 @@ function StepFour({ onNext }: { onNext: () => void }) {
             referrerCode: '', // TODO: pass referrer code
           });
         }
-        completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
         localStorage.setItem(
           'showToast',
           JSON.stringify({
@@ -375,7 +375,10 @@ function StepFour({ onNext }: { onNext: () => void }) {
             message: 'Onboarding completed successfully.',
           }),
         );
-        window.location.href = '/';
+        completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
       } else if (error) {
         setState('idle');
       }
@@ -426,9 +429,9 @@ function StepFour({ onNext }: { onNext: () => void }) {
 
   return (
     <div className="flex flex-col gap-10 h-[600px] w-[740px]">
-      <TopBar activeStep="step-four" />
       {state !== 'created' && (
         <>
+          <TopBar activeStep="step-four" />
           <TextBlock
             title="Add a credential to your idOS profile"
             subtitle="Link your credential to finish onboarding."
@@ -495,17 +498,13 @@ function StepFive() {
   const { showToast } = useToast();
   const idOSLoggedIn = useIdOSLoggedIn();
   const [walletAddress, setWalletAddress] = useState<string>('');
+  const walletConnector = useWalletConnector();
+  const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const { completeQuest } = useCompleteQuest();
 
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
       if (state === 'created') {
-        localStorage.setItem(
-          'showToast',
-          JSON.stringify({
-            type: 'success',
-            message: 'Onboarding completed successfully.',
-          }),
-        );
         // Safeguard against a user that has a profile and a credential
         // but has not been registered on the db
         const user = await getUserById(idOSLoggedIn!.user.id);
@@ -522,8 +521,17 @@ function StepFive() {
             referrerCode: '', // TODO: pass referrer code
           });
         }
-        completeUserQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        window.location.href = '/';
+        localStorage.setItem(
+          'showToast',
+          JSON.stringify({
+            type: 'success',
+            message: 'Onboarding completed successfully.',
+          }),
+        );
+        completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
       }
       if (error) {
         setState('idle');
@@ -535,9 +543,9 @@ function StepFive() {
 
   return (
     <div className="flex flex-col gap-10 h-[600px] w-[740px]">
-      <TopBar activeStep="step-five" />
       {state !== 'created' && (
         <>
+          <TopBar activeStep="step-five" />
           <TextBlock
             title="Set up your primary EVM wallet"
             subtitle="This is required to receive airdrops and rewards."
@@ -562,14 +570,25 @@ function StepFive() {
             />
           </div>
           <div className="flex justify-center mt-auto">
-            <EVMWalletAdd
-              onWalletAdded={(address) => {
-                if (address) setWalletAddress(address);
-                setState('created');
-              }}
-              onError={(err) => showToast({ type: 'error', message: err })}
-              // onSuccess={(msg) => showToast({ type: 'success', message: msg })}
-            />
+            {wallet && wallet.type === 'evm' ? (
+              <StepperButton
+                onClick={() => {
+                  if (wallet.address) setWalletAddress(wallet.address);
+                  setState('created');
+                }}
+              >
+                Add EVM wallet
+              </StepperButton>
+            ) : (
+              <EVMWalletAdd
+                onWalletAdded={(address) => {
+                  if (address) setWalletAddress(address);
+                  setState('created');
+                }}
+                onError={(err) => showToast({ type: 'error', message: err })}
+                // onSuccess={(msg) => showToast({ type: 'success', message: msg })}
+              />
+            )}
           </div>
         </div>
       )}
