@@ -1,25 +1,15 @@
+import PersonaIcon from '@/components/icons/persona';
+import { Button } from '@/components/ui/button';
 import {
+  Dialog,
   DialogClose,
   DialogContent,
   DialogFooter,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
-import PersonaIcon from '@/components/icons/persona';
 import { useNavigate } from '@tanstack/react-router';
 
-export default function KycSubmitDisclaimer({
-  spendAmount,
-  buyAmount,
-  selectedCurrency,
-  selectedToken,
-}: {
-  spendAmount: number;
-  buyAmount: number;
-  selectedCurrency: string;
-  selectedToken: string;
-}) {
+export default function KycSubmitDisclaimer({ loading }: { loading: boolean }) {
   const navigate = useNavigate();
 
   return (
@@ -27,13 +17,9 @@ export default function KycSubmitDisclaimer({
       <form>
         <DialogTrigger asChild>
           <Button
-            disabled={
-              !+spendAmount ||
-              !+buyAmount ||
-              !selectedCurrency ||
-              !selectedToken
-            }
-            className="h-12 w-full rounded-lg bg-[#74FB5B] text-black"
+            className="bg-[#74FB5B] text-black h-10  rounded-xl font-sans w-full"
+            type="button"
+            disabled={loading}
           >
             Continue
           </Button>

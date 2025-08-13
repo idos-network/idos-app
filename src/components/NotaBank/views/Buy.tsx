@@ -1,6 +1,5 @@
 import { getNoahOnRampUrl } from '@/api/noah';
 import { getSharedCredential } from '@/api/shared-credential';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -9,11 +8,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
-import { useNavigate } from '@tanstack/react-router';
 import { TokenETH, TokenUSDC, TokenUSDT } from '@web3icons/react';
 import { FlameIcon } from 'lucide-react';
 import ActionToolbar from '../components/ActionToolbar';
 import AmountInput from '../components/AmountInput';
+import KycSubmitDisclaimer from '../components/KycSubmitDisclaimer';
 import OnRampDialog from '../components/OnRampDialog';
 import { ProviderQuotes } from '../components/ProviderQuotes';
 import UserBalance from '../components/UserBalance';
@@ -24,8 +23,7 @@ window.getSharedCredential = getSharedCredential;
 window.getNoahCustomer = getNoahOnRampUrl;
 
 function BuyModule() {
-  const { data: sharedCredential } = useSharedCredential();
-  const navigate = useNavigate();
+  const { data: sharedCredential, isLoading } = useSharedCredential();
   return (
     <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
       <h3 className="text-xl">Buy Tokens</h3>
@@ -119,15 +117,9 @@ function BuyModule() {
           </p>
         </div>
         {sharedCredential?.credentialContent ? (
-          <OnRampDialog />
+          <OnRampDialog loading={isLoading} />
         ) : (
-          <Button
-            type="button"
-            className="bg-[#74FB5B] text-black h-10 rounded-xl font-sans"
-            onClick={() => navigate({ to: '/notabank/kyc' })}
-          >
-            Continue
-          </Button>
+          <KycSubmitDisclaimer loading={isLoading} />
         )}
       </form>
       <p className="flex items-center gap-2 font-sans text-sm text-center place-content-center">

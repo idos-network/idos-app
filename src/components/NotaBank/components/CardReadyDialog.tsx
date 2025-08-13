@@ -20,6 +20,7 @@ export default function CardReadyDialog() {
       <DialogTrigger asChild>
         <Button
           variant="secondary"
+          disabled
           className="flex-1 max-w-[150px] bg-[#404040B2] hover:bg-gray-700 text-white border-0 py-2.5  font-medium"
         >
           Disagree

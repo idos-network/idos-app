@@ -1,6 +1,6 @@
+import { Button } from '@/components/ui/button';
 import { useNavigate } from '@tanstack/react-router';
 import { LandingCoreUI } from './Landing';
-import { Button } from '@/components/ui/button';
 
 export default function NotaCard() {
   const navigate = useNavigate();
@@ -14,9 +14,7 @@ export default function NotaCard() {
         </p>
         <Button
           className="px-5 w-fit mt-10 bg-[#74FB5B] text-neutral-950"
-          onClick={() =>
-            navigate({ to: '/notabank/notacard/terms-and-conditions' })
-          }
+          onClick={() => navigate({ to: '/notabank/terms-and-conditions' })}
         >
           Get NotaCard
         </Button>

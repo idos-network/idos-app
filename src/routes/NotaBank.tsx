@@ -42,6 +42,6 @@ export const notabankNotaCardRoute = createRoute({
 
 export const notabankNotaCardTermsAndConditionsRoute = createRoute({
   getParentRoute: () => notabankRoute,
-  path: '/notacard/terms-and-conditions',
+  path: '/terms-and-conditions',
   component: NotaCardTermsAndConditions,
 });

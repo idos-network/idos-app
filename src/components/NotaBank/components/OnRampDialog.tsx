@@ -11,6 +11,7 @@ import {
 import { useIdOS } from '@/context/idos-context';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 
@@ -38,7 +39,7 @@ const useOnrampUrl = () => {
   });
 };
 
-export default function OnRampDialog() {
+export default function OnRampDialog({ loading }: { loading: boolean }) {
   const { icon, name, color } = onrampProviderIcon[selectedOnrampProvider];
   const [isReady, setIsReady] = useState(false);
   const [isIframeLoading, setIsIframeLoading] = useState(false);
@@ -70,7 +71,7 @@ export default function OnRampDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[450px] bg-[#1A1A1A] border-none pt-10">
         {isReady ? (
-          isPending || isLoading ? (
+          isPending || isLoading || loading ? (
             <div className="flex flex-col items-center justify-center min-h-[500px] gap-4">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#74FB5B]"></div>
               <p className="text-neutral-400 text-sm">Loading checkout...</p>
@@ -119,23 +120,13 @@ export default function OnRampDialog() {
               </p>
               <p className="text-sm text-neutral-400 text-center">
                 By clicking "Continue" you agree to {name.toUpperCase()}'s
-                <a
-                  href="https://noah.com/terms-of-service"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mx-1"
-                >
+                <Link to="/notabank/terms-and-conditions" className="mx-1">
                   <u>Terms of Service</u>
-                </a>
+                </Link>
                 and
-                <a
-                  href="https://noah.com/privacy-policy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mx-1"
-                >
+                <Link to="/notabank/terms-and-conditions" className="mx-1">
                   <u>Privacy Policy</u>
-                </a>
+                </Link>
                 .
               </p>
             </div>

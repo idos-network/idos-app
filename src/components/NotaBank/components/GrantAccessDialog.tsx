@@ -21,7 +21,10 @@ export default function GrantAccessDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="flex-1 bg-[#74FB5B] hover:bg-green-600 text-black py-2.5  font-medium max-w-[150px]">
+        <Button
+          disabled
+          className="flex-1 bg-[#74FB5B] hover:bg-green-600 text-black py-2.5  font-medium max-w-[150px]"
+        >
           Agree
         </Button>
       </DialogTrigger>
