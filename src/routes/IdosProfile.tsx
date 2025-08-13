@@ -1,6 +1,8 @@
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
+import { useIdOSLoggedIn } from '@/context/idos-context';
 import { env } from '@/env';
+import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useSpecificCredential } from '@/hooks/useCredentials';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
 import { useToast } from '@/hooks/useToast';
@@ -13,19 +15,24 @@ export function IdosProfile() {
     useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
   const { mainEvm } = useUserMainEvm();
   const { showToast } = useToast();
+  const idOSLoggedIn = useIdOSLoggedIn();
+  const { completeQuest } = useCompleteQuest();
 
   useEffect(() => {
     const toastData = localStorage.getItem('showToast');
-    if (toastData) {
+    if (toastData && idOSLoggedIn) {
       try {
         const { type, message } = JSON.parse(toastData);
         showToast({ type, message: message });
+        setTimeout(() => {
+          completeQuest(idOSLoggedIn.user.id, 'create_idos_profile');
+        }, 2000);
       } catch (e) {
         // ignore parse errors
       }
       localStorage.removeItem('showToast');
     }
-  }, [showToast]);
+  }, [idOSLoggedIn, showToast, completeQuest]);
 
   return (
     <div className="flex items-start justify-center">
