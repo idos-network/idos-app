@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 const krakenApiUrl = process.env.KRAKEN_API_URL as string;
 const krakenClientId = process.env.KRAKEN_CLIENT_ID as string;
 const krakenLevel = process.env.KRAKEN_LEVEL as string;
-const krakenPrivateKey = process.env.KRAKEN_PRIVATE_KEY as string;
+const krakenPrivateKey = process.env.KRAKEN_PRIVATE_KEY?.replace(/\\n/g, '\n') as string;
 
 
 export default async (_request: Request, _context: Context) => {
