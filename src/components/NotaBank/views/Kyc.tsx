@@ -4,13 +4,14 @@ import { useIdOS } from '@/context/idos-context';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function Kyc() {
   const { idOSClient, setIdOSClient } = useIdOS();
   const { data: sharedCredential, isLoading } = useSharedCredential();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [isIframeLoading, setIsIframeLoading] = useState(true);
 
   const { data: url } = useQuery({
     queryKey: ['kyc-url'],
@@ -22,6 +23,16 @@ export default function Kyc() {
     refetchOnReconnect: false,
     enabled: !isLoading && !sharedCredential?.credentialContent,
   });
+
+  const handleIframeLoad = () => {
+    setIsIframeLoading(false);
+  };
+
+  useEffect(() => {
+    if (url) {
+      setIsIframeLoading(true);
+    }
+  }, [url]);
 
   const onSuccess = useCallback(
     async (data: any) => {
@@ -76,7 +87,6 @@ export default function Kyc() {
     return () => controller.abort();
   }, []);
 
-  // Show loading while checking for shared credentials
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[85vh] gap-6">
@@ -128,11 +138,21 @@ export default function Kyc() {
 
   // Show KYC iframe if no shared credentials
   return (
-    <div>
+    <div className="relative">
+      {isIframeLoading && (
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#1A1A1A] rounded-2xl z-10"
+          style={{ height: '85vh' }}
+        >
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#74FB5B]"></div>
+          <p className="text-neutral-400 text-sm">Loading verification...</p>
+        </div>
+      )}
       <iframe
         src={url}
         className="w-full rounded-2xl overflow-hidden"
         style={{ height: '85vh' }}
+        onLoad={handleIframeLoad}
       />
     </div>
   );
