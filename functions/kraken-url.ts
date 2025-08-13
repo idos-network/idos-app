@@ -21,8 +21,10 @@ export default async (_request: Request, _context: Context) => {
         state: Date.now().toString(),
     };
     try {
+        console.log({ krakenPrivateKey });
 
         const token = jwt.sign(payload, krakenPrivateKey, { algorithm: "ES512" });
+        console.log({ token });
 
         return new Response(JSON.stringify({ url: `${krakenApiUrl}/kyc?token=${token}&provider=${"persona"}` }), { status: 200 });
     } catch (error) {
