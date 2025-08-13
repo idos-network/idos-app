@@ -1,6 +1,6 @@
+import crypto from 'crypto';
 import { z } from 'zod';
 import questsData from '../../quests.json';
-import crypto from 'crypto';
 
 export const questSchema = z.object({
   id: z.number(),
@@ -8,6 +8,8 @@ export const questSchema = z.object({
   title: z.string(),
   description: z.string(),
   link: z.string(),
+  internal: z.boolean(),
+  buttonText: z.string(),
   pointsReward: z.number(),
   isActive: z.boolean(),
   isRepeatable: z.boolean(),
