@@ -64,7 +64,9 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
                 <tr
                   key={quest.id}
                   className={`text-base h-[52px] ${!isLastRow ? 'border-neutral-800 border-b' : ''} ${
-                    isCompleted ? 'text-neutral-400' : 'text-neutral-200'
+                    isCompleted
+                      ? 'text-neutral-400'
+                      : 'text-neutral-200 hover:text-[#C99BFF]'
                   }`}
                 >
                   <td

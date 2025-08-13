@@ -54,7 +54,7 @@ export default function Toast({
         >
           <path
             d="M 100 0 L 108 8 L 180 8 Q 192 8 192 20 L 192 48 Q 192 60 180 60 L 20 60 Q 8 60 8 48 L 8 20 Q 8 8 20 8 L 92 8 Z"
-            fill="rgba(116, 45, 208, 0.6)"
+            fill="rgba(116, 45, 208, 0.4)"
           />
         </svg>
       </div>

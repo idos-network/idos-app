@@ -2,7 +2,7 @@ import CloseButton from '@/components/CloseButton';
 import type { QuestWithStatus } from '@/hooks/useQuests';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import SmallPrimaryButton from '../SmallPrimaryButton';
+import MediumPrimaryButton from '../MediumPrimaryButton';
 
 interface QuestsModalProps {
   isOpen: boolean;
@@ -52,35 +52,43 @@ export default function QuestsModal({
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative w-[350px] bg-neutral-950 rounded-2xl border border-neutral-800 overflow-hidden"
+        className="relative w-[400px] bg-neutral-950 rounded-2xl border border-neutral-800 overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-end px-6 pt-6 bg-neutral-800/60 border-neutral-700 rounded-t-2xl pb-5">
-          <div className="flex items-center justify-center bg-[#1D083E] rounded-lg border border-[#441983] gap-2 px-2 py-1 h-7 mr-2">
-            <img src="/idos-points-logo.png" alt="Points" className="w-4 h-4" />
-            <div className="text-sm font-medium text-neutral-50">
-              {quest.pointsReward}
-            </div>
-          </div>
+        <div className="flex items-center justify-end px-6 pt-6 bg-neutral-800/60 border-neutral-700 rounded-t-2xl">
           <CloseButton onClose={onClose} />
         </div>
         {/* Body */}
         <div className="px-6 pb-6 bg-neutral-800/60">
-          <div className="flex flex-col items-center gap-8">
-            <div className="flex flex-col items-center gap-8">
-              <span className="text-2xl font-normal text-neutral-50">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4">
+              <span className="text-[28px] font-normal text-neutral-50">
                 {quest.title}
               </span>
-              <span className="text-base text-neutral-400 font-['Inter'] text-center whitespace-pre-line">
+              <div className="flex items-center justify-center bg-[#1D083E] rounded-lg border border-[#441983] gap-2 px-2 py-1 h-7 mr-2">
+                <img
+                  src="/idos-points-logo.png"
+                  alt="Points"
+                  className="w-4 h-4"
+                />
+                <div className="text-sm font-medium text-neutral-50">
+                  {quest.pointsReward} Points
+                </div>
+              </div>
+              <span className="text-base font-light text-neutral-400 font-['Inter'] text-center whitespace-pre-line">
                 {quest.description}
               </span>
             </div>
-
             {/* Action Buttons */}
-            <div className="flex justify-between gap-5">
-              <SmallPrimaryButton disabled={quest.status === 'Completed'}>
-                {quest.status === 'Available' ? 'Claim Quest' : 'Completed'}
-              </SmallPrimaryButton>
+            <div className="flex justify-center gap-5">
+              <MediumPrimaryButton
+                onClick={() => {
+                  window.open(quest.link, '_blank');
+                }}
+                disabled={quest.status === 'Completed'}
+              >
+                {quest.buttonText}
+              </MediumPrimaryButton>
             </div>
           </div>
         </div>
