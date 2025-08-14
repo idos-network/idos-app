@@ -16,7 +16,7 @@ export const useCompleteQuest = () => {
         const result = await completeUserQuest(userId, questName);
         const quest = getQuestByName(questName);
 
-        if (result.success) {
+        if (result.success && questName !== 'create_idos_profile') {
           showToast({
             type: 'quest',
             message: 'You earned',

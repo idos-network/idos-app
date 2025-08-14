@@ -6,6 +6,7 @@ import {
   handleDWGCredential,
 } from '@/handlers/idos-credential';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
+import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useSpecificCredential } from '@/hooks/useCredentials';
 import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
@@ -22,6 +23,7 @@ import KeyIcon from '@/icons/key';
 import PersonIcon from '@/icons/person';
 import WalletIcon from '@/icons/wallet';
 import type { IdosDWG } from '@/interfaces/idos-credential';
+import { useReferralCode } from '@/providers/quests/referral-provider';
 import {
   clearUserDataFromLocalStorage,
   getCurrentUserFromLocalStorage,
@@ -357,9 +359,11 @@ function StepFour({ onNext }: { onNext: () => void }) {
   const idOSLoggedIn = useIdOSLoggedIn();
   const { showToast } = useToast();
   const { selector } = useNearWallet();
+  const { referralCode } = useReferralCode();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const { signMessageAsync } = useSignMessage();
+  const { completeQuest } = useCompleteQuest();
 
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
@@ -373,22 +377,23 @@ function StepFour({ onNext }: { onNext: () => void }) {
           updateUser({
             id: idOSLoggedIn!.user.id,
             mainEvm: wallet.address,
-            referrerCode: '', // TODO: pass referrer code
+            referrerCode: referralCode || '',
           });
         } else {
           saveUser({
             id: idOSLoggedIn!.user.id,
             mainEvm: wallet.address,
-            referrerCode: '', // TODO: pass referrer code
+            referrerCode: referralCode || '',
           });
         }
         localStorage.setItem(
-          'showToast',
+          'showCompleteToast',
           JSON.stringify({
             type: 'success',
             message: 'Onboarding completed successfully.',
           }),
         );
+        completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
         window.location.href = '/';
       } else if (error) {
         setState('idle');
@@ -508,9 +513,11 @@ function StepFive() {
   const { refresh } = useIdOS();
   const { showToast } = useToast();
   const idOSLoggedIn = useIdOSLoggedIn();
+  const { referralCode } = useReferralCode();
   const [walletAddress, setWalletAddress] = useState<string>('');
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const { completeQuest } = useCompleteQuest();
 
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
@@ -522,22 +529,23 @@ function StepFive() {
           updateUser({
             id: idOSLoggedIn!.user.id,
             mainEvm: walletAddress,
-            referrerCode: '', // TODO: pass referrer code
+            referrerCode: referralCode || '',
           });
         } else {
           saveUser({
             id: idOSLoggedIn!.user.id,
             mainEvm: walletAddress,
-            referrerCode: '', // TODO: pass referrer code
+            referrerCode: referralCode || '',
           });
         }
         localStorage.setItem(
-          'showToast',
+          'showCompleteToast',
           JSON.stringify({
             type: 'success',
             message: 'Onboarding completed successfully.',
           }),
         );
+        completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
         window.location.href = '/';
       }
       if (error) {
