@@ -3,6 +3,7 @@ import Buy from '@/components/NotaBank/views/Buy';
 import Kyc from '@/components/NotaBank/views/Kyc';
 import Landing from '@/components/NotaBank/views/Landing';
 import NotaCard from '@/components/NotaBank/views/NotaCard';
+import Onramp from '@/components/NotaBank/views/Onramp';
 import Sell from '@/components/NotaBank/views/Sell';
 import { notabankRoute } from '@/routes';
 import { createRoute } from '@tanstack/react-router';
@@ -44,4 +45,10 @@ export const notabankNotaCardTermsAndConditionsRoute = createRoute({
   getParentRoute: () => notabankRoute,
   path: '/notacard/terms-and-conditions',
   component: NotaCardTermsAndConditions,
+});
+
+export const notabankOnrampRoute = createRoute({
+  getParentRoute: () => notabankRoute,
+  path: '/onramp',
+  component: Onramp,
 });

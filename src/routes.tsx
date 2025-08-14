@@ -15,6 +15,7 @@ import {
   notabankKycRoute,
   notabankNotaCardRoute,
   notabankNotaCardTermsAndConditionsRoute,
+  notabankOnrampRoute,
   notabankSellRoute,
 } from './routes/NotaBank';
 import { Points } from './routes/Points';
@@ -94,6 +95,7 @@ export const routeTree = rootRoute.addChildren([
       notabankKycRoute,
       notabankNotaCardRoute,
       notabankNotaCardTermsAndConditionsRoute,
+      notabankOnrampRoute,
     ]),
   ]),
 ]);
