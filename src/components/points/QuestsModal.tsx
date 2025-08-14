@@ -1,5 +1,5 @@
 import CloseButton from '@/components/CloseButton';
-import { useHandleQuestClick } from '@/handlers/quests';
+import { useHandleQuestClick } from '@/hooks/useHandleQuestClick';
 import type { QuestWithStatus } from '@/hooks/useQuests';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';

@@ -117,6 +117,11 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
                 </td>
               </tr>
             )}
+            <tr className="text-neutral-400 text-base h-[52px] border-neutral-800 border-t">
+              <td colSpan={3} className="px-4 text-left">
+                More quests coming soon
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
