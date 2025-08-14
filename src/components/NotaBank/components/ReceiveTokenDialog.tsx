@@ -1,4 +1,3 @@
-import { ReceiveIcon } from '@/components/icons';
 import CopyIcon from '@/components/icons/copy';
 import NeobankLogoIcon from '@/components/icons/neobank-logo';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
+import { ArrowDownLeftIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export function ReceiveTokenDialog() {
@@ -23,10 +23,8 @@ export function ReceiveTokenDialog() {
     <Dialog>
       <form>
         <DialogTrigger asChild>
-          <Button
-            className={`flex items-center gap-2 px-6! py-3 h-[45px] rounded-2xl font-medium text-sm transition-all duration-200 hover:scale-105 bg-neutral-100 text-black hover:bg-neutral-500`}
-          >
-            <ReceiveIcon /> Receive{' '}
+          <Button>
+            <ArrowDownLeftIcon className="size-5" /> Receive
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] bg-[#1A1A1A] border-none">
@@ -39,7 +37,7 @@ export function ReceiveTokenDialog() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 mt-4">
-            <Label className="font-medium text-muted text-neutral-400">
+            <Label className="font-medium text-muted">
               Your wallet address
             </Label>
             <div className="flex py-4 px-6 w-full rounded-xl border-0 bg-[#26262699] text-sm text-white placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0">

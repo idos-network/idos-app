@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { NumberField } from '@base-ui-components/react/number-field';
 import { useId } from 'react';
 
@@ -17,26 +18,25 @@ function CursorGrowIcon(props: React.ComponentProps<'svg'>) {
   );
 }
 
-type AmountInputProps = {
-  id?: string;
-};
-
-export default function AmountInput(props: AmountInputProps) {
+export default function AmountInput(props: NumberField.Root.Props) {
   const id = useId();
   return (
-    <div className="flex items-center gap-2 justify-between">
-      <NumberField.Root
-        id={props.id ?? id}
-        defaultValue={100}
-        className="flex flex-col items-start gap-1"
-      >
+    <div className="flex items-center gap-2 w-full">
+      <NumberField.Root id={props.id ?? id} className="flex-1 w-full">
         <NumberField.ScrubArea className="cursor-ew-resize">
           <NumberField.ScrubAreaCursor className="drop-shadow-[0_1px_1px_#0008] filter">
             <CursorGrowIcon />
           </NumberField.ScrubAreaCursor>
         </NumberField.ScrubArea>
-        <NumberField.Group className="flex">
-          <NumberField.Input className="h-16 w-full border border-neutral-800 text-neutral-50 tabular-nums focus:z-1 focus:-outline-offset-0 focus:outline-neutral-600 text-2xl px-2" />
+        <NumberField.Group className="flex w-full">
+          <NumberField.Input
+            className={cn(
+              'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+              'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+              'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+              props.className,
+            )}
+          />
         </NumberField.Group>
       </NumberField.Root>
     </div>

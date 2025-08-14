@@ -1,3 +1,11 @@
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import * as React from 'react';
 import {
   CartesianGrid,
@@ -7,14 +15,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
 
 // Generate sample data for different time periods
 const generateData = (period: string) => {
@@ -135,13 +135,11 @@ export default function PerformanceChart() {
       <CardContent className="">
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between sm:gap-0">
-          <h2 className="font-semibold text-white text-xl sm:text-2xl">
+          <h2 className="mb-6 font-light font-heading text-2xl text-white">
             Balance
           </h2>
           <div className="text-left sm:text-right">
-            <div className="font-bold text-2xl text-white sm:text-3xl">
-              ${currentValue.toFixed(2)}
-            </div>
+            <div className="text-xl text-white">${currentValue.toFixed(2)}</div>
             <div
               className={`text-sm ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}
             >

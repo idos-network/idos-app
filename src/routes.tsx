@@ -70,7 +70,12 @@ export const stakingEventRoute = createRoute({
 export const notabankRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/notabank',
-  component: () => <Outlet />,
+  component: () => (
+    // Yes, this looks ugly, but it's the only way to override the font-sans class at the moment until we merge properly the styles.
+    <div className="font-sans!">
+      <Outlet />
+    </div>
+  ),
 });
 
 // Points route

@@ -1,6 +1,7 @@
 import { getNoahOnRampUrl } from '@/api/noah';
 import { getSharedCredential } from '@/api/shared-credential';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -11,7 +12,7 @@ import {
 import { useSharedCredential } from '@/hooks/useSharedCredential';
 import { useNavigate } from '@tanstack/react-router';
 import { TokenETH, TokenUSDC, TokenUSDT } from '@web3icons/react';
-import { FlameIcon } from 'lucide-react';
+import { DollarSignIcon, EuroIcon, FlameIcon } from 'lucide-react';
 import ActionToolbar from '../components/ActionToolbar';
 import AmountInput from '../components/AmountInput';
 import OnRampDialog from '../components/OnRampDialog';
@@ -28,76 +29,54 @@ function BuyModule() {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
-      <h3 className="text-xl">Buy Tokens</h3>
+      <h3 className="text-xl font-heading">Buy Tokens</h3>
       <form className="flex flex-col gap-5">
-        <div className="flex flex-col gap-4">
-          <label
-            className="text-sm text-neutral-400 font-sans"
+        <div className="flex flex-col gap-3">
+          <Label
+            className="text-muted-foreground text-sm"
             htmlFor="spend-amount"
           >
             I want to spend
-          </label>
-          <div className="h-20 flex items-center gap-4 bg-neutral-800 rounded-2xl px-4">
-            <AmountInput id="spend-amount" />
+          </Label>
+          <div className="flex items-center gap-2">
+            <AmountInput className="flex-1" id="spend-amount" />
             <Select>
-              <SelectTrigger className="h-16 w-fit border border-none text-neutral-50 tabular-nums focus:z-1 focus:-outline-offset-0 focus:outline-neutral-600 text-sm px-2">
+              <SelectTrigger className="w-24">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
-              <SelectContent className="bg-neutral-800 border-none text-sm">
-                <SelectItem
-                  value="usd"
-                  className="hover:bg-neutral-700 text-sm rounded-none"
-                >
+              <SelectContent>
+                <SelectItem value="usd">
+                  <DollarSignIcon className="size-5" />
                   <span>USD</span>
                 </SelectItem>
-                <SelectItem
-                  value="eur"
-                  className="hover:bg-neutral-700 border-t border-neutral-700 text-sm rounded-none"
-                >
+                <SelectItem value="eur">
+                  <EuroIcon className="size-5" />
                   <span>EUR</span>
-                </SelectItem>
-                <SelectItem
-                  value="gbp"
-                  className="hover:bg-neutral-700 border-t border-neutral-700 text-sm rounded-none"
-                >
-                  <span>GBP</span>
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
-        <div className="flex flex-col gap-4">
-          <label
-            className="text-sm text-neutral-400 font-sans"
-            htmlFor="buy-amount"
-          >
+        <div className="flex flex-col gap-3">
+          <Label className="text-muted-foreground text-sm" htmlFor="buy-amount">
             I want to buy
-          </label>
-          <div className="h-20 flex items-center gap-4 bg-neutral-800 rounded-2xl px-4">
-            <AmountInput id="buy-amount" />
+          </Label>
+          <div className="flex items-center gap-2">
+            <AmountInput className="flex-1" id="buy-amount" />
             <Select>
-              <SelectTrigger className="h-16 w-fit border border-none text-neutral-50 tabular-nums focus:z-1 focus:-outline-offset-0 focus:outline-neutral-600 text-sm px-2">
+              <SelectTrigger className="w-24">
                 <SelectValue placeholder="Select token" />
               </SelectTrigger>
-              <SelectContent className="bg-neutral-800 border-none">
-                <SelectItem
-                  value="usdc"
-                  className="hover:bg-neutral-700 text-sm rounded-none"
-                >
+              <SelectContent>
+                <SelectItem value="usdc">
                   <TokenUSDC className="size-8" />
                   <span>USDC</span>
                 </SelectItem>
-                <SelectItem
-                  value="usdt"
-                  className="hover:bg-neutral-700 border-t border-neutral-700 text-sm rounded-none"
-                >
+                <SelectItem value="usdt">
                   <TokenUSDT className="size-8" />
                   <span>USDT</span>
                 </SelectItem>
-                <SelectItem
-                  value="eth"
-                  className="hover:bg-neutral-700 border-t border-neutral-700 text-sm rounded-none"
-                >
+                <SelectItem value="eth">
                   <TokenETH className="size-8" />
                   <span>ETH</span>
                 </SelectItem>
@@ -105,9 +84,10 @@ function BuyModule() {
             </Select>
           </div>
         </div>
+        <ProviderQuotes />
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-sans">Gas Fee</p>
-          <p className="text-sm font-sans flex items-center gap-1 justify-between">
+          <p className="text-sm">Gas Fee</p>
+          <p className="text-sm flex items-center gap-1 justify-between">
             <span>
               1 USD = 0.000005859 ETH
               <span className="text-neutral-400">($1,632)</span>
@@ -123,30 +103,26 @@ function BuyModule() {
         ) : (
           <Button
             type="button"
-            className="bg-[#74FB5B] text-black h-10 rounded-xl font-sans"
+            variant="secondary"
             onClick={() => navigate({ to: '/notabank/kyc' })}
           >
             Continue
           </Button>
         )}
       </form>
-      <p className="flex items-center gap-2 font-sans text-sm text-center place-content-center">
-        Payment processing done by <img src="/noah.svg" alt="noah" width={58} />
-      </p>
     </div>
   );
 }
 
 export default function Buy() {
   return (
-    <div className="flex flex-col justify-center w-full md:px-[120px] max-w-7xl mx-auto">
+    <div className="flex flex-col justify-center w-full max-w-4xl mx-auto">
       <div className="flex justify-between items-center w-full h-[60px] gap-5">
         <UserBalance />
         <ActionToolbar />
       </div>
-      <div className="mt-10 flex justify-between gap-5 w-full max-w-4xl mx-auto">
+      <div className="mt-10 flex place-content-center items-center gap-5 w-full max-w-4xl mx-auto">
         <BuyModule />
-        <ProviderQuotes />
       </div>
     </div>
   );

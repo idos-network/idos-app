@@ -51,7 +51,7 @@ export default function HeroCard({
         <div className="relative p-6">
           <div className="space-y-6">
             <div className="flex flex-col gap-4">
-              <h1 className="text-4xl  font-semibold text-white tracking-tight drop-shadow-lg">
+              <h1 className="text-4xl  font-semibold text-white tracking-tight drop-shadow-lg font-heading">
                 {title}
               </h1>
 

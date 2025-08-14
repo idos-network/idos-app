@@ -1,17 +1,18 @@
-import HeroCard from '../components/HeroCard';
-import UserBalance from '../components/UserBalance';
 import ActionToolbar from '../components/ActionToolbar';
-import TransactionHistory from '../components/TransactionHistory';
 import PerformanceChart from '../components/PerformanceChart';
+import TransactionHistory from '../components/TransactionHistory';
+import UserBalance from '../components/UserBalance';
 
 export const LandingCoreUI = () => (
   <>
-    <div className="flex justify-between items-center mt-10 md:px-20">
-      <UserBalance />
-      <ActionToolbar />
+    <div className="flex flex-col justify-center w-full max-w-4xl mx-auto">
+      <div className="flex justify-between items-center w-full h-[60px] gap-5">
+        <UserBalance />
+        <ActionToolbar />
+      </div>
     </div>
 
-    <div className="flex justify-between mt-10 md:px-20 gap-5">
+    <div className="flex justify-between mt-10 gap-5 max-w-4xl mx-auto">
       <TransactionHistory />
       <PerformanceChart />
     </div>
@@ -19,23 +20,5 @@ export const LandingCoreUI = () => (
 );
 
 export default function Landing() {
-  return (
-    <>
-      <div className="flex flex-wrap items-center gap-2">
-        <HeroCard
-          title="NotaCard"
-          subtitle="Your digital bank"
-          buttonText="Get Card"
-          buttonLink="/notabank/notacard"
-        />
-        <HeroCard
-          title="NotaWallet"
-          subtitle="Your digital wallet"
-          buttonText="Get Wallet"
-          buttonLink="/"
-        />
-      </div>
-      <LandingCoreUI />
-    </>
-  );
+  return <LandingCoreUI />;
 }

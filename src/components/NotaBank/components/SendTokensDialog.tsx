@@ -1,4 +1,3 @@
-import { SendIcon } from '@/components/icons';
 import GasIcon from '@/components/icons/Gas';
 import NeobankLogoIcon from '@/components/icons/neobank-logo';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { useGasFees } from '@/hooks/useGasFees';
 import { getTokenInfo } from '@/utils/coins';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
+import { ArrowUpRightIcon, Loader2 } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { erc20Abi, parseUnits } from 'viem';
 import { useAccount, useBalance, useWriteContract } from 'wagmi';
@@ -106,10 +105,8 @@ export function SendTokensDialog() {
     <Dialog>
       <form>
         <DialogTrigger asChild>
-          <Button
-            className={`flex items-center gap-2 px-6! py-3 h-[45px] rounded-2xl font-medium text-sm transition-all duration-200 hover:scale-105 bg-neutral-100 text-black hover:bg-neutral-500`}
-          >
-            <SendIcon /> Send{' '}
+          <Button>
+            <ArrowUpRightIcon className="size-5" /> Send
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] bg-[#1A1A1A] border-none">
@@ -123,9 +120,7 @@ export function SendTokensDialog() {
           </DialogHeader>
           <div className="grid gap-4 mt-4">
             <div className="grid gap-4 mt-4">
-              <Label className="font-medium text-muted text-neutral-400">
-                Recipient
-              </Label>
+              <Label className="font-medium text-muted">Recipient</Label>
               <Input
                 type="text"
                 placeholder="0x5d4f2C8258f3F77B7365B60745Eb821D696DB777"
