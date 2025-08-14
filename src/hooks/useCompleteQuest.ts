@@ -15,7 +15,7 @@ export const useCompleteQuest = () => {
       try {
         const result = await completeUserQuest(userId, questName);
         const quest = getQuestByName(questName);
-        console.log(quest);
+
         if (result.success) {
           showToast({
             type: 'quest',

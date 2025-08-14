@@ -70,7 +70,7 @@ export function useHandleQuestClick(onModalClose?: () => void) {
         }
       }
     },
-    [navigate, handleReferralQuest, onModalClose],
+    [navigate, handleReferralQuest, onModalClose, userId, completeQuest],
   );
 
   return handleQuestClick;
