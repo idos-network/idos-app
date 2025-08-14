@@ -1,17 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
+import CloseButton from '@/components/CloseButton';
+import SmallSecondaryButton from '@/components/SmallSecondaryButton';
 import { useToast } from '@/hooks/useToast';
+import { useWalletConnector } from '@/hooks/useWalletConnector';
+import CopyIcon from '@/icons/copy';
+import LogoutIcon from '@/icons/logout';
+import truncateAddress from '@/utils/address';
+import { addressGradient } from '@/utils/gradient';
 import {
   profileStatusStyles,
   profileStatusTexts,
 } from '@/utils/profile-status';
-import CloseButton from '@/components/CloseButton';
-import CopyIcon from '@/icons/copy';
-import LogoutIcon from '@/icons/logout';
-import SmallSecondaryButton from '@/components/SmallSecondaryButton';
-import { addressGradient } from '@/utils/gradient';
-import truncateAddress from '@/utils/address';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface WalletDetailsModalProps {
   isOpen: boolean;
@@ -63,6 +63,7 @@ export default function WalletDetailsModal({
     setIsSigningOut(true);
     try {
       await disconnect();
+      localStorage.removeItem('onboardingToastShown');
       onClose();
     } catch (error) {
       showToast({

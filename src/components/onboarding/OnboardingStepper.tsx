@@ -50,7 +50,9 @@ function useStepState(initial = 'idle') {
 // Get started
 function StepOne({ onNext }: { onNext: () => void }) {
   const { showToast } = useToast();
-  const [hasShownToast, setHasShownToast] = useState(false);
+  const [hasShownToast, setHasShownToast] = useState(() => {
+    return localStorage.getItem('onboardingToastShown') === 'true';
+  });
 
   useEffect(() => {
     if (!hasShownToast) {
@@ -60,6 +62,7 @@ function StepOne({ onNext }: { onNext: () => void }) {
           message: '',
           duration: 45000,
         });
+        localStorage.setItem('onboardingToastShown', 'true');
       }, 750);
       setHasShownToast(true);
     }
