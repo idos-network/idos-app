@@ -54,13 +54,20 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       const id = ++toastId;
       setToasts((toasts) => [...toasts, { ...options, id }]);
       const duration = options.duration ?? 3500;
-      timers.current[id] = setTimeout(() => removeToast(id), duration);
+      // Only set timeout if duration is not Infinity (persistent toast)
+      if (duration !== Infinity) {
+        timers.current[id] = setTimeout(() => removeToast(id), duration);
+      }
     },
     [removeToast],
   );
 
-  const defaultToasts = toasts.filter((toast) => toast.type !== 'quest');
-  const questToasts = toasts.filter((toast) => toast.type === 'quest');
+  const defaultToasts = toasts.filter(
+    (toast) => toast.type !== 'quest' && toast.type !== 'onboarding',
+  );
+  const questToasts = toasts.filter(
+    (toast) => toast.type === 'quest' || toast.type === 'onboarding',
+  );
 
   return (
     <ToastContext.Provider value={{ showToast, setPointsFrameRef }}>

@@ -1,6 +1,11 @@
 import { createContext, useContext } from 'react';
 
-export type ToastType = 'success' | 'warning' | 'error' | 'quest';
+export type ToastType =
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'quest'
+  | 'onboarding';
 
 export interface ToastOptions {
   type: ToastType;
