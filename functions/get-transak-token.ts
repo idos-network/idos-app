@@ -3,6 +3,10 @@ import jwt from "jsonwebtoken";
 import https from "node:https";
 import invariant from "tiny-invariant";
 
+const krakenClientId = process.env.KRAKEN_CLIENT_ID as string;
+const krakenPrivateKey = process.env.KRAKEN_PRIVATE_KEY?.replace(/\\n/g, '\n') as string;
+
+
 export default async (_request: Request, _context: Context) => {
     const credentialId = _request.url.split("?")[1].split("=")[1];
     const response = await fetch(
@@ -26,11 +30,11 @@ export default async (_request: Request, _context: Context) => {
 async function getKrakenToken(): Promise<string> {
     const payload = {
         api: true,
-        clientId: process.env.KRAKEN_CLIENT_ID,
+        clientId: krakenClientId,
     };
-    invariant(process.env.KRAKEN_PRIVATE_KEY, "KRAKEN_PRIVATE_KEY is not set");
 
-    return jwt.sign(payload, process.env.KRAKEN_PRIVATE_KEY, {
+    invariant(krakenPrivateKey, "KRAKEN_PRIVATE_KEY is not set");
+    return jwt.sign(payload, krakenPrivateKey, {
         algorithm: "ES512",
         expiresIn: "600s",
     });
