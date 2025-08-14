@@ -1,8 +1,8 @@
-import { create } from 'zustand';
 import {
   currencies,
   tokens,
 } from '@/components/NotaBank/components/TokenAmountInput';
+import { create } from 'zustand';
 
 export const useBuyStore = create<{
   spendAmount: string;
@@ -17,6 +17,8 @@ export const useBuyStore = create<{
   setSelectedToken: (selectedToken: string) => void;
   lastChanged: 'spend' | 'buy';
   setLastChanged: (field: 'spend' | 'buy') => void;
+  selectedProvider: string;
+  setSelectedProvider: (selectedProvider: string) => void;
 }>((set) => ({
   spendAmount: '',
   buyAmount: '',
@@ -48,4 +50,6 @@ export const useBuyStore = create<{
   setSelectedToken: (selectedToken) => set({ selectedToken }),
   lastChanged: 'spend',
   setLastChanged: (field) => set({ lastChanged: field }),
+  selectedProvider: 'transak',
+  setSelectedProvider: (selectedProvider) => set({ selectedProvider }),
 }));
