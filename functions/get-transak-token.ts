@@ -5,9 +5,6 @@ import invariant from "tiny-invariant";
 
 export default async (_request: Request, _context: Context) => {
     const credentialId = _request.url.split("?")[1].split("=")[1];
-    const token = await getKrakenToken()
-    console.log({ krakenToken: token });
-    console.log({ credentialId, process: process.env.TRANSAK_API_URL, env: process.env.TRANSAK_API_KEY });
     const response = await fetch(
         `${process.env.KRAKEN_API_URL}/public/kyc/dag/${credentialId}/sharedToken?forClientId=transak`,
         {
@@ -22,7 +19,6 @@ export default async (_request: Request, _context: Context) => {
             }),
         },
     ).then((res) => res.json());
-    console.log({ response });
 
     return Response.json({ token: response });
 }

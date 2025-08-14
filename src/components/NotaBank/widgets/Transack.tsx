@@ -8,8 +8,7 @@ export function TransakProvider({ transakToken }: { transakToken: string }) {
   const transak = useRef<Transak | null>(null);
 
   useEffect(() => {
-    const apiKey =
-      process.env.TRANSAK_API_KEY ?? '479983ae-3b37-4ac0-84f2-f42873b1a638';
+    const apiKey = import.meta.env.VITE_TRANSAK_API_KEY ?? '';
     if (!transak.current && transakToken) {
       console.log('Initializing Transak with token:', transakToken);
       invariant(apiKey, 'TRANSAK_API_KEY is not set');
