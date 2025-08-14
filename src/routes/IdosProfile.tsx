@@ -8,6 +8,8 @@ import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useToast } from '@/hooks/useToast';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
+import { useReferralCode } from '@/providers/quests/referral-provider';
+import { getQuestByName } from '@/utils/quests';
 import { useEffect, useState } from 'react';
 
 export function IdosProfile() {
@@ -22,6 +24,7 @@ export function IdosProfile() {
   const { showToast } = useToast();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { completeQuest } = useCompleteQuest();
+  const { referralCode, clearReferralCode } = useReferralCode();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -32,20 +35,32 @@ export function IdosProfile() {
   }, []);
 
   useEffect(() => {
-    const toastData = localStorage.getItem('showToast');
-    if (toastData && idOSLoggedIn) {
+    const completeToastData = localStorage.getItem('showCompleteToast');
+    const rewardPoints = getQuestByName('create_idos_profile')?.pointsReward;
+
+    if (completeToastData && idOSLoggedIn) {
       try {
-        const { type, message } = JSON.parse(toastData);
-        showToast({ type, message: message });
+        const { completeType, completeMessage } = JSON.parse(completeToastData);
         setTimeout(() => {
-          completeQuest(idOSLoggedIn.user.id, 'create_idos_profile');
+          showToast({ type: completeType, message: completeMessage });
         }, 2000);
+        setTimeout(() => {
+          showToast({
+            type: 'quest',
+            message: 'You earned',
+            points: rewardPoints || 0,
+            icon: false,
+          });
+        }, 3000);
       } catch (e) {
         // ignore parse errors
       }
-      localStorage.removeItem('showToast');
+      localStorage.removeItem('showCompleteToast');
+      if (referralCode) {
+        clearReferralCode();
+      }
     }
-  }, [idOSLoggedIn, showToast, completeQuest]);
+  }, [idOSLoggedIn, showToast, completeQuest, referralCode, clearReferralCode]);
 
   const isStillLoading =
     idosLoading || profileQuestLoading || isLoading || mainEvmLoading;

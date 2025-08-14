@@ -1,5 +1,5 @@
 import { idOSUserSchema } from '@/interfaces/user';
-import { questsConfig } from '@/utils/quests';
+import { generateReferralCode, questsConfig } from '@/utils/quests';
 import { count, eq } from 'drizzle-orm';
 import { db, users } from './index';
 import { getUserQuestsSummary } from './user-quests';
@@ -32,15 +32,31 @@ export async function getUserReferralCount(
 }
 
 export async function getUserTotalPoints(userId: string): Promise<number> {
-  const questSummaries = await getUserQuestsSummary(userId);
+  const [questSummaries, user] = await Promise.all([
+    getUserQuestsSummary(userId),
+    getUserById(userId),
+  ]);
 
   const questLookup = new Map(questsConfig.map((quest) => [quest.name, quest]));
 
-  return questSummaries.reduce((totalPoints, summary) => {
+  // Calculate points from completed quests
+  let totalPoints = questSummaries.reduce((points, summary) => {
     const quest = questLookup.get(summary.questName);
     if (quest) {
-      totalPoints += quest.pointsReward * summary.completionCount;
+      points += quest.pointsReward * summary.completionCount;
     }
-    return totalPoints;
+    return points;
   }, 0);
+
+  // Add referral points
+  if (user[0]?.id) {
+    const referralCode = generateReferralCode(user[0].id);
+    const referralCount = await getUserReferralCount(referralCode);
+    const referralQuest = questLookup.get('referral_program');
+    if (referralQuest && referralCount > 0) {
+      totalPoints += referralQuest.pointsReward * referralCount;
+    }
+  }
+
+  return totalPoints;
 }
