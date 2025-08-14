@@ -2,7 +2,7 @@ import type { ToastType } from '@/hooks/useToast';
 import CheckIcon from '@/icons/check';
 import CloseToastIcon from '@/icons/close-toast';
 import ExclamationIcon from '@/icons/exclamation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import OnboardingPointsToast from './points/OnboardingPointsToast';
 import QuestPointsToast from './points/QuestPointsToast';
 
@@ -48,35 +48,56 @@ export default function Toast({
   close = false,
   onClose,
 }: ToastProps) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation on mount
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const animationClasses = `transition-all duration-500 ease-out transform ${
+    isVisible
+      ? 'opacity-100 translate-y-0 scale-100'
+      : 'opacity-0 -translate-y-3 scale-95'
+  }`;
+
   return type === 'quest' ? (
-    <QuestPointsToast
-      message={message}
-      points={points ?? 0}
-      close={close}
-      onClose={onClose}
-    />
+    <div className={animationClasses}>
+      <QuestPointsToast
+        message={message}
+        points={points ?? 0}
+        close={close}
+        onClose={onClose}
+      />
+    </div>
   ) : type === 'onboarding' ? (
-    <OnboardingPointsToast onClose={onClose} />
+    <OnboardingPointsToast onClose={onClose} isVisible={isVisible} />
   ) : (
-    <div
-      className={`flex items-center font-['Inter'] rounded-lg px-3 py-3 h-10 w-fit ${typeStyles[type]}`}
-    >
-      {icon && (
-        <span
-          className={`mr-2 flex items-center justify-center w-5 h-5 rounded-full ${iconBgColors[type]}`}
-        >
-          {icons[type]}
-        </span>
-      )}
-      <span className="flex-1 text-sm font-normal pr-6">{message}</span>
-      {close && (
-        <button
-          onClick={onClose}
-          className="text-lg font-normal focus:outline-none"
-        >
-          <CloseToastIcon className="text-neutral-200 w-3 h-3" />
-        </button>
-      )}
+    <div className={animationClasses}>
+      <div
+        className={`flex items-center font-['Inter'] rounded-lg px-3 py-3 h-10 w-fit ${typeStyles[type]}`}
+      >
+        {icon && (
+          <span
+            className={`mr-2 flex items-center justify-center w-5 h-5 rounded-full ${iconBgColors[type]}`}
+          >
+            {icons[type]}
+          </span>
+        )}
+        <span className="flex-1 text-sm font-normal pr-6">{message}</span>
+        {close && (
+          <button
+            onClick={onClose}
+            className="text-lg font-normal focus:outline-none"
+          >
+            <CloseToastIcon className="text-neutral-200 w-3 h-3" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

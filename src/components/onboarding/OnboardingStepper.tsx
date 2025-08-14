@@ -52,11 +52,13 @@ function StepOne({ onNext }: { onNext: () => void }) {
 
   useEffect(() => {
     if (!hasShownToast) {
-      showToast({
-        type: 'onboarding',
-        message: '',
-        duration: Infinity,
-      });
+      setTimeout(() => {
+        showToast({
+          type: 'onboarding',
+          message: '',
+          duration: 45000,
+        });
+      }, 750);
       setHasShownToast(true);
     }
   }, [showToast, hasShownToast]);

@@ -2,25 +2,33 @@ import CloseIcon from '../icons/close';
 
 interface OnboardingPointsToastProps {
   onClose: () => void;
+  isVisible?: boolean;
 }
 
 export default function OnboardingPointsToast({
   onClose,
+  isVisible = true,
 }: OnboardingPointsToastProps) {
+  const contentAnimationClasses = `transition-all duration-500 ease-out transform ${
+    isVisible
+      ? 'opacity-100 translate-y-0 scale-100'
+      : 'opacity-0 -translate-y-3 scale-95'
+  }`;
+
   return (
-    <div className="relative w-[308px] h-[224px] rounded-2xl p-6">
-      {/* Blur background that matches the exact shape */}
+    <div className="relative w-[308px] h-[224px] p-6">
+      {/* Blur background that matches the exact shape - always visible for proper blur rendering */}
       <div
         className="absolute inset-0 backdrop-blur-md -z-10 bg-neutral-900/80"
         style={{
           clipPath:
-            'path("M 154 5 L 168 20 L 296 20 Q 308 20 308 32 L 308 212 Q 308 224 296 224 L 12 224 Q 0 224 0 212 L 0 32 Q 0 20 12 20 L 140 20 Z")',
+            'path("M 154 5 L 168 20 L 296 20 A 12 12 0 0 1 308 32 L 308 212 A 12 12 0 0 1 296 224 L 12 224 A 12 12 0 0 1 0 212 L 0 32 A 12 12 0 0 1 12 20 L 140 20 Z")',
         }}
       />
 
-      {/* Main toast shape */}
+      {/* Main toast shape - animated */}
       <svg
-        className="absolute inset-0 w-full h-full z-10"
+        className={`absolute inset-0 w-full h-full z-10 ${contentAnimationClasses}`}
         viewBox="-1 0 310 225"
         preserveAspectRatio="none"
       >
@@ -32,7 +40,9 @@ export default function OnboardingPointsToast({
         />
       </svg>
 
-      <div className="relative flex flex-col items-center justify-center w-full z-10 pt-4 gap-4">
+      <div
+        className={`relative flex flex-col items-center justify-center w-full z-10 pt-4 gap-4 ${contentAnimationClasses}`}
+      >
         <div className="flex items-center justify-between w-full">
           <div className="flex-1" />
           <h2 className="text-xl leading-7 font-semibold text-neutral-50">

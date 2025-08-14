@@ -2,23 +2,33 @@ import { useUserPoints } from '@/hooks/useUserPoints';
 import { Link } from '@tanstack/react-router';
 import { forwardRef } from 'react';
 
-const PointsHeaderFrame = forwardRef<HTMLAnchorElement>((_, ref) => {
-  const { points } = useUserPoints();
+interface PointsHeaderFrameProps {
+  highlight?: boolean;
+}
 
-  return (
-    <Link
-      ref={ref}
-      to="/points"
-      className="cursor-pointer flex gap-2 h-8 bg-[#1D083E] rounded-lg px-3 items-center justify-center border border-neutral-800 hover:bg-[#2F1061] transition-colors duration-200 hover:border-[#5A23A7]"
-    >
-      <img src="/idos-points-logo.png" alt="Points" className="h-5 w-5" />
-      <div className="flex gap-1.5">
-        <div className="text-sm font-semibold text-neutral-50">{points}</div>
-        <div className="text-sm font-semibold text-neutral-50">Points</div>
-      </div>
-    </Link>
-  );
-});
+const PointsHeaderFrame = forwardRef<HTMLAnchorElement, PointsHeaderFrameProps>(
+  ({ highlight = false }, ref) => {
+    const { points } = useUserPoints();
+
+    return (
+      <Link
+        ref={ref}
+        to="/points"
+        className={`cursor-pointer flex gap-2 h-8 bg-[#1D083E] rounded-lg px-3 items-center justify-center border transition-colors duration-200 ${
+          highlight
+            ? 'border-[#5A23A7] bg-[#2F1061] drop-shadow-[0px_0px_10px_rgba(116,45,208,1)]'
+            : 'border-neutral-800 hover:bg-[#2F1061] hover:border-[#5A23A7]'
+        }`}
+      >
+        <img src="/idos-points-logo.png" alt="Points" className="h-5 w-5" />
+        <div className="flex gap-1.5">
+          <div className="text-sm font-sesmibold text-neutral-50">{points}</div>
+          <div className="text-sm font-semibold text-neutral-50">Points</div>
+        </div>
+      </Link>
+    );
+  },
+);
 
 PointsHeaderFrame.displayName = 'PointsHeaderFrame';
 

@@ -1,6 +1,7 @@
 import Toast from '@/components/Toast';
 import type { ToastOptions } from '@/hooks/useToast';
 import { ToastContext } from '@/hooks/useToast';
+import { useLocation } from '@tanstack/react-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 let toastId = 0;
@@ -8,6 +9,7 @@ let toastId = 0;
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const location = useLocation();
   const [toasts, setToasts] = useState<Array<{ id: number } & ToastOptions>>(
     [],
   );
@@ -49,15 +51,24 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  const clearAllToasts = useCallback(() => {
+    setToasts([]);
+    // Clear all timers
+    Object.values(timers.current).forEach((timer) => clearTimeout(timer));
+    timers.current = {};
+  }, []);
+
+  // Clear all toasts when route changes
+  useEffect(() => {
+    clearAllToasts();
+  }, [location.pathname, clearAllToasts]);
+
   const showToast = useCallback(
     (options: ToastOptions) => {
       const id = ++toastId;
       setToasts((toasts) => [...toasts, { ...options, id }]);
       const duration = options.duration ?? 3500;
-      // Only set timeout if duration is not Infinity (persistent toast)
-      if (duration !== Infinity) {
-        timers.current[id] = setTimeout(() => removeToast(id), duration);
-      }
+      timers.current[id] = setTimeout(() => removeToast(id), duration);
     },
     [removeToast],
   );
@@ -69,8 +80,14 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     (toast) => toast.type === 'quest' || toast.type === 'onboarding',
   );
 
+  const hasOnboardingToast = toasts.some(
+    (toast) => toast.type === 'onboarding',
+  );
+
   return (
-    <ToastContext.Provider value={{ showToast, setPointsFrameRef }}>
+    <ToastContext.Provider
+      value={{ showToast, setPointsFrameRef, hasOnboardingToast }}
+    >
       {children}
 
       {/* Default positioned toasts */}
