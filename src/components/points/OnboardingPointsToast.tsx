@@ -17,7 +17,6 @@ export default function OnboardingPointsToast({
 
   return (
     <div className="relative w-[308px] h-[224px] p-6">
-      {/* Blur background that matches the exact shape - always visible for proper blur rendering */}
       <div
         className="absolute inset-0 backdrop-blur-md -z-10 bg-neutral-900/80"
         style={{
@@ -25,8 +24,6 @@ export default function OnboardingPointsToast({
             'path("M 154 5 L 168 20 L 296 20 A 12 12 0 0 1 308 32 L 308 212 A 12 12 0 0 1 296 224 L 12 224 A 12 12 0 0 1 0 212 L 0 32 A 12 12 0 0 1 12 20 L 140 20 Z")',
         }}
       />
-
-      {/* Main toast shape - animated */}
       <svg
         className={`absolute inset-0 w-full h-full z-10 ${contentAnimationClasses}`}
         viewBox="-1 0 310 225"
@@ -39,7 +36,6 @@ export default function OnboardingPointsToast({
           strokeWidth="1.5"
         />
       </svg>
-
       <div
         className={`relative flex flex-col items-center justify-center w-full z-10 pt-4 gap-4 ${contentAnimationClasses}`}
       >
