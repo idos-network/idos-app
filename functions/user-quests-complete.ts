@@ -1,5 +1,5 @@
+import { completeUserQuest, getUserQuests } from '@/db/user-quests';
 import type { Config, Context } from '@netlify/functions';
-import { completeUserQuest } from '@/db/user-quests';
 import { z } from 'zod';
 
 const completeUserQuestRequestSchema = z.object({
@@ -13,6 +13,18 @@ export default async (request: Request, _context: Context) => {
     const { questName, userId } =
       completeUserQuestRequestSchema.parse(requestBody);
 
+    if (questName === 'daily_check') {
+      const userQuests = await getUserQuests(userId);
+      const lastCompleted = userQuests.find(
+        (quest) => quest.questName === 'daily_check',
+      );
+      if (
+        lastCompleted?.updatedAt &&
+        lastCompleted.updatedAt > new Date(Date.now() - 24 * 60 * 60 * 1000)
+      ) {
+        throw null;
+      }
+    }
     const result = await completeUserQuest(userId, questName);
 
     return new Response(JSON.stringify(result), {

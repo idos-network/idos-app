@@ -1,7 +1,10 @@
 import CloseButton from '@/components/CloseButton';
 import { useHandleQuestClick } from '@/hooks/useHandleQuestClick';
 import type { QuestWithStatus } from '@/hooks/useQuests';
-import { useEffect, useRef } from 'react';
+import { useUserId } from '@/hooks/useUserId';
+import { getDailyQuestTimeRemaining } from '@/utils/quests';
+import { formatTimeRemaining } from '@/utils/time';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import MediumPrimaryButton from '../MediumPrimaryButton';
 
@@ -18,6 +21,23 @@ export default function QuestsModal({
 }: QuestsModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const handleQuestClick = useHandleQuestClick(onClose);
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [isCheckingTime, setIsCheckingTime] = useState<boolean>(false);
+  const { userId } = useUserId();
+
+  const getDailyCheckTimeRemaining = useCallback(async () => {
+    if (!userId) return 0;
+    return await getDailyQuestTimeRemaining(userId);
+  }, [userId]);
+
+  useEffect(() => {
+    if (isOpen && quest.name === 'daily_check') {
+      setIsCheckingTime(true);
+      getDailyCheckTimeRemaining()
+        .then(setTimeRemaining)
+        .finally(() => setIsCheckingTime(false));
+    }
+  }, [isOpen, quest.name, getDailyCheckTimeRemaining]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -85,9 +105,21 @@ export default function QuestsModal({
             <div className="flex justify-center gap-5">
               <MediumPrimaryButton
                 onClick={() => handleQuestClick(quest)}
-                disabled={quest.status === 'Completed'}
+                disabled={
+                  quest.status === 'Completed' ||
+                  (quest.name === 'daily_check' &&
+                    (timeRemaining > 0 || isCheckingTime))
+                }
               >
-                {quest.buttonText}
+                {quest.status === 'Completed'
+                  ? 'Completed'
+                  : quest.name === 'daily_check'
+                    ? isCheckingTime
+                      ? 'Checking...'
+                      : timeRemaining === 0
+                        ? quest.buttonText
+                        : `Try again in ${formatTimeRemaining(timeRemaining)}`
+                    : quest.buttonText}
               </MediumPrimaryButton>
             </div>
           </div>
