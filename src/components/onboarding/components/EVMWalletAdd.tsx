@@ -83,7 +83,8 @@ export default function EVMWalletAdd({
   useEffect(() => {
     const abortController = new AbortController();
     const handleMessage = (event: MessageEvent) => {
-      const allowedOrigin = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
+      const allowedOrigin = import.meta.env
+        .VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL;
       if (!allowedOrigin) return;
       const allowedOriginUrl = new URL(allowedOrigin);
       if (event.origin !== allowedOriginUrl.origin) return;
@@ -153,8 +154,8 @@ export default function EVMWalletAdd({
 
   // Open the embedded wallet popup
   const handleOpenWalletPopup = () => {
-    const url = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
-    invariant(url, 'VITE_EMBEDDED_WALLET_APP_URL is not set');
+    const url = import.meta.env.VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL;
+    invariant(url, 'VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL is not set');
     setIsLoading(true);
     const popupWidth = 400;
     const popupHeight = 620;
