@@ -1,4 +1,5 @@
 import CloseButton from '@/components/CloseButton';
+import { useHandleQuestClick } from '@/hooks/useHandleQuestClick';
 import type { QuestWithStatus } from '@/hooks/useQuests';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -16,6 +17,7 @@ export default function QuestsModal({
   onClose,
 }: QuestsModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const handleQuestClick = useHandleQuestClick(onClose);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -82,9 +84,7 @@ export default function QuestsModal({
             {/* Action Buttons */}
             <div className="flex justify-center gap-5">
               <MediumPrimaryButton
-                onClick={() => {
-                  window.open(quest.link, '_blank');
-                }}
+                onClick={() => handleQuestClick(quest)}
                 disabled={quest.status === 'Completed'}
               >
                 {quest.buttonText}

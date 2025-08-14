@@ -1,8 +1,17 @@
 import PointsFrame from '@/components/points/PointsFrame';
 import QuestsCard from '@/components/points/QuestsCard';
 import ReferralLink from '@/components/points/ReferralLink';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useNavigate } from '@tanstack/react-router';
 
 export function Points() {
+  const hasProfile = useIdOSLoginStatus();
+  const navigate = useNavigate();
+
+  if (!hasProfile) {
+    navigate({ to: '/idos-profile', replace: true });
+  }
+
   return (
     <div className="flex items-start justify-center">
       <div className="container mx-auto max-w-[1050px] flex flex-col px-32 pt-18">

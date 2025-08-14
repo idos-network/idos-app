@@ -89,11 +89,15 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
                     </div>
                   </td>
                   <td className="w-2/3 px-4 font-['Inter'] font-medium pr-8">
-                    <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center gap-3">
+                    <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center justify-center gap-3">
                       <span className="flex items-center gap-2 font-normal">
                         {quest.status === 'Completed' ? (
                           <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#00FFB933] text-[#00FFB9]">
                             Done
+                          </div>
+                        ) : quest.isRepeatable === true ? (
+                          <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#7A7A7A33] text-[#C99BFF]">
+                            Ongoing
                           </div>
                         ) : (
                           <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#7A7A7A33] text-[#7A7A7A]">
@@ -113,6 +117,11 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
                 </td>
               </tr>
             )}
+            <tr className="text-neutral-400 text-base h-[52px] border-neutral-800 border-t">
+              <td colSpan={3} className="px-4 text-left">
+                More quests coming soon
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

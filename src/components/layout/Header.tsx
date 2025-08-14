@@ -19,7 +19,7 @@ export default function Header() {
   const hasProfile = useIdOSLoginStatus();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const { setPointsFrameRef } = useToast();
+  const { setPointsFrameRef, hasOnboardingToast } = useToast();
   const pointsFrameRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -50,7 +50,10 @@ export default function Header() {
 
         {/* Right side items */}
         <div className="flex justify-end gap-5 items-center ml-auto">
-          <PointsHeaderFrame ref={pointsFrameRef} />
+          <PointsHeaderFrame
+            ref={pointsFrameRef}
+            highlight={hasOnboardingToast}
+          />
           {wallet && wallet.type === 'evm' && (
             <WalletBar
               network={

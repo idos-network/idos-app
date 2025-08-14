@@ -1,6 +1,7 @@
 import Toast from '@/components/Toast';
 import type { ToastOptions } from '@/hooks/useToast';
 import { ToastContext } from '@/hooks/useToast';
+import { useLocation } from '@tanstack/react-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 let toastId = 0;
@@ -8,6 +9,7 @@ let toastId = 0;
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const location = useLocation();
   const [toasts, setToasts] = useState<Array<{ id: number } & ToastOptions>>(
     [],
   );
@@ -49,6 +51,18 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  const clearAllToasts = useCallback(() => {
+    setToasts([]);
+    // Clear all timers
+    Object.values(timers.current).forEach((timer) => clearTimeout(timer));
+    timers.current = {};
+  }, []);
+
+  // Clear all toasts when route changes
+  useEffect(() => {
+    clearAllToasts();
+  }, [location.pathname, clearAllToasts]);
+
   const showToast = useCallback(
     (options: ToastOptions) => {
       const id = ++toastId;
@@ -59,11 +73,21 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     [removeToast],
   );
 
-  const defaultToasts = toasts.filter((toast) => toast.type !== 'quest');
-  const questToasts = toasts.filter((toast) => toast.type === 'quest');
+  const defaultToasts = toasts.filter(
+    (toast) => toast.type !== 'quest' && toast.type !== 'onboarding',
+  );
+  const questToasts = toasts.filter(
+    (toast) => toast.type === 'quest' || toast.type === 'onboarding',
+  );
+
+  const hasOnboardingToast = toasts.some(
+    (toast) => toast.type === 'onboarding',
+  );
 
   return (
-    <ToastContext.Provider value={{ showToast, setPointsFrameRef }}>
+    <ToastContext.Provider
+      value={{ showToast, setPointsFrameRef, hasOnboardingToast }}
+    >
       {children}
 
       {/* Default positioned toasts */}

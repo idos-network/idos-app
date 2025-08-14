@@ -3,10 +3,12 @@ import { useToast } from '@/hooks/useToast';
 import { useUserPoints } from '@/hooks/useUserPoints';
 import { getQuestByName } from '@/utils/quests';
 import { useCallback } from 'react';
+import { useQuests } from './useQuests';
 
 export const useCompleteQuest = () => {
   const { showToast } = useToast();
   const { refetch: refetchPoints } = useUserPoints();
+  const { refetch: refetchQuests } = useQuests();
 
   const completeQuest = useCallback(
     async (userId: string, questName: string): Promise<void> => {
@@ -23,6 +25,7 @@ export const useCompleteQuest = () => {
           });
 
           refetchPoints();
+          refetchQuests();
         } else {
           showToast({
             type: 'error',
@@ -36,7 +39,7 @@ export const useCompleteQuest = () => {
         });
       }
     },
-    [showToast, refetchPoints],
+    [showToast, refetchPoints, refetchQuests],
   );
 
   return { completeQuest };

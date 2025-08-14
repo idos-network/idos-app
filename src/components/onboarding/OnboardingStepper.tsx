@@ -47,6 +47,22 @@ function useStepState(initial = 'idle') {
 
 // Get started
 function StepOne({ onNext }: { onNext: () => void }) {
+  const { showToast } = useToast();
+  const [hasShownToast, setHasShownToast] = useState(false);
+
+  useEffect(() => {
+    if (!hasShownToast) {
+      setTimeout(() => {
+        showToast({
+          type: 'onboarding',
+          message: '',
+          duration: 45000,
+        });
+      }, 750);
+      setHasShownToast(true);
+    }
+  }, [showToast, hasShownToast]);
+
   return (
     <div className="relative w-[900px] h-full rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
       <div className="h-full w-full bg-idos-grey1/90 flex flex-col gap-10 p-10 rounded-[40px]">
