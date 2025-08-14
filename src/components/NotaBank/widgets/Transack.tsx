@@ -1,3 +1,4 @@
+import { env } from '@/env';
 import { useNavigate } from '@tanstack/react-router';
 import { Transak } from '@transak/transak-sdk';
 import { useEffect, useRef } from 'react';
@@ -8,7 +9,7 @@ export function TransakProvider({ transakToken }: { transakToken: string }) {
   const transak = useRef<Transak | null>(null);
 
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_TRANSAK_API_KEY ?? '';
+    const apiKey = env.VITE_TRANSAK_API_KEY;
     if (!transak.current && transakToken) {
       console.log('Initializing Transak with token:', transakToken);
       invariant(apiKey, 'TRANSAK_API_KEY is not set');
