@@ -63,9 +63,14 @@ export function useHandleQuestClick(onModalClose?: () => void) {
       } else if (!quest.internal) {
         pendingQuestRef.current = quest.name;
         window.open(quest.link, 'noopener,noreferrer');
+      } else {
+        await completeQuest(userId!, quest.name);
+        if (onModalClose) {
+          onModalClose();
+        }
       }
     },
-    [navigate, handleReferralQuest, onModalClose],
+    [navigate, handleReferralQuest, onModalClose, userId, completeQuest],
   );
 
   return handleQuestClick;

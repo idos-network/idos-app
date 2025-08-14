@@ -1,3 +1,4 @@
+import { getUserQuests } from '@/api/user-quests';
 import crypto from 'crypto';
 import { z } from 'zod';
 import questsData from '../../quests.json';
@@ -31,4 +32,27 @@ export function generateReferralCode(userId: string, length = 8): string {
   const hash = crypto.createHash('sha256').update(userId).digest('hex');
 
   return hash.substring(0, length).toUpperCase();
+}
+
+export async function getDailyQuestTimeRemaining(
+  userId: string,
+): Promise<number> {
+  if (!userId) return 0;
+
+  const quests = await getUserQuests(userId);
+  const lastCompleted = quests
+    .filter((quest) => quest.questName === 'daily_check')
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+
+  if (!lastCompleted) {
+    return 0;
+  }
+
+  const now = Date.now();
+  const lastCompletedTime = lastCompleted.createdAt.getTime();
+  const cooldownEnd = lastCompletedTime + 24 * 60 * 60 * 1000;
+
+  const timeRemaining = cooldownEnd - now;
+
+  return timeRemaining > 0 ? timeRemaining : 0;
 }

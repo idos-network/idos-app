@@ -1,22 +1,35 @@
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
-import { useIdOSLoggedIn } from '@/context/idos-context';
+import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
 import { env } from '@/env';
 import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useSpecificCredential } from '@/hooks/useCredentials';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useToast } from '@/hooks/useToast';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function IdosProfile() {
+  const [isMounted, setIsMounted] = useState(false);
+  const { isLoading: idosLoading } = useIdOS();
   const hasProfile = useIdOSLoginStatus();
+  const { isCompleted: profileQuestCompleted, isLoading: profileQuestLoading } =
+    useProfileQuestCompleted();
   const { hasCredential: hasStakingCredential, isLoading } =
     useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
-  const { mainEvm } = useUserMainEvm();
+  const { mainEvm, isLoading: mainEvmLoading } = useUserMainEvm();
   const { showToast } = useToast();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { completeQuest } = useCompleteQuest();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const toastData = localStorage.getItem('showToast');
@@ -34,9 +47,22 @@ export function IdosProfile() {
     }
   }, [idOSLoggedIn, showToast, completeQuest]);
 
+  const isStillLoading =
+    idosLoading || profileQuestLoading || isLoading || mainEvmLoading;
+
+  const shouldShowProfile =
+    isMounted &&
+    profileQuestCompleted &&
+    hasProfile &&
+    !isStillLoading &&
+    hasStakingCredential &&
+    mainEvm;
+
+  const shouldShowLoading = !isMounted || isStillLoading;
+
   return (
     <div className="flex items-start justify-center">
-      {hasProfile && !isLoading && hasStakingCredential && mainEvm ? (
+      {shouldShowProfile ? (
         <div className="mx-auto flex flex-col px-32 pt-10 w-fit min-w-[1050px]">
           <div className="gap-3 flex flex-col mb-10">
             <div className="text-2xl font-medium text-neutral-50">
@@ -53,6 +79,10 @@ export function IdosProfile() {
             />
             <WalletsCard />
           </div>
+        </div>
+      ) : shouldShowLoading ? (
+        <div className="container mx-auto flex justify-center pt-10">
+          <div className="text-neutral-200">Loading...</div>
         </div>
       ) : (
         <div className="container mx-auto flex justify-center pt-10">

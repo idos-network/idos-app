@@ -11,3 +11,13 @@ export function timelockToDate(timelock: number): string {
     hour12: true,
   }).format(new Date(milliseconds));
 }
+
+export function formatTimeRemaining(milliseconds: number): string {
+  if (milliseconds === 0) return 'now';
+
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+  return `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
+}
