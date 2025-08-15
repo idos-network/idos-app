@@ -1,8 +1,8 @@
-import HeroCard from '../components/HeroCard';
-import UserBalance from '../components/UserBalance';
 import ActionToolbar from '../components/ActionToolbar';
-import TransactionHistory from '../components/TransactionHistory';
+import FaceSignBanner from '../components/FaceSignBanner';
 import PerformanceChart from '../components/PerformanceChart';
+import TransactionHistory from '../components/TransactionHistory';
+import UserBalance from '../components/UserBalance';
 
 export const LandingCoreUI = () => (
   <>
@@ -21,19 +21,8 @@ export const LandingCoreUI = () => (
 export default function Landing() {
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2">
-        <HeroCard
-          title="NotaCard"
-          subtitle="Your digital bank"
-          buttonText="Get Card"
-          buttonLink="/notabank/notacard"
-        />
-        <HeroCard
-          title="NotaWallet"
-          subtitle="Your digital wallet"
-          buttonText="Get Wallet"
-          buttonLink="/"
-        />
+      <div className="flex flex-col gap-10">
+        <FaceSignBanner />
       </div>
       <LandingCoreUI />
     </>
