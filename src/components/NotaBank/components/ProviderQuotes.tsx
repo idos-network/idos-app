@@ -19,7 +19,6 @@ interface ProviderProps {
   onSelect?: (id: string) => void;
   className?: string;
   children?: ReactNode;
-  selected?: boolean;
 }
 
 export function Provider({
@@ -27,7 +26,6 @@ export function Provider({
   onSelect,
   className = '',
   children,
-  selected = false,
 }: ProviderProps) {
   const { id, amount, price, isBestRate = false } = data;
 

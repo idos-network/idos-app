@@ -1,44 +1,8 @@
-import { BuyIcon, ReceiveIcon, SellIcon, SendIcon } from '@/components/icons';
+import { BuyIcon, SellIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Link } from '@tanstack/react-router';
-import type React from 'react';
 import { ReceiveTokenDialog } from './ReceiveTokenDialog';
 import { SendTokensDialog } from './SendTokensDialog';
-
-interface ActionButton {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  isActive?: boolean;
-  onClick?: () => void;
-  render?: () => React.ReactNode;
-}
-
-const actionButtons: ActionButton[] = [
-  {
-    id: 'buy',
-    label: 'Buy',
-    icon: <BuyIcon />,
-    isActive: true,
-  },
-  {
-    id: 'sell',
-    label: 'Sell',
-    icon: <SellIcon />,
-  },
-  {
-    id: 'send',
-    label: 'Send',
-    icon: <SendIcon />,
-    render: () => <SendTokensDialog />,
-  },
-  {
-    id: 'receive',
-    label: 'Receive',
-    icon: <ReceiveIcon />,
-    render: () => <ReceiveTokenDialog />,
-  },
-];
 
 export default function ActionToolbar() {
   return (
