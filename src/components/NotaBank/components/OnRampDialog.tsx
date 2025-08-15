@@ -28,10 +28,7 @@ export default function OnRampDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          type="button"
-          className="bg-[#74FB5B] text-black h-10 rounded-xl font-sans"
-        >
+        <Button type="button" variant="secondary">
           Continue
         </Button>
       </DialogTrigger>

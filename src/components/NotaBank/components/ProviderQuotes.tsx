@@ -19,7 +19,6 @@ interface ProviderProps {
   onSelect?: (id: string) => void;
   className?: string;
   children?: ReactNode;
-  selected?: boolean;
 }
 
 export function Provider({
@@ -27,36 +26,33 @@ export function Provider({
   onSelect,
   className = '',
   children,
-  selected = false,
 }: ProviderProps) {
   const { id, amount, price, isBestRate = false } = data;
 
-  const bgColor = isBestRate ? 'bg-green-500/20' : 'bg-neutral-800';
+  const bgColor = isBestRate ? 'bg-secondary/10' : 'bg-neutral-800/40';
 
   return (
     <div
-      onClick={() => onSelect?.(id)}
-      className={`flex flex-col gap-2 rounded-2xl p-4 min-h-[75px] ${bgColor} ${className} ${selected ? 'border-2 border-green-500' : ''}`}
+      className={`flex flex-col gap-2 rounded-md p-4 min-h-16 ${bgColor} ${className}`}
     >
       {isBestRate && (
-        <div className="flex items-center gap-2 mb-2">
-          <span className="bg-[#74FB5B] text-black px-2 py-0.5 rounded-md text-xs font-sans">
+        <div className="flex items-center gap-2">
+          <span className="bg-secondary text-black px-2 py-0.5 rounded-sm text-xs">
             BEST RATE
           </span>
         </div>
       )}
       <div className="flex items-center gap-4">
-        <RadioGroupItem value={id} id={id} checked={selected} />
+        <RadioGroupItem value={id} id={id} className="size-5 text-secondary" />
         <Label
           htmlFor={id}
-          className="font-sans text-md flex items-center gap-4 justify-between w-full cursor-pointer"
+          className="text-md flex items-center gap-4 justify-between w-full cursor-pointer"
+          onClick={() => onSelect?.(id)}
         >
           {children}
           <div className="flex flex-col gap-0.5">
-            <p className="text-sm font-sans text-right">{amount}</p>
-            <p className="text-sm font-sans text-neutral-400 text-right">
-              {price}
-            </p>
+            <p className="text-sm text-right">{amount}</p>
+            <p className="text-sm text-neutral-400 text-right">{price}</p>
           </div>
         </Label>
       </div>
@@ -64,7 +60,7 @@ export function Provider({
   );
 }
 
-const providers = ['hifi', 'transak', 'monerium', 'noah'];
+const providers = ['hifi', 'transak', 'noah'];
 
 const useFetchProviderQuotes = () => {
   return useQueries({
@@ -77,21 +73,17 @@ const useFetchProviderQuotes = () => {
 
 export function ProviderQuotes() {
   useFetchProviderQuotes();
-  const {
-    setSelectedCurrency,
-    setSelectedToken,
-    setSelectedProvider,
-    selectedProvider,
-  } = useBuyStore();
+  const { setSelectedCurrency, setSelectedToken, setSelectedProvider } =
+    useBuyStore();
+
   return (
-    <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
-      <h3 className="text-xl">Provider Quotes</h3>
-      <p className="text-neutral-400 font-sans text-sm">
+    <div className="flex flex-col gap-5 flex-1 max-w-md">
+      <h3 className="text-lg font-heading">Provider Quotes</h3>
+      <p className="text-muted-foreground text-sm">
         Compare rates from these providers.
       </p>
       <RadioGroup className="flex flex-col gap-2">
         <Provider
-          selected={selectedProvider === 'hifi'}
           data={{
             id: 'hifi',
             name: 'HiFi',
@@ -108,7 +100,6 @@ export function ProviderQuotes() {
           children={<img src="/hifi.svg" alt="HiFi" width={55} height={20} />}
         />
         <Provider
-          selected={selectedProvider === 'transak'}
           data={{
             id: 'transak',
             name: 'Transak',
@@ -127,26 +118,6 @@ export function ProviderQuotes() {
           }
         />
         <Provider
-          selected={selectedProvider === 'monerium'}
-          data={{
-            id: 'monerium',
-            name: 'Monerium',
-            amount: '100.00 USDC',
-            price: '$101.07',
-            isBestRate: false,
-          }}
-          onSelect={(id) => {
-            console.log('Selected provider:', id);
-            setSelectedCurrency('USDC');
-            setSelectedToken('USDC');
-            setSelectedProvider('monerium');
-          }}
-          children={
-            <img src="/monerium.svg" alt="Monerium" width={115} height={20} />
-          }
-        />
-        <Provider
-          selected={selectedProvider === 'noah'}
           data={{
             id: 'noah',
             name: 'Noah',

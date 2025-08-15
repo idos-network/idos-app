@@ -1,6 +1,6 @@
-import { TokenETH, TokenUSDC } from '@web3icons/react';
-import { Card, CardContent } from '@/components/ui/card';
 import { ReceiveIcon, SendIcon, SwapIcon } from '@/components/icons';
+import { Card, CardContent } from '@/components/ui/card';
+import { TokenETH, TokenUSDC } from '@web3icons/react';
 
 interface Transaction {
   id: string;
@@ -71,7 +71,9 @@ export default function TransactionsPanel() {
     <Card className="w-full rounded-3xl border-none bg-card text-white bg-[#26262699]">
       <CardContent className="px-6">
         {/* Header */}
-        <h2 className="mb-6 font-semibold text-2xl text-white">Transactions</h2>
+        <h2 className="mb-6 font-light font-heading text-2xl text-white">
+          Transactions
+        </h2>
 
         {/* Transaction List */}
         <div className="">
