@@ -73,12 +73,9 @@ const useFetchProviderQuotes = () => {
 
 export function ProviderQuotes() {
   useFetchProviderQuotes();
-  const {
-    setSelectedCurrency,
-    setSelectedToken,
-    setSelectedProvider,
-    selectedProvider,
-  } = useBuyStore();
+  const { setSelectedCurrency, setSelectedToken, setSelectedProvider } =
+    useBuyStore();
+
   return (
     <div className="flex flex-col gap-5 flex-1 max-w-md">
       <h3 className="text-lg font-heading">Provider Quotes</h3>
@@ -87,7 +84,6 @@ export function ProviderQuotes() {
       </p>
       <RadioGroup className="flex flex-col gap-2">
         <Provider
-          selected={selectedProvider === 'hifi'}
           data={{
             id: 'hifi',
             name: 'HiFi',
@@ -104,7 +100,6 @@ export function ProviderQuotes() {
           children={<img src="/hifi.svg" alt="HiFi" width={55} height={20} />}
         />
         <Provider
-          selected={selectedProvider === 'transak'}
           data={{
             id: 'transak',
             name: 'Transak',
@@ -123,7 +118,6 @@ export function ProviderQuotes() {
           }
         />
         <Provider
-          selected={selectedProvider === 'noah'}
           data={{
             id: 'noah',
             name: 'Noah',
