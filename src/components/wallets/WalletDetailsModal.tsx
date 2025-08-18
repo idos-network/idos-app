@@ -19,6 +19,7 @@ interface WalletDetailsModalProps {
   address: string;
   profileStatus: string;
   onClose: () => void;
+  balance: string;
 }
 
 export default function WalletDetailsModal({
@@ -26,6 +27,7 @@ export default function WalletDetailsModal({
   network,
   address,
   profileStatus,
+  balance,
   onClose,
 }: WalletDetailsModalProps) {
   const { disconnect } = useWalletConnector();
@@ -112,7 +114,7 @@ export default function WalletDetailsModal({
                 {network === 'near' ? address : truncateAddress(address)}
               </span>
               <span className="text-sm text-neutral-400 font-['Inter']">
-                0 ETH
+                {balance}
               </span>
               {/* Status */}
             </div>

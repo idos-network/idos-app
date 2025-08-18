@@ -1,21 +1,23 @@
-import { useState } from 'react';
-import WalletDetailsModal from './WalletDetailsModal';
+import truncateAddress from '@/utils/address';
 import { networks } from '@/utils/networks';
 import {
   profileStatusStyles,
   profileStatusTexts,
 } from '@/utils/profile-status';
-import truncateAddress from '@/utils/address';
+import { useState } from 'react';
+import WalletDetailsModal from './WalletDetailsModal';
 
 export default function WalletBar({
   network,
   address,
   profileStatus,
+  balance,
 }: {
   network: string;
   address: string;
   profileStatus: string;
   chainId?: number;
+  balance: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const selectedNetwork =
@@ -61,6 +63,7 @@ export default function WalletBar({
         network={network}
         address={address}
         profileStatus={profileStatus}
+        balance={balance}
         onClose={() => setIsModalOpen(false)}
       />
     </>

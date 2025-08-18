@@ -2,9 +2,10 @@ import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
 import React, { useContext } from 'react';
 
 export interface StellarWalletContextValue {
-  kit: StellarWalletsKit;
+  kit: StellarWalletsKit | null;
   address: string | null;
   publicKey: string | null;
+  balance: bigint;
   isConnected: boolean;
   isLoading: boolean;
   connect: () => Promise<void>;

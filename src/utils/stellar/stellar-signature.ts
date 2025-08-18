@@ -6,8 +6,8 @@ import {
   WalletNetwork,
   xBullModule,
 } from '@creit.tech/stellar-wallets-kit';
-import { StrKey } from '@stellar/stellar-base';
 import { KwilSigner } from '@kwilteam/kwil-js';
+import { StrKey } from '@stellar/stellar-base';
 
 function getSelectedWalletId() {
   return localStorage.getItem('stellar-wallet-id');
@@ -15,7 +15,7 @@ function getSelectedWalletId() {
 
 export const stellarKit: StellarWalletsKit = new StellarWalletsKit({
   // @todo: pass ENV variable here
-  network: WalletNetwork.TESTNET,
+  network: WalletNetwork.TESTNET, // TODO: update to mainnet
   selectedWalletId: getSelectedWalletId() ?? FREIGHTER_ID,
   modules: [new FreighterModule(), new xBullModule()],
 });

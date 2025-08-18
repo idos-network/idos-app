@@ -10,6 +10,7 @@ export interface NearWalletContextValue {
   setAccounts: (accounts: Account[]) => void;
   isLoading: boolean;
   publicKey: string | null;
+  balance: bigint;
 }
 
 export const NearWalletContext =

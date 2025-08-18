@@ -1,7 +1,13 @@
 import {
+  StellarWalletContext,
+  type StellarWalletContextValue,
+} from '@/context/stellar-context';
+import { derivePublicKey, stellarKit } from '@/utils/stellar/stellar-signature';
+import {
   type ISupportedWallet,
   StellarWalletsKit,
 } from '@creit.tech/stellar-wallets-kit';
+import { Horizon } from '@stellar/stellar-sdk';
 import {
   type PropsWithChildren,
   useCallback,
@@ -9,18 +15,46 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { derivePublicKey, stellarKit } from '@/utils/stellar/stellar-signature';
-import {
-  StellarWalletContext,
-  type StellarWalletContextValue,
-} from '@/context/stellar-context';
+import { parseUnits } from 'viem';
 
 export function StellarWalletProvider({ children }: PropsWithChildren) {
   const [kit, setKit] = useState<StellarWalletsKit | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [balance, setBalance] = useState<bigint>(0n);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // TODO: update to mainnet
+  const server = useMemo(
+    () => new Horizon.Server('https://horizon-testnet.stellar.org'),
+    [],
+  );
+
+  const fetchXlmBalance = useCallback(
+    async (accountAddress: string): Promise<bigint> => {
+      try {
+        const account = await server.loadAccount(accountAddress);
+        const xlmBalance = account.balances.find(
+          (balance: any) => balance.asset_type === 'native',
+        );
+        const balance = xlmBalance
+          ? BigInt(parseUnits(xlmBalance.balance, 6))
+          : BigInt(0);
+        return balance;
+      } catch (error: any) {
+        if (error?.name === 'NotFoundError') {
+          console.warn(
+            `Stellar account ${accountAddress} not found. Account may not be funded yet.`,
+          );
+          return BigInt(0); // Account doesn't exist yet (not funded)
+        }
+        console.error('Error fetching XLM balance:', error);
+        return BigInt(0);
+      }
+    },
+    [server],
+  );
 
   const initializeStellarKit = useCallback(async () => {
     try {
@@ -48,6 +82,16 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
       console.error('Stellar kit initialization failed:', error);
     });
   }, [initializeStellarKit]);
+
+  useEffect(() => {
+    if (isConnected && address && !isLoading) {
+      fetchXlmBalance(address)
+        .then(setBalance)
+        .catch((error) => {
+          console.error('Failed to fetch balance:', error);
+        });
+    }
+  }, [isConnected, address, isLoading, fetchXlmBalance]);
 
   const connect = useCallback(async () => {
     if (!kit) {
@@ -86,6 +130,8 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
 
   const disconnect = useCallback(async () => {
     setAddress(null);
+    setPublicKey(null);
+    setBalance(0n);
     setIsConnected(false);
     localStorage.removeItem('stellar-address');
     localStorage.removeItem('stellar-wallet-id');
@@ -101,12 +147,22 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
       kit,
       address,
       publicKey,
+      balance,
       isConnected,
       isLoading,
       connect,
       disconnect,
     };
-  }, [kit, address, publicKey, isConnected, isLoading, connect, disconnect]);
+  }, [
+    kit,
+    address,
+    publicKey,
+    balance,
+    isConnected,
+    isLoading,
+    connect,
+    disconnect,
+  ]);
 
   if (isLoading) {
     return <div>loading</div>;
