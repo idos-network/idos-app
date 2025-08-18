@@ -23,7 +23,7 @@ export default function StepperCards({
               {title}
             </span>
           )}
-          <span className="font-['Inter'] text-base font-normal text-neutral-400 ">
+          <span className="font-['Inter'] text-base font-light text-neutral-400 ">
             {description}
           </span>
         </div>

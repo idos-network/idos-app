@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import Spinner from '@//components/Spinner';
 import CloseButton from '@/components/CloseButton';
-import Spinner from '@/components/onboarding/components/Spinner';
 import StepperButton from '@/components/onboarding/components/StepperButton';
+import { useEffect, useRef } from 'react';
 
 interface CredentialAccessModalProps {
   isOpen: boolean;

@@ -1,12 +1,12 @@
+import CloseButton from '@/components/CloseButton';
+import SmallSecondaryButton from '@/components/SmallSecondaryButton';
+import Spinner from '@/components/Spinner';
 import {
   useFetchGrants,
   useRevokeGrant,
   type idOSGrant,
 } from '@/hooks/useGrants';
-import { timelockToMs, timelockToDate } from '@/utils/time';
-import Spinner from '@/components/onboarding/components/Spinner';
-import CloseButton from '@/components/CloseButton';
-import SmallSecondaryButton from '@/components/SmallSecondaryButton';
+import { timelockToDate, timelockToMs } from '@/utils/time';
 
 type CredentialGrantsModalProps = {
   credentialId: string;

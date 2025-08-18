@@ -1,8 +1,8 @@
-import { useIdOS } from '@/context/idos-context';
-import { useEffect, useRef, useState } from 'react';
 import CloseIcon from '@/components/icons/close';
-import Spinner from '@/components/onboarding/components/Spinner';
+import Spinner from '@/components/Spinner';
+import { useIdOS } from '@/context/idos-context';
 import { type IdosWallet } from '@/interfaces/idos-profile';
+import { useEffect, useRef, useState } from 'react';
 
 interface WalletDeleteModalProps {
   isOpen: boolean;

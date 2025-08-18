@@ -1,5 +1,5 @@
 import { getKrakenUrl } from '@/api/kraken-url';
-import Spinner from '@/components/onboarding/components/Spinner';
+import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
