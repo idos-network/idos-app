@@ -73,7 +73,7 @@ function SellModule() {
           </div>
         </div>
 
-        <ProviderQuotes />
+        <ProviderQuotes quotes={[]} />
         <div className="flex flex-col gap-1">
           <p className="text-sm">Gas Fee</p>
           <p className="text-sm flex items-center gap-1 justify-between">
