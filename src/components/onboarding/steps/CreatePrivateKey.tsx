@@ -1,9 +1,9 @@
+import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
 import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import EncryptedIcon from '@/icons/encrypted';
 import { useEffect } from 'react';
-import Spinner from '../components/Spinner';
 import StepperButton from '../components/StepperButton';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';

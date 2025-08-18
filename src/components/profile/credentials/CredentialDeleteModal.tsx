@@ -1,13 +1,13 @@
+import CloseButton from '@/components/CloseButton';
+import SmallSecondaryButton from '@/components/SmallSecondaryButton';
+import Spinner from '@/components/Spinner';
+import WarningIcon from '@/components/icons/warning';
 import { useIdOS } from '@/context/idos-context';
 import { useFetchGrants, useRevokeGrant } from '@/hooks/useGrants';
+import truncateAddress from '@/utils/address';
 import { timelockToMs } from '@/utils/time';
 import type { idOSCredential } from '@idos-network/client';
 import { useEffect, useRef, useState } from 'react';
-import CloseButton from '@/components/CloseButton';
-import Spinner from '@/components/onboarding/components/Spinner';
-import SmallSecondaryButton from '@/components/SmallSecondaryButton';
-import WarningIcon from '@/components/icons/warning';
-import truncateAddress from '@/utils/address';
 
 interface CredentialDeleteModalProps {
   isOpen: boolean;

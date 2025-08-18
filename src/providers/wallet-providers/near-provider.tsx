@@ -1,3 +1,4 @@
+import Spinner from '@/components/Spinner';
 import {
   NearWalletContext,
   type NearWalletContextValue,
@@ -187,7 +188,11 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
   }, [selector, modal, accounts, isLoading, publicKey, balance]);
 
   if (isLoading) {
-    return <div>Loading</div>;
+    return (
+      <div className="flex h-screen items-center justify-center ml-64 mt-6">
+        <Spinner />
+      </div>
+    );
   }
 
   if (!contextValue) {

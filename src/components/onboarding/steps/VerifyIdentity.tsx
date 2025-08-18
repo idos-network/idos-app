@@ -1,3 +1,4 @@
+import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
 import { env } from '@/env';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
@@ -9,7 +10,6 @@ import {
   updateUserStateInLocalStorage,
 } from '@/storage/idos-profile';
 import { useEffect } from 'react';
-import Spinner from '../components/Spinner';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';

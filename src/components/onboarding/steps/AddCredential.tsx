@@ -1,4 +1,5 @@
 import { getUserById, saveUser, updateUser } from '@/api/user';
+import Spinner from '@/components/Spinner';
 import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
 import {
   handleCreateIdOSCredential,
@@ -15,7 +16,6 @@ import { useReferralCode } from '@/providers/quests/referral-provider';
 import { clearUserDataFromLocalStorage } from '@/storage/idos-profile';
 import { useEffect } from 'react';
 import { useSignMessage } from 'wagmi';
-import Spinner from '../components/Spinner';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';

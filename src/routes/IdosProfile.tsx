@@ -1,5 +1,6 @@
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
+import Spinner from '@/components/Spinner';
 import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
 import { env } from '@/env';
 import { useCompleteQuest } from '@/hooks/useCompleteQuest';
@@ -96,8 +97,8 @@ export function IdosProfile() {
           </div>
         </div>
       ) : shouldShowLoading ? (
-        <div className="container mx-auto flex justify-center pt-10">
-          <div className="text-neutral-200">Loading...</div>
+        <div className="container mx-auto flex justify-center items-center h-screen -translate-y-20">
+          <Spinner />
         </div>
       ) : (
         <div className="container mx-auto flex justify-center pt-10">

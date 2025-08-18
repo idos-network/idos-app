@@ -1,3 +1,4 @@
+import Spinner from '@/components/Spinner';
 import {
   StellarWalletContext,
   type StellarWalletContextValue,
@@ -165,7 +166,11 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
   ]);
 
   if (isLoading) {
-    return <div>loading</div>;
+    return (
+      <div className="flex h-screen items-center justify-center ml-64 mt-6">
+        <Spinner />
+      </div>
+    );
   }
 
   if (!contextValue) {
