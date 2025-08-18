@@ -1,7 +1,7 @@
+import { idOSUserSchema, type IdOSUser } from '@/interfaces/user';
+import { z } from 'zod';
 import axiosInstance from './axios';
 import { parseWithSchema } from './parser';
-import { z } from 'zod';
-import { idOSUserSchema, type IdOSUser } from '@/interfaces/user';
 
 export const saveUser = async (userData: IdOSUser): Promise<void> => {
   const response = await axiosInstance.post('/user/save', userData);
@@ -25,4 +25,13 @@ export const getUserTotalPoints = async (id: string): Promise<number> => {
     z.object({ totalPoints: z.number() }),
   );
   return parsed.totalPoints;
+};
+
+export const getUserReferralCount = async (
+  referralCode: string,
+): Promise<number> => {
+  const response = await axiosInstance.get(
+    `/user/${referralCode}/referral-count`,
+  );
+  return parseWithSchema(response.data, z.number());
 };
