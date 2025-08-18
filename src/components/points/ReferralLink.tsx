@@ -52,19 +52,10 @@ export default function ReferralLink() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <PersonIcon className="text-neutral-400" width="16" height="16" />
-              <span
-                className={`${
-                  referralCount.data === 0
-                    ? 'text-neutral-500'
-                    : 'text-[#C99BFF]'
-                }`}
-              >
-                {referralCount.data === 0
-                  ? 'No referrals yet'
-                  : referralCount.data === 1
-                    ? '1 referral'
-                    : `${referralCount.data} referrals`}
+              <PersonIcon className="text-neutral-400" width="20" height="20" />
+              <span className="text-neutral-50">
+                Users referred:{' '}
+                <span className="text-[#C99BFF]">{referralCount.data}</span>
               </span>
             </div>
           )}
