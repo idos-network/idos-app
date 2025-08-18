@@ -100,7 +100,7 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
                             Ongoing
                           </div>
                         ) : (
-                          <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#7A7A7A33] text-[#7A7A7A]">
+                          <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#7A7A7A33] text-[#FFBB33]">
                             To do
                           </div>
                         )}
