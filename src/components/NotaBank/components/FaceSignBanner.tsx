@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 
 export default function FaceSignBanner() {
   return (
-    <div className="mx-auto flex-1">
+    <div className="mx-auto flex-1 mb-10">
       <div
         className="relative overflow-hidden rounded-3xl border border-green-600/40 p-8"
         style={{

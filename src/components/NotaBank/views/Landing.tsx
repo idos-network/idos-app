@@ -1,4 +1,5 @@
 import ActionToolbar from '../components/ActionToolbar';
+import FaceSignBanner from '../components/FaceSignBanner';
 import PerformanceChart from '../components/PerformanceChart';
 import TransactionHistory from '../components/TransactionHistory';
 import UserBalance from '../components/UserBalance';
@@ -6,6 +7,7 @@ import UserBalance from '../components/UserBalance';
 export const LandingCoreUI = () => (
   <>
     <div className="flex flex-col justify-center w-full max-w-4xl mx-auto">
+      <FaceSignBanner />
       <div className="flex justify-between items-center w-full h-[60px] gap-5">
         <UserBalance />
         <ActionToolbar />
