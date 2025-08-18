@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import FaceSignSetupDialog from './FaceSignSetupDialog';
 
 export default function FaceSignBanner() {
   return (
@@ -66,13 +66,7 @@ export default function FaceSignBanner() {
 
           {/* Right side - Button */}
           <div className="flex-shrink-0">
-            <Button
-              className="bg-aquamarine-400 hover:bg-aquamarine-300 text-green-900 font-medium  text-base rounded-2xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-green-400/25"
-              size="lg"
-              //   onClick={() => navigate({ to: buttonLink })}
-            >
-              Create
-            </Button>
+            <FaceSignSetupDialog />
           </div>
         </div>
 

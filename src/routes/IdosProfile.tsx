@@ -17,6 +17,7 @@ export function IdosProfile() {
   const [isMounted, setIsMounted] = useState(false);
   const { isLoading: idosLoading } = useIdOS();
   const hasProfile = useIdOSLoginStatus();
+  console.log('hasProfile', hasProfile);
   const { isCompleted: profileQuestCompleted, isLoading: profileQuestLoading } =
     useProfileQuestCompleted();
   const { hasCredential: hasStakingCredential, isLoading } =
