@@ -42,18 +42,26 @@ type HifiResponse = {
   conversionRate: string;
 };
 
-type QuoteRateResponse = {
+export type QuoteRateResponse = {
   name: Provider;
   rate: string;
 };
 
-async function getNoahQuote(): Promise<QuoteRateResponse> {
+type CurrencyArgs = {
+  sourceCurrency: string;
+  destinationCurrency: string;
+};
+
+async function getNoahQuote({
+  sourceCurrency,
+  destinationCurrency,
+}: CurrencyArgs): Promise<QuoteRateResponse> {
   const noahApiKey = process.env.NOAH_API_KEY;
   const noahApiUrl = process.env.NOAH_API_URL;
   invariant(noahApiKey, '`NOAH_API_KEY` is not set');
   invariant(noahApiUrl, '`NOAH_API_URL` is not set');
 
-  const url = `${noahApiUrl}/v1/prices?SourceCurrency=USD&DestinationCurrency=USDC`;
+  const url = `${noahApiUrl}/v1/prices?SourceCurrency=${sourceCurrency}&DestinationCurrency=${destinationCurrency}`;
   const options = {
     method: 'GET',
     headers: {
@@ -81,13 +89,17 @@ async function getNoahQuote(): Promise<QuoteRateResponse> {
   return data;
 }
 
-async function getTransakQuote(): Promise<QuoteRateResponse> {
+async function getTransakQuote({
+  sourceCurrency,
+  destinationCurrency,
+}: CurrencyArgs): Promise<QuoteRateResponse> {
   const transakApiKey = process.env.TRANSAK_API_KEY;
   const transakApiUrl = process.env.TRANSAK_API_URL;
   invariant(transakApiKey, '`TRANSAK_API_KEY` is not set');
   invariant(transakApiUrl, '`TRANSAK_API_URL` is not set');
 
-  const url = `${transakApiUrl}/v1/pricing/public/quotes?partnerApiKey=${transakApiKey}&fiatCurrency=USD&cryptoCurrency=USDC&isBuyOrSell=BUY&network=ethereum&paymentMethod=credit_debit_card&fiatAmount=100`;
+
+  const url = `${transakApiUrl}/v1/pricing/public/quotes?partnerApiKey=${transakApiKey}&fiatCurrency=${sourceCurrency}&cryptoCurrency=${destinationCurrency}&isBuyOrSell=BUY&network=ethereum&paymentMethod=credit_debit_card&fiatAmount=100`;
   const options = { method: 'GET', headers: { accept: 'application/json' } };
 
   const [error, data] = await goTry(async () => {
@@ -106,13 +118,16 @@ async function getTransakQuote(): Promise<QuoteRateResponse> {
   return { name: 'transak', rate: rate.toString() };
 }
 
-async function getHifiQuote(): Promise<QuoteRateResponse> {
+async function getHifiQuote({
+  sourceCurrency,
+  destinationCurrency,
+}: CurrencyArgs): Promise<QuoteRateResponse> {
   const hifiApiKey = process.env.HIFI_API_KEY;
   const hifiApiUrl = process.env.HIFI_API_URL;
   invariant(hifiApiKey, '`HIFI_API_KEY` is not set');
   invariant(hifiApiUrl, '`HIFI_API_URL` is not set');
 
-  const url = `${hifiApiUrl}/v2/onramps/rates?fromCurrency=usd&toCurrency=usdc`;
+  const url = `${hifiApiUrl}/v2/onramps/rates?fromCurrency=${sourceCurrency.toLowerCase()}&toCurrency=${destinationCurrency.toLowerCase()}`;
   const options = {
     method: 'GET',
     headers: {
@@ -139,15 +154,18 @@ async function getHifiQuote(): Promise<QuoteRateResponse> {
 export default async (request: Request, _context: Context) => {
   const { searchParams } = new URL(request.url);
   const provider = searchParams.get('provider') as Provider;
+  const sourceCurrency = searchParams.get('sourceCurrency') as string;
+  const destinationCurrency = searchParams.get('destinationCurrency') as string;
+
 
   const [error, data] = await goTry(async () => {
     switch (provider) {
       case 'noah':
-        return getNoahQuote();
+        return getNoahQuote({ sourceCurrency, destinationCurrency });
       case 'transak':
-        return getTransakQuote();
+        return getTransakQuote({ sourceCurrency, destinationCurrency });
       case 'hifi':
-        return getHifiQuote();
+        return getHifiQuote({ sourceCurrency, destinationCurrency });
       default:
         throw new Error('Invalid provider');
     }

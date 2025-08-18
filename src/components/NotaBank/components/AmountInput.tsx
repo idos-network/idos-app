@@ -22,7 +22,11 @@ export default function AmountInput(props: NumberField.Root.Props) {
   const id = useId();
   return (
     <div className="flex items-center gap-2 w-full">
-      <NumberField.Root id={props.id ?? id} className="flex-1 w-full">
+      <NumberField.Root
+        className="flex-1 w-full"
+        {...props}
+        id={props.id ?? id}
+      >
         <NumberField.ScrubArea className="cursor-ew-resize">
           <NumberField.ScrubAreaCursor className="drop-shadow-[0_1px_1px_#0008] filter">
             <CursorGrowIcon />
