@@ -5,14 +5,14 @@ import {
   getDefaultConfig,
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
-import { arbitrum, mainnet } from 'wagmi/chains';
+import { anvil, arbitrum, mainnet } from 'wagmi/chains';
 
 const projectID = env.VITE_WALLET_CONNECT_PROJECT_ID;
 
 const config = getDefaultConfig({
   appName: 'idOS Staking',
   projectId: projectID,
-  chains: [mainnet, arbitrum],
+  chains: [mainnet, arbitrum, anvil],
   ssr: true,
 });
 

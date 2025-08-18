@@ -7,6 +7,7 @@ export interface XrplWalletContextValue {
   isLoading: boolean;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
+  balance: bigint;
 }
 
 export const XrplWalletContext = createContext<XrplWalletContextValue | null>(

@@ -1,13 +1,13 @@
-import { type PropsWithChildren, useMemo } from 'react';
-import { useRainbowKit } from '@/hooks/useRainbowKit';
-import { useNearWallet } from '@/hooks/useNearWallet';
 import { useStellarWallet } from '@/context/stellar-context';
-import { useXrplWallet } from '@/hooks/useXRPLWallet';
 import {
+  type ConnectedWallet,
   WalletConnectorContext,
   type WalletConnectorContextValue,
-  type ConnectedWallet,
 } from '@/context/wallet-connector-context';
+import { useNearWallet } from '@/hooks/useNearWallet';
+import { useRainbowKit } from '@/hooks/useRainbowKit';
+import { useXrplWallet } from '@/hooks/useXRPLWallet';
+import { type PropsWithChildren, useMemo } from 'react';
 
 export function WalletConnectorProvider({ children }: PropsWithChildren) {
   const evmWallet = useRainbowKit();
@@ -46,6 +46,7 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
         type: 'evm',
         address: evmWallet.address,
         publicKey: evmWallet.address,
+        balance: evmWallet.balance || 0n,
         disconnect: evmWallet.disconnect,
         network: evmWallet.chainId,
       };
@@ -54,6 +55,7 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
         type: 'near',
         address: nearWallet.accountId,
         publicKey: nearWallet.publicKey,
+        balance: nearWallet.balance || 0n,
         disconnect: async () => {
           const wallet = await nearWallet.selector.wallet();
           await wallet.signOut();
@@ -64,6 +66,7 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
         type: 'stellar',
         address: stellarWallet.address,
         publicKey: stellarWallet.publicKey,
+        balance: stellarWallet.balance || 0n,
         disconnect: stellarWallet.disconnect,
       };
     } else if (xrplWallet.isConnected && xrplWallet.address) {
@@ -71,6 +74,7 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
         type: 'xrpl',
         address: xrplWallet.address,
         publicKey: xrplWallet.publicKey,
+        balance: xrplWallet.balance || 0n,
         disconnect: xrplWallet.disconnect,
       };
     }

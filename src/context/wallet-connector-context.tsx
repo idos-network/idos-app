@@ -1,8 +1,8 @@
-import { createContext } from 'react';
-import { useRainbowKit } from '@/hooks/useRainbowKit';
-import { useNearWallet } from '@/hooks/useNearWallet';
 import { useStellarWallet } from '@/context/stellar-context';
+import { useNearWallet } from '@/hooks/useNearWallet';
+import { useRainbowKit } from '@/hooks/useRainbowKit';
 import { useXrplWallet } from '@/hooks/useXRPLWallet';
+import { createContext } from 'react';
 
 export type WalletType = 'evm' | 'near' | 'stellar' | 'xrpl';
 
@@ -10,8 +10,9 @@ export interface ConnectedWallet {
   type: WalletType;
   address: string;
   publicKey: string | null;
-  disconnect: () => Promise<void> | void;
+  balance: bigint;
   network?: number;
+  disconnect: () => Promise<void> | void;
 }
 
 export interface WalletConnectorContextValue {

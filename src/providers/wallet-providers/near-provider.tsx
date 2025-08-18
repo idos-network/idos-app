@@ -1,11 +1,19 @@
+import {
+  NearWalletContext,
+  type NearWalletContextValue,
+} from '@/context/near-context';
+import { env } from '@/env';
+import { getNearFullAccessPublicKeys } from '@/utils/near/near-signature';
+import { Account as NearAccount } from '@near-js/accounts';
+import { JsonRpcProvider } from '@near-js/providers';
 import type { Account, WalletSelector } from '@near-wallet-selector/core';
 import { setupWalletSelector } from '@near-wallet-selector/core';
+import { setupHereWallet } from '@near-wallet-selector/here-wallet';
+import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
 import {
   setupModal,
   type WalletSelectorModal,
 } from '@near-wallet-selector/modal-ui';
-import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
-import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import '@near-wallet-selector/modal-ui/styles.css';
 import {
   type PropsWithChildren,
@@ -14,13 +22,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { getNearFullAccessPublicKeys } from '@/utils/near/near-signature';
-import {
-  NearWalletContext,
-  type NearWalletContextValue,
-} from '@/context/near-context';
-
-// Reference docs : https://docs.near.org/tools/wallet-selector
 
 declare global {
   interface Window {
@@ -29,24 +30,30 @@ declare global {
   }
 }
 
+// TODO: update to mainnet
+const provider = new JsonRpcProvider({
+  url: 'https://test.rpc.fastnear.com',
+});
+
 export function NearWalletProvider({ children }: PropsWithChildren) {
   const [selector, setSelector] = useState<WalletSelector | null>(null);
   const [modal, setModal] = useState<WalletSelectorModal | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [balance, setBalance] = useState<bigint>(0n);
 
   const initializeWalletSelector = useCallback(async () => {
     try {
       const walletSelector = await setupWalletSelector({
         // network: import.meta.env.DEV ? 'testnet' : 'mainnet',
-        network: 'testnet',
+        network: 'testnet', // TODO: update later
         debug: import.meta.env.DEV,
         modules: [setupMeteorWallet(), setupHereWallet()],
       });
 
       const walletModal = setupModal(walletSelector, {
-        contractId: '', // Replace with actual contract ID or remove if not needed
+        contractId: env.VITE_NEAR_STAKING_CONTRACT_ADDRESS,
         methodNames: [],
       });
 
@@ -71,6 +78,12 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
                       existingAccounts[0]?.accountId,
                     )
                   )?.[0] || '';
+                const account = new NearAccount(
+                  existingAccounts[0]?.accountId,
+                  provider,
+                );
+                const balance = await account.getBalance();
+                setBalance(balance);
                 setPublicKey(publicKey);
               } catch (error) {
                 console.error('Failed to restore NEAR public key:', error);
@@ -122,11 +135,24 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
             (
               await getNearFullAccessPublicKeys(signedInAccounts[0]?.accountId)
             )?.[0] || '';
+
+          const account = new NearAccount(
+            signedInAccounts[0]?.accountId,
+            provider,
+          );
+          const balance = await account.getBalance();
+          setBalance(balance);
           setPublicKey(publicKey);
           setAccounts(signedInAccounts);
         } catch (error) {
           console.error('Failed to get NEAR public key on sign in:', error);
           // Still set accounts even if public key fails
+          const account = new NearAccount(
+            signedInAccounts[0]?.accountId,
+            provider,
+          );
+          const balance = await account.getBalance();
+          setBalance(balance);
           setAccounts(signedInAccounts);
         }
       },
@@ -156,8 +182,9 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
       setAccounts,
       isLoading,
       publicKey,
+      balance,
     };
-  }, [selector, modal, accounts, isLoading, publicKey]);
+  }, [selector, modal, accounts, isLoading, publicKey, balance]);
 
   if (isLoading) {
     return <div>Loading</div>;

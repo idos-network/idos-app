@@ -1,15 +1,15 @@
 export const networks = [
   {
-    name: 'Near',
-    icon: 'near',
-  },
-  {
     name: 'Ethereum',
     icon: 'ethereum',
   },
   {
     name: 'Arbitrum',
     icon: 'arbitrum',
+  },
+  {
+    name: 'Near',
+    icon: 'near',
   },
   {
     name: 'XRPL',
