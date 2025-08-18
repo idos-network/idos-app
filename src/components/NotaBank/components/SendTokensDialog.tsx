@@ -1,4 +1,3 @@
-import GasIcon from '@/components/icons/Gas';
 import NeobankLogoIcon from '@/components/icons/neobank-logo';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +11,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useGasFees } from '@/hooks/useGasFees';
+import { GasFee } from './GasFee';
+
 import { getTokenInfo } from '@/utils/coins';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowUpRightIcon, Loader2 } from 'lucide-react';
@@ -43,34 +43,6 @@ export function SendTokensDialog() {
       refetchInterval: 10000, // Refetch every 10 seconds
     },
   });
-
-  const transactionConfig = useMemo(() => {
-    if (
-      !tokenContractInfo?.address ||
-      !recipient ||
-      !amount ||
-      !tokenContractInfo?.decimals
-    ) {
-      return undefined;
-    }
-
-    try {
-      return {
-        address: tokenContractInfo.address as `0x${string}`,
-        abi: erc20Abi,
-        functionName: 'transfer' as const,
-        args: [
-          recipient as `0x${string}`,
-          parseUnits(amount, tokenContractInfo.decimals),
-        ],
-        account: address,
-      };
-    } catch {
-      return undefined;
-    }
-  }, [tokenContractInfo, recipient, amount, address]);
-
-  const { gasFee, isLoading: isGasLoading } = useGasFees({ transactionConfig });
 
   const hasInsufficientBalance = useMemo(() => {
     if (!tokenBalance || !amount || !tokenContractInfo?.decimals) return false;
@@ -153,24 +125,21 @@ export function SendTokensDialog() {
                     </span>
                   )}
                 </span>
-                <div className="w-full flex justify-between items-center mt-2">
-                  <span className="text-sm font-medium">Estimated Gas Fee</span>
-                  <div className="flex items-center gap-1 text-sm font-medium">
-                    <GasIcon />
-                    {gasFee && !isGasLoading ? (
-                      <>
-                        <span>${gasFee.usd.toFixed(2)}</span>
-                        <span className="text-sm text-neutral-400">
-                          ({gasFee.eth.toFixed(4)} ETH)
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-sm text-neutral-400">
-                        Calculating...
-                      </span>
-                    )}
-                  </div>
-                </div>
+                <GasFee
+                  contractAddress={tokenContractInfo?.address as `0x${string}`}
+                  abi={erc20Abi}
+                  functionName="transfer"
+                  args={
+                    recipient && amount && tokenContractInfo?.decimals
+                      ? [
+                          recipient as `0x${string}`,
+                          parseUnits(amount, tokenContractInfo.decimals),
+                        ]
+                      : undefined
+                  }
+                  account={address}
+                  className="mt-2"
+                />
               </div>
             </div>
           </div>
