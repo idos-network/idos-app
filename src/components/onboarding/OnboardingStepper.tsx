@@ -37,12 +37,12 @@ export default function OnboardingStepper() {
 
     const currentUser = getCurrentUserFromLocalStorage();
 
-    if (currentUser) {
-      if (
-        currentUser.mainAddress !== (wallet && wallet.address) &&
-        !hasProfile
-      ) {
+    if (currentUser && wallet) {
+      if (currentUser.mainAddress !== wallet.address) {
         clearUserDataFromLocalStorage();
+      }
+
+      if (!hasProfile) {
         setActiveStep('step-one');
         return;
       }

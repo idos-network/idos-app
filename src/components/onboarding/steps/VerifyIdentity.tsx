@@ -89,46 +89,52 @@ export default function VerifyIdentity({ onNext }: VerifyIdentityProps) {
     <div className="flex flex-col gap-10 h-[600px] w-[740px]">
       <TopBar activeStep="step-three" />
       <div className="flex flex-col flex-1 justify-between">
-        {state !== 'verifying' && state !== 'creating' && (
-          <>
-            <div className="flex flex-col gap-8 w-full items-center">
-              <TextBlock
-                title="Verify you are a human"
-                subtitle="In a moment, we'll ask you to follow some instructions for a liveness check. This will let us know that this is you, without exposing your identity."
-              />
-              <div className="w-full h-full flex flex-row gap-5 min-h-[120px]">
-                <StepperCards
-                  icon={<FrameIcon color="var(--color-aquamarine-400)" />}
-                  description="Pictures of your face and personal data stays encrypted and is never shared without your consent."
-                />
-                <StepperCards
-                  icon={
-                    <PersonIcon
-                      color="var(--color-aquamarine-400)"
-                      width="36"
-                      height="36"
-                    />
+        {state !== 'verifying' &&
+          state !== 'creating' &&
+          state !== 'verified' && (
+            <>
+              <div className="flex flex-col gap-8 w-full items-center">
+                <TextBlock
+                  title="Verify you are a human"
+                  subtitle={
+                    <>
+                      In a moment, we'll ask you to follow some instructions for
+                      a liveness check.
+                      <br />
+                      This will let us know that this is you, without exposing
+                      your identity.
+                    </>
                   }
-                  description="Once verified, your Proof of Personhood credential can be reused across other supported platforms."
                 />
+                <div className="w-full h-full flex flex-row gap-5 min-h-[120px]">
+                  <StepperCards
+                    icon={<FrameIcon color="var(--color-aquamarine-400)" />}
+                    description="Pictures of your face and personal data stays encrypted and is never shared without your consent."
+                  />
+                  <StepperCards
+                    icon={
+                      <PersonIcon
+                        color="var(--color-aquamarine-400)"
+                        width="36"
+                        height="36"
+                      />
+                    }
+                    description="Once verified, your Proof of Personhood credential can be reused across other supported platforms."
+                  />
+                </div>
+                <span className="text-neutral-400 w-[860px] text-base text-center font-normal font-['Urbanist']">
+                  For privacy, idOS allows{' '}
+                  <span className="text-aquamarine-400">
+                    multiple profiles system-wide
+                  </span>{' '}
+                  but lets users prove uniqueness when needed. <br />{' '}
+                  <span className="text-aquamarine-400">This app </span>{' '}
+                  prevents quest farming and sybil attacks by limiting each
+                  human to one idOS profile.
+                </span>
               </div>
-              <span className="text-neutral-400 w-[860px] text-base text-center font-medium font-['Urbanist']">
-                For privacy, idOS allows multiple profiles system-wide but lets
-                users prove uniqueness when needed. <br /> This{' '}
-                <a
-                  href="https://app.idos.network/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-aquamarine-600 underline text-base text-center font-semibold font-['Urbanist']"
-                >
-                  app
-                </a>{' '}
-                prevents quest farming and sybil attacks by limiting each human
-                to one idOS profile.
-              </span>
-            </div>
-          </>
-        )}
+            </>
+          )}
         {state === 'idle' && (
           <div className="flex justify-center mt-auto">
             <StepperButton onClick={handleProofOfHumanity}>

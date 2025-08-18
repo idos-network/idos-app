@@ -121,10 +121,7 @@ export default function AddCredential({ onNext }: AddCredentialProps) {
       {state !== 'created' && (
         <>
           <TopBar activeStep="step-four" />
-          <TextBlock
-            title="Add a credential to your idOS profile"
-            subtitle="Link your credential to finish onboarding."
-          />
+          <TextBlock title="Add a credential to your idOS profile" />
         </>
       )}
       {state === 'idle' && (

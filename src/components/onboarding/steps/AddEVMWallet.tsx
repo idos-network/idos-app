@@ -68,8 +68,8 @@ export default function AddEVMWallet() {
         <>
           <TopBar activeStep="step-five" />
           <TextBlock
-            title="Set up your primary EVM wallet"
-            subtitle="This is required to receive airdrops and rewards."
+            title="Set up your primary wallet"
+            subtitle="This is required to participate in airdrops"
           />
         </>
       )}
