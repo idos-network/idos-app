@@ -1,5 +1,3 @@
-import { getNoahOnRampUrl } from '@/api/noah';
-import { getSharedCredential } from '@/api/shared-credential';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
