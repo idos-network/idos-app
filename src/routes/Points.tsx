@@ -1,19 +1,29 @@
 import PointsFrame from '@/components/points/PointsFrame';
 import QuestsCard from '@/components/points/QuestsCard';
 import ReferralLink from '@/components/points/ReferralLink';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import Spinner from '@/components/Spinner';
+import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
 export function Points() {
-  const hasProfile = useIdOSLoginStatus();
+  const { isCompleted: profileQuestCompleted, isLoading } =
+    useProfileQuestCompleted();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!hasProfile) {
+    if (!isLoading && !profileQuestCompleted) {
       navigate({ to: '/idos-profile', replace: true });
     }
-  }, [hasProfile, navigate]);
+  }, [profileQuestCompleted, isLoading, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-start justify-center">

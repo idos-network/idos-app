@@ -6,7 +6,7 @@ export function useProfileQuestCompleted() {
   const profileQuest = quests.find(
     (quest) => quest.name === 'create_idos_profile',
   );
-  const isCompleted = profileQuest?.status === 'Completed' || false;
+  const isCompleted = profileQuest?.status === 'Completed';
 
   return {
     isCompleted,
