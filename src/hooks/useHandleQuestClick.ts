@@ -10,7 +10,7 @@ export function useHandleQuestClick(onModalClose?: () => void) {
   const { completeQuest } = useCompleteQuest();
   const { userId } = useUserId();
   const { showToast } = useToast();
-  const [pendingQuests, setPendingQuests] = useState<Set<string>>(new Set());
+  const [pendingQuest, setPendingQuest] = useState<string | null>(null);
 
   const referralCode = useMemo(
     () => (userId ? generateReferralCode(userId) : ''),
@@ -40,18 +40,14 @@ export function useHandleQuestClick(onModalClose?: () => void) {
           onModalClose();
         }
       } else if (!quest.internal) {
-        if (pendingQuests.has(quest.name)) {
+        if (pendingQuest === quest.name) {
           await completeQuest(userId!, quest.name);
-          setPendingQuests((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(quest.name);
-            return newSet;
-          });
+          setPendingQuest(null);
           if (onModalClose) {
             onModalClose();
           }
         } else {
-          setPendingQuests((prev) => new Set(prev).add(quest.name));
+          setPendingQuest(quest.name);
           window.open(quest.link, '_blank', 'noopener,noreferrer');
         }
       } else {
@@ -67,9 +63,9 @@ export function useHandleQuestClick(onModalClose?: () => void) {
       onModalClose,
       userId,
       completeQuest,
-      pendingQuests,
+      pendingQuest,
     ],
   );
 
-  return { handleQuestClick, pendingQuests };
+  return { handleQuestClick, pendingQuest };
 }

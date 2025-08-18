@@ -20,7 +20,7 @@ export default function QuestsModal({
   onClose,
 }: QuestsModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
-  const { handleQuestClick, pendingQuests } = useHandleQuestClick(onClose);
+  const { handleQuestClick, pendingQuest } = useHandleQuestClick(onClose);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [isCheckingTime, setIsCheckingTime] = useState<boolean>(false);
   const { userId } = useUserId();
@@ -119,7 +119,7 @@ export default function QuestsModal({
                       : timeRemaining === 0
                         ? quest.buttonText
                         : `Try again in ${formatTimeRemaining(timeRemaining)}`
-                    : !quest.internal && pendingQuests.has(quest.name)
+                    : !quest.internal && pendingQuest === quest.name
                       ? 'Complete quest'
                       : quest.buttonText}
               </MediumPrimaryButton>
