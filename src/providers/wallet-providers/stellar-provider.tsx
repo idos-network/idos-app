@@ -68,12 +68,6 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
         setAddress(storedAddress);
         setIsConnected(true);
         setPublicKey(storedPublicKey);
-        try {
-          const initialBalance = await fetchXlmBalance(storedAddress);
-          setBalance(initialBalance);
-        } catch (error) {
-          console.error('Failed to fetch initial balance:', error);
-        }
       }
     } catch (error) {
       console.error('Failed to initialize Stellar Wallets Kit:', error);
@@ -81,13 +75,23 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
     } finally {
       setIsLoading(false);
     }
-  }, [fetchXlmBalance]);
+  }, []);
 
   useEffect(() => {
     initializeStellarKit().catch((error) => {
       console.error('Stellar kit initialization failed:', error);
     });
   }, [initializeStellarKit]);
+
+  useEffect(() => {
+    if (isConnected && address && !isLoading) {
+      fetchXlmBalance(address)
+        .then(setBalance)
+        .catch((error) => {
+          console.error('Failed to fetch balance:', error);
+        });
+    }
+  }, [isConnected, address, isLoading, fetchXlmBalance]);
 
   const connect = useCallback(async () => {
     if (!kit) {
@@ -109,13 +113,6 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
           localStorage.setItem('stellar-address', address);
           localStorage.setItem('stellar-wallet-id', option.id);
           localStorage.setItem('stellar-public-key', publicKey);
-
-          try {
-            const newBalance = await fetchXlmBalance(address);
-            setBalance(newBalance);
-          } catch (error) {
-            console.error('Failed to fetch balance after connection:', error);
-          }
         },
         onClosed: (error?: Error) => {
           if (error) {
@@ -129,7 +126,7 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
     } finally {
       setIsLoading(false);
     }
-  }, [kit, fetchXlmBalance]);
+  }, [kit]);
 
   const disconnect = useCallback(async () => {
     setAddress(null);
