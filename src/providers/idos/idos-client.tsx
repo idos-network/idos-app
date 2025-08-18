@@ -8,13 +8,17 @@ import { type PropsWithChildren, useContext, useEffect, useState } from 'react';
 
 import { IDOSClientContext } from '@/context/idos-context';
 import { WalletConnectorContext } from '@/context/wallet-connector-context';
+import { env } from '@/env';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 import { useQueryClient } from '@tanstack/react-query';
 
 const _idOSClient = createIDOSClient({
   nodeUrl: 'https://nodes.staging.idos.network/',
-  enclaveOptions: { container: '#idOS-enclave' },
+  enclaveOptions: {
+    container: '#idOS-enclave',
+    url: env.VITE_IDOS_ENCLAVE_URL ?? 'https://enclave.staging.idos.network/',
+  },
 });
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
