@@ -3,14 +3,14 @@ import { useToast } from '@/hooks/useToast';
 import { useUserId } from '@/hooks/useUserId';
 import { generateReferralCode, type Quest } from '@/utils/quests';
 import { useNavigate } from '@tanstack/react-router';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export function useHandleQuestClick(onModalClose?: () => void) {
   const navigate = useNavigate();
   const { completeQuest } = useCompleteQuest();
   const { userId } = useUserId();
   const { showToast } = useToast();
-  const pendingQuestRef = useRef<string | null>(null);
+  const [pendingQuests, setPendingQuests] = useState<Set<string>>(new Set());
 
   const referralCode = useMemo(
     () => (userId ? generateReferralCode(userId) : ''),
@@ -30,27 +30,6 @@ export function useHandleQuestClick(onModalClose?: () => void) {
     });
   }, [referralUrl, showToast]);
 
-  // Handle external quest completion
-  // Completes the quest when the user returns to the page
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (!document.hidden && pendingQuestRef.current && userId) {
-        await completeQuest(userId, pendingQuestRef.current);
-        pendingQuestRef.current = null;
-
-        if (onModalClose) {
-          onModalClose();
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [completeQuest, userId, onModalClose]);
-
   const handleQuestClick = useCallback(
     async (quest: Quest) => {
       if (quest.internal && quest.link) {
@@ -61,8 +40,20 @@ export function useHandleQuestClick(onModalClose?: () => void) {
           onModalClose();
         }
       } else if (!quest.internal) {
-        pendingQuestRef.current = quest.name;
-        window.open(quest.link, 'noopener,noreferrer');
+        if (pendingQuests.has(quest.name)) {
+          await completeQuest(userId!, quest.name);
+          setPendingQuests((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(quest.name);
+            return newSet;
+          });
+          if (onModalClose) {
+            onModalClose();
+          }
+        } else {
+          setPendingQuests((prev) => new Set(prev).add(quest.name));
+          window.open(quest.link, '_blank', 'noopener,noreferrer');
+        }
       } else {
         await completeQuest(userId!, quest.name);
         if (onModalClose) {
@@ -70,8 +61,15 @@ export function useHandleQuestClick(onModalClose?: () => void) {
         }
       }
     },
-    [navigate, handleReferralQuest, onModalClose, userId, completeQuest],
+    [
+      navigate,
+      handleReferralQuest,
+      onModalClose,
+      userId,
+      completeQuest,
+      pendingQuests,
+    ],
   );
 
-  return handleQuestClick;
+  return { handleQuestClick, pendingQuests };
 }
