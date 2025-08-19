@@ -19,9 +19,24 @@ export default function Sidebar() {
         >
           {({ isActive }) => (
             <div
-              className={`flex items-center gap-4 w-full rounded-xl px-3 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+              className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
             >
               <UserIcon className="h-6 w-6" isActive={isActive} /> idOS Profile
+            </div>
+          )}
+        </Link>
+        <Link
+          to="/notabank"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
+        >
+          {({ isActive }) => (
+            <div
+              className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+            >
+              <BankIcon isActive={isActive} /> NotaBank
+              <AppTag className="ml-auto" variant="success">
+                <span>New</span>
+              </AppTag>
             </div>
           )}
         </Link>
@@ -31,10 +46,22 @@ export default function Sidebar() {
         >
           {({ isActive }) => (
             <div
-              className={`flex items-center gap-4 w-full rounded-xl px-3 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+              className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
             >
               <CalendarIcon className="h-6 w-6" isActive={isActive} /> Staking
               Event
+            </div>
+          )}
+        </Link>
+        <Link
+          to="/idos-ico"
+          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
+        >
+          {({ isActive }) => (
+            <div
+              className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+            >
+              <LayersIcon className="h-6 w-6" isActive={isActive} /> IDOS ICO
             </div>
           )}
         </Link>
@@ -44,25 +71,10 @@ export default function Sidebar() {
         >
           {({ isActive }) => (
             <div
-              className={`flex items-center gap-4 w-full rounded-xl px-3 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+              className={`flex items-center gap-4 w-full rounded-xl px-4 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
             >
-              <LayersIcon className="h-6 w-6" isActive={isActive} /> idOS
+              <LayersIcon className="h-6 w-6" isActive={isActive} /> IDOS
               Staking
-            </div>
-          )}
-        </Link>
-        <Link
-          to="/notabank"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30"
-        >
-          {({ isActive }) => (
-            <div
-              className={`flex items-center justify-between gap-4 w-full rounded-xl px-3 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
-            >
-              <BankIcon isActive={isActive} /> NotaBank
-              <AppTag variant="success">
-                <span>New</span>
-              </AppTag>
             </div>
           )}
         </Link>
