@@ -2,6 +2,7 @@ import { getUserQuests } from '@/api/user-quests';
 import crypto from 'crypto';
 import { z } from 'zod';
 import questsData from '../../quests.json';
+import { getUtcDayEnd, getUtcDayStart } from './time';
 
 export const questSchema = z.object({
   id: z.number(),
@@ -42,17 +43,23 @@ export async function getDailyQuestTimeRemaining(
   const quests = await getUserQuests(userId);
   const lastCompleted = quests
     .filter((quest) => quest.questName === 'daily_check')
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
 
   if (!lastCompleted) {
     return 0;
   }
 
-  const now = Date.now();
-  const lastCompletedTime = lastCompleted.createdAt.getTime();
-  const cooldownEnd = lastCompletedTime + 24 * 60 * 60 * 1000;
+  const now = new Date();
+  const today = getUtcDayStart(now);
+  const lastCompletedUTC = getUtcDayStart(lastCompleted.updatedAt);
 
-  const timeRemaining = cooldownEnd - now;
+  if (lastCompletedUTC.getTime() < today.getTime()) {
+    return 0;
+  }
+
+  const endOfDayUTC = getUtcDayEnd(now);
+
+  const timeRemaining = endOfDayUTC.getTime() - now.getTime();
 
   return timeRemaining > 0 ? timeRemaining : 0;
 }
