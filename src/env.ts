@@ -19,6 +19,7 @@ export const env = createEnv({
     VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL: z.string().min(1),
     VITE_TRANSAK_API_KEY: z.string().min(1),
     VITE_NEAR_STAKING_CONTRACT_ADDRESS: z.string().min(1),
+    VITE_ETH_STAKING_CONTRACT_ADDRESS: z.string().min(1),
     VITE_IDOS_ENCLAVE_URL: z.string().optional(),
   },
 

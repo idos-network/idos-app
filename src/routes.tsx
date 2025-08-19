@@ -21,7 +21,11 @@ import {
 } from './routes/NotaBank';
 import { Points } from './routes/Points';
 import { RootComponent } from './routes/RootComponent';
-import { StakingEvent } from './routes/StakingEvent';
+import {
+  stakingEventIndexRoute,
+  stakingEventMyStakingsRoute,
+  stakingEventStakeRoute,
+} from './routes/StakingEvent';
 
 // Root route
 export const rootRoute = createRootRouteWithContext<{
@@ -69,7 +73,7 @@ export const notabankRoute = createRoute({
 export const stakingEventRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/staking-event',
-  component: StakingEvent,
+  component: () => <Outlet />,
 });
 
 // IDOS ICO route
@@ -107,7 +111,11 @@ export const routeTree = rootRoute.addChildren([
       notabankNotaCardTermsAndConditionsRoute,
       notabankOnrampRoute,
     ]),
-    stakingEventRoute,
+    stakingEventRoute.addChildren([
+      stakingEventIndexRoute,
+      stakingEventMyStakingsRoute,
+      stakingEventStakeRoute,
+    ]),
     idosIcoRoute,
     idosStakingRoute,
     pointsRoute,
