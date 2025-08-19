@@ -1,4 +1,5 @@
 import type { UserQuest } from '@/interfaces/user-quests';
+import { getUtcDayStart } from '@/utils/time';
 
 export function handleDailyQuest(userQuests: UserQuest[]): boolean {
   const lastCompleted = userQuests.find(
@@ -9,21 +10,9 @@ export function handleDailyQuest(userQuests: UserQuest[]): boolean {
     return true;
   }
 
-  const today = new Date();
-  const todayUTC = new Date(
-    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
-  );
+  const today = getUtcDayStart(new Date());
 
-  const lastCompletedUTC = new Date(
-    Date.UTC(
-      lastCompleted.updatedAt.getUTCFullYear(),
-      lastCompleted.updatedAt.getUTCMonth(),
-      lastCompleted.updatedAt.getUTCDate(),
-    ),
-  );
+  const lastCompletedUTC = getUtcDayStart(lastCompleted.updatedAt);
 
-  return !(
-    lastCompletedUTC.getTime() === todayUTC.getTime() ||
-    lastCompletedUTC.getTime() > todayUTC.getTime()
-  );
+  return !(lastCompletedUTC.getTime() >= today.getTime());
 }
