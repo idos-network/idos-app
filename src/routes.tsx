@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router';
 import AppLayout from './components/layout/AppLayout';
 import { Home } from './routes/Home';
+import { IdosIco } from './routes/IdosIco';
 import { IdosProfile } from './routes/IdosProfile';
 import { IdosStaking } from './routes/IdosStaking';
 import {
@@ -52,20 +53,6 @@ export const idosProfileRoute = createRoute({
   component: IdosProfile,
 });
 
-// Native Staking route
-export const idosStakingRoute = createRoute({
-  getParentRoute: () => layoutRoute,
-  path: '/idos-staking',
-  component: IdosStaking,
-});
-
-// Staking Event route
-export const stakingEventRoute = createRoute({
-  getParentRoute: () => layoutRoute,
-  path: '/staking-event',
-  component: StakingEvent,
-});
-
 // NotaBank main route that catches all /notabank/* paths
 export const notabankRoute = createRoute({
   getParentRoute: () => layoutRoute,
@@ -76,6 +63,27 @@ export const notabankRoute = createRoute({
       <Outlet />
     </div>
   ),
+});
+
+// Staking Event route
+export const stakingEventRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/staking-event',
+  component: StakingEvent,
+});
+
+// IDOS ICO route
+export const idosIcoRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/idos-ico',
+  component: IdosIco,
+});
+
+// IDOS Staking route
+export const idosStakingRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/idos-staking',
+  component: IdosStaking,
 });
 
 // Points route
@@ -90,9 +98,6 @@ export const routeTree = rootRoute.addChildren([
   indexRoute,
   layoutRoute.addChildren([
     idosProfileRoute,
-    idosStakingRoute,
-    stakingEventRoute,
-    pointsRoute,
     notabankRoute.addChildren([
       notabankIndexRoute,
       notabankBuyRoute,
@@ -102,5 +107,9 @@ export const routeTree = rootRoute.addChildren([
       notabankNotaCardTermsAndConditionsRoute,
       notabankOnrampRoute,
     ]),
+    stakingEventRoute,
+    idosIcoRoute,
+    idosStakingRoute,
+    pointsRoute,
   ]),
 ]);
