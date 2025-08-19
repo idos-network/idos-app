@@ -42,17 +42,36 @@ export async function getDailyQuestTimeRemaining(
   const quests = await getUserQuests(userId);
   const lastCompleted = quests
     .filter((quest) => quest.questName === 'daily_check')
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
 
   if (!lastCompleted) {
     return 0;
   }
 
-  const now = Date.now();
-  const lastCompletedTime = lastCompleted.createdAt.getTime();
-  const cooldownEnd = lastCompletedTime + 24 * 60 * 60 * 1000;
+  const now = new Date();
+  const today = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
+  const lastCompletedUTC = new Date(
+    Date.UTC(
+      lastCompleted.updatedAt.getUTCFullYear(),
+      lastCompleted.updatedAt.getUTCMonth(),
+      lastCompleted.updatedAt.getUTCDate(),
+    ),
+  );
 
-  const timeRemaining = cooldownEnd - now;
+  if (
+    lastCompletedUTC.getTime() !== today.getTime() &&
+    lastCompletedUTC.getTime() < today.getTime()
+  ) {
+    return 0;
+  }
+
+  const endOfDayUTC = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1),
+  );
+
+  const timeRemaining = endOfDayUTC.getTime() - now.getTime();
 
   return timeRemaining > 0 ? timeRemaining : 0;
 }

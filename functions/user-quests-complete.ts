@@ -1,6 +1,8 @@
 import { completeUserQuest, getUserQuests } from '@/db/user-quests';
+import type { UserQuest } from '@/interfaces/user-quests';
 import type { Config, Context } from '@netlify/functions';
 import { z } from 'zod';
+import { handleDailyQuest } from './utils/quests';
 
 const completeUserQuestRequestSchema = z.object({
   questName: z.string().min(1, 'questName is required'),
@@ -13,15 +15,10 @@ export default async (request: Request, _context: Context) => {
     const { questName, userId } =
       completeUserQuestRequestSchema.parse(requestBody);
 
+    const userQuests = (await getUserQuests(userId)) as UserQuest[];
+
     if (questName === 'daily_check') {
-      const userQuests = await getUserQuests(userId);
-      const lastCompleted = userQuests.find(
-        (quest) => quest.questName === 'daily_check',
-      );
-      if (
-        lastCompleted?.updatedAt &&
-        lastCompleted.updatedAt > new Date(Date.now() - 24 * 60 * 60 * 1000)
-      ) {
+      if (!handleDailyQuest(userQuests)) {
         throw null;
       }
     }

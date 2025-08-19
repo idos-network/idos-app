@@ -5,6 +5,7 @@ export const userQuestSchema = z.object({
   userId: z.string(),
   questName: z.string(),
   createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 export type UserQuest = z.infer<typeof userQuestSchema>;
