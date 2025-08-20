@@ -7,6 +7,12 @@ export type ToastType =
   | 'quest'
   | 'onboarding';
 
+export interface ToastLink {
+  text: string;
+  url: string;
+  external?: boolean; // defaults to true
+}
+
 export interface ToastOptions {
   type: ToastType;
   message: string;
@@ -14,6 +20,7 @@ export interface ToastOptions {
   duration?: number; // ms
   icon?: boolean;
   close?: boolean;
+  link?: ToastLink;
 }
 
 export interface ToastContextType {
