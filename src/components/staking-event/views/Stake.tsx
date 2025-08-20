@@ -17,15 +17,34 @@ import { useNavigate } from '@tanstack/react-router';
 import { formatNearAmount } from 'near-api-js/lib/utils/format';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { formatEther } from 'viem';
-import { useAccount, useWriteContract } from 'wagmi';
+import {
+  useAccount,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from 'wagmi';
 
 interface LockupPeriodWithSelection extends LockupPeriod {
   isSelected: boolean;
 }
 
 export function Stake() {
-  const { address } = useAccount();
-  const { writeContractAsync } = useWriteContract();
+  const { address, chain } = useAccount();
+  const {
+    writeContractAsync,
+    data: hash,
+    isPending: isWritePending,
+    isError: isWriteError,
+    error: writeError,
+  } = useWriteContract();
+
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    isError: isConfirmError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const { showToast } = useToast();
@@ -48,6 +67,8 @@ export function Stake() {
   const [amount, setAmount] = useState('');
   const [selectedLockup, setSelectedLockup] = useState('6-months');
   const [hasUserManuallySelected, setHasUserManuallySelected] = useState(false);
+  const [isNearTransactionPending, setIsNearTransactionPending] =
+    useState(false);
 
   const availableAssets = useMemo(() => {
     return STAKING_ASSETS.map((asset: StakingAsset, index: number) => ({
@@ -69,6 +90,7 @@ export function Stake() {
 
   const isCurrentAssetConnected = currentAsset.connected;
 
+  // Auto-select connected asset
   useEffect(() => {
     if (hasUserManuallySelected) return;
 
@@ -89,6 +111,56 @@ export function Stake() {
     availableAssets,
     hasUserManuallySelected,
   ]);
+
+  // Handle ETH transaction confirmation
+  useEffect(() => {
+    if (isConfirmed && selectedAsset === 'ETH') {
+      const lockupMonths =
+        LOCKUP_PERIODS.find((period) => period.id === selectedLockup)?.months ??
+        0;
+
+      showToast({
+        type: 'success',
+        message: `Staked ${amount} ETH for ${lockupMonths} months!`,
+        close: true,
+        duration: 10000,
+        link: {
+          text: 'Open in explorer',
+          url: `${chain?.blockExplorers?.default.url}/tx/${hash}`,
+        },
+      });
+
+      setAmount('');
+    }
+  }, [isConfirmed, selectedAsset, selectedLockup, showToast, hash]);
+
+  // Handle ETH transaction errors
+  useEffect(() => {
+    if (isWriteError && writeError && selectedAsset === 'ETH') {
+      console.error('ETH staking failed:', writeError);
+      showToast({
+        type: 'error',
+        message: 'ETH staking failed! Please try again.',
+      });
+    }
+  }, [isWriteError, writeError, selectedAsset, showToast]);
+
+  // Handle ETH transaction confirmation errors
+  useEffect(() => {
+    if (isConfirmError && selectedAsset === 'ETH') {
+      showToast({
+        type: 'error',
+        message: 'Transaction confirmation failed. Please check your wallet.',
+      });
+    }
+  }, [isConfirmError, selectedAsset, showToast]);
+
+  // Reset NEAR transaction state when switching away from NEAR
+  useEffect(() => {
+    if (selectedAsset !== 'NEAR' && isNearTransactionPending) {
+      setIsNearTransactionPending(false);
+    }
+  }, [selectedAsset, isNearTransactionPending]);
 
   const handleAssetChange = (newAsset: string) => {
     setSelectedAsset(newAsset);
@@ -135,6 +207,24 @@ export function Stake() {
     }));
   }, [selectedLockup]);
 
+  // Compute overall transaction state
+  const isTransactionPending = useMemo(() => {
+    if (selectedAsset === 'ETH') {
+      return isWritePending || isConfirming;
+    } else if (selectedAsset === 'NEAR') {
+      return isNearTransactionPending;
+    }
+    return false;
+  }, [selectedAsset, isWritePending, isConfirming, isNearTransactionPending]);
+
+  const isStakeButtonDisabled = useMemo(() => {
+    if (!isCurrentAssetConnected) {
+      return false;
+    }
+
+    return isAmountMaxed || isTransactionPending || !amount;
+  }, [isCurrentAssetConnected, isAmountMaxed, isTransactionPending, amount]);
+
   const handleLockupSelect = (lockupId: string) => {
     setSelectedLockup(lockupId);
   };
@@ -157,6 +247,10 @@ export function Stake() {
       0;
 
     try {
+      if (selectedAsset === 'NEAR') {
+        setIsNearTransactionPending(true);
+      }
+
       await handleStake({
         selectedAsset,
         amount,
@@ -166,18 +260,25 @@ export function Stake() {
         walletConnector,
       });
 
-      showToast({
-        type: 'success',
-        message: `Staked ${amount} ${selectedAsset} for ${lockupMonths} months!`,
-      });
-
-      setAmount('');
+      // TODO: handle NEAR success
+      if (selectedAsset === 'NEAR') {
+        showToast({
+          type: 'success',
+          message: `Successfully staked ${amount} ${selectedAsset} for ${lockupMonths} months!`,
+        });
+        setAmount('');
+        setIsNearTransactionPending(false);
+      }
     } catch (error) {
       console.error('Staking failed:', error);
-      showToast({
-        type: 'error',
-        message: 'Staking failed!',
-      });
+
+      if (selectedAsset === 'NEAR') {
+        setIsNearTransactionPending(false);
+        showToast({
+          type: 'error',
+          message: 'NEAR staking failed! Please try again.',
+        });
+      }
     }
   }, [
     isCurrentAssetConnected,
@@ -189,6 +290,7 @@ export function Stake() {
     writeContractAsync,
     walletConnector,
     handleWalletConnection,
+    showToast,
   ]);
 
   return (
@@ -304,13 +406,30 @@ export function Stake() {
                 Cancel
               </SmallSecondaryButton>
               <SmallPrimaryButton
-                className={`flex-1 h-10 bg-aquamarine-400 text-neutral-950 hover:bg-aquamarine-600`}
+                className={`flex-1 h-10 bg-aquamarine-400 text-neutral-950 hover:bg-aquamarine-600 ${
+                  isStakeButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
                 onClick={stakeAsset}
-                disabled={isAmountMaxed}
+                disabled={isStakeButtonDisabled}
               >
-                {isCurrentAssetConnected
-                  ? `Stake ${selectedAsset}`
-                  : `Connect ${selectedAsset} Wallet`}
+                {isTransactionPending ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-neutral-950 border-t-transparent"></div>
+                    <span>
+                      {selectedAsset === 'ETH' &&
+                        isWritePending &&
+                        'Confirm in Wallet...'}
+                      {selectedAsset === 'ETH' &&
+                        isConfirming &&
+                        'Confirming...'}
+                      {selectedAsset === 'NEAR' && 'Processing...'}
+                    </span>
+                  </div>
+                ) : isCurrentAssetConnected ? (
+                  `Stake ${selectedAsset}`
+                ) : (
+                  `Connect ${selectedAsset} Wallet`
+                )}
               </SmallPrimaryButton>
             </div>
           </div>
