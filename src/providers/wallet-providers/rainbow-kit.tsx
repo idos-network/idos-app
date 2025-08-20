@@ -5,14 +5,14 @@ import {
   getDefaultConfig,
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
-import { anvil, arbitrum, mainnet } from 'wagmi/chains';
+import { anvil, arbitrum, mainnet, sepolia } from 'wagmi/chains';
 
 const projectID = env.VITE_WALLET_CONNECT_PROJECT_ID;
 
 const config = getDefaultConfig({
   appName: 'idOS Staking',
   projectId: projectID,
-  chains: [mainnet, arbitrum, anvil],
+  chains: [mainnet, arbitrum, anvil, sepolia],
   ssr: true,
 });
 
@@ -28,7 +28,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
           fontStack: 'system',
           overlayBlur: 'small',
         })}
-        initialChain={mainnet}
+        initialChain={sepolia}
       >
         {children}
       </RainbowKitProvider>
