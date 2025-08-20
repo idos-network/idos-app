@@ -25,9 +25,13 @@ export default function SmallSecondaryButton({
       className={`font-['Inter'] flex items-center justify-center gap-2 text-sm font-medium self-stretch px-4 py-3 ${height} ${width} rounded-lg ${
         disabled
           ? 'cursor-not-allowed bg-neutral-400 text-neutral-700'
-          : `cursor-pointer ${className || 'bg-neutral-700/50 hover:bg-neutral-700'} ${
-              danger ? 'text-[#EA8E8F]' : 'text-neutral-50'
-            }`
+          : `cursor-pointer ${
+              danger
+                ? 'text-[#EA8E8F]'
+                : !className?.includes('text-')
+                  ? 'text-neutral-50'
+                  : ''
+            } ${className || 'bg-neutral-700/50 hover:bg-neutral-700'}`
       }`}
       onClick={onClick}
       disabled={disabled}
