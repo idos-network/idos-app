@@ -11,7 +11,6 @@ import {
 import { LOCKUP_PERIODS, STAKING_ASSETS } from '@/constants/staking-event';
 import { handleStake } from '@/handlers/staking-event';
 import { useStakeTxHandler } from '@/hooks/useStakeTxHandler';
-import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import type { LockupPeriod, StakingAsset } from '@/interfaces/staking-event';
 import { useNavigate } from '@tanstack/react-router';
@@ -48,7 +47,6 @@ export function Stake() {
 
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const getDefaultAsset = useCallback(() => {
@@ -70,6 +68,8 @@ export function Stake() {
   const [hasUserManuallySelected, setHasUserManuallySelected] = useState(false);
   const [isNearTransactionPending, setIsNearTransactionPending] =
     useState(false);
+  const [nearTx, setNearTx] = useState<any>(null);
+  const [nearTxError, setNearTxError] = useState<Error | null>(null);
 
   const handleTransactionSuccess = useCallback(() => {
     setAmount('');
@@ -84,6 +84,8 @@ export function Stake() {
     selectedAsset,
     selectedLockup,
     amount,
+    nearTx,
+    nearTxError,
     onTransactionSuccess: handleTransactionSuccess,
   });
 
@@ -128,6 +130,17 @@ export function Stake() {
     availableAssets,
     hasUserManuallySelected,
   ]);
+
+  // NEAR transaction state management
+  useEffect(() => {
+    if (selectedAsset !== 'NEAR') {
+      setNearTx(null);
+      setNearTxError(null);
+      setIsNearTransactionPending(false);
+    } else if (nearTx || nearTxError) {
+      setIsNearTransactionPending(false);
+    }
+  }, [selectedAsset, nearTx, nearTxError]);
 
   const handleAssetChange = (newAsset: string) => {
     setSelectedAsset(newAsset);
@@ -206,16 +219,14 @@ export function Stake() {
     const lockupDays =
       LOCKUP_PERIODS.find((period) => period.id === selectedLockup)?.days ?? 0;
 
-    const lockupMonths =
-      LOCKUP_PERIODS.find((period) => period.id === selectedLockup)?.months ??
-      0;
-
     try {
       if (selectedAsset === 'NEAR') {
         setIsNearTransactionPending(true);
+        setNearTx(null);
+        setNearTxError(null);
       }
 
-      await handleStake({
+      const result = await handleStake({
         selectedAsset,
         amount,
         lockupDays,
@@ -224,24 +235,12 @@ export function Stake() {
         walletConnector,
       });
 
-      // TODO: handle NEAR success
       if (selectedAsset === 'NEAR') {
-        showToast({
-          type: 'success',
-          message: `Successfully staked ${amount} ${selectedAsset} for ${lockupMonths} months!`,
-        });
-        setAmount('');
-        setIsNearTransactionPending(false);
+        setNearTx(result);
       }
     } catch (error) {
-      console.error('Staking failed:', error);
-
       if (selectedAsset === 'NEAR') {
-        setIsNearTransactionPending(false);
-        showToast({
-          type: 'error',
-          message: 'NEAR staking failed! Please try again.',
-        });
+        setNearTxError(error as Error);
       }
     }
   }, [
@@ -254,7 +253,6 @@ export function Stake() {
     writeContractAsync,
     walletConnector,
     handleWalletConnection,
-    showToast,
   ]);
 
   return (

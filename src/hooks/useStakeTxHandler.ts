@@ -12,6 +12,8 @@ interface UseStakeTxHandlerProps {
   selectedAsset: string;
   selectedLockup: string;
   amount: string;
+  nearTx?: any;
+  nearTxError?: Error | null;
   onTransactionSuccess?: () => void;
 }
 
@@ -24,6 +26,8 @@ export function useStakeTxHandler({
   selectedAsset,
   selectedLockup,
   amount,
+  nearTx,
+  nearTxError,
   onTransactionSuccess,
 }: UseStakeTxHandlerProps) {
   const { showToast } = useToast();
@@ -79,4 +83,71 @@ export function useStakeTxHandler({
       });
     }
   }, [isConfirmError, selectedAsset, showToast]);
+
+  // Handle NEAR transaction success
+  useEffect(() => {
+    if (nearTx && selectedAsset === 'NEAR') {
+      if (nearTx.final_execution_status === 'EXECUTED') {
+        const lockupMonths =
+          LOCKUP_PERIODS.find((period) => period.id === selectedLockup)
+            ?.months ?? 0;
+
+        const isTestnet =
+          nearTx.transaction?.signer_id?.endsWith('.testnet') ?? false;
+        const explorerBaseUrl = isTestnet
+          ? 'https://testnet.nearblocks.io/txns'
+          : 'https://nearblocks.io/txns';
+
+        showToast({
+          type: 'success',
+          message: `Successfully staked ${amount} NEAR for ${lockupMonths} months!`,
+          close: true,
+          duration: 10000,
+          link: nearTx.transaction?.hash
+            ? {
+                text: 'Open in explorer',
+                url: `${explorerBaseUrl}/${nearTx.transaction.hash}`,
+              }
+            : undefined,
+        });
+
+        onTransactionSuccess?.();
+      }
+    }
+  }, [nearTx, selectedAsset, selectedLockup, showToast, onTransactionSuccess]);
+
+  // Handle NEAR transaction errors
+  useEffect(() => {
+    if (selectedAsset === 'NEAR') {
+      if (nearTxError) {
+        console.error(
+          'NEAR staking error:',
+          nearTxError.message || nearTxError,
+        );
+
+        const isUserCancelled =
+          nearTxError.message?.includes('User closed') ||
+          nearTxError.message?.includes('cancelled');
+
+        showToast({
+          type: 'error',
+          message: isUserCancelled
+            ? 'Transaction cancelled by user.'
+            : 'NEAR staking failed! Please try again.',
+        });
+        return;
+      }
+
+      if (nearTx && nearTx.final_execution_status !== 'EXECUTED') {
+        console.error(
+          'NEAR transaction failed with status:',
+          nearTx.final_execution_status,
+        );
+        showToast({
+          type: 'error',
+          message: 'NEAR transaction failed! Please try again.',
+        });
+      }
+    }
+  }, [nearTx, nearTxError, selectedAsset, showToast]);
 }

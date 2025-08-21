@@ -44,14 +44,14 @@ export const stakeNEAR = async ({
   amount,
   lockupDays,
   walletConnector,
-}: StakeNEARParams): Promise<void> => {
+}: StakeNEARParams): Promise<any> => {
   if (!walletConnector.nearWallet.accountId) {
     throw new Error('NEAR wallet is not connected');
   }
 
   try {
     const wallet = await walletConnector.nearWallet.selector.wallet();
-    await wallet.signAndSendTransaction({
+    const tx = await wallet.signAndSendTransaction({
       receiverId: env.VITE_NEAR_STAKING_CONTRACT_ADDRESS,
       actions: [
         {
@@ -67,9 +67,9 @@ export const stakeNEAR = async ({
         },
       ],
     });
+    return tx;
   } catch (error) {
-    console.error('NEAR staking failed:', error);
-    throw new Error('Failed to stake NEAR. Please try again.');
+    throw error;
   }
 };
 
@@ -89,7 +89,7 @@ export const handleStake = async ({
   address,
   writeContractAsync,
   walletConnector,
-}: StakeParams): Promise<void> => {
+}: StakeParams): Promise<any> => {
   if (selectedAsset === 'ETH') {
     if (!address || !writeContractAsync) {
       throw new Error('ETH wallet connection required');
@@ -100,12 +100,14 @@ export const handleStake = async ({
       lockupDays,
       writeContractAsync,
     });
+    return null;
   } else if (selectedAsset === 'NEAR') {
-    await stakeNEAR({
+    const tx = await stakeNEAR({
       amount,
       lockupDays,
       walletConnector,
     });
+    return tx;
   } else {
     throw new Error(`Unsupported asset: ${selectedAsset}`);
   }
