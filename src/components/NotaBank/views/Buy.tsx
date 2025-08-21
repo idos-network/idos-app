@@ -20,11 +20,6 @@ import OnRampDialog from '../components/OnRampDialog';
 import { ProviderQuotes } from '../components/ProviderQuotes';
 import UserBalance from '../components/UserBalance';
 
-// @ts-expect-error keep these until tested in prod
-window.getSharedCredential = getSharedCredential;
-// @ts-expect-error keep these until tested in prod
-window.getNoahCustomer = getNoahOnRampUrl;
-
 const providers = ['hifi', 'transak', 'noah'];
 
 const useFetchProviderQuotes = ({
