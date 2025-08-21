@@ -49,28 +49,24 @@ export const stakeNEAR = async ({
     throw new Error('NEAR wallet is not connected');
   }
 
-  try {
-    const wallet = await walletConnector.nearWallet.selector.wallet();
-    const tx = await wallet.signAndSendTransaction({
-      receiverId: env.VITE_NEAR_STAKING_CONTRACT_ADDRESS,
-      actions: [
-        {
-          type: 'FunctionCall',
-          params: {
-            methodName: 'lock_near',
-            args: {
-              days: lockupDays,
-            },
-            gas: '30000000000000',
-            deposit: parseUnits(amount, 24).toString(),
+  const wallet = await walletConnector.nearWallet.selector.wallet();
+  const tx = await wallet.signAndSendTransaction({
+    receiverId: env.VITE_NEAR_STAKING_CONTRACT_ADDRESS,
+    actions: [
+      {
+        type: 'FunctionCall',
+        params: {
+          methodName: 'lock_near',
+          args: {
+            days: lockupDays,
           },
+          gas: '30000000000000',
+          deposit: parseUnits(amount, 24).toString(),
         },
-      ],
-    });
-    return tx;
-  } catch (error) {
-    throw error;
-  }
+      },
+    ],
+  });
+  return tx;
 };
 
 export interface StakeParams {

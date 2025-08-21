@@ -53,6 +53,7 @@ export function useStakeTxHandler({
 
       onTransactionSuccess?.();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isConfirmed,
     selectedAsset,
@@ -114,6 +115,7 @@ export function useStakeTxHandler({
         onTransactionSuccess?.();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nearTx, selectedAsset, selectedLockup, showToast, onTransactionSuccess]);
 
   // Handle NEAR transaction errors

@@ -1,4 +1,4 @@
-export default function ArrowIcon({
+export default function DropdownArrowIcon({
   className,
   ...props
 }: {

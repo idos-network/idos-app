@@ -1,4 +1,4 @@
-import ArrowIcon from '@/icons/arrow';
+import DropdownArrowIcon from '@/icons/dropdown-arrow';
 import type { StakingAsset } from '@/interfaces/staking-event';
 import { useEffect, useRef, useState } from 'react';
 
@@ -72,7 +72,7 @@ export function AssetSelector({
           className="flex items-center justify-between w-full h-14 px-4 py-3.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 transition-all"
         >
           <AssetDisplay asset={selectedAssetData} />
-          <ArrowIcon
+          <DropdownArrowIcon
             className={`size-3 text-neutral-400 transition-transform ml-5 ${isOpen ? '-scale-y-100' : ''}`}
           />
         </button>
