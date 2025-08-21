@@ -6,6 +6,7 @@ import {
   Outlet,
 } from '@tanstack/react-router';
 import AppLayout from './components/layout/AppLayout';
+import NotaBankLogo from './components/NotaBank/components/NotaBankLogo';
 import { Home } from './routes/Home';
 import { IdosIco } from './routes/IdosIco';
 import { IdosProfile } from './routes/IdosProfile';
@@ -64,6 +65,7 @@ export const notabankRoute = createRoute({
   component: () => (
     // Yes, this looks ugly, but it's the only way to override the font-sans class at the moment until we merge properly the styles.
     <div className="font-sans!">
+      <NotaBankLogo />
       <Outlet />
     </div>
   ),

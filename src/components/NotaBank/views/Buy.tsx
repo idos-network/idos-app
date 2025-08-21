@@ -1,5 +1,3 @@
-import { getNoahOnRampUrl } from '@/api/noah';
-import { getSharedCredential } from '@/api/shared-credential';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import {
@@ -21,11 +19,6 @@ import AmountInput from '../components/AmountInput';
 import OnRampDialog from '../components/OnRampDialog';
 import { ProviderQuotes } from '../components/ProviderQuotes';
 import UserBalance from '../components/UserBalance';
-
-// @ts-expect-error keep these until tested in prod
-window.getSharedCredential = getSharedCredential;
-// @ts-expect-error keep these until tested in prod
-window.getNoahCustomer = getNoahOnRampUrl;
 
 const providers = ['hifi', 'transak', 'noah'];
 
