@@ -1,3 +1,4 @@
+import FaceSignBanner from '@/components/NotaBank/components/FaceSignBanner';
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
 import Spinner from '@/components/Spinner';
@@ -94,6 +95,7 @@ export function IdosProfile() {
               onError={(err) => showToast({ type: 'error', message: err })}
               onSuccess={(msg) => showToast({ type: 'success', message: msg })}
             />
+            <FaceSignBanner />
             <WalletsCard />
           </div>
         </div>
