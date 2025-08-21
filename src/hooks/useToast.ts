@@ -10,14 +10,14 @@ export type ToastType =
 export interface ToastLink {
   text: string;
   url: string;
-  external?: boolean; // defaults to true
+  external?: boolean;
 }
 
 export interface ToastOptions {
   type: ToastType;
   message: string;
   points?: number;
-  duration?: number; // ms
+  duration?: number;
   icon?: boolean;
   close?: boolean;
   link?: ToastLink;

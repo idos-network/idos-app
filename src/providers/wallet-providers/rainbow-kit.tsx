@@ -28,7 +28,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
           fontStack: 'system',
           overlayBlur: 'small',
         })}
-        initialChain={sepolia}
+        initialChain={sepolia} // TODO: update to mainnet
       >
         {children}
       </RainbowKitProvider>
