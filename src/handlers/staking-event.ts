@@ -7,7 +7,7 @@ interface StakeETHParams {
   address: `0x${string}`;
   amount: string;
   lockupDays: number;
-  writeContractAsync: any; // wagmi's writeContractAsync function
+  writeContractAsync: any;
 }
 
 interface StakeNEARParams {

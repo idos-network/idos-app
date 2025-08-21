@@ -10,6 +10,7 @@ import {
 
 import { LOCKUP_PERIODS, STAKING_ASSETS } from '@/constants/staking-event';
 import { handleStake } from '@/handlers/staking-event';
+import { useStakeTxHandler } from '@/hooks/useStakeTxHandler';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import type { LockupPeriod, StakingAsset } from '@/interfaces/staking-event';
@@ -28,7 +29,7 @@ interface LockupPeriodWithSelection extends LockupPeriod {
 }
 
 export function Stake() {
-  const { address, chain } = useAccount();
+  const { address } = useAccount();
   const {
     writeContractAsync,
     data: hash,
@@ -69,6 +70,22 @@ export function Stake() {
   const [hasUserManuallySelected, setHasUserManuallySelected] = useState(false);
   const [isNearTransactionPending, setIsNearTransactionPending] =
     useState(false);
+
+  const handleTransactionSuccess = useCallback(() => {
+    setAmount('');
+  }, []);
+
+  useStakeTxHandler({
+    isConfirmed,
+    isWriteError,
+    isConfirmError,
+    writeError,
+    hash,
+    selectedAsset,
+    selectedLockup,
+    amount,
+    onTransactionSuccess: handleTransactionSuccess,
+  });
 
   const availableAssets = useMemo(() => {
     return STAKING_ASSETS.map((asset: StakingAsset, index: number) => ({
@@ -112,56 +129,6 @@ export function Stake() {
     hasUserManuallySelected,
   ]);
 
-  // Handle ETH transaction confirmation
-  useEffect(() => {
-    if (isConfirmed && selectedAsset === 'ETH') {
-      const lockupMonths =
-        LOCKUP_PERIODS.find((period) => period.id === selectedLockup)?.months ??
-        0;
-
-      showToast({
-        type: 'success',
-        message: `Staked ${amount} ETH for ${lockupMonths} months!`,
-        close: true,
-        duration: 10000,
-        link: {
-          text: 'Open in explorer',
-          url: `${chain?.blockExplorers?.default.url}/tx/${hash}`,
-        },
-      });
-
-      setAmount('');
-    }
-  }, [isConfirmed, selectedAsset, selectedLockup, showToast, hash]);
-
-  // Handle ETH transaction errors
-  useEffect(() => {
-    if (isWriteError && writeError && selectedAsset === 'ETH') {
-      console.error('ETH staking failed:', writeError);
-      showToast({
-        type: 'error',
-        message: 'ETH staking failed! Please try again.',
-      });
-    }
-  }, [isWriteError, writeError, selectedAsset, showToast]);
-
-  // Handle ETH transaction confirmation errors
-  useEffect(() => {
-    if (isConfirmError && selectedAsset === 'ETH') {
-      showToast({
-        type: 'error',
-        message: 'Transaction confirmation failed. Please check your wallet.',
-      });
-    }
-  }, [isConfirmError, selectedAsset, showToast]);
-
-  // Reset NEAR transaction state when switching away from NEAR
-  useEffect(() => {
-    if (selectedAsset !== 'NEAR' && isNearTransactionPending) {
-      setIsNearTransactionPending(false);
-    }
-  }, [selectedAsset, isNearTransactionPending]);
-
   const handleAssetChange = (newAsset: string) => {
     setSelectedAsset(newAsset);
     setHasUserManuallySelected(true);
@@ -179,7 +146,7 @@ export function Stake() {
     }
   };
 
-  const getMaxBalance = useCallback(() => {
+  const maxBalance = useMemo(() => {
     if (!isCurrentAssetConnected) return '0';
 
     if (selectedAsset === 'ETH' && wallet && wallet.type === 'evm') {
@@ -193,12 +160,11 @@ export function Stake() {
   const isAmountMaxed = useMemo(() => {
     if (!amount || amount === '' || !isCurrentAssetConnected) return false;
 
-    const maxBalance = getMaxBalance();
     const numericAmount = parseFloat(amount);
     const numericMax = parseFloat(maxBalance);
 
     return numericAmount > numericMax;
-  }, [amount, getMaxBalance, isCurrentAssetConnected]);
+  }, [amount, maxBalance, isCurrentAssetConnected]);
 
   const lockupPeriods: LockupPeriodWithSelection[] = useMemo(() => {
     return LOCKUP_PERIODS.map((period) => ({
@@ -207,7 +173,6 @@ export function Stake() {
     }));
   }, [selectedLockup]);
 
-  // Compute overall transaction state
   const isTransactionPending = useMemo(() => {
     if (selectedAsset === 'ETH') {
       return isWritePending || isConfirming;
@@ -221,7 +186,6 @@ export function Stake() {
     if (!isCurrentAssetConnected) {
       return false;
     }
-
     return isAmountMaxed || isTransactionPending || !amount;
   }, [isCurrentAssetConnected, isAmountMaxed, isTransactionPending, amount]);
 
@@ -362,7 +326,7 @@ export function Stake() {
                 isConnected={isCurrentAssetConnected}
                 isAmountMaxed={isAmountMaxed}
                 onAmountChange={setAmount}
-                onMaxClick={() => setAmount(getMaxBalance())}
+                onMaxClick={() => setAmount(maxBalance)}
               />
             </div>
 
