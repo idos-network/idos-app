@@ -147,7 +147,7 @@ export function Stake() {
     setHasUserManuallySelected(true);
   };
 
-  const handleWalletConnection = async () => {
+  const handleWalletConnection = useCallback(async () => {
     try {
       if (selectedAsset === 'ETH') {
         await walletConnector.connectEthereum();
@@ -157,7 +157,7 @@ export function Stake() {
     } catch (error) {
       console.error('Failed to connect wallet:', error);
     }
-  };
+  }, [selectedAsset, walletConnector]);
 
   const maxBalance = useMemo(() => {
     if (!isCurrentAssetConnected) return '0';
@@ -309,13 +309,10 @@ export function Stake() {
                                 3,
                               )
                             : '0.00'
-                        : '- '}
+                        : '-'}{' '}
                       {selectedAsset}
                     </span>
                   </div>
-                  {!isCurrentAssetConnected && (
-                    <div className="text-sm">(not connected)</div>
-                  )}
                 </div>
               </div>
               <AmountInput
