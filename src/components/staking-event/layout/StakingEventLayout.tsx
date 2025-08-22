@@ -1,5 +1,5 @@
-import SmallPrimaryButton from '@/components/SmallPrimaryButton';
 import { Link, Outlet, useLocation } from '@tanstack/react-router';
+import { StakeFrame } from '../components';
 
 export function StakingEventLayout() {
   const location = useLocation();
@@ -13,14 +13,11 @@ export function StakingEventLayout() {
     <div className="space-y-6 p-5">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-light text-white">Staking Event</h1>
-        <Link to="/staking-event/stake">
-          <SmallPrimaryButton>Stake</SmallPrimaryButton>
-        </Link>
+        <StakeFrame />
       </div>
 
       {/* Navigation Tabs */}
-      <div className="relative flex gap-1 border-b border-neutral-800">
+      <div className="relative flex gap-1 border-b border-neutral-800 mb-10">
         <Link
           to="/staking-event"
           className={`relative px-4 py-3 text-base font-medium transition-colors border-b ${
