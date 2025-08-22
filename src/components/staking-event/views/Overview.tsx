@@ -1,24 +1,14 @@
-import SmallSecondaryButton from '@/components/SmallSecondaryButton';
-import { useNavigate } from '@tanstack/react-router';
-
 export function Overview() {
-  const navigate = useNavigate();
-
   return (
-    <div className="flex flex-col gap-4">
-      <h1>Staking Event Overview</h1>
-      <p>This is the overview page for the staking event.</p>
-      <div className="flex gap-4">
-        <SmallSecondaryButton
-          onClick={() => navigate({ to: '/staking-event/stake' })}
-        >
-          Stake
-        </SmallSecondaryButton>
-        <SmallSecondaryButton
-          onClick={() => navigate({ to: '/staking-event/my-stakings' })}
-        >
-          My Stakings
-        </SmallSecondaryButton>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <h2 className="text-xl font-light text-white">
+          Staking Event Overview
+        </h2>
+        <p className="text-neutral-400">
+          Participate in our staking event to earn rewards. Lock your assets for
+          a specified period and receive project tokens as rewards.
+        </p>
       </div>
     </div>
   );
