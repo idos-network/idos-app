@@ -7,6 +7,8 @@ import {
 } from '@tanstack/react-router';
 import AppLayout from './components/layout/AppLayout';
 import NotaBankLogo from './components/NotaBank/components/NotaBankLogo';
+import { StakingEventLayout } from './components/staking-event/layout/StakingEventLayout';
+import { Stake } from './components/staking-event/views/Stake';
 import { Home } from './routes/Home';
 import { IdosIco } from './routes/IdosIco';
 import { IdosProfile } from './routes/IdosProfile';
@@ -25,7 +27,6 @@ import { RootComponent } from './routes/RootComponent';
 import {
   stakingEventIndexRoute,
   stakingEventMyStakingsRoute,
-  stakingEventStakeRoute,
 } from './routes/StakingEvent';
 
 // Root route
@@ -75,7 +76,14 @@ export const notabankRoute = createRoute({
 export const stakingEventRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/staking-event',
-  component: () => <Outlet />,
+  component: StakingEventLayout,
+});
+
+// Standalone Stake route
+export const stakingEventStakeRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/staking-event/stake',
+  component: Stake,
 });
 
 // IDOS ICO route
@@ -116,8 +124,8 @@ export const routeTree = rootRoute.addChildren([
     stakingEventRoute.addChildren([
       stakingEventIndexRoute,
       stakingEventMyStakingsRoute,
-      stakingEventStakeRoute,
     ]),
+    stakingEventStakeRoute,
     idosIcoRoute,
     idosStakingRoute,
     pointsRoute,
