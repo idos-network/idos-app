@@ -51,7 +51,7 @@ export function IDOSAirdropCard() {
         {/* TODO: calculate value */}
         18,780.25 IDOS
       </div>
-      {/* Tooltip rendered outside component using portal */}
+      {/* TODO: move to shared tooltip component */}
       {showTooltip &&
         tooltipPosition &&
         createPortal(

@@ -1,6 +1,7 @@
 import { rewardLockTokenVaultAbi } from '@/abis/RewardLockTokenVault';
 import { parseWithSchema } from '@/api/parser';
 import InfoIcon from '@/components/icons/info';
+import { config } from '@/config/wagmi.config';
 import { env } from '@/env';
 import { useFetchWallets } from '@/hooks/useFetchWallets';
 import {
@@ -9,7 +10,6 @@ import {
   type DepositPosition,
   type NearDepositPosition,
 } from '@/interfaces/staking-event';
-import { config } from '@/providers/wallet-providers/rainbow-kit';
 import { JsonRpcProvider } from '@near-js/providers';
 import { useEffect, useMemo, useState } from 'react';
 import { readContract } from 'wagmi/actions';
@@ -96,7 +96,7 @@ export function MyStakings() {
     };
 
     fetchDeposits();
-  }, [config, evmWallets]);
+  }, [evmWallets]);
 
   const nearWallets = useMemo(
     () => wallets.filter((wallet) => wallet.wallet_type === 'NEAR'),

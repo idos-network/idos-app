@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router';
 export function StakeFrame() {
   return (
     <div className="mx-auto flex-1 mb-10">
+      {/* Background gradients */}
       <div
         className="relative overflow-hidden rounded-3xl border border-aquamarine-900 p-6"
         style={{
@@ -26,10 +27,8 @@ export function StakeFrame() {
         />
 
         {/* Main content */}
-        <div className="relative flex items-center justify-between gap-10">
-          {/* Left side - Icon and text */}
+        <div className="relative flex items-center justify-between gap-10 flex-1">
           <div className="flex items-center sm:gap-10 flex-1">
-            {/* Text content */}
             <div className="flex flex-col gap-2.5 text-left">
               <div className="text-2xl font-normal text-neutral-50">
                 Staking Event
@@ -43,8 +42,6 @@ export function StakeFrame() {
               </p>
             </div>
           </div>
-
-          {/* Right side - Button */}
           <div className="flex-shrink-0">
             <Link to="/staking-event/stake">
               <SmallPrimaryButton>Stake</SmallPrimaryButton>

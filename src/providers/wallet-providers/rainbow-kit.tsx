@@ -1,20 +1,7 @@
-import { env } from '@/env';
-import {
-  RainbowKitProvider,
-  darkTheme,
-  getDefaultConfig,
-} from '@rainbow-me/rainbowkit';
+import { config } from '@/config/wagmi.config';
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
-import { anvil, arbitrum, mainnet, sepolia } from 'wagmi/chains';
-
-const projectID = env.VITE_WALLET_CONNECT_PROJECT_ID;
-
-export const config = getDefaultConfig({
-  appName: 'idOS Staking',
-  projectId: projectID,
-  chains: [mainnet, arbitrum, anvil, sepolia],
-  ssr: true,
-});
+import { sepolia } from 'wagmi/chains';
 
 export function Provider({ children }: { children: React.ReactNode }) {
   return (
