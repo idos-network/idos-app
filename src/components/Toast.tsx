@@ -1,4 +1,4 @@
-import type { ToastType } from '@/hooks/useToast';
+import type { ToastLink, ToastType } from '@/hooks/useToast';
 import CheckIcon from '@/icons/check';
 import CloseToastIcon from '@/icons/close-toast';
 import ExclamationIcon from '@/icons/exclamation';
@@ -37,6 +37,7 @@ interface ToastProps {
   points?: number;
   icon?: boolean;
   close?: boolean;
+  link?: ToastLink;
   onClose: () => void;
 }
 
@@ -46,6 +47,7 @@ export default function Toast({
   points,
   icon = true,
   close = false,
+  link,
   onClose,
 }: ToastProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -88,7 +90,24 @@ export default function Toast({
             {icons[type]}
           </span>
         )}
-        <span className="flex-1 text-sm font-normal pr-6">{message}</span>
+        <span className="flex-1 text-sm font-normal pr-6">
+          {message}
+          {link && (
+            <>
+              {' '}
+              <a
+                href={link.url}
+                target={link.external !== false ? '_blank' : undefined}
+                rel={
+                  link.external !== false ? 'noopener noreferrer' : undefined
+                }
+                className="cursor-pointer underline hover:no-underline hover:text-aquamarine-300"
+              >
+                {link.text}
+              </a>
+            </>
+          )}
+        </span>
         {close && (
           <button
             onClick={onClose}

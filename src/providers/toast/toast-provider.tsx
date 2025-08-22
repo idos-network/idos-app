@@ -100,6 +100,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
             points={toast.points}
             icon={toast.icon}
             close={toast.close}
+            link={toast.link}
             onClose={() => removeToast(toast.id)}
           />
         ))}
@@ -122,6 +123,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
               points={toast.points}
               icon={toast.icon}
               close={toast.close}
+              link={toast.link}
               onClose={() => removeToast(toast.id)}
             />
           ))}

@@ -20,7 +20,7 @@ export default function SmallPrimaryButton({
         xSmall ? 'h-8' : 'h-9'
       } ${
         disabled
-          ? 'cursor-not-allowed opacity-50 bg-aquamarine-700 text-neutral-800'
+          ? `cursor-not-allowed opacity-50 ${className || 'bg-aquamarine-700 text-neutral-800'}`
           : `cursor-pointer ${className || 'bg-aquamarine-400 text-neutral-950 hover:bg-aquamarine-600'}`
       }`}
       onClick={onClick}
