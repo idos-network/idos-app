@@ -18,7 +18,7 @@ export const FaceTecExample: React.FC = () => {
   return (
     <div className="facetec-container">
       {/* Custom styling for centered container */}
-      <style jsx>{`
+      <style>{`
         .facetec-container {
           display: flex;
           flex-direction: column;
