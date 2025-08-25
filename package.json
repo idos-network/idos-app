@@ -17,7 +17,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "netlify dev:exec drizzle-kit studio",
     "db:setup": "createdb idos_dev && npm run db:generate && npm run db:migrate",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "facetec-browser-sdk": "live-server --host=localhost --port=8000"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-beta.2",
@@ -36,6 +37,7 @@
     "@near-wallet-selector/here-wallet": "8.10.2",
     "@near-wallet-selector/meteor-wallet": "8.10.2",
     "@near-wallet-selector/modal-ui": "8.10.2",
+    "live-server": "^1.2.1",
     "@netlify/functions": "^4.1.9",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
