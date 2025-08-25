@@ -3,12 +3,14 @@ import FaceSignSetupDialog from './FaceSignSetupDialog';
 export default function FaceSignBanner() {
   return (
     <div className="mx-auto flex-1">
+      {/* Background gradients */}
       <div
-        className="relative overflow-hidden rounded-3xl border border-green-600/40 p-8"
+        className="relative overflow-hidden rounded-3xl border border-aquamarine-900 p-8"
         style={{
           background: `
-      linear-gradient(91.71deg, rgba(38, 38, 38, 0.6) -3.43%, rgba(0, 98, 77, 0.6) 97.67%), radial-gradient(73.41% 215.8% at 27.88% 12.72%, rgba(0, 98, 77, 0.8) 0%, rgba(0, 0, 0, 0.16) 100%) 
-    `,
+            radial-gradient(ellipse 70% 180% at 25% 0%, #00624D -10%, rgba(0, 0, 0, 0.3) 80%),
+            linear-gradient(81deg,#262626 20%, #00624D 100%)
+          `,
         }}
       >
         {/* Background grid patterns */}
@@ -16,21 +18,10 @@ export default function FaceSignBanner() {
           className="absolute inset-0 opacity-30"
           style={{
             backgroundImage: `
-          linear-gradient(rgba(34, 197, 94, 0.8) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(34, 197, 94, 0.8) 1px, transparent 1px)
+          linear-gradient(#525252 1px, transparent 1px),
+          linear-gradient(90deg, #525252 1px, transparent 1px)
         `,
-            backgroundSize: '25px 25px',
-          }}
-        />
-
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `
-          linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-        `,
-            backgroundSize: '12px 12px',
+            backgroundSize: '23px 23px',
           }}
         />
 
@@ -69,10 +60,6 @@ export default function FaceSignBanner() {
             <FaceSignSetupDialog />
           </div>
         </div>
-
-        {/* Decorative overlays */}
-        <div className="absolute inset-0 rounded-3xl shadow-inner shadow-green-500/20 pointer-events-none"></div>
-        <div className="absolute inset-0 rounded-3xl border border-green-400/20 pointer-events-none"></div>
       </div>
     </div>
   );
