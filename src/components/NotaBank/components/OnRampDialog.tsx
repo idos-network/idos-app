@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useBuyStore } from '@/stores/buy-store';
+import { useSharedStore } from '@/stores/shared-store';
 import { useNavigate } from '@tanstack/react-router';
 
 const onrampProviderIcon = {
@@ -17,7 +17,7 @@ const onrampProviderIcon = {
 
 export default function OnRampDialog() {
   const navigate = useNavigate();
-  const { selectedProvider } = useBuyStore();
+  const { selectedProvider } = useSharedStore();
   const { icon, name, color } =
     onrampProviderIcon[selectedProvider as keyof typeof onrampProviderIcon];
 

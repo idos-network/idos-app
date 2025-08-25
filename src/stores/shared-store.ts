@@ -2,9 +2,10 @@ import {
   currencies,
   tokens,
 } from '@/components/NotaBank/components/TokenAmountInput';
+import type { idOSCredential } from '@idos-network/client';
 import { create } from 'zustand';
 
-export const useBuyStore = create<{
+interface SharedStore {
   spendAmount: string;
   buyAmount: string;
   setSpendAmount: (spendAmount: string) => void;
@@ -19,22 +20,26 @@ export const useBuyStore = create<{
   setLastChanged: (field: 'spend' | 'buy') => void;
   selectedProvider: string;
   setSelectedProvider: (selectedProvider: string) => void;
-}>((set) => ({
+  sharedCredential: idOSCredential | null;
+  setSharedCredential: (sharedCredential: idOSCredential | null) => void;
+}
+
+export const useSharedStore = create<SharedStore>((set) => ({
   spendAmount: '',
   buyAmount: '',
   setBuyAmount: (buyAmount) => {
-    const rate = useBuyStore.getState().rate || 1;
+    const rate = useSharedStore.getState().rate || 1;
     const spendAmount = +buyAmount / +rate;
     set({ buyAmount, spendAmount: spendAmount.toString(), lastChanged: 'buy' });
   },
   setSpendAmount: (spendAmount) => {
-    const rate = useBuyStore.getState().rate || 1;
+    const rate = useSharedStore.getState().rate || 1;
     const buyAmount = +spendAmount * +rate;
     set({ spendAmount, buyAmount: buyAmount.toString(), lastChanged: 'spend' });
   },
   rate: '',
   setRate: (rate: string) => {
-    const { spendAmount, buyAmount, lastChanged } = useBuyStore.getState();
+    const { spendAmount, buyAmount, lastChanged } = useSharedStore.getState();
     let newSpendAmount = spendAmount;
     let newBuyAmount = buyAmount;
     if (lastChanged === 'spend') {
@@ -46,10 +51,16 @@ export const useBuyStore = create<{
   },
   selectedCurrency: currencies[0].value,
   setSelectedCurrency: (selectedCurrency) => set({ selectedCurrency }),
+
   selectedToken: tokens[0].value,
   setSelectedToken: (selectedToken) => set({ selectedToken }),
+
   lastChanged: 'spend',
   setLastChanged: (field) => set({ lastChanged: field }),
+
   selectedProvider: 'transak',
   setSelectedProvider: (selectedProvider) => set({ selectedProvider }),
+
+  sharedCredential: null,
+  setSharedCredential: (sharedCredential) => set({ sharedCredential }),
 }));

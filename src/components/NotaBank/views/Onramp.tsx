@@ -1,10 +1,11 @@
 import { getNoahOnRampUrl } from '@/api/noah';
 import { useIdOS } from '@/context/idos-context';
+import { useRequestGrant } from '@/hooks/useRequestGrant';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
 import { useTransakToken } from '@/hooks/useTransakToken';
-import { useBuyStore } from '@/stores/buy-store';
+import { useSharedStore } from '@/stores/shared-store';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { TransakProvider } from '../widgets/Transack';
 
@@ -17,6 +18,27 @@ const CheckoutLoading = () => (
   <div className="flex flex-col items-center justify-center min-h-[500px] gap-4">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#74FB5B]"></div>
     <p className="text-neutral-400 text-sm">Loading checkout...</p>
+  </div>
+);
+
+const GrantRequestLoading = () => (
+  <div className="flex flex-col items-center justify-center min-h-[500px] gap-4">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#74FB5B]"></div>
+    <p className="text-neutral-400 text-sm">Requesting access permission...</p>
+    <p className="text-neutral-500 text-xs max-w-md text-center">
+      We're requesting permission to access your credentials to complete the
+      onramp process.
+    </p>
+  </div>
+);
+
+const TransakTokenLoading = () => (
+  <div className="flex flex-col items-center justify-center min-h-[500px] gap-4">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#74FB5B]"></div>
+    <p className="text-neutral-400 text-sm">Loading Transak token...</p>
+    <p className="text-neutral-500 text-xs max-w-md text-center">
+      Setting up secure payment processing with Transak.
+    </p>
   </div>
 );
 
@@ -49,7 +71,7 @@ const useOnrampUrl = (selectedProvider: string) => {
 };
 
 export default function Onramp() {
-  const { selectedProvider } = useBuyStore();
+  const { selectedProvider } = useSharedStore();
   const [isIframeLoading, setIsIframeLoading] = useState(false);
   const {
     data: onrampUrl,
@@ -57,21 +79,41 @@ export default function Onramp() {
     isLoading,
   } = useOnrampUrl(selectedProvider);
   const { data: sharedCredential } = useSharedCredential();
-  const credentialId = sharedCredential?.credentialId;
+  const {
+    data: accessGrant,
+    mutate: requestGrant,
+    isPending: isRequestingGrant,
+  } = useRequestGrant();
   const { data: transakToken, isLoading: isTransakLoading } = useTransakToken(
-    selectedProvider === 'transak' ? (credentialId ?? '') : '',
+    selectedProvider === 'transak' ? (accessGrant?.id ?? '') : '',
   );
 
   const handleIframeLoad = () => {
     setIsIframeLoading(false);
   };
 
+  useEffect(() => {
+    if (accessGrant) return;
+    if (!sharedCredential?.credentialId) return;
+    requestGrant();
+  }, [accessGrant, sharedCredential, requestGrant]);
+
   if (selectedProvider === 'transak' && transakToken)
     return <TransakProvider transakToken={transakToken ?? ''} />;
 
+  // Show grant request loading when requesting permission
+  if (isRequestingGrant) {
+    return <GrantRequestLoading />;
+  }
+
+  // Show specific Transak loading when loading Transak token
+  if (isTransakLoading) {
+    return <TransakTokenLoading />;
+  }
+
   return (
     <div>
-      {isPending || isLoading || isTransakLoading ? (
+      {isPending || isLoading ? (
         <CheckoutLoading />
       ) : (
         <div className="relative">

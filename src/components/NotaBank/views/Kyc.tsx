@@ -153,6 +153,8 @@ export default function Kyc() {
         className="w-full rounded-2xl overflow-hidden"
         style={{ height: '85vh' }}
         onLoad={handleIframeLoad}
+        sandbox="allow-popups allow-forms allow-scripts allow-same-origin"
+        allow="camera; microphone; geolocation; clipboard-write"
       />
     </div>
   );

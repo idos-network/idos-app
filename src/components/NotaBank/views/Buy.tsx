@@ -8,15 +8,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
+import { useSharedStore } from '@/stores/shared-store';
 import { useQueries } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { TokenETH, TokenUSDC, TokenUSDT } from '@web3icons/react';
 import type { QuoteRateResponse } from 'functions/provider-quotes';
 import { DollarSignIcon, EuroIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import ActionToolbar from '../components/ActionToolbar';
 import AmountInput from '../components/AmountInput';
-import OnRampDialog from '../components/OnRampDialog';
 import { ProviderQuotes } from '../components/ProviderQuotes';
 import UserBalance from '../components/UserBalance';
 
@@ -48,14 +49,18 @@ const useFetchProviderQuotes = ({
 };
 
 function BuyModule() {
-  const { data: sharedCredential } = useSharedCredential();
+  const {
+    data: sharedCredential,
+    isLoading: fetchingCredential,
+    isError,
+  } = useSharedCredential();
   const navigate = useNavigate();
   const [sourceCurrency, setSourceCurrency] = useState('USD');
   const [buyAmount, setBuyAmount] = useState(100);
   const [spendAmount, setSpendAmount] = useState(100);
   const [destinationCurrency, setDestinationCurrency] = useState('USDC');
-  const [selectedProvider, setSelectedProvider] = useState<string>('');
   const [lastChanged, setLastChanged] = useState<'spend' | 'buy'>('spend');
+  const { selectedProvider, setSelectedProvider } = useSharedStore();
 
   const quotes = useFetchProviderQuotes({
     sourceCurrency,
@@ -133,6 +138,15 @@ function BuyModule() {
       }
     }
   };
+
+  useEffect(() => {
+    if (fetchingCredential) {
+      toast.loading('Checking shared credential...');
+    } else if (isError) {
+      toast.error('Shared credential not found');
+    }
+    toast.dismiss();
+  }, [fetchingCredential, isError]);
 
   return (
     <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
@@ -229,11 +243,18 @@ function BuyModule() {
           isLoading={quotes.isPending}
         />
         {sharedCredential?.credentialContent ? (
-          <OnRampDialog />
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => navigate({ to: '/notabank/onramp' })}
+          >
+            Continue
+          </Button>
         ) : (
           <Button
             type="button"
             variant="secondary"
+            disabled={fetchingCredential}
             onClick={() => navigate({ to: '/notabank/kyc' })}
           >
             Continue

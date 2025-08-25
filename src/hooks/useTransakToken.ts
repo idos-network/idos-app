@@ -8,7 +8,9 @@ export const useTransakToken = (credentialId: string) => {
 
   return useQuery({
     queryKey: ['transak-token'],
-    queryFn: () => getTransakToken(credentialId),
+    queryFn: () => getTransakToken('956ccc10-d804-4e72-9939-0651873fd289'),
     enabled: !!userId && !!credentialId,
+    staleTime: 0,
+    gcTime: 0,
   });
 };
