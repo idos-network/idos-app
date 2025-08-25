@@ -74,7 +74,6 @@ export function WalletActionModal({
     updateUser({
       id: idOSLoggedIn!.user.id,
       mainEvm: address,
-      referrerCode: '', // TODO: make it optional
     });
     refetch();
   };

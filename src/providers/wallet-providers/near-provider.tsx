@@ -31,9 +31,8 @@ declare global {
   }
 }
 
-// TODO: update to mainnet
 const provider = new JsonRpcProvider({
-  url: 'https://test.rpc.fastnear.com',
+  url: env.VITE_NEAR_RPC_URL,
 });
 
 export function NearWalletProvider({ children }: PropsWithChildren) {
@@ -47,8 +46,7 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
   const initializeWalletSelector = useCallback(async () => {
     try {
       const walletSelector = await setupWalletSelector({
-        // network: import.meta.env.DEV ? 'testnet' : 'mainnet',
-        network: 'testnet', // TODO: update later
+        network: env.VITE_NODE_ENV === 'development' ? 'testnet' : 'mainnet',
         debug: import.meta.env.DEV,
         modules: [setupMeteorWallet(), setupHereWallet()],
       });

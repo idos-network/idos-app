@@ -1,7 +1,8 @@
 import { config } from '@/config/wagmi.config';
+import { env } from '@/env';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
+import { mainnet, sepolia } from 'wagmi/chains';
 
 export function Provider({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +16,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
           fontStack: 'system',
           overlayBlur: 'small',
         })}
-        initialChain={sepolia} // TODO: update to mainnet
+        initialChain={env.VITE_NODE_ENV === 'development' ? sepolia : mainnet}
       >
         {children}
       </RainbowKitProvider>
