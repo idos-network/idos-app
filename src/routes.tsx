@@ -6,6 +6,7 @@ import {
   createRoute,
   Outlet,
 } from '@tanstack/react-router';
+import { FaceTecExample } from './components/FaceTecExample';
 import AppLayout from './components/layout/AppLayout';
 import NotaBankLogo from './components/NotaBank/components/NotaBankLogo';
 import { StakingEventLayout } from './components/staking-event/layout/StakingEventLayout';
@@ -108,6 +109,13 @@ export const pointsRoute = createRoute({
   component: Points,
 });
 
+// FaceTec Example route
+export const faceTecExampleRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/face-tec-example',
+  component: FaceTecExample,
+});
+
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -135,5 +143,6 @@ export const routeTree = rootRoute.addChildren([
     idosIcoRoute,
     idosStakingRoute,
     pointsRoute,
+    faceTecExampleRoute,
   ]),
 ]);

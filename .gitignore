@@ -30,3 +30,15 @@ local.db
 local.db-journal
 local.db-wal
 migrations-local/
+
+# Docker
+Dockerfile
+Dockerfile.*
+docker-compose.yml
+docker-compose.yaml
+docker-compose.*.yml
+docker-compose.*.yaml
+docker/
+.docker/
+docker-data/
+.dockerignore
