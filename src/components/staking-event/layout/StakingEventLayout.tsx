@@ -12,7 +12,7 @@ export function StakingEventLayout() {
   return (
     <div className="space-y-6 p-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-10">
         <StakeFrame />
       </div>
 

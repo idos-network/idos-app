@@ -6,7 +6,7 @@ import UserBalance from '../components/UserBalance';
 
 export const LandingCoreUI = () => (
   <>
-    <div className="flex flex-col justify-center w-full max-w-4xl mx-auto">
+    <div className="flex flex-col justify-center w-full max-w-4xl mx-auto gap-10">
       <FaceSignBanner />
       <div className="flex justify-between items-center w-full h-[60px] gap-5">
         <UserBalance />
