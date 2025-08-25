@@ -24,7 +24,7 @@ export default async (_request: Request, _context: Context) => {
 
         const token = jwt.sign(payload, krakenPrivateKey, { algorithm: "ES512" });
 
-        return new Response(JSON.stringify({ url: `${krakenApiUrl}/kyc?token=${token}&provider=${"persona"}` }), { status: 200 });
+        return new Response(JSON.stringify({ url: `${krakenApiUrl}/kyc?token=${token}&provider=${"sumsub"}` }), { status: 200 });
     } catch (error) {
         console.error('Error in kraken-url:', error);
         throw error;
