@@ -21,12 +21,9 @@ export const useRequestGrant = () => {
       }
       const credentialId = credential.id;
       const accessGrant = await idOSClient.requestAccessGrant(credentialId, {
-        consumerAuthPublicKey:
-          import.meta.env.VITE_CONSUMER_AUTH_PUBLIC_KEY ||
-          'b1115801ea37364102d0ecddd355c0465293af6efb5f7391c6b4b8065475af4e',
-        consumerEncryptionPublicKey:
-          import.meta.env.VITE_CONSUMER_ENCRYPTION_PUBLIC_KEY ||
-          'veZMZWRsyW81K3yvyNpk7lECrNpH8W/Xhi4CIy/8vRg=',
+        consumerAuthPublicKey: import.meta.env.VITE_IDOS_AUTH_PUBLIC_KEY,
+        consumerEncryptionPublicKey: import.meta.env
+          .VITE_IDOS_ENCRYPTION_PUBLIC_KEY,
       });
       if (!accessGrant) {
         console.warn('Failed to request access grant');
