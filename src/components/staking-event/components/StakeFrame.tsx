@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 
 export function StakeFrame() {
   return (
-    <div className="mx-auto flex-1 mb-10">
+    <div className="mx-auto flex-1">
       {/* Background gradients */}
       <div
         className="relative overflow-hidden rounded-3xl border border-aquamarine-900 p-6"
