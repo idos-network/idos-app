@@ -112,7 +112,7 @@ export default function WalletsCard() {
                   <td className="w-10/12 px-4">
                     <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center gap-3">
                       <span className="flex items-center gap-2 font-normal">
-                        {wallet.wallet_type !== 'face_sign' ? (
+                        {wallet.wallet_type === 'face_sign' ? (
                           <FaceSignInfoDialog />
                         ) : (
                           wallet.wallet_type
