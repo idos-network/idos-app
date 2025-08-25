@@ -26,7 +26,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   //
   success: boolean;
 
-  constructor(sessionToken: string, sampleAppControllerReference: any) {
+  constructor(sessionToken: string) {
     //
     // DEVELOPER NOTE:  These properties are for demonstration purposes only so the Sample App can get information about what is happening in the processor.
     // In the code in your own App, you can pass around signals, flags, intermediates, and results however you would like.

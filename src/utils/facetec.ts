@@ -95,10 +95,7 @@ export class MyApp {
     console.log('Starting liveness check...');
     this.getSessionToken((sessionToken: string) => {
       console.log('Session token: ', sessionToken);
-      const livenessCheckProcessor = new LivenessCheckProcessor(
-        sessionToken,
-        this,
-      );
+      new LivenessCheckProcessor(sessionToken);
     });
   };
 
