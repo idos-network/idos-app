@@ -1,149 +1,147 @@
 /* FaceTec Fluid Container Styling - No Backdrop, Responsive */
 
 /* Remove fixed positioning and backdrop */
-[id*="facetec"],
+[id*='facetec'],
 .facetec-overlay,
-div[style*="position: fixed"] {
-    position: relative !important;
-    background: transparent !important;
-    padding: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    display: block !important;
+div[style*='position: fixed'] {
+  position: relative !important;
+  background: transparent !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
 }
 
 /* Make FaceTec container fluid and responsive */
-[id*="facetec"]>div:first-child,
+[id*='facetec'] > div:first-child,
 .facetec-container,
-div[style*="border-radius"] {
-    position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    overflow: visible !important;
-    box-shadow: none !important;
-    background: transparent !important;
+div[style*='border-radius'] {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }
 
 /* Make frame elements fluid */
-[id*="facetec"] canvas,
-[id*="facetec"] video {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    border-radius: inherit !important;
+[id*='facetec'] canvas,
+[id*='facetec'] video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: inherit !important;
 }
 
 /* Make oval area responsive to container */
-[id*="facetec"] svg,
-[class*="oval"] {
-    width: 100% !important;
-    height: auto !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-    margin: 0 !important;
+[id*='facetec'] svg,
+[class*='oval'] {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
 }
 
 /* Guidance screens - adapt to container */
-[class*="guidance"],
-[class*="ready-screen"],
-[class*="retry-screen"] {
-    padding: 1rem !important;
-    width: 100% !important;
-    height: auto !important;
-    background: transparent !important;
+[class*='guidance'],
+[class*='ready-screen'],
+[class*='retry-screen'] {
+  padding: 1rem !important;
+  width: 100% !important;
+  height: auto !important;
+  background: transparent !important;
 }
 
 /* Buttons - responsive sizing */
-[class*="button"],
-button[class*="facetec"] {
-    width: 100% !important;
-    max-width: 300px !important;
-    margin: 0.5rem auto !important;
-    border-radius: 6px !important;
-    padding: 10px 20px !important;
+[class*='button'],
+button[class*='facetec'] {
+  width: 100% !important;
+  max-width: 300px !important;
+  margin: 0.5rem auto !important;
+  border-radius: 6px !important;
+  padding: 10px 20px !important;
 }
 
 /* Result and feedback screens */
-[class*="result"],
-[class*="feedback"] {
-    width: 100% !important;
-    padding: 1rem !important;
-    background: transparent !important;
+[class*='result'],
+[class*='feedback'] {
+  width: 100% !important;
+  padding: 1rem !important;
+  background: transparent !important;
 }
 
 /* Text elements - inherit container colors */
-[class*="header-text"],
+[class*='header-text'],
 h1,
 h2,
 h3 {
-    color: inherit !important;
-    font-size: clamp(1.1rem, 4vw, 1.5rem) !important;
+  color: inherit !important;
+  font-size: clamp(1.1rem, 4vw, 1.5rem) !important;
 }
 
-[class*="subtext"],
+[class*='subtext'],
 p {
-    color: inherit !important;
-    opacity: 0.8 !important;
-    font-size: clamp(0.9rem, 3vw, 1rem) !important;
+  color: inherit !important;
+  opacity: 0.8 !important;
+  font-size: clamp(0.9rem, 3vw, 1rem) !important;
 }
 
 /* Cancel button - adapt to container */
-[class*="cancel"] {
-    position: absolute !important;
-    top: 0.5rem !important;
-    right: 0.5rem !important;
-    width: 28px !important;
-    height: 28px !important;
-    background: rgba(0, 0, 0, 0.5) !important;
-    border-radius: 50% !important;
-    border: none !important;
-    color: white !important;
-    z-index: 10 !important;
+[class*='cancel'] {
+  position: absolute !important;
+  top: 0.5rem !important;
+  right: 0.5rem !important;
+  width: 28px !important;
+  height: 28px !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-radius: 50% !important;
+  border: none !important;
+  color: white !important;
+  z-index: 10 !important;
 }
 
 /* Remove all transforms and fixed positioning */
-[id*="facetec"] * {
-    transform: none !important;
-    position: relative !important;
+[id*='facetec'] * {
+  transform: none !important;
+  position: relative !important;
 }
 
 /* Ensure proper aspect ratio containers work */
 .facetec-fluid-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Responsive breakpoints for fluid design */
 @media (max-width: 768px) {
-
-    [class*="button"],
-    button[class*="facetec"] {
-        max-width: 250px !important;
-        padding: 8px 16px !important;
-    }
+  [class*='button'],
+  button[class*='facetec'] {
+    max-width: 250px !important;
+    padding: 8px 16px !important;
+  }
 }
 
 @media (max-width: 480px) {
+  [class*='guidance'],
+  [class*='ready-screen'],
+  [class*='retry-screen'] {
+    padding: 0.75rem !important;
+  }
 
-    [class*="guidance"],
-    [class*="ready-screen"],
-    [class*="retry-screen"] {
-        padding: 0.75rem !important;
-    }
-
-    [class*="button"],
-    button[class*="facetec"] {
-        max-width: 200px !important;
-        padding: 6px 12px !important;
-    }
+  [class*='button'],
+  button[class*='facetec'] {
+    max-width: 200px !important;
+    padding: 6px 12px !important;
+  }
 }
 
 #DOM_FT_getReadyScreen {
-    background: transparent !important;
+  background: transparent !important;
 }
