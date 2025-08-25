@@ -73,7 +73,7 @@ export default function Kyc() {
   useEffect(() => {
     if (sharedCredential?.credentialContent) {
       setTimeout(() => {
-        navigate({ to: '/notabank/buy' });
+        navigate({ to: '/notabank/onramp' });
       }, 700);
     }
   }, [sharedCredential?.credentialContent, navigate]);
