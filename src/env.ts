@@ -18,9 +18,22 @@ export const env = createEnv({
     VITE_EMBEDDED_WALLET_APP_URL: z.string().min(1),
     VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL: z.string().min(1),
     VITE_TRANSAK_API_KEY: z.string().min(1),
+    VITE_NEAR_RPC_URL: z.string().default('https://test.rpc.fastnear.com'),
+    VITE_STELLAR_API_URL: z
+      .string()
+      .default('https://horizon-testnet.stellar.org'),
+    VITE_XRPL_RPC_URL: z
+      .string()
+      .default('wss://s.altnet.rippletest.net:51233'),
     VITE_NEAR_STAKING_CONTRACT_ADDRESS: z.string().min(1),
     VITE_ETH_STAKING_CONTRACT_ADDRESS: z.string().min(1),
-    VITE_IDOS_ENCLAVE_URL: z.string().optional(),
+    VITE_IDOS_ENCLAVE_URL: z
+      .string()
+      .default('https://enclave.staging.idos.network/'),
+    VITE_IDOS_NODE_URL: z
+      .string()
+      .default('https://nodes.staging.idos.network/'),
+    VITE_NODE_ENV: z.string().default('development'),
   },
 
   /**

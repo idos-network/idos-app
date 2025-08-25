@@ -3,6 +3,7 @@ import {
   StellarWalletContext,
   type StellarWalletContextValue,
 } from '@/context/stellar-context';
+import { env } from '@/env';
 import { derivePublicKey, stellarKit } from '@/utils/stellar/stellar-signature';
 import {
   type ISupportedWallet,
@@ -26,9 +27,8 @@ export function StellarWalletProvider({ children }: PropsWithChildren) {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // TODO: update to mainnet
   const server = useMemo(
-    () => new Horizon.Server('https://horizon-testnet.stellar.org'),
+    () => new Horizon.Server(env.VITE_STELLAR_API_URL),
     [],
   );
 
