@@ -1,12 +1,13 @@
+import { type IdosDWG } from '@/interfaces/idos-credential';
 import type { Config, Context } from '@netlify/functions';
 // @ts-ignore
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
-import { type IdosDWG } from '@/interfaces/idos-credential';
-import { encode as utf8Encode } from '@stablelib/utf8';
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
+import { encode as utf8Encode } from '@stablelib/utf8';
 import nacl from 'tweetnacl';
 import { z } from 'zod';
 
+// TODO: update for idOS App launch
 export const IDDocumentTypeSchema = z.enum([
   'PASSPORT',
   'DRIVERS',
@@ -32,7 +33,7 @@ export default async (request: Request, _context: Context) => {
     };
 
   const idOSIssuer = await idOSIssuerClass.init({
-    nodeUrl: process.env.KWIL_NODE_URL as string,
+    nodeUrl: process.env.IDOS_NODE_URL as string,
     signingKeyPair: nacl.sign.keyPair.fromSecretKey(
       Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
     ),
@@ -46,7 +47,7 @@ export default async (request: Request, _context: Context) => {
   const issuerDomain = process.env.ISSUER_DOMAIN as string;
 
   const credentialFields = {
-    id: `https://idOS-staking/credentials/${id}`,
+    id: `https://idOS-app/credentials/${id}`,
     level: 'human',
     issued: new Date(),
     approvedAt: new Date(),
@@ -54,8 +55,9 @@ export default async (request: Request, _context: Context) => {
 
   const credentialId = crypto.randomUUID();
 
+  // TODO: update for idOS App launch
   const credentialSubject = {
-    id: `https://idOS-staking/subjects/${credentialId}`,
+    id: `https://idOS-app/subjects/${credentialId}`,
     firstName: 'Cristiano',
     familyName: 'Ronaldo',
     dateOfBirth: new Date(),

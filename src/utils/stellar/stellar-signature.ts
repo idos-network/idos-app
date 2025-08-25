@@ -1,4 +1,5 @@
 import type { ConnectedWallet } from '@/context/wallet-connector-context';
+import { env } from '@/env';
 import {
   FREIGHTER_ID,
   FreighterModule,
@@ -14,8 +15,10 @@ function getSelectedWalletId() {
 }
 
 export const stellarKit: StellarWalletsKit = new StellarWalletsKit({
-  // @todo: pass ENV variable here
-  network: WalletNetwork.TESTNET, // TODO: update to mainnet
+  network:
+    env.VITE_NODE_ENV === 'development'
+      ? WalletNetwork.TESTNET
+      : WalletNetwork.PUBLIC,
   selectedWalletId: getSelectedWalletId() ?? FREIGHTER_ID,
   modules: [new FreighterModule(), new xBullModule()],
 });

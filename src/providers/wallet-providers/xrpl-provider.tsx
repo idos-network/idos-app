@@ -3,6 +3,7 @@ import {
   XrplWalletContext,
   type XrplWalletContextValue,
 } from '@/context/xrpl-context';
+import { env } from '@/env';
 import { getGemWalletPublicKey } from '@/utils/xrpl/xrpl-signature';
 import * as GemWallet from '@gemwallet/api';
 import {
@@ -54,8 +55,8 @@ export function XrplWalletProvider({ children }: PropsWithChildren) {
       const { publicKey: pk, address: addr } = result;
 
       const xrpl = await import('xrpl');
-      // TODO: update to mainnet
-      const client = new xrpl.Client('wss://s.altnet.rippletest.net:51233');
+      const client = new xrpl.Client(env.VITE_XRPL_RPC_URL);
+
       await client.connect();
 
       const response = await client.request({
