@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { TokenETH, TokenUSDC, TokenUSDT } from '@web3icons/react';
-import { DollarSignIcon, EuroIcon, FlameIcon } from 'lucide-react';
+import { DollarSignIcon, EuroIcon } from 'lucide-react';
 import ActionToolbar from '../components/ActionToolbar';
 import AmountInput from '../components/AmountInput';
 import { ProviderQuotes } from '../components/ProviderQuotes';
@@ -74,20 +74,6 @@ function SellModule() {
         </div>
 
         <ProviderQuotes quotes={[]} />
-        <div className="flex flex-col gap-1">
-          <p className="text-sm">Gas Fee</p>
-          <p className="text-sm flex items-center gap-1 justify-between">
-            <span>
-              1 USD = 0.000005859 ETH
-              <span className="text-neutral-400">($1,632)</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <FlameIcon className="size-4 text-yellow-500" />
-              $15.99
-            </span>
-          </p>
-        </div>
-
         <Button type="button" variant="secondary">
           Continue
         </Button>
