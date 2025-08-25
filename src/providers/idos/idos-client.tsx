@@ -99,15 +99,8 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     };
     setupClient();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    evmSigner,
-    walletConnector?.connectedWallet,
-    walletConnector?.nearWallet,
-    walletConnector?.stellarWallet,
-    refreshTrigger,
-    // Removing xrplWallet from dependencies to prevent reinitialization on connection failures
-    // walletConnector?.xrplWallet,
-  ]);
+    // Removing wallet dependencies to prevent reinitialization on connection failures
+  }, [walletConnector?.connectedWallet, refreshTrigger]);
 
   if (isLoading) {
     return (
