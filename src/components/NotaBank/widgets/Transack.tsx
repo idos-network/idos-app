@@ -1,4 +1,5 @@
 import { env } from '@/env';
+import { useSharedStore } from '@/stores/shared-store';
 import { useNavigate } from '@tanstack/react-router';
 import { Transak } from '@transak/transak-sdk';
 import { useEffect, useRef } from 'react';
@@ -6,6 +7,8 @@ import invariant from 'tiny-invariant';
 
 export function TransakProvider({ transakToken }: { transakToken: string }) {
   const navigate = useNavigate();
+  const { selectedToken, buyAmount, selectedCurrency, spendAmount } =
+    useSharedStore();
   const transak = useRef<Transak | null>(null);
 
   useEffect(() => {
@@ -19,10 +22,10 @@ export function TransakProvider({ transakToken }: { transakToken: string }) {
         environment: Transak.ENVIRONMENTS.STAGING,
         kycShareTokenProvider: 'SUMSUB',
         kycShareToken: transakToken,
-        // defaultCryptoCurrency: selectedToken,
-        // defaultCryptoAmount: +buyAmount || 0,
-        // defaultFiatCurrency: selectedCurrency,
-        // defaultFiatAmount: +spendAmount || 0,
+        defaultCryptoCurrency: selectedToken,
+        defaultCryptoAmount: +buyAmount || 0,
+        defaultFiatCurrency: selectedCurrency,
+        defaultFiatAmount: +spendAmount || 0,
       });
       transak.current.init();
 

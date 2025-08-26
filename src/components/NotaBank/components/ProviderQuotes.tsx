@@ -1,9 +1,12 @@
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import type { RadioGroupProps } from '@radix-ui/react-radio-group';
+import { useSharedStore } from '@/stores/shared-store';
+import { useQueries } from '@tanstack/react-query';
 import type { QuoteRateResponse } from 'functions/provider-quotes';
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+
+const providers = ['hifi', 'transak', 'noah'];
 
 interface ProviderData {
   id: string;
@@ -18,32 +21,50 @@ interface ProviderProps {
   onSelect?: (id: string) => void;
   className?: string;
   children?: ReactNode;
+  bestRate?: boolean;
 }
 
-interface ProviderQuoteData {
-  quote: QuoteRateResponse;
-  spendAmount: number;
-  buyAmount: number;
-  destinationCurrency: string;
+const useFetchProviderQuotes = ({
+  sourceCurrency,
+  destinationCurrency,
+}: {
   sourceCurrency: string;
-  lastChanged: 'spend' | 'buy';
-}
+  destinationCurrency: string;
+}) => {
+  return useQueries({
+    queries: providers.map((provider) => ({
+      queryKey: [
+        'provider-quote',
+        { provider, sourceCurrency, destinationCurrency },
+      ],
+      queryFn: () =>
+        fetch(
+          `/api/provider-quotes?provider=${provider}&sourceCurrency=${sourceCurrency}&destinationCurrency=${destinationCurrency}`,
+        ).then((res) => res.json()) as Promise<QuoteRateResponse>,
+    })),
+    combine: (results) => ({
+      data: results.map((result) => result.data),
+      isPending: results.some((result) => result.isPending),
+    }),
+  });
+};
 
 export function Provider({
   data,
   onSelect,
   className = '',
   children,
+  bestRate = false,
 }: ProviderProps) {
-  const { id, amount, price, isBestRate = false } = data;
-
-  const bgColor = isBestRate ? 'bg-secondary/10' : 'bg-neutral-800/40';
+  const { id, amount, price } = data;
+  const bgColor = bestRate ? 'bg-[#043102]' : 'bg-neutral-800/40';
 
   return (
     <div
-      className={`flex flex-col gap-2 rounded-md p-4 min-h-16 ${bgColor} ${className}`}
+      className={`flex flex-col gap-5 rounded-md p-5 cursor-pointer ${bgColor} ${className}`}
+      onClick={() => onSelect?.(id)}
     >
-      {isBestRate && (
+      {bestRate && (
         <div className="flex items-center gap-2">
           <span className="bg-secondary text-black px-2 py-0.5 rounded-sm text-xs">
             BEST RATE
@@ -54,8 +75,7 @@ export function Provider({
         <RadioGroupItem value={id} id={id} className="size-5 text-secondary" />
         <Label
           htmlFor={id}
-          className="text-md flex items-center gap-4 justify-between w-full cursor-pointer"
-          onClick={() => onSelect?.(id)}
+          className="text-md flex items-center gap-4 justify-between w-full"
         >
           {children}
           <div className="flex flex-col gap-0.5">
@@ -68,52 +88,11 @@ export function Provider({
   );
 }
 
-type ProviderQuotesProps = RadioGroupProps & {
-  quotes: ProviderQuoteData[];
-  selectedProvider?: string;
-  onProviderSelect?: (providerId: string) => void;
-  isLoading?: boolean;
+export const providerLogos = {
+  hifi: <img src="/hifi.svg" alt="HiFi" width={55} height={20} />,
+  transak: <img src="/transak.svg" alt="Transak" width={86} height={30} />,
+  noah: <img src="/noah.svg" alt="Noah" width={70} height={20} />,
 };
-
-// Helper function to calculate amounts based on quote rate
-function calculateAmounts(
-  quote: QuoteRateResponse,
-  spendAmount: number,
-  buyAmount: number,
-  destinationCurrency: string,
-  sourceCurrency: string,
-  lastChanged: 'spend' | 'buy',
-) {
-  const rate = parseFloat(quote.rate);
-
-  // Calculate what the amounts would be with this provider's rate
-  let calculatedBuyAmount: number;
-  let calculatedSpendAmount: number;
-
-  if (lastChanged === 'spend') {
-    calculatedBuyAmount = spendAmount * rate;
-    calculatedSpendAmount = spendAmount;
-  } else {
-    calculatedBuyAmount = buyAmount;
-    calculatedSpendAmount = buyAmount / rate;
-  }
-
-  return {
-    buyAmountDisplay: `${calculatedBuyAmount.toFixed(2)} ${destinationCurrency}`,
-    spendAmountDisplay: `${sourceCurrency}${calculatedSpendAmount.toFixed(2)}`,
-  };
-}
-
-// Helper function to get provider logo
-function getProviderLogo(providerName: string) {
-  const logos = {
-    hifi: <img src="/hifi.svg" alt="HiFi" width={55} height={20} />,
-    transak: <img src="/transak.svg" alt="Transak" width={86} height={30} />,
-    noah: <img src="/noah.svg" alt="Noah" width={70} height={20} />,
-  };
-
-  return logos[providerName as keyof typeof logos] || null;
-}
 
 // Skeleton component for loading state
 function ProviderSkeleton() {
@@ -137,39 +116,53 @@ function ProviderSkeleton() {
   );
 }
 
-export function ProviderQuotes({
-  quotes,
-  selectedProvider,
-  onProviderSelect,
-  isLoading = false,
-  ...props
-}: ProviderQuotesProps) {
+export function ProviderQuotes() {
+  const {
+    selectedCurrency,
+    selectedToken,
+    spendAmount,
+    selectedProvider,
+    setSelectedProvider,
+    setRate,
+  } = useSharedStore();
+  const quotes = useFetchProviderQuotes({
+    sourceCurrency: selectedCurrency,
+    destinationCurrency: selectedToken,
+  });
   // Sort quotes by rate (best rate first - highest rate gives most tokens for same spend amount)
   const sortedQuotes = useMemo(() => {
-    if (quotes.length === 0) return [];
+    if (quotes.data?.length === 0) return [];
 
-    return [...quotes]
-      .filter(
-        (quoteData) => quoteData && quoteData.quote && quoteData.quote.rate,
-      )
+    return [...quotes.data]
+      .filter((quoteData) => quoteData && quoteData.rate)
       .sort((a, b) => {
-        const rateA = parseFloat(a.quote.rate);
-        const rateB = parseFloat(b.quote.rate);
+        const rateA = parseFloat(a?.rate ?? '0');
+        const rateB = parseFloat(b?.rate ?? '0');
         return rateB - rateA;
       });
-  }, [quotes]);
+  }, [quotes.data]);
+
+  const selectedProviderQuote = useMemo(() => {
+    return quotes.data?.find((quote) => quote?.name === selectedProvider);
+  }, [quotes.data, selectedProvider]);
+
+  useEffect(() => {
+    if (selectedProviderQuote) setRate(selectedProviderQuote.rate);
+  }, [selectedProviderQuote]);
+
+  useEffect(() => {
+    if (!selectedProvider) setSelectedProvider(sortedQuotes[0]?.name ?? '');
+  }, [sortedQuotes, setSelectedProvider, selectedProvider]);
 
   // Find the best rate (highest rate means best conversion)
-  const bestRateQuote = sortedQuotes.length > 0 ? sortedQuotes[0] : null;
-
   return (
-    <div className="flex flex-col gap-5 flex-1 max-w-md">
+    <div className="flex flex-col gap-5 flex-1 max-w-md bg-[#26262699] p-6 rounded-3xl">
       <h3 className="text-lg font-heading">Provider Quotes</h3>
       <p className="text-muted-foreground text-sm">
         Compare rates from these providers.
       </p>
 
-      {isLoading ? (
+      {quotes.isPending ? (
         <div className="flex flex-col gap-2">
           {/* Show 3 skeleton loaders to represent the typical number of providers */}
           <ProviderSkeleton />
@@ -177,38 +170,27 @@ export function ProviderQuotes({
           <ProviderSkeleton />
         </div>
       ) : (
-        <RadioGroup
-          className="flex flex-col gap-2"
-          value={selectedProvider}
-          {...props}
-        >
-          {sortedQuotes.map((quoteData) => {
-            const { buyAmountDisplay, spendAmountDisplay } = calculateAmounts(
-              quoteData.quote,
-              quoteData.spendAmount,
-              quoteData.buyAmount,
-              quoteData.destinationCurrency,
-              quoteData.sourceCurrency,
-              quoteData.lastChanged,
-            );
-
-            const isBestRate =
-              quoteData.quote.name === bestRateQuote?.quote.name;
+        <RadioGroup className="flex flex-col gap-2" value={selectedProvider}>
+          {sortedQuotes.map((quoteData, index) => {
+            if (!quoteData) return null;
 
             return (
               <Provider
-                key={quoteData.quote.name}
+                key={quoteData?.name}
+                bestRate={!index}
                 data={{
-                  id: quoteData.quote.name,
-                  name: quoteData.quote.name,
-                  amount: buyAmountDisplay,
-                  price: spendAmountDisplay,
-                  isBestRate,
+                  id: quoteData?.name ?? '',
+                  name: quoteData?.name ?? '',
+                  amount: `${+spendAmount || 100} ${selectedToken}`,
+                  price: `${(+quoteData?.rate * (+spendAmount || 100)).toFixed(2)} ${selectedCurrency}`,
+                  isBestRate: false,
                 }}
                 onSelect={(id) => {
-                  onProviderSelect?.(id);
+                  setSelectedProvider?.(id);
                 }}
-                children={getProviderLogo(quoteData.quote.name)}
+                children={
+                  providerLogos[quoteData?.name as keyof typeof providerLogos]
+                }
               />
             );
           })}

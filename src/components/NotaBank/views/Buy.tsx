@@ -9,200 +9,84 @@ import {
 } from '@/components/ui/select';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
 import { useSharedStore } from '@/stores/shared-store';
-import { useQueries } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { TokenETH, TokenUSDC, TokenUSDT } from '@web3icons/react';
-import type { QuoteRateResponse } from 'functions/provider-quotes';
-import { DollarSignIcon, EuroIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { EuroIcon } from 'lucide-react';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 import ActionToolbar from '../components/ActionToolbar';
 import AmountInput from '../components/AmountInput';
-import { ProviderQuotes } from '../components/ProviderQuotes';
+import { providerLogos, ProviderQuotes } from '../components/ProviderQuotes';
 import UserBalance from '../components/UserBalance';
 
-const providers = ['hifi', 'transak', 'noah'];
-
-const useFetchProviderQuotes = ({
-  sourceCurrency,
-  destinationCurrency,
-}: {
-  sourceCurrency: string;
-  destinationCurrency: string;
-}) => {
-  return useQueries({
-    queries: providers.map((provider) => ({
-      queryKey: [
-        'provider-quote',
-        { provider, sourceCurrency, destinationCurrency },
-      ],
-      queryFn: () =>
-        fetch(
-          `/api/provider-quotes?provider=${provider}&sourceCurrency=${sourceCurrency}&destinationCurrency=${destinationCurrency}`,
-        ).then((res) => res.json()) as Promise<QuoteRateResponse>,
-    })),
-    combine: (results) => ({
-      data: results.map((result) => result.data),
-      isPending: results.some((result) => result.isPending),
-    }),
-  });
-};
-
-function BuyModule() {
-  const {
-    data: sharedCredential,
-    isLoading: fetchingCredential,
-    isError,
-  } = useSharedCredential();
-  const navigate = useNavigate();
-  const [sourceCurrency, setSourceCurrency] = useState('USD');
-  const [buyAmount, setBuyAmount] = useState(100);
-  const [spendAmount, setSpendAmount] = useState(100);
-  const [destinationCurrency, setDestinationCurrency] = useState('USDC');
-  const [lastChanged, setLastChanged] = useState<'spend' | 'buy'>('spend');
-  const { selectedProvider, setSelectedProvider } = useSharedStore();
-
-  const quotes = useFetchProviderQuotes({
-    sourceCurrency,
-    destinationCurrency,
-  });
-
-  useEffect(() => {
-    if (quotes.data && quotes.data.length > 0 && !selectedProvider) {
-      const validQuotes = quotes.data.filter(
-        (quote): quote is QuoteRateResponse =>
-          Boolean(quote && quote.name && quote.rate),
-      );
-      if (validQuotes.length > 0) {
-        const bestProvider = validQuotes.reduce((best, current) => {
-          const currentRate = parseFloat(current.rate);
-          const bestRate = parseFloat(best.rate);
-          return currentRate > bestRate ? current : best;
-        });
-
-        setSelectedProvider(bestProvider.name);
-        // Calculate initial buy amount
-        const rate = parseFloat(bestProvider.rate);
-        setBuyAmount(spendAmount * rate);
-      }
-    }
-  }, [quotes.data, selectedProvider, spendAmount]);
-
-  const handleSpendAmountChange = (value: number | null) => {
-    const newSpendAmount = value ?? 0;
-    setSpendAmount(newSpendAmount);
-    setLastChanged('spend');
-
-    if (selectedProvider && quotes.data) {
-      const selectedQuote = quotes.data.find(
-        (quote) => quote?.name === selectedProvider,
-      );
-      if (selectedQuote && selectedQuote.rate) {
-        const rate = parseFloat(selectedQuote.rate);
-        setBuyAmount(newSpendAmount * rate);
-      }
-    }
-  };
-
-  const handleBuyAmountChange = (value: number | null) => {
-    const newBuyAmount = value ?? 0;
-    setBuyAmount(newBuyAmount);
-    setLastChanged('buy');
-
-    if (selectedProvider && quotes.data) {
-      const selectedQuote = quotes.data.find(
-        (quote) => quote?.name === selectedProvider,
-      );
-      if (selectedQuote && selectedQuote.rate) {
-        const rate = parseFloat(selectedQuote.rate);
-        setSpendAmount(newBuyAmount / rate);
-      }
-    }
-  };
-
-  const handleProviderSelect = (providerId: string) => {
-    setSelectedProvider(providerId);
-
-    if (quotes.data) {
-      const selectedQuote = quotes.data.find(
-        (quote) => quote?.name === providerId,
-      );
-
-      if (selectedQuote && selectedQuote.rate) {
-        const rate = parseFloat(selectedQuote.rate);
-        if (lastChanged === 'spend') {
-          setBuyAmount(spendAmount * rate);
-        } else {
-          setSpendAmount(buyAmount / rate);
-        }
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (fetchingCredential) {
-      toast.loading('Checking shared credential...');
-    } else if (isError) {
-      toast.error('Shared credential not found');
-    }
-    toast.dismiss();
-  }, [fetchingCredential, isError]);
+export const SpendInput = () => {
+  const { selectedCurrency, spendAmount, setSpendAmount, setSelectedCurrency } =
+    useSharedStore();
 
   return (
-    <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
-      <h3 className="text-xl font-heading">Buy Tokens</h3>
-      <form className="flex flex-col gap-5">
-        <div className="flex flex-col gap-3">
-          <Label
-            className="text-muted-foreground text-sm"
-            htmlFor="spend-amount"
-          >
-            I want to spend
-          </Label>
-          <div className="flex items-center gap-2">
-            <AmountInput
-              className="flex-1"
-              id="spend-amount"
-              value={spendAmount}
-              onValueChange={handleSpendAmountChange}
-            />
+    <div className="flex flex-col gap-3">
+      <Label className="text-muted-foreground text-sm" htmlFor="spend-amount">
+        I want to spend
+      </Label>
+      <div className="flex items-center gap-2">
+        <AmountInput
+          className="flex-1"
+          id="spend-amount"
+          value={+spendAmount}
+          onInput={(e) => {
+            const value = (e.target as unknown as { value: string }).value ?? 0;
+            setSpendAmount(+value as number);
+          }}
+          rightSlot={
             <Select
-              value={sourceCurrency}
-              onValueChange={(value) => setSourceCurrency(value)}
+              value={selectedCurrency}
+              onValueChange={(value) => setSelectedCurrency(value)}
             >
-              <SelectTrigger className="w-32 min-w-32 shrink-0">
-                <SelectValue placeholder="Select currency" />
+              <SelectTrigger className="border-0 bg-transparent! shadow-none px-0 py-0 h-auto text-white text-base font-semibold">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="USD">
-                  <DollarSignIcon className="size-5" />
                   <span>USD</span>
                 </SelectItem>
                 <SelectItem value="EUR">
-                  <EuroIcon className="size-5" />
+                  <EuroIcon className="size-6" />
                   <span>EUR</span>
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
-        </div>
-        <div className="flex flex-col gap-3">
-          <Label className="text-muted-foreground text-sm" htmlFor="buy-amount">
-            I want to buy
-          </Label>
-          <div className="flex items-center gap-2">
-            <AmountInput
-              className="flex-1"
-              id="buy-amount"
-              value={buyAmount}
-              onValueChange={handleBuyAmountChange}
-            />
+          }
+        />
+      </div>
+    </div>
+  );
+};
+
+export const BuyInput = () => {
+  const { selectedToken, buyAmount, setBuyAmount, setSelectedToken } =
+    useSharedStore();
+
+  return (
+    <div className="flex flex-col gap-3">
+      <Label className="text-muted-foreground text-sm" htmlFor="buy-amount">
+        I want to buy
+      </Label>
+      <div className="flex items-center gap-2">
+        <AmountInput
+          className="flex-1"
+          id="buy-amount"
+          value={+buyAmount}
+          onInput={(e) => {
+            const value = (e.target as unknown as { value: string }).value ?? 0;
+            setBuyAmount(+value as number);
+          }}
+          rightSlot={
             <Select
-              value={destinationCurrency}
-              onValueChange={(value) => setDestinationCurrency(value)}
+              value={selectedToken}
+              onValueChange={(value) => setSelectedToken(value)}
             >
-              <SelectTrigger className="w-32 min-w-32 shrink-0">
-                <SelectValue placeholder="Select token" />
+              <SelectTrigger className="border-0 bg-transparent! shadow-none px-0 py-0 h-auto text-white text-base font-semibold">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="USDC">
@@ -219,29 +103,38 @@ function BuyModule() {
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
-        </div>
-        <ProviderQuotes
-          quotes={
-            quotes.data
-              ? quotes.data
-                  .filter((quote): quote is QuoteRateResponse =>
-                    Boolean(quote && quote.name && quote.rate),
-                  )
-                  .map((quote) => ({
-                    quote: quote,
-                    spendAmount,
-                    buyAmount,
-                    destinationCurrency,
-                    sourceCurrency,
-                    lastChanged,
-                  }))
-              : []
           }
-          selectedProvider={selectedProvider}
-          onProviderSelect={handleProviderSelect}
-          isLoading={quotes.isPending}
         />
+      </div>
+    </div>
+  );
+};
+
+function BuyModule() {
+  const {
+    data: sharedCredential,
+    isLoading: fetchingCredential,
+    isError,
+  } = useSharedCredential();
+  const navigate = useNavigate();
+  const { selectedProvider } = useSharedStore();
+
+  useEffect(() => {
+    if (fetchingCredential) {
+      toast.loading('Checking shared credential...');
+    } else if (isError) {
+      toast.error('Shared credential not found');
+    }
+    toast.dismiss();
+  }, [fetchingCredential, isError]);
+
+  return (
+    <div className="flex flex-col gap-5 p-6 bg-[#26262699] rounded-3xl flex-1 max-w-md ">
+      <h3 className="text-xl font-heading">Buy Tokens</h3>
+      <form className="flex flex-col gap-5">
+        <SpendInput />
+        <BuyInput />
+        {/* <ProviderQuotes /> */}
         {sharedCredential?.credentialContent ? (
           <Button
             type="button"
@@ -260,20 +153,34 @@ function BuyModule() {
             Continue
           </Button>
         )}
+        {/* Powered by {provider} */}
+        <div className="flex justify-center items-center gap-2">
+          <span className="text-xs text-neutral-100 text-center">
+            Powered by
+          </span>
+          {providerLogos[selectedProvider as keyof typeof providerLogos]}
+        </div>
       </form>
     </div>
   );
 }
 
 export default function Buy() {
+  const { buyAmount, spendAmount } = useSharedStore();
+  const hasAmount = buyAmount > 0 || spendAmount > 0;
   return (
     <div className="flex flex-col justify-center w-full max-w-4xl mx-auto">
       <div className="flex justify-between items-center w-full h-[60px] gap-5">
         <UserBalance />
         <ActionToolbar />
       </div>
-      <div className="mt-10 flex place-content-center items-center gap-5 w-full max-w-4xl mx-auto">
+      <div
+        className={`mt-10 flex  gap-5 w-full max-w-4xl mx-auto ${
+          hasAmount ? 'justify-between' : 'justify-center'
+        }`}
+      >
         <BuyModule />
+        {hasAmount ? <ProviderQuotes /> : null}
       </div>
     </div>
   );

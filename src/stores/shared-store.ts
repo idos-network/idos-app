@@ -6,10 +6,10 @@ import type { idOSCredential } from '@idos-network/client';
 import { create } from 'zustand';
 
 interface SharedStore {
-  spendAmount: string;
-  buyAmount: string;
-  setSpendAmount: (spendAmount: string) => void;
-  setBuyAmount: (buyAmount: string) => void;
+  spendAmount: number;
+  buyAmount: number;
+  setSpendAmount: (spendAmount: number) => void;
+  setBuyAmount: (buyAmount: number) => void;
   rate: string;
   setRate: (rate: string) => void;
   selectedCurrency: string;
@@ -25,17 +25,17 @@ interface SharedStore {
 }
 
 export const useSharedStore = create<SharedStore>((set) => ({
-  spendAmount: '',
-  buyAmount: '',
+  spendAmount: 0,
+  buyAmount: 0,
   setBuyAmount: (buyAmount) => {
     const rate = useSharedStore.getState().rate || 1;
     const spendAmount = +buyAmount / +rate;
-    set({ buyAmount, spendAmount: spendAmount.toString(), lastChanged: 'buy' });
+    set({ buyAmount, spendAmount, lastChanged: 'buy' });
   },
   setSpendAmount: (spendAmount) => {
     const rate = useSharedStore.getState().rate || 1;
     const buyAmount = +spendAmount * +rate;
-    set({ spendAmount, buyAmount: buyAmount.toString(), lastChanged: 'spend' });
+    set({ spendAmount, buyAmount, lastChanged: 'spend' });
   },
   rate: '',
   setRate: (rate: string) => {
@@ -43,9 +43,9 @@ export const useSharedStore = create<SharedStore>((set) => ({
     let newSpendAmount = spendAmount;
     let newBuyAmount = buyAmount;
     if (lastChanged === 'spend') {
-      newBuyAmount = (+spendAmount * +rate).toString();
+      newBuyAmount = +spendAmount * +rate;
     } else if (lastChanged === 'buy') {
-      newSpendAmount = (+buyAmount / +rate).toString();
+      newSpendAmount = +buyAmount / +rate;
     }
     set({ rate, spendAmount: newSpendAmount, buyAmount: newBuyAmount });
   },
@@ -58,7 +58,7 @@ export const useSharedStore = create<SharedStore>((set) => ({
   lastChanged: 'spend',
   setLastChanged: (field) => set({ lastChanged: field }),
 
-  selectedProvider: 'transak',
+  selectedProvider: '',
   setSelectedProvider: (selectedProvider) => set({ selectedProvider }),
 
   sharedCredential: null,
