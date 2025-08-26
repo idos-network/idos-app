@@ -13,6 +13,7 @@ interface WalletActionModalProps {
   walletId?: string;
   wallets: IdosWallet[];
   refetch: () => void;
+  refetchMainEvm: () => void;
 }
 
 export function WalletActionModal({
@@ -22,6 +23,7 @@ export function WalletActionModal({
   walletId,
   wallets,
   refetch,
+  refetchMainEvm,
 }: WalletActionModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -70,12 +72,24 @@ export function WalletActionModal({
     };
   }, [isOpen, onClose]);
 
-  const setAsPrimary = (address: string) => {
-    updateUser({
-      id: idOSLoggedIn!.user.id,
-      mainEvm: address,
-    });
-    refetch();
+  const setAsPrimary = async (address: string) => {
+    try {
+      await updateUser({
+        id: idOSLoggedIn!.user.id,
+        mainEvm: address,
+      });
+      await refetchMainEvm();
+      showToast({
+        type: 'success',
+        message: 'Primary wallet updated successfully',
+      });
+    } catch (error) {
+      console.error('Failed to update primary wallet:', error);
+      showToast({
+        type: 'error',
+        message: 'Failed to set primary wallet. Please try again.',
+      });
+    }
   };
 
   return (

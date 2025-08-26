@@ -18,7 +18,7 @@ export function useUserMainEvm() {
   });
 
   const mainEvm = userData?.[0]?.mainEvm || '';
-  console.log('mainEvm', mainEvm);
+
   return {
     mainEvm,
     isLoading: userIdLoading || isLoading,
