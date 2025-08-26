@@ -6,7 +6,7 @@ export interface idOSGrant {
   id: string;
   data_id: string;
   ag_grantee_wallet_identifier: string;
-  locked_until: string;
+  locked_until: string | number;
 }
 
 export function useFetchGrants({ credentialId }: { credentialId: string }) {
@@ -45,7 +45,7 @@ export function useFetchGrants({ credentialId }: { credentialId: string }) {
           credentialIds.includes(grant.data_id),
         );
 
-        setGrants(credentialGrants);
+        setGrants(credentialGrants as idOSGrant[]);
       } catch (err) {
         setError(
           err instanceof Error ? err : new Error('Failed to fetch grants'),

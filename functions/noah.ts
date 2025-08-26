@@ -1,17 +1,17 @@
-import type { Credentials, IDDocumentType } from "@idos-network/consumer";
-import type { Config, Context } from "@netlify/functions";
-import { goTry } from "go-try";
-import invariant from "tiny-invariant";
+import type { Credentials } from '@idos-network/consumer';
+import type { Config, Context } from '@netlify/functions';
+import { goTry } from 'go-try';
+import invariant from 'tiny-invariant';
 
 function formatDate(dateString?: string | Date): string | undefined {
   if (!dateString) return undefined;
 
   const date = new Date(dateString);
-  return date.toISOString().split("T")[0];
+  return date.toISOString().split('T')[0];
 }
 
 type NoahCustomer = {
-  Type: "Individual";
+  Type: 'Individual';
   FullName: FullName;
   DateOfBirth?: string;
   Email?: string;
@@ -27,13 +27,13 @@ type FullName = {
 };
 
 type NoahIDDocumentType =
-  | "AddressProof"
-  | "DrivingLicense"
-  | "ForeignerID"
-  | "NationalIDCard"
-  | "Passport"
-  | "ResidencePermit"
-  | "TaxID";
+  | 'AddressProof'
+  | 'DrivingLicense'
+  | 'ForeignerID'
+  | 'NationalIDCard'
+  | 'Passport'
+  | 'ResidencePermit'
+  | 'TaxID';
 
 type Identity = {
   IssuingCountry: string;
@@ -60,7 +60,7 @@ type NoahLineItem = {
 };
 
 type NoahPayInFiatRequest = {
-  PaymentMethodCategory: "Card" | "Bank";
+  PaymentMethodCategory: 'Card' | 'Bank';
   FiatCurrency: string;
   CryptoCurrency: string;
   FiatAmount: string;
@@ -77,8 +77,8 @@ type NoahCheckoutSession = {
   PaymentMethodCategory: string;
   SourceCurrency: string;
   DestinationCurrency: string;
-  Status: "pending" | "failed" | "settled";
-  Type: "PayinCrypto" | "PayinFiat" | "PayoutFiat";
+  Status: 'pending' | 'failed' | 'settled';
+  Type: 'PayinCrypto' | 'PayinFiat' | 'PayoutFiat';
 };
 
 type NoahResponse = {
@@ -88,22 +88,22 @@ type NoahResponse = {
 
 async function createNoahCustomer(
   userAddress: string,
-  credentialSubject: Credentials["credentialSubject"],
+  credentialSubject: Credentials['credentialSubject'],
   origin: string,
 ) {
   const noahApiKey = process.env.NOAH_API_KEY;
   const noahAPiUrl = process.env.NOAH_API_URL;
-  invariant(noahApiKey, "`NOAH_API_KEY` is not set");
-  invariant(noahAPiUrl, "`NOAH_API_URL` is not set");
+  invariant(noahApiKey, '`NOAH_API_KEY` is not set');
+  invariant(noahAPiUrl, '`NOAH_API_URL` is not set');
 
-  const documentTypeMapper: Record<IDDocumentType, NoahIDDocumentType> = {
-    PASSPORT: "Passport",
-    DRIVERS: "DrivingLicense",
-    ID_CARD: "NationalIDCard",
+  const documentTypeMapper: Record<string, NoahIDDocumentType> = {
+    PASSPORT: 'Passport',
+    DRIVERS: 'DrivingLicense',
+    ID_CARD: 'NationalIDCard',
   };
 
   const customer: NoahCustomer = {
-    Type: "Individual",
+    Type: 'Individual',
     FullName: {
       FirstName: credentialSubject.firstName,
       LastName: credentialSubject.familyName,
@@ -118,61 +118,62 @@ async function createNoahCustomer(
         IDNumber: credentialSubject.idDocumentNumber,
         IssuedDate: formatDate(credentialSubject.idDocumentDateOfIssue),
         ExpiryDate: formatDate(credentialSubject.idDocumentDateOfExpiry),
-        IDType: documentTypeMapper[credentialSubject.idDocumentType] ?? "Passport",
+        IDType:
+          documentTypeMapper[credentialSubject.idDocumentType] ?? 'Passport',
       },
     ],
     PrimaryResidence: {
-      Street: credentialSubject.residentialAddressStreet ?? "",
-      City: credentialSubject.residentialAddressCity ?? "",
-      PostCode: credentialSubject.residentialAddressPostalCode ?? "",
-      State: "CA",
-      Country: credentialSubject.residentialAddressCountry ?? "",
+      Street: credentialSubject.residentialAddressStreet ?? '',
+      City: credentialSubject.residentialAddressCity ?? '',
+      PostCode: credentialSubject.residentialAddressPostalCode ?? '',
+      State: 'CA',
+      Country: credentialSubject.residentialAddressCountry ?? '',
     },
   };
 
   // Cleanup URL
   const returnUrl = new URL(origin);
-  returnUrl.pathname = "/callbacks/noah";
-  returnUrl.search = "";
-  returnUrl.hash = "";
+  returnUrl.pathname = '/callbacks/noah';
+  returnUrl.search = '';
+  returnUrl.hash = '';
 
   const subject: NoahPayInFiatRequest = {
     Customer: customer,
-    PaymentMethodCategory: "Card",
-    FiatCurrency: "USD",
-    CryptoCurrency: "BTC_TEST",
-    FiatAmount: "100",
+    PaymentMethodCategory: 'Card',
+    FiatCurrency: 'USD',
+    CryptoCurrency: 'BTC_TEST',
+    FiatAmount: '100',
     ReturnURL: returnUrl.toString(),
     ExternalID: crypto.randomUUID(),
     CustomerID: userAddress,
     Nonce: crypto.randomUUID(),
     LineItems: [
       {
-        Description: "Book #1",
-        Quantity: "1",
-        UnitAmount: "50",
-        TotalAmount: "50",
+        Description: 'Book #1',
+        Quantity: '1',
+        UnitAmount: '50',
+        TotalAmount: '50',
       },
       {
-        Description: "Book #2",
-        Quantity: "10",
-        UnitAmount: "5",
-        TotalAmount: "50",
+        Description: 'Book #2',
+        Quantity: '10',
+        UnitAmount: '5',
+        TotalAmount: '50',
       },
     ],
   };
   const response = await fetch(`${noahAPiUrl}/v1/checkout/payin/fiat`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "X-Api-Key": noahApiKey,
+      'Content-Type': 'application/json',
+      'X-Api-Key': noahApiKey,
     },
     body: JSON.stringify(subject),
   });
 
   if (!response.ok) {
     const text = await response.text();
-    console.error("Noah error:", text);
+    console.error('Noah error:', text);
     console.error(JSON.stringify(subject, null, 2));
     throw new Error(`Failed to create Noah customer: ${text}`);
   }
@@ -183,26 +184,35 @@ async function createNoahCustomer(
 }
 
 export default async function handler(request: Request, _context: Context) {
-  const origin = request.url.split("?")[0];
+  const origin = request.url.split('?')[0];
   const { searchParams } = new URL(request.url);
-  const credentialId = searchParams.get("credentialId");
-  const userId = searchParams.get("userId");
-  const address = searchParams.get("address");
+  const credentialId = searchParams.get('credentialId');
+  const userId = searchParams.get('userId');
+  const address = searchParams.get('address');
 
-  const apiUrl = origin.split("/").slice(0, -1).join("/")
-  const baseUrl = origin.split("/").slice(0, -2).join("/")
+  const apiUrl = origin.split('/').slice(0, -1).join('/');
+  const baseUrl = origin.split('/').slice(0, -2).join('/');
 
   if (!credentialId) {
-    return Response.json({ error: "`credentialId` search param is required" }, { status: 400 });
+    return Response.json(
+      { error: '`credentialId` search param is required' },
+      { status: 400 },
+    );
   }
 
   if (!address) {
-    return Response.json({ error: "`address` search param is not supported" }, { status: 400 });
+    return Response.json(
+      { error: '`address` search param is not supported' },
+      { status: 400 },
+    );
   }
 
-  const [credentialError, credential] = await goTry<{ credentialContent: Credentials["credentialSubject"] }>(async () => {
-    return await fetch(`${apiUrl}/get-shared-credential?userId=${userId}`)
-      .then((res) => res.json())
+  const [credentialError, credential] = await goTry<{
+    credentialContent: Credentials['credentialSubject'];
+  }>(async () => {
+    return await fetch(`${apiUrl}/get-shared-credential?userId=${userId}`).then(
+      (res) => res.json(),
+    );
   });
 
   if (credentialError) {
@@ -217,15 +227,13 @@ export default async function handler(request: Request, _context: Context) {
     return Response.json({ error: customerError.message }, { status: 400 });
   }
 
-
   return Response.json({
     url: customer.HostedURL,
     currentUrl: request.url,
   });
 }
 
-
 export const config: Config = {
-  path: "/api/noah",
-  method: "GET",
+  path: '/api/noah',
+  method: 'GET',
 };
