@@ -22,7 +22,7 @@ export function useCredentialDetails(credentialId: string | null) {
         setError(null);
 
         // Get the credential
-        const cred = await idOSClient.getCredentialOwned(credentialId);
+        const cred = await idOSClient.getCredentialById(credentialId);
 
         if (!cred) {
           throw new Error(`Credential with id ${credentialId} not found`);

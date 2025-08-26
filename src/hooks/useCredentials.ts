@@ -1,6 +1,6 @@
 import { useIdOS } from '@/context/idos-context';
 import type { idOSCredential } from '@idos-network/client';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useCredentials() {
   const { idOSClient } = useIdOS();
@@ -16,7 +16,7 @@ export function useCredentials() {
         return;
       }
       const creds = await idOSClient.getAllCredentials();
-      setCredentials(creds);
+      setCredentials(creds as idOSCredential[]);
     } catch (err) {
       setError(
         err instanceof Error ? err : new Error('Failed to fetch credentials'),
