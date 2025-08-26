@@ -10,7 +10,11 @@ import { useState } from 'react';
 import { WalletActionModal } from './WalletActionModal';
 import WalletAddButton from './WalletAddButton';
 
-export default function WalletsCard() {
+interface WalletsCardProps {
+  refetchMainEvm: () => void;
+}
+
+export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
   const { wallets, isLoading, error, refetch } = useFetchWallets();
   const { connectedWallet } = useWalletConnector();
   const { mainEvm } = useUserMainEvm();
@@ -192,6 +196,7 @@ export default function WalletsCard() {
         walletId={selectedWalletId || undefined}
         wallets={wallets}
         refetch={refetch}
+        refetchMainEvm={refetchMainEvm}
       />
 
       {/* Shared tooltip */}

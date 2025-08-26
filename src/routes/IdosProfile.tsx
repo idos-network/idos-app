@@ -1,4 +1,3 @@
-import FaceSignBanner from '@/components/NotaBank/components/FaceSignBanner';
 import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
 import Spinner from '@/components/Spinner';
@@ -18,12 +17,15 @@ export function IdosProfile() {
   const [isMounted, setIsMounted] = useState(false);
   const { isLoading: idosLoading } = useIdOS();
   const hasProfile = useIdOSLoginStatus();
-  console.log('hasProfile', hasProfile);
   const { isCompleted: profileQuestCompleted, isLoading: profileQuestLoading } =
     useProfileQuestCompleted();
   const { hasCredential: hasStakingCredential, isLoading } =
     useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
-  const { mainEvm, isLoading: mainEvmLoading } = useUserMainEvm();
+  const {
+    mainEvm,
+    isLoading: mainEvmLoading,
+    refetch: refetchMainEvm,
+  } = useUserMainEvm();
   const { showToast } = useToast();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { completeQuest } = useCompleteQuest();
@@ -95,8 +97,8 @@ export function IdosProfile() {
               onError={(err) => showToast({ type: 'error', message: err })}
               onSuccess={(msg) => showToast({ type: 'success', message: msg })}
             />
-            <FaceSignBanner />
-            <WalletsCard />
+            {/* <FaceSignBanner /> */}
+            <WalletsCard refetchMainEvm={refetchMainEvm} />
           </div>
         </div>
       ) : shouldShowLoading ? (
