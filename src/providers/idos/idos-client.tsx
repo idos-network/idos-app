@@ -98,8 +98,9 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
       }
     };
     setupClient();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     // Removing wallet dependencies to prevent reinitialization on connection failures
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletConnector?.connectedWallet, refreshTrigger]);
 
   if (isLoading) {
