@@ -29,7 +29,6 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [idOSClient, setClient] = useState<idOSClient>(_idOSClient);
   const [withSigner, setWithSigner] = useState<idOSClientWithUserSigner>();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [lastWalletKey, setLastWalletKey] = useState<string | null>(null);
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
 
@@ -43,18 +42,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     }
   }, [walletConnector?.isConnected, queryClient]);
 
-  // Only setup client if wallet key actually changed
   useEffect(() => {
-    const currentWalletKey = walletConnector?.connectedWallet
-      ? `${walletConnector.connectedWallet.type}-${walletConnector.connectedWallet.address}`
-      : null;
-
-    if (currentWalletKey === lastWalletKey) {
-      return;
-    }
-
-    setLastWalletKey(currentWalletKey);
-
     const setupClient = async () => {
       setIsLoading(true);
       try {
@@ -122,7 +110,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
     // Removing wallet dependencies to prevent reinitialization on connection failures
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletConnector?.connectedWallet, refreshTrigger, lastWalletKey]);
+  }, [walletConnector?.connectedWallet, refreshTrigger]);
 
   if (isLoading) {
     return (

@@ -1,6 +1,8 @@
 import SmallPrimaryButton from '@/components/SmallPrimaryButton';
 import AddIcon from '@/components/icons/add';
 import { useIdOSLoggedIn } from '@/context/idos-context';
+import { handleSaveUserWallets } from '@/handlers/user-wallets';
+import { type IdosWallet } from '@/interfaces/idos-profile';
 import { verifySignature } from '@/utils/verify-signatures';
 import type { idOSClientLoggedIn, idOSWallet } from '@idos-network/client';
 import { useEffect, useState } from 'react';
@@ -134,6 +136,8 @@ export default function WalletAddButton({
         });
         onSuccess?.('The wallet has been added to your idOS profile');
         onWalletAdded?.();
+        const wallets = (await idOSLoggedIn!.getWallets()) as IdosWallet[];
+        await handleSaveUserWallets(idOSLoggedIn!.user.id, wallets);
       } catch (error) {
         onError?.('Failed to add wallet to your idOS profile');
       } finally {
