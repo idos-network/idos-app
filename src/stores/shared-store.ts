@@ -64,14 +64,15 @@ export const useSharedStore = create<SharedStore>((set) => ({
 
   sharedCredential: null,
   setSharedCredential: (sharedCredential) => set({ sharedCredential }),
-  resetStore: () => set({
-    spendAmount: 0,
-    buyAmount: 0,
-    rate: '',
-    selectedCurrency: currencies[0].value,
-    selectedToken: tokens[0].value,
-    lastChanged: 'spend',
-    selectedProvider: '',
-    sharedCredential: null,
-  }),
+  resetStore: () =>
+    set({
+      spendAmount: 0,
+      buyAmount: 0,
+      rate: '',
+      selectedCurrency: currencies[0].value,
+      selectedToken: tokens[0].value,
+      lastChanged: 'spend',
+      selectedProvider: '',
+      sharedCredential: null,
+    }),
 }));
