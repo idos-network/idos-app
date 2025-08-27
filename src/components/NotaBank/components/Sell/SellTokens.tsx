@@ -4,15 +4,7 @@ import { useSellTokenStore } from '@/stores/sell-token-store';
 import { ChevronDown } from 'lucide-react';
 
 export default function SellTokens() {
-  const { selectedToken, amount, setAmount, selectedCountry } =
-    useSellTokenStore();
-
-  const handleAmountChange = (value: string) => {
-    // Only allow numbers and decimal points
-    if (/^\d*\.?\d*$/.test(value)) {
-      setAmount(value);
-    }
-  };
+  const { selectedToken, amount, selectedCountry } = useSellTokenStore();
 
   if (!selectedToken) return null;
 

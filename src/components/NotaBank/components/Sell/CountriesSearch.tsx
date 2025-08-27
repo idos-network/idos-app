@@ -100,7 +100,7 @@ export default function CountriesSearch() {
               ) : (
                 filteredCountries.slice(0, 50).map((country) => (
                   <Button
-                    key={country.cca2}
+                    key={country.name.common}
                     variant="ghost"
                     className="w-full justify-start p-3 h-auto hover:bg-neutral-700/50 rounded-none border-0"
                     onClick={() => handleCountrySelect(country)}
