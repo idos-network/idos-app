@@ -5,9 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 export const useTransakToken = (credentialId: string) => {
   const { idOSClient } = useIdOS();
   const userId = idOSClient.state === 'logged-in' ? idOSClient.user.id : null;
+  console.log({ credentialId });
 
   return useQuery({
-    queryKey: ['transak-token'],
+    queryKey: ['transak-token', credentialId], // Add proper query key
     queryFn: () => getTransakToken(credentialId),
     enabled: !!userId && !!credentialId,
     staleTime: 0,

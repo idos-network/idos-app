@@ -5,6 +5,7 @@ import { useSharedCredential } from '@/hooks/useSharedCredential';
 import { useTransakToken } from '@/hooks/useTransakToken';
 import { useSharedStore } from '@/stores/shared-store';
 import { useQuery } from '@tanstack/react-query';
+import { useSearch } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { TransakProvider } from '../widgets/Transack';
@@ -71,13 +72,13 @@ const useOnrampUrl = (selectedProvider: string) => {
 };
 
 export default function Onramp() {
+  const { method } = useSearch({
+    from: '/layout/notabank/onramp',
+  });
   const { selectedProvider } = useSharedStore();
+  const usedProvider = method || selectedProvider;
   const [isIframeLoading, setIsIframeLoading] = useState(false);
-  const {
-    data: onrampUrl,
-    isPending,
-    isLoading,
-  } = useOnrampUrl(selectedProvider);
+  const { data: onrampUrl, isPending, isLoading } = useOnrampUrl(usedProvider);
   const { data: sharedCredential } = useSharedCredential();
   const {
     data: accessGrant,
@@ -85,12 +86,21 @@ export default function Onramp() {
     isPending: isRequestingGrant,
   } = useRequestGrant();
   const { data: transakToken, isLoading: isTransakLoading } = useTransakToken(
-    selectedProvider === 'transak' ? (accessGrant?.id ?? '') : '',
+    usedProvider === 'transak' ? (accessGrant?.id ?? '') : '',
   );
 
   const handleIframeLoad = () => {
     setIsIframeLoading(false);
   };
+
+  // useEffect(() => {
+  //   if (toSpend) {
+  //     setSpendAmount(+toSpend);
+  //   }
+  //   if (toReceive) {
+  //     setBuyAmount(+toReceive);
+  //   }
+  // }, [toSpend, toReceive, setSpendAmount, setBuyAmount]);
 
   useEffect(() => {
     if (accessGrant) return;
@@ -99,7 +109,9 @@ export default function Onramp() {
   }, [accessGrant, sharedCredential, requestGrant]);
 
   if (selectedProvider === 'transak' && transakToken)
-    return <TransakProvider transakToken={transakToken ?? ''} />;
+    return (
+      <TransakProvider transakToken={transakToken ?? ''} key={transakToken} />
+    );
 
   // Show grant request loading when requesting permission
   if (isRequestingGrant) {

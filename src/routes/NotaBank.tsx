@@ -51,4 +51,9 @@ export const notabankOnrampRoute = createRoute({
   getParentRoute: () => notabankRoute,
   path: '/onramp',
   component: Onramp,
+  validateSearch: (search: Record<string, unknown>) => ({
+    method: search.method as string | undefined,
+    toSpend: search.toSpend as string | undefined,
+    toReceive: search.toReceive as string | undefined,
+  }),
 });

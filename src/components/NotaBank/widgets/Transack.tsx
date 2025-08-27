@@ -14,7 +14,6 @@ export function TransakProvider({ transakToken }: { transakToken: string }) {
   useEffect(() => {
     const apiKey = env.VITE_TRANSAK_API_KEY;
     if (!transak.current && transakToken) {
-      console.log('Initializing Transak with token:', transakToken);
       invariant(apiKey, 'TRANSAK_API_KEY is not set');
 
       transak.current = new Transak({
@@ -27,12 +26,16 @@ export function TransakProvider({ transakToken }: { transakToken: string }) {
         defaultFiatCurrency: selectedCurrency,
         defaultFiatAmount: +spendAmount || 0,
       });
-      transak.current.init();
+      transak.current?.logoutUser();
+      transak.current?.cleanup();
 
+      transak.current.init();
       Transak.on(Transak.EVENTS.TRANSAK_WIDGET_CLOSE, (orderData) => {
         console.log('Transak widget closed:', orderData);
         navigate({ to: '/notabank/buy' });
         transak.current?.close();
+        transak.current?.logoutUser();
+        transak.current?.cleanup();
         transak.current = null;
       });
 
