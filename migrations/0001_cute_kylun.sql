@@ -4,10 +4,10 @@ CREATE TABLE "user_wallets" (
 	"address" varchar NOT NULL,
 	"walletType" varchar NOT NULL,
 	"createdAt" timestamp DEFAULT now(),
-	"updatedAt" timestamp DEFAULT now()
+	"updatedAt" timestamp DEFAULT now(),
+	CONSTRAINT "user_wallets_user_address_unique" UNIQUE("userId","address")
 );
 --> statement-breakpoint
 CREATE INDEX "user_wallets_user_id_idx" ON "user_wallets" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "user_wallets_address_idx" ON "user_wallets" USING btree ("address");--> statement-breakpoint
-CREATE INDEX "user_wallets_wallet_type_idx" ON "user_wallets" USING btree ("walletType");--> statement-breakpoint
-CREATE INDEX "user_wallets_user_address_unique_idx" ON "user_wallets" USING btree ("userId","address");
+CREATE INDEX "user_wallets_wallet_type_idx" ON "user_wallets" USING btree ("walletType");

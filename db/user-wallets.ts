@@ -15,17 +15,16 @@ export async function saveUserWallets(
     return [];
   }
 
-  return await db.transaction(async (tx) => {
-    await tx.delete(userWallets).where(eq(userWallets.userId, userId));
+  const walletsToInsert = wallets.map((wallet) => ({
+    userId,
+    address: wallet.address,
+    walletType: wallet.walletType,
+  }));
 
-    const walletsToInsert = wallets.map((wallet) => ({
-      userId,
-      address: wallet.address,
-      walletType: wallet.walletType,
-    }));
-
-    return await tx.insert(userWallets).values(walletsToInsert);
-  });
+  return await db
+    .insert(userWallets)
+    .values(walletsToInsert)
+    .onConflictDoNothing({ target: [userWallets.userId, userWallets.address] });
 }
 
 export async function getUserWallets(userId: string) {

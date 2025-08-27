@@ -1,5 +1,5 @@
 {
-  "id": "64eb9fc4-6434-44ca-9d04-3f9334a745a4",
+  "id": "d50c1dcb-184d-4d79-9714-390c074151ab",
   "prevId": "98224b7e-73d4-45c6-b3a8-16b8231b8629",
   "version": "7",
   "dialect": "postgresql",
@@ -211,32 +211,20 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "user_wallets_user_address_unique_idx": {
-          "name": "user_wallets_user_address_unique_idx",
-          "columns": [
-            {
-              "expression": "userId",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "address",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "user_wallets_user_address_unique": {
+          "name": "user_wallets_user_address_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "userId",
+            "address"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
