@@ -1,1 +1,1 @@
-export { db, schema, users, userQuests } from './connection';
+export { db, schema, userQuests, userWallets, users } from './connection';

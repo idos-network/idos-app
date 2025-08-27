@@ -9,7 +9,9 @@ import { type PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { IDOSClientContext } from '@/context/idos-context';
 import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { env } from '@/env';
+import { handleSaveUserWallets } from '@/handlers/user-wallets';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
+import type { IdosWallet } from '@/interfaces/idos-profile';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -84,6 +86,9 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         setWithSigner(_withSigner);
         if (await _withSigner.hasProfile()) {
           const client = await _withSigner.logIn();
+          const userWallets = await client.getWallets();
+          const walletsArray = userWallets as IdosWallet[];
+          handleSaveUserWallets(client.user.id, walletsArray);
           setClient(client);
         } else {
           setClient(_withSigner);

@@ -1,10 +1,10 @@
 import { neon } from '@netlify/neon';
-import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js';
 import { drizzle as drizzleNeon } from 'drizzle-orm/neon-http';
+import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import * as pgSchema from './schema';
 import { env } from '@/server_env';
+import * as pgSchema from './schema';
 
 const isProduction = (process.env.NODE_ENV || 'development') === 'production';
 
@@ -14,4 +14,4 @@ export const db = isProduction
 
 export const schema = pgSchema;
 
-export const { users, userQuests } = schema;
+export const { users, userQuests, userWallets } = schema;

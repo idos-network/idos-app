@@ -81,7 +81,7 @@ export function WalletDeleteModal({
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-lg mx-4 bg-neutral-950 gap-8 rounded-2xl border border-neutral-800 overflow-hidden"
+        className="relative w-fit min-w-[400px] mx-4 bg-neutral-950 gap-8 rounded-2xl border border-neutral-800 overflow-hidden"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 bg-neutral-800/60 border-neutral-700 rounded-t-2xl">
@@ -113,8 +113,9 @@ export function WalletDeleteModal({
             <div className="space-y-6">
               <div className="gap-2 flex flex-col">
                 <p className="text-neutral-400 text-sm font-['Inter']">
-                  Do you want to delete this wallet from the idOS? This action
-                  cannot be undone.
+                  Do you want to delete this wallet from the idOS?
+                  <br />
+                  This action cannot be undone.
                 </p>
                 <div className="px-3 py-2 rounded-md bg-neutral-800 text-sm font-mono text-neutral-300">
                   {wallet.address}
