@@ -12,6 +12,7 @@ import { env } from '@/env';
 import { handleSaveUserWallets } from '@/handlers/user-wallets';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
+import { useSharedStore } from '@/stores/shared-store';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -31,6 +32,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
+  const { resetStore } = useSharedStore();
 
   const refresh = async () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -41,6 +43,12 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
       queryClient.removeQueries({ queryKey: ['shared-credential'] });
     }
   }, [walletConnector?.isConnected, queryClient]);
+
+  useEffect(() => {
+    if (!walletConnector?.connectedWallet) {
+      resetStore();
+    }
+  }, [walletConnector]);
 
   useEffect(() => {
     const setupClient = async () => {
