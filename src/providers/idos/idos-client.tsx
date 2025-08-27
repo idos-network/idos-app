@@ -86,13 +86,9 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         setWithSigner(_withSigner);
         if (await _withSigner.hasProfile()) {
           const client = await _withSigner.logIn();
-          try {
-            const userWallets = await client.getWallets();
-            const walletsArray = userWallets as IdosWallet[];
-            await handleSaveUserWallets(client.user.id, walletsArray);
-          } catch (error) {
-            console.error('Failed to fetch and save wallets:', error);
-          }
+          const userWallets = await client.getWallets();
+          const walletsArray = userWallets as IdosWallet[];
+          handleSaveUserWallets(client.user.id, walletsArray);
           setClient(client);
         } else {
           setClient(_withSigner);

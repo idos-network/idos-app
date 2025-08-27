@@ -137,7 +137,7 @@ export default function WalletAddButton({
         onSuccess?.('The wallet has been added to your idOS profile');
         onWalletAdded?.();
         const wallets = (await idOSLoggedIn!.getWallets()) as IdosWallet[];
-        await handleSaveUserWallets(idOSLoggedIn!.user.id, wallets);
+        handleSaveUserWallets(idOSLoggedIn!.user.id, wallets);
       } catch (error) {
         onError?.('Failed to add wallet to your idOS profile');
       } finally {
