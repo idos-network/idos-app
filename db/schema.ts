@@ -1,11 +1,12 @@
-import {
-  pgTable,
-  varchar,
-  timestamp,
-  integer,
-  index,
-} from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import {
+  index,
+  integer,
+  pgTable,
+  timestamp,
+  unique,
+  varchar,
+} from 'drizzle-orm/pg-core';
 
 export const users = pgTable(
   'users',
@@ -42,14 +43,42 @@ export const userQuests = pgTable(
   ],
 );
 
+export const userWallets = pgTable(
+  'user_wallets',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    userId: varchar('userId', { length: 36 }).notNull(),
+    address: varchar('address').notNull(),
+    walletType: varchar('walletType').notNull(),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index('user_wallets_user_id_idx').on(table.userId),
+    index('user_wallets_address_idx').on(table.address),
+    index('user_wallets_wallet_type_idx').on(table.walletType),
+    unique('user_wallets_user_address_unique').on(table.userId, table.address),
+  ],
+);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   userQuests: many(userQuests),
+  userWallets: many(userWallets),
 }));
 
 export const userQuestsRelations = relations(userQuests, ({ one }) => ({
   user: one(users, {
     fields: [userQuests.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userWalletsRelations = relations(userWallets, ({ one }) => ({
+  user: one(users, {
+    fields: [userWallets.userId],
     references: [users.id],
   }),
 }));

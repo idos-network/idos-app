@@ -9,7 +9,9 @@ import { type PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { IDOSClientContext } from '@/context/idos-context';
 import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { env } from '@/env';
+import { handleSaveUserWallets } from '@/handlers/user-wallets';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
+import type { IdosWallet } from '@/interfaces/idos-profile';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -27,6 +29,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const [idOSClient, setClient] = useState<idOSClient>(_idOSClient);
   const [withSigner, setWithSigner] = useState<idOSClientWithUserSigner>();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [lastWalletKey, setLastWalletKey] = useState<string | null>(null);
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
 
@@ -40,7 +43,18 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     }
   }, [walletConnector?.isConnected, queryClient]);
 
+  // Only setup client if wallet key actually changed
   useEffect(() => {
+    const currentWalletKey = walletConnector?.connectedWallet
+      ? `${walletConnector.connectedWallet.type}-${walletConnector.connectedWallet.address}`
+      : null;
+
+    if (currentWalletKey === lastWalletKey) {
+      return;
+    }
+
+    setLastWalletKey(currentWalletKey);
+
     const setupClient = async () => {
       setIsLoading(true);
       try {
@@ -84,6 +98,13 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         setWithSigner(_withSigner);
         if (await _withSigner.hasProfile()) {
           const client = await _withSigner.logIn();
+          try {
+            const userWallets = await client.getWallets();
+            const walletsArray = userWallets as IdosWallet[];
+            await handleSaveUserWallets(client.user.id, walletsArray);
+          } catch (error) {
+            console.error('Failed to fetch and save wallets:', error);
+          }
           setClient(client);
         } else {
           setClient(_withSigner);
@@ -101,7 +122,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
     // Removing wallet dependencies to prevent reinitialization on connection failures
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletConnector?.connectedWallet, refreshTrigger]);
+  }, [walletConnector?.connectedWallet, refreshTrigger, lastWalletKey]);
 
   if (isLoading) {
     return (
