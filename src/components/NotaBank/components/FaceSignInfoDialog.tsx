@@ -45,7 +45,7 @@ export default function FaceSignInfoDialog() {
               <DeactiviateFaceSignDialog
                 onCancel={() => setIsDeactivating(false)}
                 onDeactivate={() => {
-                  console.log('deactivate');
+                  console.log('deactivate ');
                 }}
               />
             ) : (
