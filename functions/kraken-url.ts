@@ -8,7 +8,8 @@ const krakenLevel = process.env.KRAKEN_LEVEL as string;
 const krakenPrivateKey = process.env.KRAKEN_PRIVATE_KEY?.replace(/\\n/g, '\n') as string;
 
 
-export default async (_request: Request, _context: Context) => {
+export default async (request: Request, _context: Context) => {
+    const connectedWallet = request.url.split("?")[1].split("=")[1];
     invariant(krakenApiUrl, "`KRAKEN_API_URL` is not set");
     invariant(krakenClientId, "`KRAKEN_CLIENT_ID` is not set");
     invariant(krakenLevel, "`KRAKEN_LEVEL` is not set");
@@ -24,7 +25,7 @@ export default async (_request: Request, _context: Context) => {
 
         const token = jwt.sign(payload, krakenPrivateKey, { algorithm: "ES512" });
 
-        return new Response(JSON.stringify({ url: `${krakenApiUrl}/kyc?token=${token}&provider=${"sumsub"}` }), { status: 200 });
+        return new Response(JSON.stringify({ url: `${krakenApiUrl}/kyc?token=${token}&provider=${"sumsub"}&walletAddress=${connectedWallet}` }), { status: 200 });
     } catch (error) {
         console.error('Error in kraken-url:', error);
         throw error;

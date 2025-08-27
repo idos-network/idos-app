@@ -22,6 +22,7 @@ interface SharedStore {
   setSelectedProvider: (selectedProvider: string) => void;
   sharedCredential: idOSCredential | null;
   setSharedCredential: (sharedCredential: idOSCredential | null) => void;
+  resetStore: () => void;
 }
 
 export const useSharedStore = create<SharedStore>((set) => ({
@@ -63,4 +64,15 @@ export const useSharedStore = create<SharedStore>((set) => ({
 
   sharedCredential: null,
   setSharedCredential: (sharedCredential) => set({ sharedCredential }),
+  resetStore: () =>
+    set({
+      spendAmount: 0,
+      buyAmount: 0,
+      rate: '',
+      selectedCurrency: currencies[0].value,
+      selectedToken: tokens[0].value,
+      lastChanged: 'spend',
+      selectedProvider: '',
+      sharedCredential: null,
+    }),
 }));

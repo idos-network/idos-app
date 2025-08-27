@@ -2,9 +2,11 @@ import { getKrakenUrl } from '@/api/kraken-url';
 import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
+import { useSharedStore } from '@/stores/shared-store';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 
 export default function Kyc() {
   const { idOSClient, setIdOSClient } = useIdOS();
@@ -12,11 +14,13 @@ export default function Kyc() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isIframeLoading, setIsIframeLoading] = useState(true);
+  const { selectedProvider, spendAmount, buyAmount } = useSharedStore();
+  const { address } = useAccount();
 
   const { data: url } = useQuery({
     queryKey: ['kyc-url'],
     queryFn: () => {
-      return getKrakenUrl().then((res) => res);
+      return getKrakenUrl(address as string).then((res) => res);
     },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -73,7 +77,9 @@ export default function Kyc() {
   useEffect(() => {
     if (sharedCredential?.credentialContent) {
       setTimeout(() => {
-        navigate({ to: '/notabank/onramp' });
+        navigate({
+          to: `/notabank/onramp?method=${selectedProvider}&toSpend=${spendAmount}&toReceive=${buyAmount}`,
+        });
       }, 700);
     }
   }, [sharedCredential?.credentialContent, navigate]);

@@ -47,8 +47,22 @@ export const notabankNotaCardTermsAndConditionsRoute = createRoute({
   component: NotaCardTermsAndConditions,
 });
 
+interface SearchValue {
+  method?: string;
+  toSpend?: string;
+  toReceive?: string;
+}
+
+const validateSearch = (search?: SearchValue): SearchValue => ({
+  method: search?.method as string | undefined,
+  toSpend: search?.toSpend as string | undefined,
+  toReceive: search?.toReceive as string | undefined,
+});
+
 export const notabankOnrampRoute = createRoute({
   getParentRoute: () => notabankRoute,
   path: '/onramp',
   component: Onramp,
+  // make the whole search optional
+  validateSearch: validateSearch,
 });
