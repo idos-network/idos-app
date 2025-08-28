@@ -3,7 +3,6 @@ import { CredentialsCard, WalletsCard } from '@/components/profile';
 import Spinner from '@/components/Spinner';
 import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
 import { env } from '@/env';
-import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useSpecificCredential } from '@/hooks/useCredentials';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
@@ -11,7 +10,8 @@ import { useToast } from '@/hooks/useToast';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { useReferralCode } from '@/providers/quests/referral-provider';
 import { getQuestByName } from '@/utils/quests';
-import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useState } from 'react';
 
 export function IdosProfile() {
   const [isMounted, setIsMounted] = useState(false);
@@ -27,8 +27,8 @@ export function IdosProfile() {
     refetch: refetchMainEvm,
   } = useUserMainEvm();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
   const idOSLoggedIn = useIdOSLoggedIn();
-  const { completeQuest } = useCompleteQuest();
   const { referralCode, clearReferralCode } = useReferralCode();
 
   useEffect(() => {
@@ -39,13 +39,38 @@ export function IdosProfile() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
+  const isStillLoading =
+    idosLoading || profileQuestLoading || isLoading || mainEvmLoading;
+
+  const shouldShowProfile =
+    isMounted &&
+    profileQuestCompleted &&
+    hasProfile &&
+    !isStillLoading &&
+    hasStakingCredential &&
+    mainEvm;
+
+  const shouldShowLoading = !isMounted || isStillLoading;
+
+  const handleOnboardingComplete = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['user'] });
+    queryClient.invalidateQueries({ queryKey: ['userPoints'] });
+    refetchMainEvm();
+
+    setIsMounted(false);
+    setTimeout(() => {
+      setIsMounted(true);
+    }, 1000);
+
     const completeToastData = localStorage.getItem('showCompleteToast');
-    const rewardPoints = getQuestByName('create_idos_profile')?.pointsReward;
 
     if (completeToastData && idOSLoggedIn) {
       try {
-        const { completeType, completeMessage } = JSON.parse(completeToastData);
+        const { type: completeType, message: completeMessage } =
+          JSON.parse(completeToastData);
+        const rewardPoints = getQuestByName(
+          'create_idos_profile',
+        )?.pointsReward;
         setTimeout(() => {
           showToast({ type: completeType, message: completeMessage });
         }, 2000);
@@ -65,20 +90,14 @@ export function IdosProfile() {
         clearReferralCode();
       }
     }
-  }, [idOSLoggedIn, showToast, completeQuest, referralCode, clearReferralCode]);
-
-  const isStillLoading =
-    idosLoading || profileQuestLoading || isLoading || mainEvmLoading;
-
-  const shouldShowProfile =
-    isMounted &&
-    profileQuestCompleted &&
-    hasProfile &&
-    !isStillLoading &&
-    hasStakingCredential &&
-    mainEvm;
-
-  const shouldShowLoading = !isMounted || isStillLoading;
+  }, [
+    queryClient,
+    refetchMainEvm,
+    idOSLoggedIn,
+    showToast,
+    referralCode,
+    clearReferralCode,
+  ]);
 
   return (
     <div className="flex items-start justify-center">
@@ -107,7 +126,7 @@ export function IdosProfile() {
         </div>
       ) : (
         <div className="container mx-auto flex justify-center pt-10">
-          <OnboardingStepper />
+          <OnboardingStepper onComplete={handleOnboardingComplete} />
         </div>
       )}
     </div>

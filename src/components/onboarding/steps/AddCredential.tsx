@@ -24,9 +24,13 @@ import { useStepState } from './useStepState';
 
 interface AddCredentialProps {
   onNext: () => void;
+  onComplete?: () => void;
 }
 
-export default function AddCredential({ onNext }: AddCredentialProps) {
+export default function AddCredential({
+  onNext,
+  onComplete,
+}: AddCredentialProps) {
   const { state, setState, loading, setLoading, error } = useStepState();
   const { refresh } = useIdOS();
   const idOSLoggedIn = useIdOSLoggedIn();
@@ -67,7 +71,7 @@ export default function AddCredential({ onNext }: AddCredentialProps) {
           }),
         );
         completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        window.location.href = '/';
+        onComplete?.();
       } else if (error) {
         setState('idle');
       }

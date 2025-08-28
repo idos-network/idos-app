@@ -14,7 +14,12 @@ import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
 
-export default function AddEVMWallet() {
+interface AddEVMWalletProps {
+  onNext: () => void;
+  onComplete?: () => void;
+}
+
+export default function AddEVMWallet({ onComplete }: AddEVMWalletProps) {
   const { state, setState, error } = useStepState();
   const { refresh } = useIdOS();
   const { showToast } = useToast();
@@ -52,7 +57,7 @@ export default function AddEVMWallet() {
           }),
         );
         completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        window.location.href = '/';
+        onComplete?.();
       }
       if (error) {
         setState('idle');

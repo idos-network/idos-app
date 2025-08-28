@@ -15,8 +15,13 @@ export const useCompleteQuest = () => {
       try {
         const result = await completeUserQuest(userId, questName);
         const quest = getQuestByName(questName);
+        if (questName === 'create_idos_profile') {
+          refetchPoints();
+          refetchQuests();
+          return;
+        }
 
-        if (result.success && questName !== 'create_idos_profile') {
+        if (result.success) {
           showToast({
             type: 'quest',
             message: 'You earned',

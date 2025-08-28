@@ -16,7 +16,13 @@ import {
   VerifyIdentity,
 } from './steps';
 
-export default function OnboardingStepper() {
+interface OnboardingStepperProps {
+  onComplete?: () => void;
+}
+
+export default function OnboardingStepper({
+  onComplete,
+}: OnboardingStepperProps) {
   const [activeStep, setActiveStep] = useState<string | null>(null);
   const hasProfile = useIdOSLoginStatus();
   const walletConnector = useWalletConnector();
@@ -69,7 +75,15 @@ export default function OnboardingStepper() {
     const currentStep = steps.find((step) => step.id === activeStep);
     if (!currentStep) return null;
     const StepComponent = currentStep.component;
-    return <StepComponent onNext={handleNext} />;
+
+    const isCompletionStep =
+      currentStep.id === 'step-four' || currentStep.id === 'step-five';
+    return (
+      <StepComponent
+        onNext={handleNext}
+        onComplete={isCompletionStep ? onComplete : undefined}
+      />
+    );
   }
 
   function handleNext() {
