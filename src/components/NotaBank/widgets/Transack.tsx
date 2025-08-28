@@ -46,10 +46,10 @@ export const TransakProvider = memo(function TransakProvider({
       environment: Transak.ENVIRONMENTS.STAGING,
       kycShareTokenProvider: 'SUMSUB',
       kycShareToken: transakToken,
-      defaultCryptoCurrency: selectedToken,
-      defaultCryptoAmount: +buyAmount || 0,
-      defaultFiatCurrency: selectedCurrency,
-      defaultFiatAmount: +spendAmount || 0,
+      defaultCryptoCurrency: selectedToken ?? 'USDC',
+      defaultCryptoAmount: +buyAmount || 100,
+      defaultFiatCurrency: selectedCurrency ?? 'USD',
+      defaultFiatAmount: +spendAmount || 100,
     });
     newTransak.init();
     updateTransak(newTransak);
