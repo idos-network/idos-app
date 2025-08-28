@@ -1,12 +1,8 @@
+import { useIdOS } from '@/context/idos-context';
 import { env } from '@/env';
 import { useSpecificCredential } from '@/hooks/useCredentials';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
-import {
-  clearUserDataFromLocalStorage,
-  getCurrentUserFromLocalStorage,
-} from '@/storage/idos-profile';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import {
   AddCredential,
@@ -20,17 +16,55 @@ interface OnboardingStepperProps {
   onComplete?: () => void;
 }
 
+const useHasProfile = () => {
+  const { idOSClient } = useIdOS();
+
+  return useQuery({
+    queryKey: [],
+    queryFn: () => {
+      return idOSClient.state === 'logged-in'
+        ? !!idOSClient.user.id
+        : idOSClient.state === 'with-user-signer' && idOSClient.hasProfile();
+    },
+    staleTime: 0,
+    gcTime: 0,
+  });
+};
+
+const useHasStakingCredential = () => {
+  const { idOSClient } = useIdOS();
+  return useQuery({
+    queryKey: ['hasStakingCredential'],
+    queryFn: () => {
+      if (['with-user-signer', 'logged-in'].includes(idOSClient.state)) {
+        if ('filterCredentials' in idOSClient)
+          return idOSClient.filterCredentials({
+            acceptedIssuers: [
+              {
+                authPublicKey: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
+              },
+            ],
+          });
+      }
+    },
+  });
+};
+
 export default function OnboardingStepper({
   onComplete,
 }: OnboardingStepperProps) {
   const [activeStep, setActiveStep] = useState<string | null>(null);
-  const hasProfile = useIdOSLoginStatus();
-  const walletConnector = useWalletConnector();
   const { mainEvm } = useUserMainEvm();
-  const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const { hasCredential: hasStakingCredential, isLoading } =
-    useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
+  const { idOSClient } = useIdOS();
+  const isLoggedIn = idOSClient.state === 'logged-in' && idOSClient.user.id;
+  const {
+    hasCredential: _hasStakingCredential,
+    isLoading: isLoadingStakingCredential,
+  } = useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
 
+  const { data: stakingCredentials } = useHasStakingCredential();
+  const hasStakingCredential = !!stakingCredentials?.length;
+  const { data: hasProfile, isLoading: isLoadingHasProfile } = useHasProfile();
   const steps = [
     { id: 'step-one', component: GetStarted }, // Get started
     { id: 'step-two', component: CreatePrivateKey }, // Create your private key
@@ -39,37 +73,32 @@ export default function OnboardingStepper({
     { id: 'step-five', component: AddEVMWallet }, // Set up primary EVM wallet only for non EVM wallets
   ];
   useEffect(() => {
-    if (isLoading) return;
-
-    const currentUser = getCurrentUserFromLocalStorage();
-
-    if (currentUser && wallet) {
-      if (currentUser.mainAddress !== wallet.address) {
-        clearUserDataFromLocalStorage();
-      }
-
-      if (!hasProfile) {
-        setActiveStep('step-one');
+    if (isLoadingHasProfile) return;
+    if (isLoggedIn && hasStakingCredential) {
+      if (mainEvm) {
+        onComplete?.();
         return;
       }
-
-      if (currentUser.humanVerified && !hasStakingCredential) {
-        setActiveStep('step-four');
-        return;
-      } else if (currentUser.idosKey) {
-        setActiveStep('step-three');
-        return;
-      }
-    } else if (hasProfile && !hasStakingCredential) {
       setActiveStep('step-four');
-      return;
-    } else if (hasProfile && hasStakingCredential && !mainEvm) {
-      setActiveStep('step-five');
       return;
     }
 
-    setActiveStep('step-one');
-  }, [isLoading, hasProfile, wallet, hasStakingCredential, mainEvm]);
+    if (!hasProfile) {
+      setActiveStep('step-one');
+      return;
+    }
+
+    if (isLoggedIn && !hasStakingCredential) {
+      setActiveStep('step-four');
+      return;
+    }
+  }, [
+    isLoadingStakingCredential,
+    isLoggedIn,
+    hasStakingCredential,
+    mainEvm,
+    hasProfile,
+  ]);
 
   function getCurrentStepComponent() {
     const currentStep = steps.find((step) => step.id === activeStep);

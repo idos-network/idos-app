@@ -52,7 +52,9 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     const setupClient = async () => {
-      setIsLoading(true);
+      if (!['with-user-signer', 'logged-in'].includes(idOSClient.state)) {
+        setIsLoading(true);
+      }
       try {
         const newClient = await _idOSClient.createClient();
         let _signer: any = undefined;

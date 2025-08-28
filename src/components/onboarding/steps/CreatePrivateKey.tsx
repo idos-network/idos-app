@@ -1,5 +1,6 @@
 import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
+import type { ConnectedWallet } from '@/context/wallet-connector-context';
 import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import EncryptedIcon from '@/icons/encrypted';
@@ -15,15 +16,20 @@ interface CreatePrivateKeyProps {
 
 export default function CreatePrivateKey({ onNext }: CreatePrivateKeyProps) {
   const { state, setState, loading, setLoading, error } = useStepState();
-  const { withSigner } = useIdOS();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const handleSaveIdOSProfile = useHandleSaveIdOSProfile();
+  const { mutate: handleSaveIdOSProfile } = useHandleSaveIdOSProfile({
+    onNext,
+    wallet: wallet as ConnectedWallet,
+    setState,
+    setLoading,
+  });
+  const { idOSClient } = useIdOS();
 
   useEffect(() => {
-    handleSaveIdOSProfile(setState, setLoading, withSigner, wallet, onNext);
+    handleSaveIdOSProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [withSigner, wallet, onNext]);
+  }, [idOSClient.state === 'with-user-signer']);
 
   useEffect(() => {
     if (error) {
