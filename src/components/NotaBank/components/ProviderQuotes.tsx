@@ -151,9 +151,9 @@ export function ProviderQuotes() {
   }, [selectedProviderQuote]);
 
   useEffect(() => {
-    if (selectedProvider) return;
+    // Always select the best provider (remove the early return)
     setSelectedProvider(sortedQuotes[0]?.name ?? '');
-  }, [sortedQuotes[0]?.name, selectedProvider, setSelectedProvider]);
+  }, [sortedQuotes[0]?.name, setSelectedProvider]);
 
   // Find the best rate (highest rate means best conversion)
   return (
