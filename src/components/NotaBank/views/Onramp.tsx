@@ -1,10 +1,11 @@
 import { getNoahOnRampUrl } from '@/api/noah';
+import { BackArrow } from '@/components/icons/back-arrow';
 import { useIdOS } from '@/context/idos-context';
 import { useRequestGrant } from '@/hooks/useRequestGrant';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
 import { useSharedStore } from '@/stores/shared-store';
 import { useQuery } from '@tanstack/react-query';
-import { useSearch } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { TransakProvider } from '../widgets/Transack';
@@ -61,6 +62,7 @@ const useOnrampUrl = (selectedProvider: string) => {
 };
 
 export default function Onramp() {
+  const navigate = useNavigate();
   const { method } = useSearch({
     from: '/layout/notabank/onramp',
   });
@@ -79,15 +81,6 @@ export default function Onramp() {
     setIsIframeLoading(false);
   };
 
-  // useEffect(() => {
-  //   if (toSpend) {
-  //     setSpendAmount(+toSpend);
-  //   }
-  //   if (toReceive) {
-  //     setBuyAmount(+toReceive);
-  //   }
-  // }, [toSpend, toReceive, setSpendAmount, setBuyAmount]);
-
   useEffect(() => {
     if (accessGrant) return;
     if (!sharedCredential?.credentialId) return;
@@ -99,27 +92,36 @@ export default function Onramp() {
     return <GrantRequestLoading />;
   }
 
-  if (selectedProvider === 'transak')
-    return (
-      <TransakProvider
-        grantId={usedProvider === 'transak' ? accessGrant?.id : ''}
-        key={accessGrant?.id}
-      />
-    );
-
   return (
-    <div>
-      {isPending || isLoading ? (
-        <CheckoutLoading />
+    <div className="relative">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate({ to: '/notabank/buy' })}
+        className="absolute top-4 left-4 z-10 cursor-pointer flex items-center gap-3 text-aquamarine-400 hover:text-aquamarine-700 transition-colors"
+      >
+        <BackArrow className="w-6 h-4" color="currentColor" />
+        <span className="text-base font-normal">Back to buy</span>
+      </button>
+      {selectedProvider === 'transak' ? (
+        <TransakProvider
+          grantId={usedProvider === 'transak' ? accessGrant?.id : ''}
+          key={accessGrant?.id}
+        />
       ) : (
-        <div className="relative">
-          {isIframeLoading && <IframeLoading />}
-          <iframe
-            src={onrampUrl ?? ''}
-            className="w-full min-h-[500px] rounded-2xl overflow-hidden"
-            onLoad={handleIframeLoad}
-          />
-        </div>
+        <>
+          {isPending || isLoading ? (
+            <CheckoutLoading />
+          ) : (
+            <div className="relative">
+              {isIframeLoading && <IframeLoading />}
+              <iframe
+                src={onrampUrl ?? ''}
+                className="w-full min-h-[500px] rounded-2xl overflow-hidden"
+                onLoad={handleIframeLoad}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
