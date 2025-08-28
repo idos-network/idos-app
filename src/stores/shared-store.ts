@@ -2,9 +2,14 @@ import {
   currencies,
   tokens,
 } from '@/components/NotaBank/components/TokenAmountInput';
-import type { idOSCredential } from '@idos-network/client';
+import type { CredentialSubject } from '@idos-network/issuer';
 import { create } from 'zustand';
 
+interface SharedCredential {
+  credentialContent: CredentialSubject;
+  credentialId: string;
+  verificationResult: boolean;
+}
 interface SharedStore {
   spendAmount: number;
   buyAmount: number;
@@ -20,8 +25,8 @@ interface SharedStore {
   setLastChanged: (field: 'spend' | 'buy') => void;
   selectedProvider: string;
   setSelectedProvider: (selectedProvider: string) => void;
-  sharedCredential: idOSCredential | null;
-  setSharedCredential: (sharedCredential: idOSCredential | null) => void;
+  sharedCredential: SharedCredential | null;
+  setSharedCredential: (sharedCredential: SharedCredential | null) => void;
   resetStore: () => void;
 }
 

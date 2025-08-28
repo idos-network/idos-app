@@ -179,7 +179,7 @@ export default function Buy() {
         }`}
       >
         <BuyModule />
-        <ProviderQuotes />
+        {hasAmount && <ProviderQuotes />}
       </div>
     </div>
   );

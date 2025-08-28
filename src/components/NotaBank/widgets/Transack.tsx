@@ -4,7 +4,10 @@ import { useSharedStore } from '@/stores/shared-store';
 import { useNavigate } from '@tanstack/react-router';
 import { Transak } from '@transak/transak-sdk';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
+
 const apiKey = env.VITE_TRANSAK_API_KEY;
 
 const TransakTokenLoading = () => (
@@ -23,10 +26,16 @@ export const TransakProvider = memo(function TransakProvider({
   grantId: string;
 }) {
   const navigate = useNavigate();
+  const { address } = useAccount();
   const { data: transakToken, isLoading: transakTokenLoading } =
     useTransakToken(grantId);
-  const { selectedToken, buyAmount, selectedCurrency, spendAmount } =
-    useSharedStore();
+  const {
+    selectedToken,
+    buyAmount,
+    selectedCurrency,
+    spendAmount,
+    sharedCredential,
+  } = useSharedStore();
   const [transak, setTransak] = useState<Transak | null>(null);
 
   const updateTransak = useCallback((newTransak: Transak | null) => {
@@ -34,12 +43,14 @@ export const TransakProvider = memo(function TransakProvider({
   }, []);
 
   useEffect(() => {
-    console.log('RENDERED');
-  }, [transak]);
-
-  useEffect(() => {
     if (!transakToken || transak) return;
     invariant(apiKey, 'TRANSAK_API_KEY is not set');
+    toast.loading(
+      `Initializing Transak for ${sharedCredential?.credentialContent.email}`,
+    );
+    setTimeout(() => {
+      toast.dismiss();
+    }, 4000);
 
     const newTransak = new Transak({
       apiKey,
@@ -50,17 +61,29 @@ export const TransakProvider = memo(function TransakProvider({
       defaultCryptoAmount: +buyAmount || 100,
       defaultFiatCurrency: selectedCurrency ?? 'USD',
       defaultFiatAmount: +spendAmount || 100,
+      walletAddress: address,
+      email: sharedCredential?.credentialContent.email as string,
     });
     newTransak.init();
     updateTransak(newTransak);
-  }, [transakToken, transak]);
+  }, [
+    transakToken,
+    transak,
+    address,
+    sharedCredential?.credentialContent.email,
+  ]);
 
   useEffect(() => {
     Transak.on(Transak.EVENTS.TRANSAK_WIDGET_CLOSE, (orderData) => {
       console.log('Transak widget closed:', orderData);
-      navigate({ to: '/notabank/buy' });
-      transak?.close();
-      updateTransak(null);
+      transak?.logoutUser();
+
+      setTimeout(() => {
+        transak?.cleanup();
+        transak?.close();
+        updateTransak(null);
+        navigate({ to: '/notabank/buy' });
+      }, 1000);
     });
 
     Transak.on(Transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, (orderData) => {

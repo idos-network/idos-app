@@ -10,7 +10,7 @@ export default function AppLayout() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <Toaster position="bottom-right" />
+      <Toaster position="top-center" />
       <div className="flex flex-1 flex-col lg:ml-64">
         <Header />
         <main className="flex-1 p-8 text-idos-seasalt">
