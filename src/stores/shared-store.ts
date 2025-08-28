@@ -26,8 +26,8 @@ interface SharedStore {
 }
 
 export const useSharedStore = create<SharedStore>((set) => ({
-  spendAmount: 0,
-  buyAmount: 0,
+  spendAmount: 100,
+  buyAmount: 100,
   setBuyAmount: (buyAmount) => {
     const rate = useSharedStore.getState().rate || 1;
     const spendAmount = +buyAmount / +rate;
