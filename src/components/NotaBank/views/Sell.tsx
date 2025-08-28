@@ -1,16 +1,21 @@
-import { Button } from '@/components/ui/button';
+import { useSellTokenStore } from '@/stores/sell-token-store';
 import ActionToolbar from '../components/ActionToolbar';
+import CountriesSearch from '../components/Sell/CountriesSearch';
+import SellTokens from '../components/Sell/SellTokens';
 import UserBalance from '../components/UserBalance';
 
 function SellModule() {
+  const { selectedCountry } = useSellTokenStore();
+
   return (
-    <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
-      <h3 className="text-xl font-heading">Sell Tokens</h3>
-      <form className="flex flex-col gap-5">
-        <Button type="button" variant="secondary">
-          Continue
-        </Button>
-      </form>
+    <div className="flex items-center place-content-center gap-5 w-full max-w-4xl mx-auto">
+      {!selectedCountry ? (
+        <div className="flex flex-col gap-5 p-6 bg-neutral-900 rounded-2xl flex-1 max-w-md border border-neutral-700/50">
+          <CountriesSearch />
+        </div>
+      ) : (
+        <SellTokens />
+      )}
     </div>
   );
 }
@@ -22,7 +27,7 @@ export default function Sell() {
         <UserBalance />
         <ActionToolbar />
       </div>
-      <div className="mt-10 flex items-center place-content-center gap-5 w-full max-w-4xl mx-auto">
+      <div className="mt-10">
         <SellModule />
       </div>
     </div>
