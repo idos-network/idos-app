@@ -63,17 +63,8 @@ export const SpendInput = () => {
 };
 
 export const BuyInput = () => {
-  const {
-    selectedToken,
-    buyAmount,
-    setBuyAmount,
-    setSelectedToken,
-    setSpendAmount,
-  } = useSharedStore();
-
-  useEffect(() => {
-    setSpendAmount(100);
-  }, []);
+  const { selectedToken, buyAmount, setBuyAmount, setSelectedToken } =
+    useSharedStore();
 
   return (
     <div className="flex flex-col gap-3">
@@ -143,7 +134,6 @@ function BuyModule() {
       <form className="flex flex-col gap-5">
         <SpendInput />
         <BuyInput />
-        {/* <ProviderQuotes /> */}
         {sharedCredential?.credentialContent ? (
           <Button
             type="button"
@@ -189,7 +179,7 @@ export default function Buy() {
         }`}
       >
         <BuyModule />
-        {hasAmount ? <ProviderQuotes /> : null}
+        <ProviderQuotes />
       </div>
     </div>
   );

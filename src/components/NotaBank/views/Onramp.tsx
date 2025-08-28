@@ -2,7 +2,6 @@ import { getNoahOnRampUrl } from '@/api/noah';
 import { useIdOS } from '@/context/idos-context';
 import { useRequestGrant } from '@/hooks/useRequestGrant';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
-import { useTransakToken } from '@/hooks/useTransakToken';
 import { useSharedStore } from '@/stores/shared-store';
 import { useQuery } from '@tanstack/react-query';
 import { useSearch } from '@tanstack/react-router';
@@ -29,16 +28,6 @@ const GrantRequestLoading = () => (
     <p className="text-neutral-500 text-xs max-w-md text-center">
       We're requesting permission to access your credentials to complete the
       onramp process.
-    </p>
-  </div>
-);
-
-const TransakTokenLoading = () => (
-  <div className="flex flex-col items-center justify-center min-h-[500px] gap-4">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#74FB5B]"></div>
-    <p className="text-neutral-400 text-sm">Loading Transak token...</p>
-    <p className="text-neutral-500 text-xs max-w-md text-center">
-      Setting up secure payment processing with Transak.
     </p>
   </div>
 );
@@ -85,9 +74,6 @@ export default function Onramp() {
     mutate: requestGrant,
     isPending: isRequestingGrant,
   } = useRequestGrant();
-  const { data: transakToken, isLoading: isTransakLoading } = useTransakToken(
-    usedProvider === 'transak' ? (accessGrant?.id ?? '') : '',
-  );
 
   const handleIframeLoad = () => {
     setIsIframeLoading(false);
@@ -108,20 +94,18 @@ export default function Onramp() {
     requestGrant();
   }, [accessGrant, sharedCredential, requestGrant]);
 
-  if (selectedProvider === 'transak' && transakToken)
-    return (
-      <TransakProvider transakToken={transakToken ?? ''} key={transakToken} />
-    );
-
   // Show grant request loading when requesting permission
   if (isRequestingGrant) {
     return <GrantRequestLoading />;
   }
 
-  // Show specific Transak loading when loading Transak token
-  if (isTransakLoading) {
-    return <TransakTokenLoading />;
-  }
+  if (selectedProvider === 'transak')
+    return (
+      <TransakProvider
+        grantId={usedProvider === 'transak' ? accessGrant?.id : ''}
+        key={accessGrant?.id}
+      />
+    );
 
   return (
     <div>
