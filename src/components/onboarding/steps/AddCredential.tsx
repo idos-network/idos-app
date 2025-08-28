@@ -67,7 +67,7 @@ export default function AddCredential({ onNext }: AddCredentialProps) {
           }),
         );
         completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        window.location.href = '/';
+        window.location.href = '/idos-profile';
       } else if (error) {
         setState('idle');
       }

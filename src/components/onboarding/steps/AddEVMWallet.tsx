@@ -52,7 +52,7 @@ export default function AddEVMWallet() {
           }),
         );
         completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        window.location.href = '/';
+        window.location.href = '/idos-profile';
       }
       if (error) {
         setState('idle');
