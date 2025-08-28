@@ -15,6 +15,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 export function IdosProfile() {
   const [isMounted, setIsMounted] = useState(false);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
   const { isLoading: idosLoading } = useIdOS();
   const hasProfile = useIdOSLoginStatus();
   const { isCompleted: profileQuestCompleted, isLoading: profileQuestLoading } =
@@ -48,11 +49,13 @@ export function IdosProfile() {
     hasProfile &&
     !isStillLoading &&
     hasStakingCredential &&
-    mainEvm;
+    !!mainEvm;
 
   const shouldShowLoading = !isMounted || isStillLoading;
 
   const handleOnboardingComplete = useCallback(() => {
+    setOnboardingCompleted(true);
+
     queryClient.invalidateQueries({ queryKey: ['user'] });
     queryClient.invalidateQueries({ queryKey: ['userPoints'] });
     refetchMainEvm();
@@ -101,7 +104,7 @@ export function IdosProfile() {
 
   return (
     <div className="flex items-start justify-center">
-      {shouldShowProfile ? (
+      {shouldShowProfile || onboardingCompleted ? (
         <div className="mx-auto flex flex-col px-32 pt-10 w-fit min-w-[1050px]">
           <div className="gap-3 flex flex-col mb-10">
             <div className="text-2xl font-medium text-neutral-50">
