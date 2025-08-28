@@ -63,8 +63,17 @@ export const SpendInput = () => {
 };
 
 export const BuyInput = () => {
-  const { selectedToken, buyAmount, setBuyAmount, setSelectedToken } =
-    useSharedStore();
+  const {
+    selectedToken,
+    buyAmount,
+    setBuyAmount,
+    setSelectedToken,
+    setSpendAmount,
+  } = useSharedStore();
+
+  useEffect(() => {
+    setSpendAmount(100);
+  }, []);
 
   return (
     <div className="flex flex-col gap-3">
