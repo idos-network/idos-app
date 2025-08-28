@@ -26,9 +26,6 @@ export function TransakProvider({ transakToken }: { transakToken: string }) {
         defaultFiatCurrency: selectedCurrency,
         defaultFiatAmount: +spendAmount || 0,
       });
-      transak.current?.logoutUser();
-      transak.current?.cleanup();
-
       transak.current.init();
       Transak.on(Transak.EVENTS.TRANSAK_WIDGET_CLOSE, (orderData) => {
         console.log('Transak widget closed:', orderData);
