@@ -1,4 +1,5 @@
 import { getGeoblock } from '@/api/geoblock';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { IDOSClientProvider } from '@/providers/idos/idos-client';
 import { ReferralProvider } from '@/providers/quests/referral-provider';
 import * as TanstackQueryProvider from '@/providers/tanstack-query/root-provider';
@@ -13,9 +14,11 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import AccessRestricted from './AccessRestricted';
+import MobileRestricted from './MobileRestricted';
 import { RootDocument } from './RootDocument';
 
 export function RootComponent() {
+  const isMobile = useIsMobile();
   const { data: response } = useQuery({
     queryKey: ['geoblock'],
     queryFn: () => getGeoblock(),
@@ -25,6 +28,14 @@ export function RootComponent() {
     return (
       <RootDocument>
         <AccessRestricted />
+      </RootDocument>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <RootDocument>
+        <MobileRestricted />
       </RootDocument>
     );
   }
