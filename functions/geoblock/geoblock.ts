@@ -17,6 +17,14 @@ const client: IpregistryClient = new IpregistryClient(
 export const geoblockConfig: GeoblockConfig = geoblockConfigData;
 
 export default async (_request: Request, context: Context) => {
+  if (process.env.NODE_ENV !== 'production') {
+    return new Response(JSON.stringify({ blocked: false }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
   const ip = context.ip;
 
   try {

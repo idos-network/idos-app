@@ -1,5 +1,4 @@
 import { getGeoblock } from '@/api/geoblock';
-import { env } from '@/env';
 import { IDOSClientProvider } from '@/providers/idos/idos-client';
 import { ReferralProvider } from '@/providers/quests/referral-provider';
 import * as TanstackQueryProvider from '@/providers/tanstack-query/root-provider';
@@ -17,20 +16,17 @@ import AccessRestricted from './AccessRestricted';
 import { RootDocument } from './RootDocument';
 
 export function RootComponent() {
-  if (env.VITE_NODE_ENV === 'production') {
-    const { data: response } = useQuery({
-      queryKey: ['geoblock'],
-      queryFn: () => getGeoblock(),
-      retry: false,
-    });
+  const { data: response } = useQuery({
+    queryKey: ['geoblock'],
+    queryFn: () => getGeoblock(),
+  });
 
-    if (response?.blocked) {
-      return (
-        <RootDocument>
-          <AccessRestricted />
-        </RootDocument>
-      );
-    }
+  if (response?.blocked) {
+    return (
+      <RootDocument>
+        <AccessRestricted />
+      </RootDocument>
+    );
   }
 
   return (
