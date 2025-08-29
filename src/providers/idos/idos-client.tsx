@@ -14,7 +14,7 @@ import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { useSharedStore } from '@/stores/shared-store';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const _idOSClient = createIDOSClient({
   nodeUrl: env.VITE_IDOS_NODE_URL,
@@ -23,6 +23,14 @@ const _idOSClient = createIDOSClient({
     url: env.VITE_IDOS_ENCLAVE_URL,
   },
 });
+
+const useCreatedClient = () =>
+  useQuery({
+    queryKey: ['created-client'],
+    queryFn: async () => {
+      return await _idOSClient.createClient();
+    },
+  });
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
@@ -33,6 +41,13 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
   const { resetStore } = useSharedStore();
+  const { data: createdClient } = useCreatedClient();
+
+  useEffect(() => {
+    if (createdClient) {
+      setClient(createdClient);
+    }
+  }, [createdClient]);
 
   const refresh = async () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -56,35 +71,36 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         setIsLoading(true);
       }
       try {
-        const newClient = await _idOSClient.createClient();
         let _signer: any = undefined;
-        if (walletConnector?.connectedWallet) {
-          if (walletConnector.connectedWallet.type === 'evm') {
-            _signer = evmSigner;
-          } else if (walletConnector.connectedWallet.type === 'near') {
-            const nearWallet = walletConnector.nearWallet;
-            if (nearWallet?.selector.isSignedIn()) {
-              _signer = await nearWallet.selector.wallet();
-            }
-          } else if (walletConnector.connectedWallet.type === 'stellar') {
-            const stellarWallet = walletConnector.stellarWallet;
-            if (
-              stellarWallet?.isConnected &&
-              stellarWallet.address &&
-              stellarWallet.kit
-            ) {
-              _signer = await createStellarSigner(
-                stellarWallet.publicKey as string,
-                stellarWallet.address as string,
-              );
-            }
-          } else if (walletConnector.connectedWallet.type === 'xrpl') {
-            const xrplWallet = walletConnector.xrplWallet;
-            if (xrplWallet?.isConnected && xrplWallet.address) {
-              _signer = GemWallet;
-            }
+        if (!walletConnector?.connectedWallet || !createdClient) return;
+        console.log('CLIENT SETUP', refreshTrigger);
+        const newClient = createdClient;
+        if (walletConnector.connectedWallet.type === 'evm') {
+          _signer = evmSigner;
+        } else if (walletConnector.connectedWallet.type === 'near') {
+          const nearWallet = walletConnector.nearWallet;
+          if (nearWallet?.selector.isSignedIn()) {
+            _signer = await nearWallet.selector.wallet();
+          }
+        } else if (walletConnector.connectedWallet.type === 'stellar') {
+          const stellarWallet = walletConnector.stellarWallet;
+          if (
+            stellarWallet?.isConnected &&
+            stellarWallet.address &&
+            stellarWallet.kit
+          ) {
+            _signer = await createStellarSigner(
+              stellarWallet.publicKey as string,
+              stellarWallet.address as string,
+            );
+          }
+        } else if (walletConnector.connectedWallet.type === 'xrpl') {
+          const xrplWallet = walletConnector.xrplWallet;
+          if (xrplWallet?.isConnected && xrplWallet.address) {
+            _signer = GemWallet;
           }
         }
+
         if (!_signer) {
           setClient(newClient);
           setWithSigner(undefined);
@@ -116,7 +132,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
     // Removing wallet dependencies to prevent reinitialization on connection failures
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletConnector?.connectedWallet, refreshTrigger]);
+  }, [walletConnector?.connectedWallet, refreshTrigger, createdClient]);
 
   if (isLoading) {
     return (

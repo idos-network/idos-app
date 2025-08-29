@@ -2,6 +2,7 @@ import { useIdOS } from '@/context/idos-context';
 import type { ConnectedWallet } from '@/context/wallet-connector-context';
 import { env } from '@/env';
 import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
+import { useStepperStore } from '@/stores/stepper-store';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 import { verifySignature } from '@/utils/verify-signatures';
@@ -33,6 +34,7 @@ export function useHandleSaveIdOSProfile({
   const { selector } = useNearWallet();
   const { signMessageAsync } = useSignMessage();
   const { idOSClient } = useIdOS();
+  const { nextStep } = useStepperStore();
 
   return useMutation({
     mutationFn: async () => {
@@ -51,6 +53,7 @@ export function useHandleSaveIdOSProfile({
       let publicKey;
 
       setState('waiting_signature');
+      debugger
 
       try {
         if (wallet.type === 'near') {
@@ -143,7 +146,7 @@ export function useHandleSaveIdOSProfile({
     },
     onSuccess: () => {
       setState('created');
-      onNext();
+      nextStep();
     },
     onError: () => {
       setState('idle');

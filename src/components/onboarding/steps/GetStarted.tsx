@@ -2,7 +2,8 @@ import { useToast } from '@/hooks/useToast';
 import CredentialIcon from '@/icons/credential';
 import KeyIcon from '@/icons/key';
 import PersonIcon from '@/icons/person';
-import { useEffect, useState } from 'react';
+import { useStepperStore } from '@/stores/stepper-store';
+import { useState } from 'react';
 import GetStartedTextBlock from '../components/GetStartedCards';
 import StepperButton from '../components/StepperButton';
 
@@ -10,25 +11,26 @@ interface GetStartedProps {
   onNext: () => void;
 }
 
-export default function GetStarted({ onNext }: GetStartedProps) {
+export default function GetStarted() {
+  const { nextStep } = useStepperStore();
   const { showToast } = useToast();
   const [hasShownToast, setHasShownToast] = useState(() => {
     return localStorage.getItem('onboardingToastShown') === 'true';
   });
 
-  useEffect(() => {
-    if (!hasShownToast) {
-      setTimeout(() => {
-        showToast({
-          type: 'onboarding',
-          message: '',
-          duration: 45000,
-        });
-        localStorage.setItem('onboardingToastShown', 'true');
-      }, 750);
-      setHasShownToast(true);
-    }
-  }, [showToast, hasShownToast]);
+  // useEffect(() => {
+  //   if (!hasShownToast) {
+  //     setTimeout(() => {
+  //       showToast({
+  //         type: 'onboarding',
+  //         message: '',
+  //         duration: 45000,
+  //       });
+  //       localStorage.setItem('onboardingToastShown', 'true');
+  //     }, 750);
+  //     setHasShownToast(true);
+  //   }
+  // }, [showToast, hasShownToast]);
 
   return (
     <div className="relative w-[910px] h-full rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
@@ -71,7 +73,7 @@ export default function GetStarted({ onNext }: GetStartedProps) {
           />
         </div>
         <div className="flex justify-center z-5">
-          <StepperButton onClick={onNext}>Create idOS profile</StepperButton>
+          <StepperButton onClick={nextStep}>Create idOS profile</StepperButton>
         </div>
       </div>
     </div>

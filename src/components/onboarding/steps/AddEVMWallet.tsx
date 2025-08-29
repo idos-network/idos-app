@@ -19,7 +19,7 @@ interface AddEVMWalletProps {
   onComplete?: () => void;
 }
 
-export default function AddEVMWallet({ onComplete }: AddEVMWalletProps) {
+export default function AddEVMWallet() {
   const { state, setState, error } = useStepState();
   const { refresh } = useIdOS();
   const { showToast } = useToast();
@@ -57,7 +57,7 @@ export default function AddEVMWallet({ onComplete }: AddEVMWalletProps) {
           }),
         );
         completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        onComplete?.();
+        // onComplete?.();
       }
       if (error) {
         setState('idle');

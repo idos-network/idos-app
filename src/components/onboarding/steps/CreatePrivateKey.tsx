@@ -4,6 +4,7 @@ import type { ConnectedWallet } from '@/context/wallet-connector-context';
 import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import EncryptedIcon from '@/icons/encrypted';
+import { useStepperStore } from '@/stores/stepper-store';
 import { useEffect } from 'react';
 import StepperButton from '../components/StepperButton';
 import TextBlock from '../components/TextBlock';
@@ -14,12 +15,13 @@ interface CreatePrivateKeyProps {
   onNext: () => void;
 }
 
-export default function CreatePrivateKey({ onNext }: CreatePrivateKeyProps) {
+export default function CreatePrivateKey() {
   const { state, setState, loading, setLoading, error } = useStepState();
+  const { nextStep } = useStepperStore();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const { mutate: handleSaveIdOSProfile } = useHandleSaveIdOSProfile({
-    onNext,
+    onNext: () => {},
     wallet: wallet as ConnectedWallet,
     setState,
     setLoading,

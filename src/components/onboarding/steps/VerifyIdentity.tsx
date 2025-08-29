@@ -9,6 +9,7 @@ import {
   getCurrentUserFromLocalStorage,
   updateUserStateInLocalStorage,
 } from '@/storage/idos-profile';
+import { useStepperStore } from '@/stores/stepper-store';
 import { useEffect } from 'react';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
@@ -20,8 +21,9 @@ interface VerifyIdentityProps {
   onNext: () => void;
 }
 
-export default function VerifyIdentity({ onNext }: VerifyIdentityProps) {
+export default function VerifyIdentity() {
   const { state, setState } = useStepState();
+  const { nextStep } = useStepperStore();
   const { refresh } = useIdOS();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
@@ -35,33 +37,31 @@ export default function VerifyIdentity({ onNext }: VerifyIdentityProps) {
   const publicKey = currentUser?.publicKey || '';
 
   useEffect(() => {
-    if (state === 'verified') {
-      updateUserStateInLocalStorage(userAddress, { humanVerified: true });
-      const handleProfile = async () => {
-        setState('creating');
-        const response = await handleCreateIdOSProfile(
-          userId,
-          userEncryptionPublicKey,
-          userAddress,
-          env.VITE_OWNERSHIP_PROOF_MESSAGE,
-          ownershipProofSignature,
-          publicKey,
-          walletType,
-        );
-        if (!response) {
-          updateUserStateInLocalStorage(userAddress, { humanVerified: false });
-          setState('idle');
-        } else {
-          await refresh();
-          onNext();
-        }
-      };
-      handleProfile();
-    }
+    updateUserStateInLocalStorage(userAddress, { humanVerified: true });
+    const handleProfile = async () => {
+      setState('creating');
+      const response = await handleCreateIdOSProfile(
+        userId,
+        userEncryptionPublicKey,
+        userAddress,
+        env.VITE_OWNERSHIP_PROOF_MESSAGE,
+        ownershipProofSignature,
+        publicKey,
+        walletType,
+      );
+      debugger;
+      if (!response) {
+        updateUserStateInLocalStorage(userAddress, { humanVerified: false });
+        setState('idle');
+      } else {
+        await refresh();
+        nextStep();
+      }
+    };
+    // handleProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     state,
-    onNext,
     userAddress,
     userId,
     userEncryptionPublicKey,

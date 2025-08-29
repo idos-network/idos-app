@@ -27,10 +27,7 @@ interface AddCredentialProps {
   onComplete?: () => void;
 }
 
-export default function AddCredential({
-  onNext,
-  onComplete,
-}: AddCredentialProps) {
+export default function AddCredential() {
   const { state, setState, loading, setLoading, error } = useStepState();
   const { refresh } = useIdOS();
   const idOSLoggedIn = useIdOSLoggedIn();
@@ -45,7 +42,7 @@ export default function AddCredential({
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
       if (state === 'created' && wallet && wallet.type !== 'evm') {
-        onNext();
+        // onNext();
       } else if (state === 'created' && wallet && wallet.type === 'evm') {
         // Safeguard against a user that has a profile
         // but has not been registered on the db
@@ -71,7 +68,7 @@ export default function AddCredential({
           }),
         );
         completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        onComplete?.();
+        // onComplete?.();
       } else if (error) {
         setState('idle');
       }

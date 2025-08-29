@@ -1,9 +1,10 @@
-import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
+import OnboardingStepper, {
+  useHasStakingCredential,
+  useUserWallets,
+} from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
 import Spinner from '@/components/Spinner';
 import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
-import { env } from '@/env';
-import { useSpecificCredential } from '@/hooks/useCredentials';
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useToast } from '@/hooks/useToast';
@@ -20,17 +21,18 @@ export function IdosProfile() {
   const hasProfile = useIdOSLoginStatus();
   const { isCompleted: profileQuestCompleted, isLoading: profileQuestLoading } =
     useProfileQuestCompleted();
-  const { hasCredential: hasStakingCredential, isLoading } =
-    useSpecificCredential(env.VITE_ISSUER_SIGNING_PUBLIC_KEY);
+  const { data: hasStakingCredential, isLoading } = useHasStakingCredential();
   const {
     mainEvm,
     isLoading: mainEvmLoading,
     refetch: refetchMainEvm,
   } = useUserMainEvm();
+  const { data: userWallets, isLoading: userWalletsLoading } = useUserWallets();
   const { showToast } = useToast();
   const queryClient = useQueryClient();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { referralCode, clearReferralCode } = useReferralCode();
+  console.log({ userWallets });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -43,6 +45,7 @@ export function IdosProfile() {
   const isStillLoading =
     idosLoading || profileQuestLoading || isLoading || mainEvmLoading;
 
+  console.log({ idosLoading, profileQuestLoading, isLoading, mainEvmLoading });
   const shouldShowProfile =
     isMounted &&
     profileQuestCompleted &&
@@ -51,7 +54,7 @@ export function IdosProfile() {
     hasStakingCredential &&
     !!mainEvm;
 
-  const shouldShowLoading = !isMounted || isStillLoading;
+  const shouldShowLoading = isStillLoading;
 
   const handleOnboardingComplete = useCallback(() => {
     setOnboardingCompleted(true);
@@ -101,6 +104,7 @@ export function IdosProfile() {
     referralCode,
     clearReferralCode,
   ]);
+  console.log({ shouldShowLoading });
 
   return (
     <div className="flex items-start justify-center">
@@ -129,7 +133,7 @@ export function IdosProfile() {
         </div>
       ) : (
         <div className="container mx-auto flex justify-center pt-10">
-          <OnboardingStepper onComplete={handleOnboardingComplete} />
+          <OnboardingStepper />
         </div>
       )}
     </div>
