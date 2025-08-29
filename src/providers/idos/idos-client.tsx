@@ -3,6 +3,7 @@ import { type PropsWithChildren, useContext, useEffect } from 'react';
 
 import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { handleSaveUserWallets } from '@/handlers/user-wallets';
+import { useAuth } from '@/hooks/useAuth';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { _idOSClient, useIdosStore } from '@/stores/idosStore';
@@ -13,6 +14,7 @@ import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 const useSigner = () => {
   const walletConnector = useContext(WalletConnectorContext);
   const evmSigner = useEthersSigner();
+  const { authenticate, isAuthenticated } = useAuth();
 
   const enabledCondition = walletConnector?.isConnected
     ? walletConnector?.connectedWallet?.type === 'evm'
@@ -101,6 +103,10 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
             saveNewUserToLocalStorage(userPayload as any);
             handleSaveUserWallets(client.user.id, walletsArray);
             setIdOSClient(client);
+
+            if (!isAuthenticated) {
+              await authenticate();
+            }
           } else {
             setIdOSClient(_withSigner);
           }

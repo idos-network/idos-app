@@ -7,6 +7,7 @@ import {
 import { useNearWallet } from '@/hooks/useNearWallet';
 import { useRainbowKit } from '@/hooks/useRainbowKit';
 import { useXrplWallet } from '@/hooks/useXRPLWallet';
+import { authService } from '@/services/auth';
 import { type PropsWithChildren, useMemo } from 'react';
 
 export function WalletConnectorProvider({ children }: PropsWithChildren) {
@@ -36,7 +37,7 @@ export function WalletConnectorProvider({ children }: PropsWithChildren) {
       if (xrplWallet.isConnected) {
         promises.push(xrplWallet.disconnect());
       }
-
+      promises.push(Promise.resolve(authService.logout()));
       await Promise.all(promises);
     };
     let connectedWallet: ConnectedWallet | null = null;
