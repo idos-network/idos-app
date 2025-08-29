@@ -1,24 +1,48 @@
-import type { Config, Context } from '@netlify/functions';
 import { getUserReferralCount } from '@/db/user';
 import { ValidationError } from '@/utils/errors';
+import { generateReferralCode } from '@/utils/quests';
+import type { Config, Context } from '@netlify/functions';
+import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 
-export default async (_request: Request, context: Context) => {
-  const { referralCode } = context.params;
+async function getUserReferralCountHandler(
+  request: AuthenticatedRequest,
+  context: Context,
+) {
+  const { userId } = context.params;
 
-  if (!referralCode) {
+  if (!userId) {
     throw new ValidationError('Referral code is required');
   }
 
+  if (request.userId !== userId) {
+    return new Response(
+      JSON.stringify({
+        error: 'Unauthorized to view referral count for another user',
+      }),
+      {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+  }
+
   try {
-    const user = await getUserReferralCount(referralCode);
-    return new Response(JSON.stringify(user), { status: 200 });
+    const count = await getUserReferralCount(
+      generateReferralCode(request.userId),
+    );
+    return new Response(JSON.stringify(count), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Error in user-referral-count:', error);
     throw error;
   }
-};
+}
+
+export default withAuth(getUserReferralCountHandler);
 
 export const config: Config = {
-  path: '/api/user/:referralCode/referral-count',
+  path: '/api/user/:userId/referral-count',
   method: 'GET',
 };

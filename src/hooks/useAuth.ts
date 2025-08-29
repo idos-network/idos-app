@@ -25,7 +25,7 @@ export function useAuth() {
       setIsAuthenticated(authenticated);
 
       if (authenticated) {
-        const tokens = localStorage.getItem('auth_tokens');
+        const tokens = localStorage.getItem('auth_jwts');
         if (tokens) {
           try {
             const parsedTokens: AuthTokens = JSON.parse(tokens);
@@ -46,7 +46,7 @@ export function useAuth() {
     checkAuth();
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'auth_tokens') {
+      if (e.key === 'auth_jwts') {
         checkAuth();
       }
     };
