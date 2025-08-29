@@ -5,6 +5,7 @@ import {
   integer,
   pgMaterializedView,
   pgTable,
+  text,
   timestamp,
   unique,
   varchar,
@@ -112,6 +113,32 @@ export const referrals = pgTable(
   ],
 );
 
+export const userTokens = pgTable(
+  'user_tokens',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    userId: varchar('userId', { length: 36 }).default(''),
+    publicAddress: varchar('publicAddress', { length: 255 }).notNull(),
+    walletType: varchar('walletType').notNull(),
+    accessToken: text('accessToken').notNull(),
+    refreshToken: text('refreshToken').notNull(),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index('user_tokens_user_id_idx').on(table.userId),
+    index('user_tokens_public_address_idx').on(table.publicAddress),
+    index('user_tokens_wallet_type_idx').on(table.walletType),
+    index('user_tokens_refresh_token_idx').on(table.refreshToken),
+    unique('user_tokens_user_address_unique').on(
+      table.userId,
+      table.publicAddress,
+    ),
+  ],
+);
+
 export const leaderboardView = pgMaterializedView('leaderboard_view', {
   userId: varchar('userId', { length: 36 }).primaryKey(),
   name: varchar('name'),
@@ -189,6 +216,7 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
 export const usersRelations = relations(users, ({ many }) => ({
   userQuests: many(userQuests),
   userWallets: many(userWallets),
+  userTokens: many(userTokens),
 }));
 
 export const referralsRelations = relations(referrals, ({ one }) => ({
@@ -218,4 +246,11 @@ export const userWalletsRelations = relations(userWallets, ({ one }) => ({
 
 export const questsRelations = relations(quests, ({ many }) => ({
   userQuests: many(userQuests),
+}));
+
+export const userTokensRelations = relations(userTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [userTokens.userId],
+    references: [users.id],
+  }),
 }));
