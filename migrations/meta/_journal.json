@@ -15,6 +15,13 @@
       "when": 1756300608685,
       "tag": "0001_cute_kylun",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756468748900,
+      "tag": "0002_huge_the_hunter",
+      "breakpoints": true
     }
   ]
 }

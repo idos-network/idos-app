@@ -3,6 +3,7 @@ import {
   index,
   integer,
   pgTable,
+  text,
   timestamp,
   unique,
   varchar,
@@ -63,10 +64,38 @@ export const userWallets = pgTable(
   ],
 );
 
+export const userTokens = pgTable(
+  'user_tokens',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    userId: varchar('userId', { length: 36 }).default(''),
+    publicAddress: varchar('publicAddress', { length: 255 }).notNull(),
+    walletType: varchar('walletType').notNull(),
+    accessToken: text('accessToken').notNull(),
+    refreshToken: text('refreshToken').notNull(),
+    expiresAt: timestamp('expiresAt').notNull(),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index('user_tokens_user_id_idx').on(table.userId),
+    index('user_tokens_public_address_idx').on(table.publicAddress),
+    index('user_tokens_wallet_type_idx').on(table.walletType),
+    index('user_tokens_refresh_token_idx').on(table.refreshToken),
+    unique('user_tokens_user_address_unique').on(
+      table.userId,
+      table.publicAddress,
+    ),
+  ],
+);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   userQuests: many(userQuests),
   userWallets: many(userWallets),
+  userTokens: many(userTokens),
 }));
 
 export const userQuestsRelations = relations(userQuests, ({ one }) => ({
@@ -79,6 +108,13 @@ export const userQuestsRelations = relations(userQuests, ({ one }) => ({
 export const userWalletsRelations = relations(userWallets, ({ one }) => ({
   user: one(users, {
     fields: [userWallets.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userTokensRelations = relations(userTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [userTokens.userId],
     references: [users.id],
   }),
 }));
