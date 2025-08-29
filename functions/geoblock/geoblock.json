@@ -1,188 +1,120 @@
 {
   "countries": [
     {
-      "name": "Australia",
-      "code": "AU"
+      "name": "Afghanistan",
+      "code": "AF"
     },
     {
-      "name": "Canada",
-      "code": "CA"
+      "name": "Algeria",
+      "code": "DZ"
     },
     {
-      "name": "Austria",
-      "code": "AT"
+      "name": "Angola",
+      "code": "AO"
     },
     {
-      "name": "Belgium",
-      "code": "BE"
+      "name": "Bolivia",
+      "code": "BO"
     },
     {
       "name": "Bulgaria",
       "code": "BG"
     },
     {
-      "name": "Croatia",
-      "code": "HR"
+      "name": "Burkina Faso",
+      "code": "BF"
     },
     {
-      "name": "Republic of Cyprus",
-      "code": "CY"
+      "name": "Cameroon",
+      "code": "CM"
     },
     {
-      "name": "Czech Republic",
-      "code": "CZ"
+      "name": "Democratic Republic of the Congo",
+      "code": "CD"
     },
     {
-      "name": "Denmark",
-      "code": "DK"
-    },
-    {
-      "name": "Estonia",
-      "code": "EE"
-    },
-    {
-      "name": "Finland",
-      "code": "FI"
-    },
-    {
-      "name": "France",
-      "code": "FR"
-    },
-    {
-      "name": "Germany",
-      "code": "DE"
-    },
-    {
-      "name": "Greece",
-      "code": "GR"
-    },
-    {
-      "name": "Hungary",
-      "code": "HU"
-    },
-    {
-      "name": "Ireland",
-      "code": "IE"
-    },
-    {
-      "name": "Italy",
-      "code": "IT"
-    },
-    {
-      "name": "Latvia",
-      "code": "LV"
-    },
-    {
-      "name": "Lithuania",
-      "code": "LT"
-    },
-    {
-      "name": "Luxembourg",
-      "code": "LU"
-    },
-    {
-      "name": "Malta",
-      "code": "MT"
-    },
-    {
-      "name": "Netherlands",
-      "code": "NL"
-    },
-    {
-      "name": "Poland",
-      "code": "PL"
-    },
-    {
-      "name": "Portugal",
-      "code": "PT"
-    },
-    {
-      "name": "Romania",
-      "code": "RO"
-    },
-    {
-      "name": "Slovakia",
-      "code": "SK"
-    },
-    {
-      "name": "Slovenia",
-      "code": "SI"
-    },
-    {
-      "name": "Spain",
-      "code": "ES"
-    },
-    {
-      "name": "Sweden",
-      "code": "SE"
-    },
-    {
-      "name": "Hong Kong",
-      "code": "HK"
-    },
-    {
-      "name": "Japan",
-      "code": "JP"
-    },
-    {
-      "name": "Singapore",
-      "code": "SG"
-    },
-    {
-      "name": "United Kingdom",
-      "code": "GB"
-    },
-    {
-      "name": "United States of America",
-      "code": "US"
-    },
-    {
-      "name": "Belarus",
-      "code": "BY"
-    },
-    {
-      "name": "Cuba",
-      "code": "CU"
+      "name": "Haiti",
+      "code": "HT"
     },
     {
       "name": "Iran",
       "code": "IR"
     },
     {
-      "name": "Iraq",
-      "code": "IQ"
-    },
-    {
-      "name": "Liberia",
-      "code": "LR"
-    },
-    {
       "name": "Ivory Coast",
       "code": "CI"
+    },
+    {
+      "name": "Kenya",
+      "code": "KE"
+    },
+    {
+      "name": "Laos",
+      "code": "LA"
+    },
+    {
+      "name": "Lebanon",
+      "code": "LB"
+    },
+    {
+      "name": "Mali",
+      "code": "ML"
+    },
+    {
+      "name": "Monaco",
+      "code": "MC"
+    },
+    {
+      "name": "Mozambique",
+      "code": "MZ"
+    },
+    {
+      "name": "Myanmar",
+      "code": "MM"
+    },
+    {
+      "name": "Namibia",
+      "code": "NA"
+    },
+    {
+      "name": "Nepal",
+      "code": "NP"
     },
     {
       "name": "North Korea",
       "code": "KP"
     },
     {
-      "name": "Myanmarrrr",
-      "code": "MM"
-    },
-    {
-      "name": "Algeriaaa",
-      "code": "DZ"
-    },
-    {
-      "name": "Russian Federation",
-      "code": "RU"
-    },
-    {
-      "name": "Sudan",
-      "code": "SD"
+      "name": "South Sudan",
+      "code": "SS"
     },
     {
       "name": "Syria",
       "code": "SY"
+    },
+    {
+      "name": "Tanzania",
+      "code": "TZ"
+    },
+    {
+      "name": "Trinidad and Tobago",
+      "code": "TT"
+    },
+    {
+      "name": "Vanuatu",
+      "code": "VU"
+    },
+    {
+      "name": "Venezuela",
+      "code": "VE"
+    },
+    {
+      "name": "Virgin Islands (UK)",
+      "code": "VG"
+    },
+    {
+      "name": "Yemen",
+      "code": "YE"
     }
   ],
   "security": {
