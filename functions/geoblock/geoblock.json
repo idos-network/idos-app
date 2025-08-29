@@ -1,0 +1,133 @@
+{
+  "countries": [
+    {
+      "name": "Afghanistan",
+      "code": "AF"
+    },
+    {
+      "name": "Algeria",
+      "code": "DZ"
+    },
+    {
+      "name": "Angola",
+      "code": "AO"
+    },
+    {
+      "name": "Bolivia",
+      "code": "BO"
+    },
+    {
+      "name": "Bulgaria",
+      "code": "BG"
+    },
+    {
+      "name": "Burkina Faso",
+      "code": "BF"
+    },
+    {
+      "name": "Cameroon",
+      "code": "CM"
+    },
+    {
+      "name": "Democratic Republic of the Congo",
+      "code": "CD"
+    },
+    {
+      "name": "Haiti",
+      "code": "HT"
+    },
+    {
+      "name": "Iran",
+      "code": "IR"
+    },
+    {
+      "name": "Ivory Coast",
+      "code": "CI"
+    },
+    {
+      "name": "Kenya",
+      "code": "KE"
+    },
+    {
+      "name": "Laos",
+      "code": "LA"
+    },
+    {
+      "name": "Lebanon",
+      "code": "LB"
+    },
+    {
+      "name": "Mali",
+      "code": "ML"
+    },
+    {
+      "name": "Monaco",
+      "code": "MC"
+    },
+    {
+      "name": "Mozambique",
+      "code": "MZ"
+    },
+    {
+      "name": "Myanmar",
+      "code": "MM"
+    },
+    {
+      "name": "Namibia",
+      "code": "NA"
+    },
+    {
+      "name": "Nepal",
+      "code": "NP"
+    },
+    {
+      "name": "North Korea",
+      "code": "KP"
+    },
+    {
+      "name": "South Sudan",
+      "code": "SS"
+    },
+    {
+      "name": "Syria",
+      "code": "SY"
+    },
+    {
+      "name": "Tanzania",
+      "code": "TZ"
+    },
+    {
+      "name": "Trinidad and Tobago",
+      "code": "TT"
+    },
+    {
+      "name": "Vanuatu",
+      "code": "VU"
+    },
+    {
+      "name": "Venezuela",
+      "code": "VE"
+    },
+    {
+      "name": "Virgin Islands (UK)",
+      "code": "VG"
+    },
+    {
+      "name": "Yemen",
+      "code": "YE"
+    }
+  ],
+  "security": {
+    "is_abuser": true,
+    "is_attacker": true,
+    "is_bogon": true,
+    "is_cloud_provider": false,
+    "is_proxy": false,
+    "is_relay": false,
+    "is_tor": false,
+    "is_tor_exit": false,
+    "is_vpn": false,
+    "is_anonymous": false,
+    "is_threat": true
+  }
+}
