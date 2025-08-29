@@ -5,23 +5,16 @@ function WalletConnectorButton({
   label,
   iconSrc,
   evmWallet = false,
-  disabled = false,
 }: {
   onClick: () => void;
   label: string;
   iconSrc?: string;
   evmWallet?: boolean;
-  disabled?: boolean;
 }) {
   return (
     <button
       onClick={onClick}
-      disabled={disabled}
-      className={`group flex w-[399px] h-12 justify-between items-center font-semibold py-2 px-6 rounded-xl ${
-        disabled
-          ? 'bg-neutral-700/60 text-neutral-400 cursor-not-allowed'
-          : 'bg-neutral-800/60 hover:bg-neutral-800 text-neutral-50 cursor-pointer'
-      }`}
+      className="group flex w-[399px] h-12 justify-between items-center font-semibold py-2 px-6 rounded-xl bg-neutral-800/60 hover:bg-neutral-800 text-neutral-50 cursor-pointer"
     >
       <span
         className="font-normal text-base leading-6 tracking-normal"
@@ -53,7 +46,7 @@ function WalletConnectorButton({
   );
 }
 
-export function WalletConnector({ disabled = false }: { disabled?: boolean }) {
+export function WalletConnector() {
   const walletConnector = useWalletConnector();
 
   return (
@@ -62,28 +55,24 @@ export function WalletConnector({ disabled = false }: { disabled?: boolean }) {
         onClick={() => walletConnector.connectEthereum()}
         label="Connect an EVM Wallet"
         evmWallet={true}
-        disabled={disabled}
       />
 
       <WalletConnectorButton
         onClick={() => walletConnector.connectNear()}
         label="Connect with NEAR"
         iconSrc="/near.png"
-        disabled={disabled}
       />
 
       <WalletConnectorButton
         onClick={() => walletConnector.connectStellar()}
         label="Connect with Stellar"
         iconSrc="/stellar.png"
-        disabled={disabled}
       />
 
       <WalletConnectorButton
         onClick={() => walletConnector.connectXRPL()}
         label="Connect with XRPL"
         iconSrc="/xrpl.png"
-        disabled={disabled}
       />
     </div>
   );
