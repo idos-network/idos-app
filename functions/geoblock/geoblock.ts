@@ -3,6 +3,7 @@ import {
   InMemoryCache,
   IpregistryClient,
   IpregistryOptions,
+  UserAgents,
 } from '@ipregistry/client';
 import type { Config, Context } from '@netlify/functions';
 import geoblockConfigData from './geoblock.json';
@@ -16,15 +17,20 @@ const client: IpregistryClient = new IpregistryClient(
 
 export const geoblockConfig: GeoblockConfig = geoblockConfigData;
 
-export default async (_request: Request, context: Context) => {
+export default async (request: Request, context: Context) => {
   if (process.env.NODE_ENV !== 'production') {
     return new Response(JSON.stringify({ blocked: false }), {
       status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
   }
+
+  const userAgent = request.headers.get('user-agent') || '';
+  if (UserAgents.isBot(userAgent)) {
+    return new Response(JSON.stringify({ blocked: true }), {
+      status: 200,
+    });
+  }
+
   const ip = context.ip;
 
   try {
@@ -40,9 +46,6 @@ export default async (_request: Request, context: Context) => {
 
     return new Response(JSON.stringify({ blocked: isBlocked }), {
       status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
   } catch (error) {
     console.error('Unexpected IPRegistry error:', error);
