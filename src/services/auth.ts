@@ -5,7 +5,6 @@ import { z } from 'zod';
 const authTokensSchema = z.object({
   accessToken: z.string(),
   refreshToken: z.string(),
-  expiresAt: z.string(),
   userId: z.string().optional(),
   publicAddress: z.string(),
 });
@@ -39,7 +38,7 @@ class AuthService {
 
   private loadTokensFromStorage(): void {
     try {
-      const storedTokens = localStorage.getItem('auth_tokens');
+      const storedTokens = localStorage.getItem('auth_jwts');
       if (storedTokens) {
         const tokens: AuthTokens = JSON.parse(storedTokens);
         this.accessToken = tokens.accessToken;
@@ -53,7 +52,7 @@ class AuthService {
 
   public saveTokensToStorage(tokens: AuthTokens): void {
     try {
-      localStorage.setItem('auth_tokens', JSON.stringify(tokens));
+      localStorage.setItem('auth_jwts', JSON.stringify(tokens));
       this.accessToken = tokens.accessToken;
       this.refreshToken = tokens.refreshToken;
     } catch (error) {
@@ -64,7 +63,7 @@ class AuthService {
   private clearTokens(): void {
     this.accessToken = null;
     this.refreshToken = null;
-    localStorage.removeItem('auth_tokens');
+    localStorage.removeItem('auth_jwts');
   }
 
   public async getAuthMessage(

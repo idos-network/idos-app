@@ -1,5 +1,5 @@
 {
-  "id": "f45ced5f-ff2d-4625-ac47-c3139e871e94",
+  "id": "63ae271e-defd-4c55-ad10-d027b56a5cc1",
   "prevId": "d50c1dcb-184d-4d79-9714-390c074151ab",
   "version": "7",
   "dialect": "postgresql",
@@ -161,12 +161,6 @@
         "refreshToken": {
           "name": "refreshToken",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "expiresAt": {
-          "name": "expiresAt",
-          "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },

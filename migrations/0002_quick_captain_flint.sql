@@ -5,7 +5,6 @@ CREATE TABLE "user_tokens" (
 	"walletType" varchar NOT NULL,
 	"accessToken" text NOT NULL,
 	"refreshToken" text NOT NULL,
-	"expiresAt" timestamp NOT NULL,
 	"createdAt" timestamp DEFAULT now(),
 	"updatedAt" timestamp DEFAULT now(),
 	CONSTRAINT "user_tokens_user_address_unique" UNIQUE("userId","publicAddress")

@@ -73,7 +73,6 @@ export const userTokens = pgTable(
     walletType: varchar('walletType').notNull(),
     accessToken: text('accessToken').notNull(),
     refreshToken: text('refreshToken').notNull(),
-    expiresAt: timestamp('expiresAt').notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt')
       .defaultNow()

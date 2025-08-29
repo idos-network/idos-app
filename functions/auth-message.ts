@@ -24,10 +24,8 @@ export default async function handler(request: Request, _context: Context) {
       );
     }
 
-    // Generate a unique nonce
     const nonce = randomBytes(32).toString('hex');
 
-    // Create the message to sign
     const message = `Sign this message to authenticate with idOS App.\n\nAddress: ${publicAddress}\nNonce: ${nonce}\nTimestamp: ${Date.now()}`;
 
     // TODO: save message to db

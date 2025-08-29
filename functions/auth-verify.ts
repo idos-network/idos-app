@@ -4,11 +4,11 @@ import { verifySignature } from '@/utils/verify-signatures';
 import type { Config, Context } from '@netlify/functions';
 import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
-
-const JWT_SECRET =
-  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-const JWT_EXPIRES_IN = '10s'; // TODO: change to 1h
-const REFRESH_TOKEN_EXPIRES_IN = '60'; //TODO: change to 7d
+import {
+  JWT_EXPIRES_IN,
+  JWT_SECRET,
+  REFRESH_TOKEN_EXPIRES_IN,
+} from './utils/constants';
 
 export default async function handler(request: Request, _context: Context) {
   if (request.method !== 'POST') {
@@ -21,14 +21,6 @@ export default async function handler(request: Request, _context: Context) {
   try {
     const { publicAddress, publicKey, signature, message, nonce, walletType } =
       await request.json();
-    console.log(
-      publicAddress,
-      publicKey,
-      signature,
-      message,
-      nonce,
-      walletType,
-    );
 
     if (
       !publicAddress ||
@@ -111,10 +103,6 @@ export default async function handler(request: Request, _context: Context) {
       { expiresIn: REFRESH_TOKEN_EXPIRES_IN },
     );
 
-    const expiresAt = new Date();
-    const secondsToAdd = parseInt(REFRESH_TOKEN_EXPIRES_IN);
-    expiresAt.setSeconds(expiresAt.getSeconds() + secondsToAdd);
-
     const existingToken = await db
       .select()
       .from(userTokens)
@@ -128,7 +116,6 @@ export default async function handler(request: Request, _context: Context) {
           userId,
           accessToken,
           refreshToken,
-          expiresAt,
           updatedAt: new Date(),
         })
         .where(eq(userTokens.id, existingToken[0].id));
@@ -139,7 +126,6 @@ export default async function handler(request: Request, _context: Context) {
         walletType,
         accessToken,
         refreshToken,
-        expiresAt,
       });
     }
 
@@ -147,7 +133,6 @@ export default async function handler(request: Request, _context: Context) {
       JSON.stringify({
         accessToken,
         refreshToken,
-        expiresAt: expiresAt.toISOString(),
         walletType,
         publicAddress,
       }),
