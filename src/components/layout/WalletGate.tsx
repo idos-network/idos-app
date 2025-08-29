@@ -53,6 +53,7 @@ export default function WalletGate() {
             <div className="text-sm text-neutral-400">
               I agree to the{' '}
               <a
+                // TODO: Add user agreement link
                 href="/user-agreement"
                 className="text-aquamarine-600 hover:text-aquamarine-400 underline"
                 target="_blank"
@@ -62,6 +63,7 @@ export default function WalletGate() {
               </a>{' '}
               and confirm I read the{' '}
               <a
+                // TODO: Add privacy policy link
                 href="/privacy-policy"
                 className="text-aquamarine-600 hover:text-aquamarine-400 underline"
                 target="_blank"
@@ -71,6 +73,7 @@ export default function WalletGate() {
               </a>{' '}
               and{' '}
               <a
+                // TODO: Add transparency document link
                 href="/transparency-document"
                 className="text-aquamarine-600 hover:text-aquamarine-400 underline"
                 target="_blank"
