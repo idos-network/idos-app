@@ -6,6 +6,7 @@ import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import { encode as utf8Encode } from '@stablelib/utf8';
 import nacl from 'tweetnacl';
 import { z } from 'zod';
+import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 
 // TODO: update for idOS App launch
 export const IDDocumentTypeSchema = z.enum([
@@ -15,13 +16,20 @@ export const IDDocumentTypeSchema = z.enum([
 ] as const);
 export type IDDocumentType = z.infer<typeof IDDocumentTypeSchema>;
 
-export default async (request: Request, _context: Context) => {
+async function idosCredentialHandler(
+  request: AuthenticatedRequest,
+  _context: Context,
+) {
   if (request.method !== 'POST') {
     return new Response(
       JSON.stringify({
         success: false,
         message: 'Method not allowed. Use POST.',
       }),
+      {
+        status: 405,
+        headers: { 'Content-Type': 'application/json' },
+      },
     );
   }
 
@@ -31,6 +39,19 @@ export default async (request: Request, _context: Context) => {
       userEncryptionPublicKey: string;
       userId: string;
     };
+
+  if (request.userId !== userId) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'Unauthorized to create credential for another user',
+      }),
+      {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+  }
 
   const idOSIssuer = await idOSIssuerClass.init({
     nodeUrl: process.env.IDOS_NODE_URL as string,
@@ -150,8 +171,13 @@ export default async (request: Request, _context: Context) => {
     },
   );
 
-  return new Response(JSON.stringify(result), { status: 200 });
-};
+  return new Response(JSON.stringify(result), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+export default withAuth(idosCredentialHandler);
 
 export const config: Config = {
   path: '/api/idos-credential',
