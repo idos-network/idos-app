@@ -19,7 +19,6 @@ async function completeUserQuestHandler(
     const { questName, userId } =
       completeUserQuestRequestSchema.parse(requestBody);
 
-    // Verify that the authenticated user is completing their own quest
     if (request.userId !== userId) {
       return new Response(
         JSON.stringify({

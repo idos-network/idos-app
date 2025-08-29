@@ -14,7 +14,6 @@ import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 const useSigner = () => {
   const walletConnector = useContext(WalletConnectorContext);
   const evmSigner = useEthersSigner();
-  const { authenticate, isAuthenticated } = useAuth();
 
   const enabledCondition = walletConnector?.isConnected
     ? walletConnector?.connectedWallet?.type === 'evm'
@@ -73,6 +72,7 @@ const useSigner = () => {
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const { data: signer, isLoading: isLoadingSigner } = useSigner();
+  const { authenticate, isAuthenticated } = useAuth();
 
   const { idOSClient, setIdOSClient, initializing, setSettingSigner } =
     useIdosStore();
@@ -102,11 +102,12 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
             saveNewUserToLocalStorage(userPayload as any);
             handleSaveUserWallets(client.user.id, walletsArray);
-            setIdOSClient(client);
 
             if (!isAuthenticated) {
               await authenticate();
             }
+
+            setIdOSClient(client);
           } else {
             setIdOSClient(_withSigner);
           }
