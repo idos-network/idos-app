@@ -3,10 +3,11 @@ import { userTokens } from '@/db/schema';
 import type { Config, Context } from '@netlify/functions';
 import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
-
-const JWT_SECRET =
-  process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-const JWT_EXPIRES_IN = '1h';
+import {
+  JWT_EXPIRES_IN,
+  JWT_SECRET,
+  REFRESH_TOKEN_EXPIRES_IN,
+} from './utils/constants';
 
 export default async function handler(request: Request, _context: Context) {
   if (request.method !== 'POST') {
@@ -95,18 +96,14 @@ export default async function handler(request: Request, _context: Context) {
         type: 'refresh',
       },
       JWT_SECRET,
-      { expiresIn: '7d' },
+      { expiresIn: REFRESH_TOKEN_EXPIRES_IN },
     );
-
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // 1 hour from now
 
     await db
       .update(userTokens)
       .set({
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        expiresAt,
         updatedAt: new Date(),
       })
       .where(eq(userTokens.id, tokenRecord[0].id));
@@ -115,7 +112,6 @@ export default async function handler(request: Request, _context: Context) {
       JSON.stringify({
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        expiresAt: expiresAt.toISOString(),
         publicAddress,
       }),
       {

@@ -29,7 +29,6 @@ export async function verifyAuth(
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
-    // Verify the JWT token
     let decoded;
     try {
       decoded = jwt.verify(token, JWT_SECRET) as any;
@@ -54,12 +53,6 @@ export async function verifyAuth(
       return null;
     }
 
-    console.log('JWT decoded successfully:', {
-      userId,
-      publicAddress,
-      type: decoded.type,
-    });
-
     const tokenRecord = await db
       .select()
       .from(userTokens)
@@ -73,11 +66,6 @@ export async function verifyAuth(
 
     if (tokenRecord.length === 0) {
       console.error('Token not found in database for address:', publicAddress);
-      return null;
-    }
-
-    if (new Date() > tokenRecord[0].expiresAt) {
-      console.error('Token expired for address:', publicAddress);
       return null;
     }
 
