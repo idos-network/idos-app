@@ -1,6 +1,7 @@
 import { WalletConnector } from '@/components/wallets/WalletConnector';
-import { useEffect } from 'react';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
+import { useEffect, useState } from 'react';
+import CheckIcon from '../icons/check';
 
 function XRPLAutoConnect() {
   const walletConnector = useWalletConnector();
@@ -16,6 +17,8 @@ function XRPLAutoConnect() {
 }
 
 export default function WalletGate() {
+  const [isAccepted, setIsAccepted] = useState(false);
+
   return (
     <div className="grid grid-cols-2 min-h-screen bg-neutral-950">
       <XRPLAutoConnect />
@@ -33,7 +36,51 @@ export default function WalletGate() {
           <span className="mb-4 text-base font-semibold text-center text-idos-seasalt">
             Connect your wallet to get started.
           </span>
-          <WalletConnector />
+          <WalletConnector disabled={!isAccepted} />
+          <div className="flex items-center justify-center gap-3 mt-10 mx-10">
+            <div className="relative flex items-center justify-center">
+              <input
+                type="checkbox"
+                id="accept-terms"
+                checked={isAccepted}
+                onChange={(e) => setIsAccepted(e.target.checked)}
+                className="appearance-none w-5 h-5 text-neutral-950 bg-neutral-800 border border-aquamarine-500 rounded hover:border-aquamarine-500 hover:bg-aquamarine-950 focus:ring-aquamarine-500 focus:ring-1 checked:bg-aquamarine-400 checked:border-aquamarine-500"
+              />
+              {isAccepted && (
+                <CheckIcon className="absolute inset-0 w-5 h-5 text-neutral-950 pointer-events-none" />
+              )}
+            </div>
+            <div className="text-sm text-neutral-400">
+              I agree to the{' '}
+              <a
+                href="/user-agreement"
+                className="text-aquamarine-600 hover:text-aquamarine-400 underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                User Agreement
+              </a>{' '}
+              and confirm I read the{' '}
+              <a
+                href="/privacy-policy"
+                className="text-aquamarine-600 hover:text-aquamarine-400 underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy Policy
+              </a>{' '}
+              and{' '}
+              <a
+                href="/transparency-document"
+                className="text-aquamarine-600 hover:text-aquamarine-400 underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Transparency Document
+              </a>
+              .
+            </div>
+          </div>
         </div>
       </div>
     </div>
