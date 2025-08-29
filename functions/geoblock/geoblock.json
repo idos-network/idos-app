@@ -1,0 +1,201 @@
+{
+  "countries": [
+    {
+      "name": "Australia",
+      "code": "AU"
+    },
+    {
+      "name": "Canada",
+      "code": "CA"
+    },
+    {
+      "name": "Austria",
+      "code": "AT"
+    },
+    {
+      "name": "Belgium",
+      "code": "BE"
+    },
+    {
+      "name": "Bulgaria",
+      "code": "BG"
+    },
+    {
+      "name": "Croatia",
+      "code": "HR"
+    },
+    {
+      "name": "Republic of Cyprus",
+      "code": "CY"
+    },
+    {
+      "name": "Czech Republic",
+      "code": "CZ"
+    },
+    {
+      "name": "Denmark",
+      "code": "DK"
+    },
+    {
+      "name": "Estonia",
+      "code": "EE"
+    },
+    {
+      "name": "Finland",
+      "code": "FI"
+    },
+    {
+      "name": "France",
+      "code": "FR"
+    },
+    {
+      "name": "Germany",
+      "code": "DE"
+    },
+    {
+      "name": "Greece",
+      "code": "GR"
+    },
+    {
+      "name": "Hungary",
+      "code": "HU"
+    },
+    {
+      "name": "Ireland",
+      "code": "IE"
+    },
+    {
+      "name": "Italy",
+      "code": "IT"
+    },
+    {
+      "name": "Latvia",
+      "code": "LV"
+    },
+    {
+      "name": "Lithuania",
+      "code": "LT"
+    },
+    {
+      "name": "Luxembourg",
+      "code": "LU"
+    },
+    {
+      "name": "Malta",
+      "code": "MT"
+    },
+    {
+      "name": "Netherlands",
+      "code": "NL"
+    },
+    {
+      "name": "Poland",
+      "code": "PL"
+    },
+    {
+      "name": "Portugal",
+      "code": "PT"
+    },
+    {
+      "name": "Romania",
+      "code": "RO"
+    },
+    {
+      "name": "Slovakia",
+      "code": "SK"
+    },
+    {
+      "name": "Slovenia",
+      "code": "SI"
+    },
+    {
+      "name": "Spain",
+      "code": "ES"
+    },
+    {
+      "name": "Sweden",
+      "code": "SE"
+    },
+    {
+      "name": "Hong Kong",
+      "code": "HK"
+    },
+    {
+      "name": "Japan",
+      "code": "JP"
+    },
+    {
+      "name": "Singapore",
+      "code": "SG"
+    },
+    {
+      "name": "United Kingdom",
+      "code": "GB"
+    },
+    {
+      "name": "United States of America",
+      "code": "US"
+    },
+    {
+      "name": "Belarus",
+      "code": "BY"
+    },
+    {
+      "name": "Cuba",
+      "code": "CU"
+    },
+    {
+      "name": "Iran",
+      "code": "IR"
+    },
+    {
+      "name": "Iraq",
+      "code": "IQ"
+    },
+    {
+      "name": "Liberia",
+      "code": "LR"
+    },
+    {
+      "name": "Ivory Coast",
+      "code": "CI"
+    },
+    {
+      "name": "North Korea",
+      "code": "KP"
+    },
+    {
+      "name": "Myanmarrrr",
+      "code": "MM"
+    },
+    {
+      "name": "Algeriaaa",
+      "code": "DZ"
+    },
+    {
+      "name": "Russian Federation",
+      "code": "RU"
+    },
+    {
+      "name": "Sudan",
+      "code": "SD"
+    },
+    {
+      "name": "Syria",
+      "code": "SY"
+    }
+  ],
+  "security": {
+    "is_abuser": true,
+    "is_attacker": true,
+    "is_bogon": true,
+    "is_cloud_provider": false,
+    "is_proxy": false,
+    "is_relay": false,
+    "is_tor": false,
+    "is_tor_exit": false,
+    "is_vpn": false,
+    "is_anonymous": false,
+    "is_threat": true
+  }
+}

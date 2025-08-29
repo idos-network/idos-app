@@ -1,6 +1,6 @@
 import axiosInstance from './axios';
 
-export const getIpData = async () => {
+export const getGeoblock = async () => {
   const response = await axiosInstance.get(`/geoblock`);
   return response.data;
 };
