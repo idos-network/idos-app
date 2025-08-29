@@ -1,5 +1,6 @@
 import { getUserReferralCount } from '@/db/user';
 import { ValidationError } from '@/utils/errors';
+import { generateReferralCode } from '@/utils/quests';
 import type { Config, Context } from '@netlify/functions';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 
@@ -28,7 +29,9 @@ async function getUserReferralCountHandler(
   }
 
   try {
-    const user = await getUserReferralCount(referralCode);
+    const user = await getUserReferralCount(
+      generateReferralCode(request.userId),
+    );
     return new Response(JSON.stringify(user), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
