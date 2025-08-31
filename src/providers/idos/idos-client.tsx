@@ -34,7 +34,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
   const { resetStore } = useSharedStore();
-  const { authenticate, isAuthenticated } = useAuth();
+  const { authenticate } = useAuth();
 
   const refresh = async () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -100,10 +100,8 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
           const client = await _withSigner.logIn();
           const userWallets = await client.getWallets();
           const walletsArray = userWallets as IdosWallet[];
-          handleSaveUserWallets(client.user.id, walletsArray);
-          if (!isAuthenticated) {
-            await authenticate();
-          }
+          await handleSaveUserWallets(client.user.id, walletsArray);
+          await authenticate();
           setClient(client);
         } else {
           setClient(_withSigner);
