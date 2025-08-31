@@ -27,9 +27,9 @@ export default function ReferralLink() {
   );
 
   const referralCount = useQuery({
-    queryKey: ['referralCount', referralCode],
-    queryFn: () => getUserReferralCount(referralCode),
-    enabled: !!referralCode,
+    queryKey: ['referralCount', userId],
+    queryFn: () => getUserReferralCount(userId || ''),
+    enabled: !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
