@@ -12,7 +12,8 @@ export default function MobileRestricted() {
           <br />
           <p className="text-neutral-200 text-xl mb-6 font-urbanist">
             For a better experience today, app.idos.network only supports
-            desktop.
+            desktop. Please use a desktop browser that supports wallet
+            extensions (e.g. Chrome, Brave, Firefox).
           </p>
         </div>
       </div>
