@@ -11,6 +11,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useIdOS } from '@/context/idos-context';
+import { isProduction } from '@/env';
 import { CopyIcon } from 'lucide-react';
 import { useState } from 'react';
 import { formatEther } from 'viem';
@@ -20,6 +21,10 @@ import FaceSignTag from './FaceSignTag';
 import AppTag from './Tag';
 
 export default function FaceSignInfoDialog() {
+  if (isProduction) {
+    return null;
+  }
+
   const [isDeactivating, setIsDeactivating] = useState(false);
   const { address } = useAccount();
   const { idOSClient } = useIdOS();

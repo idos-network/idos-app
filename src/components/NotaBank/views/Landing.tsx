@@ -1,3 +1,4 @@
+import { isProduction } from '@/env';
 import ActionToolbar from '../components/ActionToolbar';
 import FaceSignBanner from '../components/FaceSignBanner';
 import PerformanceChart from '../components/PerformanceChart';
@@ -7,7 +8,7 @@ import UserBalance from '../components/UserBalance';
 export const LandingCoreUI = () => (
   <>
     <div className="flex flex-col justify-center w-full max-w-4xl mx-auto gap-10">
-      <FaceSignBanner />
+      {!isProduction && <FaceSignBanner />}
       <div className="flex justify-between items-center w-full h-[60px] gap-5">
         <UserBalance />
         <ActionToolbar />

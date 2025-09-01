@@ -1,4 +1,5 @@
 import { NotFound } from '@/components/NotFound';
+import { isProduction } from '@/env';
 import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
@@ -112,20 +113,25 @@ export const routeTree = rootRoute.addChildren([
   indexRoute,
   layoutRoute.addChildren([
     idosProfileRoute,
-    notabankRoute.addChildren([
-      notabankIndexRoute,
-      notabankBuyRoute,
-      notabankSellRoute,
-      notabankKycRoute,
-      notabankNotaCardRoute,
-      notabankNotaCardTermsAndConditionsRoute,
-      notabankOnrampRoute,
-    ]),
-    stakingEventRoute.addChildren([
-      stakingEventIndexRoute,
-      stakingEventMyStakingsRoute,
-    ]),
-    stakingEventStakeRoute,
+    ...(isProduction
+      ? []
+      : [
+          notabankRoute.addChildren([
+            notabankIndexRoute,
+            notabankBuyRoute,
+            notabankSellRoute,
+            notabankKycRoute,
+            notabankNotaCardRoute,
+            notabankNotaCardTermsAndConditionsRoute,
+            notabankOnrampRoute,
+          ]),
+          stakingEventRoute.addChildren([
+            stakingEventIndexRoute,
+            stakingEventMyStakingsRoute,
+          ]),
+          stakingEventStakeRoute,
+        ]),
+
     idosIcoRoute,
     idosStakingRoute,
     pointsRoute,

@@ -1,5 +1,6 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { isProduction } from '@/env';
 import { AlertCircleIcon } from 'lucide-react';
 
 export default function DeactiviateFaceSignDialog({
@@ -9,6 +10,10 @@ export default function DeactiviateFaceSignDialog({
   onCancel: () => void;
   onDeactivate: () => void;
 }) {
+  if (isProduction) {
+    return null;
+  }
+
   return (
     <div className="">
       <div className="flex flex-col justify-center items-center gap-4">
@@ -25,7 +30,7 @@ export default function DeactiviateFaceSignDialog({
             Are you sure you want to deactivate your idOS FaceSign wallet?
           </h3>
           <p className="text-neutral-400 text-sm text-center">
-            You’re going to disable or disconnect your idOS FaceSign wallet.
+            You're going to disable or disconnect your idOS FaceSign wallet.
           </p>
         </div>
 
