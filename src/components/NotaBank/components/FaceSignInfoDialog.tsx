@@ -21,10 +21,6 @@ import FaceSignTag from './FaceSignTag';
 import AppTag from './Tag';
 
 export default function FaceSignInfoDialog() {
-  if (isProduction) {
-    return null;
-  }
-
   const [isDeactivating, setIsDeactivating] = useState(false);
   const { address } = useAccount();
   const { idOSClient } = useIdOS();
@@ -32,6 +28,10 @@ export default function FaceSignInfoDialog() {
   const { data: balance } = useBalance({
     address,
   });
+
+  if (isProduction) {
+    return null;
+  }
 
   return (
     <Dialog>

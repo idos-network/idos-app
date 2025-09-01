@@ -32,11 +32,12 @@ const MobileFaceSign = () => (
 );
 
 export default function FaceSignSetupDialog() {
+  const [isMobile, setIsMobile] = useState(false);
+
   if (isProduction) {
     return null;
   }
 
-  const [isMobile, setIsMobile] = useState(false);
   return (
     <Dialog
       onOpenChange={(open) => {
