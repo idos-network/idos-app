@@ -1,6 +1,7 @@
 import CalendarIcon from '@/components/icons/calendar';
 import LayersIcon from '@/components/icons/layers';
 import UserIcon from '@/components/icons/user';
+import { isProduction } from '@/env';
 import { Link } from '@tanstack/react-router';
 import { BankIcon } from '../icons/bank';
 import XIcon from '../icons/x-icon';
@@ -25,59 +26,65 @@ export default function Sidebar() {
             </div>
           )}
         </Link>
-        <Link
-          to="/notabank"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
-        >
-          {({ isActive }) => (
-            <div
-              className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+
+        {!isProduction && (
+          <>
+            <Link
+              to="/notabank"
+              className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
             >
-              <BankIcon isActive={isActive} /> NotaBank
-              <AppTag className="ml-auto" variant="success">
-                <span>New</span>
-              </AppTag>
-            </div>
-          )}
-        </Link>
-        <Link
-          to="/staking-event"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
-        >
-          {({ isActive }) => (
-            <div
-              className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+              {({ isActive }) => (
+                <div
+                  className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+                >
+                  <BankIcon isActive={isActive} /> NotaBank
+                  <AppTag className="ml-auto" variant="success">
+                    <span>New</span>
+                  </AppTag>
+                </div>
+              )}
+            </Link>
+            <Link
+              to="/staking-event"
+              className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
             >
-              <CalendarIcon className="h-6 w-6" isActive={isActive} /> Staking
-              Event
-            </div>
-          )}
-        </Link>
-        <Link
-          to="/idos-ico"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
-        >
-          {({ isActive }) => (
-            <div
-              className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+              {({ isActive }) => (
+                <div
+                  className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+                >
+                  <CalendarIcon className="h-6 w-6" isActive={isActive} />{' '}
+                  Staking Event
+                </div>
+              )}
+            </Link>
+            <Link
+              to="/idos-ico"
+              className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
             >
-              <LayersIcon className="h-6 w-6" isActive={isActive} /> IDOS ICO
-            </div>
-          )}
-        </Link>
-        <Link
-          to="/idos-staking"
-          className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
-        >
-          {({ isActive }) => (
-            <div
-              className={`flex items-center gap-4 w-full rounded-xl px-4 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+              {({ isActive }) => (
+                <div
+                  className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+                >
+                  <LayersIcon className="h-6 w-6" isActive={isActive} /> IDOS
+                  ICO
+                </div>
+              )}
+            </Link>
+            <Link
+              to="/idos-staking"
+              className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
             >
-              <LayersIcon className="h-6 w-6" isActive={isActive} /> IDOS
-              Staking
-            </div>
-          )}
-        </Link>
+              {({ isActive }) => (
+                <div
+                  className={`flex items-center gap-4 w-full rounded-xl px-4 py-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
+                >
+                  <LayersIcon className="h-6 w-6" isActive={isActive} /> IDOS
+                  Staking
+                </div>
+              )}
+            </Link>
+          </>
+        )}
       </nav>
       <footer className="mt-auto flex items-center h-13 pb-4 pt-4 border-t border-gray-800 -mx-6 px-4">
         <a

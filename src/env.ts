@@ -57,3 +57,6 @@ export const env = createEnv({
    */
   emptyStringAsUndefined: true,
 });
+
+// Add isProduction as a computed property using VITE_NODE_ENV
+export const isProduction = env.VITE_NODE_ENV === 'production';
