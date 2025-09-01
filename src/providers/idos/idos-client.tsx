@@ -14,7 +14,7 @@ import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { useSharedStore } from '@/stores/shared-store';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const _idOSClient = createIDOSClient({
   nodeUrl: env.VITE_IDOS_NODE_URL,
@@ -23,6 +23,15 @@ const _idOSClient = createIDOSClient({
     url: env.VITE_IDOS_ENCLAVE_URL,
   },
 });
+
+const useIdleIdOSClient = () => {
+  return useQuery({
+    queryKey: ['idos-client'],
+    queryFn: () => {
+      return _idOSClient.createClient();
+    },
+  });
+};
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
@@ -33,6 +42,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   const evmSigner = useEthersSigner();
   const walletConnector = useContext(WalletConnectorContext);
   const { resetStore } = useSharedStore();
+  const { data: idleIdOSClient } = useIdleIdOSClient();
 
   const refresh = async () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -51,12 +61,16 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   }, [walletConnector]);
 
   useEffect(() => {
+    if (idleIdOSClient) {
+      setClient(idleIdOSClient);
+    }
+  }, [idleIdOSClient]);
+
+  useEffect(() => {
+    if (idOSClient.state !== 'configuration' || !idleIdOSClient) return;
     const setupClient = async () => {
-      if (!['with-user-signer', 'logged-in'].includes(idOSClient.state)) {
-        setIsLoading(true);
-      }
       try {
-        const newClient = await _idOSClient.createClient();
+        console.log('setupClient');
         let _signer: any = undefined;
         if (walletConnector?.connectedWallet) {
           if (walletConnector.connectedWallet.type === 'evm') {
@@ -85,14 +99,8 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
             }
           }
         }
-        if (!_signer) {
-          setClient(newClient);
-          setWithSigner(undefined);
-          setIsLoading(false);
-          return;
-        }
 
-        const _withSigner = await newClient.withUserSigner(_signer);
+        const _withSigner = await idleIdOSClient.withUserSigner(_signer);
         setWithSigner(_withSigner);
         if (await _withSigner.hasProfile()) {
           const client = await _withSigner.logIn();
@@ -116,7 +124,12 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
     // Removing wallet dependencies to prevent reinitialization on connection failures
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletConnector?.connectedWallet, refreshTrigger]);
+  }, [
+    walletConnector?.connectedWallet,
+    refreshTrigger,
+    idleIdOSClient,
+    idOSClient.state,
+  ]);
 
   if (isLoading) {
     return (
