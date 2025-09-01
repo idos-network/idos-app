@@ -33,6 +33,7 @@ export const env = createEnv({
     VITE_IDOS_NODE_URL: z
       .string()
       .default('https://nodes.staging.idos.network/'),
+    VITE_NODE_ENV: z.string().default('development'),
   },
 
   /**
@@ -57,5 +58,5 @@ export const env = createEnv({
   emptyStringAsUndefined: true,
 });
 
-// Add isProduction as a computed property using NODE_ENV directly
-export const isProduction = process.env.NODE_ENV === 'production';
+// Add isProduction as a computed property using VITE_NODE_ENV
+export const isProduction = env.VITE_NODE_ENV === 'production';
