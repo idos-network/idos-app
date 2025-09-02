@@ -76,10 +76,6 @@ export default function WalletDetailsModal({
     }
   };
 
-  const handleCopyAddress = () => {
-    showToast({ type: 'success', message: 'Copied!' });
-  };
-
   if (!isOpen) return null;
 
   return createPortal(
