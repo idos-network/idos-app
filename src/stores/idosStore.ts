@@ -1,8 +1,8 @@
 import { queryClient } from '@/providers/tanstack-query/query-client';
-import { idOSClientConfiguration, type idOSClient } from '@idos-network/client';
+import { createIDOSClient, type idOSClient } from '@idos-network/client';
 import { create } from 'zustand';
 
-export const _idOSClient = new idOSClientConfiguration({
+export const _idOSClient = createIDOSClient({
   nodeUrl: 'https://nodes.staging.idos.network/',
   enclaveOptions: {
     container: '#idOS-enclave',
@@ -27,7 +27,7 @@ export const useIdosStore = create<IdosStore>((set) => ({
       const idleClient = await idOSClient.logOut();
       set({ idOSClient: idleClient, initializing: true });
       window.location.reload();
-      queryClient.removeQueries()
+      queryClient.removeQueries();
     }
   },
 }));
