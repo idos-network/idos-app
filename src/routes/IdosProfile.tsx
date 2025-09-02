@@ -1,22 +1,26 @@
 import FaceSignBanner from '@/components/NotaBank/components/FaceSignBanner';
 import OnboardingStepper, {
   useHasStakingCredential,
+  useUserId,
 } from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
 import Spinner from '@/components/Spinner';
 import { isProduction } from '@/env';
 import { useToast } from '@/hooks/useToast';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
+import { useIdosStore } from '@/stores/idosStore';
 
 export function IdosProfile() {
   const { refetch: refetchMainEvm } = useUserMainEvm();
   const { showToast } = useToast();
+  const { settingSigner } = useIdosStore();
   const { data: stakingCreds, isLoading: stakingCredsLoading } =
     useHasStakingCredential();
+  const { isLoading: isLoadingUserId } = useUserId();
   const hasStakingCredential =
     Array.isArray(stakingCreds) && !!stakingCreds?.length;
 
-  const newLoading = stakingCredsLoading;
+  const newLoading = stakingCredsLoading || isLoadingUserId || settingSigner;
 
   if (newLoading) {
     return (

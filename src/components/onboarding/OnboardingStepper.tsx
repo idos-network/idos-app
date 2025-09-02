@@ -4,7 +4,7 @@ import { useSpecificCredential } from '@/hooks/useCredentials';
 import { getCurrentUserFromLocalStorage } from '@/storage/idos-profile';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   AddCredential,
   AddEVMWallet,
@@ -15,10 +15,20 @@ import {
 
 const savedUser = getCurrentUserFromLocalStorage();
 
+export const useWalletIdentifier = () => {
+  const { idOSClient } = useIdOS();
+  useMemo(() => {
+    return idOSClient && idOSClient.state === 'with-user-signer'
+      ? idOSClient.walletIdentifier
+      : null;
+  }, [idOSClient]);
+};
+
 export const useHasStakingCredential = () => {
   const { idOSClient } = useIdOS();
+  const walletIdentifier = useWalletIdentifier();
   return useQuery({
-    queryKey: ['has-staking-credentials'],
+    queryKey: ['has-staking-credentials', walletIdentifier],
     queryFn: async () => {
       if (idOSClient && idOSClient.state === 'logged-in') {
         const result = await idOSClient.filterCredentials({
@@ -42,8 +52,9 @@ export const useHasStakingCredential = () => {
 
 export const useUserId = () => {
   const { idOSClient } = useIdOS();
+  const walletIdentifier = useWalletIdentifier();
   return useQuery({
-    queryKey: [],
+    queryKey: ['userId', walletIdentifier],
     queryFn: () => {
       if (!idOSClient) return null;
       return idOSClient.state === 'logged-in' ? idOSClient.user.id : null;
