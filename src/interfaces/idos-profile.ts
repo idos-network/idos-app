@@ -11,6 +11,7 @@ export const idosUserProfileSchema = z.object({
   idosStakingCredential: z.boolean().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
+  encryptionPasswordStore: z.string().optional(),
 });
 
 export const idOSWalletSchema = z.object({
@@ -31,6 +32,7 @@ export const idOSProfileRequestSchema = z.object({
   ownershipProofSignature: z.string(),
   publicKey: z.string(),
   walletType: z.string(),
+  encryptionPasswordStore: z.string().optional(),
 });
 
 export type IdosUserProfile = z.infer<typeof idosUserProfileSchema>;

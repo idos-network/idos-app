@@ -8,6 +8,7 @@ export async function handleCreateIdOSProfile(
   ownershipProofSignature: string,
   publicKey: string,
   walletType: string,
+  encryptionPasswordStore: string,
 ) {
   try {
     const response = await createIdOSProfile(
@@ -18,6 +19,7 @@ export async function handleCreateIdOSProfile(
       ownershipProofSignature,
       publicKey,
       walletType,
+      encryptionPasswordStore,
     );
 
     if (response) {

@@ -48,6 +48,8 @@ export default function VerifyIdentity() {
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
   const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
   const publicKey = currentUser?.publicKey || '';
+  const encryptionPasswordStore =
+    currentUser?.encryptionPasswordStore || 'user';
 
   useEffect(() => {
     if (state === 'verified') {
@@ -62,6 +64,7 @@ export default function VerifyIdentity() {
           ownershipProofSignature,
           publicKey,
           walletType,
+          encryptionPasswordStore,
         );
         if (!response) {
           updateUserStateInLocalStorage(userAddress, { humanVerified: false });
