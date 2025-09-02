@@ -1,11 +1,11 @@
 import { getUserById, saveUser, updateUser } from '@/api/user';
-import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
-import { useCompleteQuest } from '@/hooks/useCompleteQuest';
+import { useIdOSLoggedIn } from '@/context/idos-context';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import AirdropIcon from '@/icons/airdrop';
 import WalletIcon from '@/icons/wallet';
 import { useReferralCode } from '@/providers/quests/referral-provider';
+import { queryClient } from '@/providers/tanstack-query/query-client';
 import { useEffect, useState } from 'react';
 import EVMWalletAdd from '../components/EVMWalletAdd';
 import StepperButton from '../components/StepperButton';
@@ -14,58 +14,48 @@ import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
 
-interface AddEVMWalletProps {
-  onNext: () => void;
-  onComplete?: () => void;
-}
-
-export default function AddEVMWallet({ onComplete }: AddEVMWalletProps) {
+export default function AddEVMWallet() {
   const { state, setState, error } = useStepState();
-  const { refresh } = useIdOS();
   const { showToast } = useToast();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { referralCode } = useReferralCode();
   const [walletAddress, setWalletAddress] = useState<string>('');
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const { completeQuest } = useCompleteQuest();
 
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
-      if (state === 'created') {
-        // Safeguard against a user that has a profile and a credential
-        // but has not been registered on the db
-        const user = await getUserById(idOSLoggedIn!.user.id);
-        if (user[0]) {
-          updateUser({
-            id: idOSLoggedIn!.user.id,
-            mainEvm: walletAddress,
-            referrerCode: referralCode || '',
-          });
-        } else {
-          saveUser({
-            id: idOSLoggedIn!.user.id,
-            mainEvm: walletAddress,
-            referrerCode: referralCode || '',
-          });
-        }
-        localStorage.setItem(
-          'showCompleteToast',
-          JSON.stringify({
-            type: 'success',
-            message: 'Onboarding completed successfully.',
-          }),
-        );
-        completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        onComplete?.();
+      // Safeguard against a user that has a profile and a credential
+      // but has not been registered on the db
+      const user = await getUserById(idOSLoggedIn!.user.id);
+      if (user[0]) {
+        updateUser({
+          id: idOSLoggedIn!.user.id,
+          mainEvm: walletAddress,
+          referrerCode: referralCode || '',
+        });
+      } else {
+        saveUser({
+          id: idOSLoggedIn!.user.id,
+          mainEvm: walletAddress,
+          referrerCode: referralCode || '',
+        });
       }
-      if (error) {
-        setState('idle');
-      }
+      localStorage.setItem(
+        'showCompleteToast',
+        JSON.stringify({
+          type: 'success',
+          message: 'Onboarding completed successfully.',
+        }),
+      );
+      queryClient.invalidateQueries({ queryKey: ['has-staking-credentials'] });
     };
+    if (error) {
+      setState('idle');
+    }
     saveUserAndCompleteQuest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, error, refresh]);
+  }, [state, error]);
 
   return (
     <div className="flex flex-col gap-10 h-[600px] w-[740px]">

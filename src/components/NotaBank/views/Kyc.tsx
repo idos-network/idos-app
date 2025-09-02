@@ -41,7 +41,7 @@ export default function Kyc() {
   const onSuccess = useCallback(
     async (data: any) => {
       console.log('onSuccess', data);
-      if (idOSClient.state === 'with-user-signer') {
+      if (idOSClient && idOSClient.state === 'with-user-signer') {
         const loggedIn = await idOSClient.logIn();
         if (loggedIn) setIdOSClient(loggedIn);
       }

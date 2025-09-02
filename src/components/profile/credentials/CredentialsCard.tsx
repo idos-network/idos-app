@@ -1,34 +1,51 @@
 import { CredentialActionModal } from '@/components/profile/credentials/CredentialActionModal';
 import { CredentialDetailsModal } from '@/components/profile/credentials/CredentialDetailsModal';
+import { useIdOS } from '@/context/idos-context';
 import { useCredentialDetails } from '@/hooks/useCredentialDetails';
-import { useCredentials } from '@/hooks/useCredentials';
 import MoreVertIcon from '@/icons/more-vert';
-import type { idOSCredential } from '@idos-network/client';
-import { useEffect, useMemo, useState } from 'react';
-import z from 'zod';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import CredentialAccessModal from './CredentialAccessModal';
 
-const CredentialPublicNotesSchema = z.object({
-  level: z.string(),
-  type: z.string(),
-  status: z.string(),
-  issuer: z.string(),
-  id: z.string(),
-  shares: z.union([z.string(), z.number()]).optional(),
-});
-
-type CredentialPublicNotes = z.infer<typeof CredentialPublicNotesSchema>;
+const safeParse = (public_notes: string) => {
+  try {
+    return JSON.parse(public_notes);
+  } catch (e) {
+    return null;
+  }
+};
 
 interface CredentialsCardProps {
   onError?: (error: string) => void;
   onSuccess?: (message: string) => void;
 }
 
+const userUserCredentials = () => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { idOSClient } = useIdOS();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return useQuery({
+    queryKey: ['userCredentials'],
+    enabled: !!idOSClient && idOSClient.state === 'logged-in',
+    queryFn: () => {
+      return idOSClient && idOSClient.state === 'logged-in'
+        ? idOSClient.getAllCredentials()
+        : [];
+    },
+    // how to map elems from here
+  });
+};
+
 export default function CredentialsCard({
   onError,
   onSuccess,
 }: CredentialsCardProps) {
-  const { credentials, isLoading, error, refetch } = useCredentials();
+  const {
+    data: credentials,
+    isLoading,
+    error,
+    refetch,
+  } = userUserCredentials();
   const [selectedCredentialId, setSelectedCredentialId] = useState<
     string | null
   >(null);
@@ -55,24 +72,6 @@ export default function CredentialsCard({
   useEffect(() => {
     if (detailsError) onError?.(detailsError.message);
   }, [detailsError, onError]);
-
-  const processedCredentials = useMemo(() => {
-    if (credentials instanceof Promise) return [];
-
-    return credentials
-      .filter((cred: idOSCredential) => cred.public_notes !== '')
-      .map((cred: idOSCredential) => {
-        let parsed: CredentialPublicNotes | null = null;
-        try {
-          parsed = CredentialPublicNotesSchema.parse(
-            JSON.parse(cred.public_notes),
-          );
-        } catch (_e) {
-          parsed = null;
-        }
-        return { cred, parsed };
-      });
-  }, [credentials]);
 
   useEffect(() => {
     const enclaveElement = document.getElementById('idOS-enclave');
@@ -124,8 +123,10 @@ export default function CredentialsCard({
             </tr>
           </thead>
           <tbody>
-            {processedCredentials.map(({ cred, parsed }, index) => {
-              const isLastRow = index === processedCredentials.length - 1;
+            {credentials?.map((cred, index) => {
+              const isLastRow = index === credentials.length - 1;
+              const parsed = safeParse(cred.public_notes ?? '');
+              if (!parsed) return null;
               return (
                 <tr
                   key={cred.id}
@@ -172,7 +173,7 @@ export default function CredentialsCard({
         }}
         position={actionModalPosition}
         credentialId={selectedCredentialId || undefined}
-        credentials={credentials}
+        credentials={credentials ?? []}
         refetch={refetch}
         onError={onError}
         onSuccess={onSuccess}

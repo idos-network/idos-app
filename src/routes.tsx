@@ -34,7 +34,7 @@ import {
 export const rootRoute = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
-  errorComponent: () => <RootComponent />,
+  errorComponent: () => <>Some error happened {':('}</>,
   notFoundComponent: () => <NotFound />,
   component: RootComponent,
 });

@@ -2,19 +2,17 @@ import { useToast } from '@/hooks/useToast';
 import CredentialIcon from '@/icons/credential';
 import KeyIcon from '@/icons/key';
 import PersonIcon from '@/icons/person';
+import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useEffect, useState } from 'react';
 import GetStartedTextBlock from '../components/GetStartedCards';
 import StepperButton from '../components/StepperButton';
 
-interface GetStartedProps {
-  onNext: () => void;
-}
-
-export default function GetStarted({ onNext }: GetStartedProps) {
+export default function GetStarted() {
   const { showToast } = useToast();
   const [hasShownToast, setHasShownToast] = useState(() => {
     return localStorage.getItem('onboardingToastShown') === 'true';
   });
+  const { nextStep } = useOnboardingStore();
 
   useEffect(() => {
     if (!hasShownToast) {
@@ -71,7 +69,7 @@ export default function GetStarted({ onNext }: GetStartedProps) {
           />
         </div>
         <div className="flex justify-center z-5">
-          <StepperButton onClick={onNext}>Create idOS profile</StepperButton>
+          <StepperButton onClick={nextStep}>Create idOS profile</StepperButton>
         </div>
       </div>
     </div>

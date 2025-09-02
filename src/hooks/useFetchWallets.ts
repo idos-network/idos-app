@@ -12,6 +12,7 @@ export function useFetchWallets() {
     try {
       setIsLoading(true);
       setError(null);
+      if (!idOSClient) return;
 
       if (idOSClient.state !== 'logged-in') {
         setWallets([]);

@@ -18,6 +18,7 @@ export function useFetchGrants({ credentialId }: { credentialId: string }) {
 
   useEffect(() => {
     const fetchGrants = async () => {
+      if (!idOSClient) return;
       if (!credentialId || idOSClient.state !== 'logged-in') {
         setGrants([]);
         setIsLoading(false);
@@ -80,6 +81,7 @@ export function useRevokeGrant() {
   const [variables, setVariables] = useState<idOSGrant | null>(null);
 
   const mutate = async (grant: idOSGrant) => {
+    if (!idOSClient) return;
     if (idOSClient.state !== 'logged-in') {
       throw new Error('User not logged in');
     }

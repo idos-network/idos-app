@@ -6,7 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 
 export const useSharedCredential = () => {
   const { idOSClient } = useIdOS();
-  const userId = idOSClient.state === 'logged-in' ? idOSClient.user.id : null;
+  const userId =
+    idOSClient && idOSClient.state === 'logged-in' ? idOSClient.user.id : null;
   const { setSharedCredential, sharedCredential } = useSharedStore();
 
   return useQuery<{

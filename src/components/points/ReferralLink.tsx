@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 
 export default function ReferralLink() {
   const { showToast } = useToast();
-  const { userId } = useUserId();
+  const { data: userId } = useUserId();
 
   const referralCode = useMemo(
     () => (userId ? generateReferralCode(userId) : ''),

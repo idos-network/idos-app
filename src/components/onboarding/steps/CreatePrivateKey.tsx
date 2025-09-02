@@ -4,32 +4,32 @@ import type { ConnectedWallet } from '@/context/wallet-connector-context';
 import { useHandleSaveIdOSProfile } from '@/hooks/useHandleSaveIdOSProfile';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import EncryptedIcon from '@/icons/encrypted';
+import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useEffect } from 'react';
 import StepperButton from '../components/StepperButton';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
 
-interface CreatePrivateKeyProps {
-  onNext: () => void;
-}
-
-export default function CreatePrivateKey({ onNext }: CreatePrivateKeyProps) {
-  const { state, setState, loading, setLoading, error } = useStepState();
+export default function CreatePrivateKey() {
+  const { state, setState, loading, error } = useStepState();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const { nextStep } = useOnboardingStore();
+
   const { mutate: handleSaveIdOSProfile } = useHandleSaveIdOSProfile({
-    onNext,
+    onNext: nextStep,
     wallet: wallet as ConnectedWallet,
     setState,
-    setLoading,
   });
   const { idOSClient } = useIdOS();
 
   useEffect(() => {
+    if (!idOSClient) return;
+    if (idOSClient.state !== 'with-user-signer' || !wallet) return;
     handleSaveIdOSProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idOSClient.state === 'with-user-signer']);
+  }, [idOSClient, wallet]);
 
   useEffect(() => {
     if (error) {
