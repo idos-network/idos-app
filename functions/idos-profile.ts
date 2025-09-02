@@ -35,6 +35,7 @@ export default async (request: Request, _context: Context) => {
     ownershipProofSignature,
     publicKey,
     walletType,
+    encryptionPasswordStore,
   } = idOSProfileRequestSchema.parse(await request.json());
 
   const idOSIssuerInstance = await idOSIssuer;
@@ -42,7 +43,7 @@ export default async (request: Request, _context: Context) => {
   const user = {
     id: userId,
     recipient_encryption_public_key: userEncryptionPublicKey,
-    encryption_password_store: 'user' as const,
+    encryption_password_store: encryptionPasswordStore as string,
   };
 
   const walletTypeMap: Record<string, string> = {

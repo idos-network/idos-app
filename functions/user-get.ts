@@ -1,6 +1,6 @@
-import type { Config, Context } from '@netlify/functions';
 import { getUserById } from '@/db/user';
 import { UserNotFoundError } from '@/utils/errors';
+import type { Config, Context } from '@netlify/functions';
 
 export default async (_request: Request, context: Context) => {
   const { userId } = context.params;
