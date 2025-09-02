@@ -2,7 +2,6 @@ import CloseButton from '@/components/CloseButton';
 import SmallSecondaryButton from '@/components/SmallSecondaryButton';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
-import CopyIcon from '@/icons/copy';
 import LogoutIcon from '@/icons/logout';
 import truncateAddress from '@/utils/address';
 import { addressGradient } from '@/utils/gradient';
@@ -77,10 +76,6 @@ export default function WalletDetailsModal({
     }
   };
 
-  const handleCopyAddress = () => {
-    showToast({ type: 'success', message: 'Copied!' });
-  };
-
   if (!isOpen) return null;
 
   return createPortal(
@@ -125,21 +120,13 @@ export default function WalletDetailsModal({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between gap-5">
-              <SmallSecondaryButton
-                onClick={handleCopyAddress}
-                icon={<CopyIcon />}
-                height="h-10"
-                width="w-[156px]"
-              >
-                Copy Address
-              </SmallSecondaryButton>
+            <div className="flex justify-between gap-5 mt-4 w-full">
               <SmallSecondaryButton
                 onClick={handleSignOut}
                 icon={<LogoutIcon />}
                 disabled={isSigningOut}
                 height="h-10"
-                width="w-[156px]"
+                width="w-full"
               >
                 {isSigningOut ? 'Disconnecting...' : 'Disconnect'}
               </SmallSecondaryButton>
