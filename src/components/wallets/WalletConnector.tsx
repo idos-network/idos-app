@@ -63,11 +63,11 @@ export function WalletConnector() {
         iconSrc="/near.png"
       />
 
-      <WalletConnectorButton
+      {/* <WalletConnectorButton
         onClick={() => walletConnector.connectStellar()}
         label="Connect with Stellar"
         iconSrc="/stellar.png"
-      />
+      /> */}
 
       <WalletConnectorButton
         onClick={() => walletConnector.connectXRPL()}
