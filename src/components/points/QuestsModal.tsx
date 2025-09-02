@@ -1,12 +1,12 @@
 import CloseButton from '@/components/CloseButton';
 import { useHandleQuestClick } from '@/hooks/useHandleQuestClick';
 import type { QuestWithStatus } from '@/hooks/useQuests';
-import { useUserId } from '@/hooks/useUserId';
 import { getDailyQuestTimeRemaining } from '@/utils/quests';
 import { formatTimeRemaining } from '@/utils/time';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import MediumPrimaryButton from '../MediumPrimaryButton';
+import { useUserId } from '../onboarding/OnboardingStepper';
 
 interface QuestsModalProps {
   isOpen: boolean;
@@ -23,7 +23,7 @@ export default function QuestsModal({
   const { handleQuestClick, pendingQuest } = useHandleQuestClick(onClose);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [isCheckingTime, setIsCheckingTime] = useState<boolean>(false);
-  const { userId } = useUserId();
+  const { data: userId } = useUserId();
 
   const getDailyCheckTimeRemaining = useCallback(async () => {
     if (!userId) return 0;

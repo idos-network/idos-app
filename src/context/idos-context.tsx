@@ -1,9 +1,10 @@
+import { useIdosStore } from '@/stores/idosStore';
 import {
   type idOSClient,
   type idOSClientLoggedIn,
   type idOSClientWithUserSigner,
 } from '@idos-network/client';
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 type IdOSContextType = {
   idOSClient: idOSClient;
@@ -18,25 +19,20 @@ export const IDOSClientContext = createContext<IdOSContextType | undefined>(
 );
 
 export const useIdOS = () => {
-  const context = useContext(IDOSClientContext);
-  if (!context) {
-    throw new Error('useIdOS must be used within an IdOSProvider');
-  }
-  return context;
+  const { idOSClient, setIdOSClient, initializing } = useIdosStore();
+  return { idOSClient, setIdOSClient, initializing };
 };
 
 export const useUnsafeIdOS = () => {
-  return useContext(IDOSClientContext);
+  const { idOSClient, setIdOSClient, initializing } = useIdosStore();
+  return { idOSClient, setIdOSClient, initializing };
 };
 
 export const useIdOSLoggedIn = (): idOSClientLoggedIn | null => {
-  const context = useContext(IDOSClientContext);
-  if (!context) {
-    throw new Error('useIdOSLoggedIn must be used within an IdOSProvider');
-  }
+  const { idOSClient } = useIdosStore();
 
-  if (context.idOSClient.state === 'logged-in') {
-    return context.idOSClient as idOSClientLoggedIn;
+  if (idOSClient && idOSClient.state === 'logged-in') {
+    return idOSClient as idOSClientLoggedIn;
   }
 
   return null;

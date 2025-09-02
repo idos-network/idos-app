@@ -15,6 +15,10 @@ export const saveNewUserToLocalStorage = (idosUser: IdosUserProfile) => {
   return newIdOSUser;
 };
 
+export const removeUserFromLocalStorage = () => {
+  localStorage.removeItem('idosUser');
+};
+
 export const updateUserStateInLocalStorage = (
   mainAddress: string,
   fields: Partial<IdosUserProfile>,

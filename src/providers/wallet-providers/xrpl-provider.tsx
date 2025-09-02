@@ -3,7 +3,6 @@ import {
   XrplWalletContext,
   type XrplWalletContextValue,
 } from '@/context/xrpl-context';
-import { env } from '@/env';
 import { getGemWalletPublicKey } from '@/utils/xrpl/xrpl-signature';
 import * as GemWallet from '@gemwallet/api';
 import {
@@ -36,13 +35,11 @@ export function XrplWalletProvider({ children }: PropsWithChildren) {
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => reject(new Error('Timeout')), 150);
     });
-
     try {
       const installed = await Promise.race([
         GemWallet.isInstalled(),
         timeoutPromise,
       ]);
-
       if (!installed?.result?.isInstalled) {
         setIsInstallModalOpen(true);
         setIsLoading(false);
@@ -54,20 +51,40 @@ export function XrplWalletProvider({ children }: PropsWithChildren) {
 
       const { publicKey: pk, address: addr } = result;
 
-      const xrpl = await import('xrpl');
-      const client = new xrpl.Client(env.VITE_XRPL_RPC_URL);
+      // @todo: Add XRPL balance <it's breaking the flow currently>
+      // const xrpl = await import('xrpl');
+      // const client = new xrpl.Client(env.VITE_XRPL_RPC_URL);
 
-      await client.connect();
+      // await client.connect();
 
-      const response = await client.request({
-        command: 'account_info',
-        account: addr,
-        ledger_index: 'validated',
-      });
+      const balance = 0n;
 
-      const balance = BigInt(response.result.account_data.Balance);
+      // try {
+      //   const response = await client.request({
+      //     command: 'account_info',
+      //     account: addr,
+      //     ledger_index: 'validated',
+      //   });
 
-      await client.disconnect();
+      //   balance = BigInt(response.result.account_data.Balance);
+      // } catch (accountError: any) {
+      //   // Handle unfunded/non-existent accounts (common in testnet)
+      //   if (
+      //     accountError?.data?.error === 'actNotFound' ||
+      //     accountError?.message?.includes('actNotFound') ||
+      //     accountError?.message?.includes('Account not found')
+      //   ) {
+      //     console.log(
+      //       'XRPL account not yet funded/activated, balance set to 0',
+      //     );
+      //     balance = 0n;
+      //   } else {
+      //     // Re-throw other errors
+      //     throw accountError;
+      //   }
+      // }
+
+      // await client.disconnect();
 
       setAddress(addr);
       setPublicKey(pk);

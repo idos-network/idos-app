@@ -2,9 +2,9 @@ import CalendarIcon from '@/components/icons/calendar';
 import LayersIcon from '@/components/icons/layers';
 import UserIcon from '@/components/icons/user';
 import WalletBar from '@/components/wallets/WalletBar';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
+import { useIdosStore } from '@/stores/idosStore';
 import { Link } from '@tanstack/react-router';
 import { formatNearAmount } from 'near-api-js/lib/utils/format';
 import { useEffect, useRef, useState } from 'react';
@@ -18,7 +18,8 @@ const evmNetworks = {
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const hasProfile = useIdOSLoginStatus();
+  const { idOSClient } = useIdosStore();
+  const hasProfile = idOSClient?.state === 'logged-in';
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const { setPointsFrameRef, hasOnboardingToast } = useToast();

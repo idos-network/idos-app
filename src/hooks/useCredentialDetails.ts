@@ -11,6 +11,7 @@ export function useCredentialDetails(credentialId: string | null) {
 
   useEffect(() => {
     const fetchCredentialDetails = async () => {
+      if (!idOSClient) return;
       if (!credentialId || idOSClient.state !== 'logged-in') {
         setCredential(null);
         setDecryptedContent(null);

@@ -9,6 +9,8 @@ import {
   getCurrentUserFromLocalStorage,
   updateUserStateInLocalStorage,
 } from '@/storage/idos-profile';
+import { useOnboardingStore } from '@/stores/onboarding-store';
+import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
@@ -16,16 +18,29 @@ import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
 
-interface VerifyIdentityProps {
-  onNext: () => void;
-}
+const useLogin = () => {
+  const { idOSClient, setIdOSClient } = useIdOS();
+  return useMutation({
+    mutationKey: ['login'],
+    mutationFn: async () => {
+      if (idOSClient && idOSClient.state === 'with-user-signer') {
+        const loggedIn = await idOSClient.logIn();
+        if (loggedIn) {
+          setIdOSClient(loggedIn);
+        }
+      }
+      return Promise.resolve(undefined);
+    },
+  });
+};
 
-export default function VerifyIdentity({ onNext }: VerifyIdentityProps) {
+export default function VerifyIdentity() {
   const { state, setState } = useStepState();
-  const { refresh } = useIdOS();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const walletType = (wallet && wallet.type) || '';
+  const { nextStep } = useOnboardingStore();
+  const { mutate: login } = useLogin();
 
   const currentUser = getCurrentUserFromLocalStorage();
   const userId = currentUser?.id || '';
@@ -52,8 +67,8 @@ export default function VerifyIdentity({ onNext }: VerifyIdentityProps) {
           updateUserStateInLocalStorage(userAddress, { humanVerified: false });
           setState('idle');
         } else {
-          await refresh();
-          onNext();
+          await login();
+          nextStep();
         }
       };
       handleProfile();
@@ -61,7 +76,7 @@ export default function VerifyIdentity({ onNext }: VerifyIdentityProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     state,
-    onNext,
+    nextStep,
     userAddress,
     userId,
     userEncryptionPublicKey,

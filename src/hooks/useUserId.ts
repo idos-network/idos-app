@@ -1,43 +1,16 @@
 import { useIdOS } from '@/context/idos-context';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-export function useUserId() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [hasProfile, setHasProfile] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { idOSClient, withSigner, isLoading: idosLoading } = useIdOS();
-
-  useEffect(() => {
-    const checkUser = async () => {
-      if (idosLoading) {
-        setIsLoading(true);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        if (idOSClient.state === 'logged-in') {
-          setUserId(idOSClient.user.id);
-          setHasProfile(true);
-        } else if (withSigner) {
-          const userHasProfile = await withSigner.hasProfile();
-          setHasProfile(userHasProfile);
-          setUserId(null);
-        } else {
-          setHasProfile(false);
-          setUserId(null);
-        }
-      } catch (error) {
-        console.error('Error checking user profile:', error);
-        setHasProfile(false);
-        setUserId(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkUser();
-  }, [idOSClient, withSigner, idosLoading]);
-
-  return { userId, hasProfile, isLoading };
-}
+export const useUserId = () => {
+  const { idOSClient } = useIdOS();
+  return useQuery({
+    queryKey: ['userId'],
+    queryFn: () => {
+      if (!idOSClient) return null;
+      return idOSClient.state === 'logged-in' ? idOSClient.user.id : null;
+    },
+    enabled: !!idOSClient && idOSClient.state === 'logged-in',
+    staleTime: 0,
+    gcTime: 0,
+  });
+};

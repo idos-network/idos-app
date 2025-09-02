@@ -7,6 +7,7 @@ export const useRequestGrant = () => {
   return useMutation({
     mutationKey: ['request-grant'],
     mutationFn: async () => {
+      if (!idOSClient) return;
       if (idOSClient.state !== 'logged-in') {
         console.warn('Please login to continue');
         return;

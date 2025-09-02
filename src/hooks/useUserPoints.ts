@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useUserId } from './useUserId';
 
 export function useUserPoints() {
-  const { userId, isLoading: userIdLoading } = useUserId();
+  const { data: userId, isLoading: userIdLoading } = useUserId();
 
   const {
     data: points,

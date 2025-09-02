@@ -1,6 +1,6 @@
+import { useUserId } from '@/components/onboarding/OnboardingStepper';
 import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useToast } from '@/hooks/useToast';
-import { useUserId } from '@/hooks/useUserId';
 import { generateReferralCode, type Quest } from '@/utils/quests';
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useMemo, useState } from 'react';
@@ -8,7 +8,7 @@ import { useCallback, useMemo, useState } from 'react';
 export function useHandleQuestClick(onModalClose?: () => void) {
   const navigate = useNavigate();
   const { completeQuest } = useCompleteQuest();
-  const { userId } = useUserId();
+  const { data: userId } = useUserId();
   const { showToast } = useToast();
   const [pendingQuest, setPendingQuest] = useState<string | null>(null);
 

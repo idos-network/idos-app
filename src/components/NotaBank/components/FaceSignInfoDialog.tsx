@@ -67,7 +67,7 @@ export default function FaceSignInfoDialog() {
                 </div>
                 {/* Verification Status */}
                 <div className="flex flex-col items-center text-center mb-3">
-                  {(idOSClient.state === 'logged-in' && (
+                  {(idOSClient && idOSClient.state === 'logged-in' && (
                     <AppTag variant="success">
                       <span className="text-sm">Verified</span>
                     </AppTag>

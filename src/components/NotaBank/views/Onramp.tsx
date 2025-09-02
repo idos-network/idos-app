@@ -45,7 +45,8 @@ const IframeLoading = () => (
 const useOnrampUrl = (selectedProvider: string) => {
   const { idOSClient } = useIdOS();
   const { address } = useAccount();
-  const userId = idOSClient.state === 'logged-in' ? idOSClient.user.id : null;
+  const userId =
+    idOSClient && idOSClient.state === 'logged-in' ? idOSClient.user.id : null;
   const { data: sharedCredential } = useSharedCredential();
   const credentialId = sharedCredential?.credentialId;
 

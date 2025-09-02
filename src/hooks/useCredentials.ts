@@ -11,6 +11,7 @@ export function useCredentials() {
   const fetchCredentials = useCallback(async () => {
     try {
       setIsLoading(true);
+      if (!idOSClient) return;
       if (idOSClient.state !== 'logged-in') {
         setCredentials([]);
         return;

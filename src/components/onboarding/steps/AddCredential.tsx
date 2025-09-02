@@ -1,6 +1,6 @@
 import { getUserById, saveUser, updateUser } from '@/api/user';
 import Spinner from '@/components/Spinner';
-import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
+import { useIdOSLoggedIn } from '@/context/idos-context';
 import {
   handleCreateIdOSCredential,
   handleDWGCredential,
@@ -13,7 +13,9 @@ import CredentialIcon from '@/icons/credential';
 import GraphIcon from '@/icons/graph';
 import type { IdosDWG } from '@/interfaces/idos-credential';
 import { useReferralCode } from '@/providers/quests/referral-provider';
+import { queryClient } from '@/providers/tanstack-query/query-client';
 import { clearUserDataFromLocalStorage } from '@/storage/idos-profile';
+import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useEffect } from 'react';
 import { useSignMessage } from 'wagmi';
 import StepperButton from '../components/StepperButton';
@@ -22,17 +24,8 @@ import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
 
-interface AddCredentialProps {
-  onNext: () => void;
-  onComplete?: () => void;
-}
-
-export default function AddCredential({
-  onNext,
-  onComplete,
-}: AddCredentialProps) {
+export default function AddCredential() {
   const { state, setState, loading, setLoading, error } = useStepState();
-  const { refresh } = useIdOS();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { showToast } = useToast();
   const { selector } = useNearWallet();
@@ -41,11 +34,12 @@ export default function AddCredential({
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const { signMessageAsync } = useSignMessage();
   const { completeQuest } = useCompleteQuest();
-
+  const { nextStep } = useOnboardingStore();
+  console.log('RENDER ADD CREDENTIAL');
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
       if (state === 'created' && wallet && wallet.type !== 'evm') {
-        onNext();
+        nextStep();
       } else if (state === 'created' && wallet && wallet.type === 'evm') {
         // Safeguard against a user that has a profile
         // but has not been registered on the db
@@ -71,7 +65,9 @@ export default function AddCredential({
           }),
         );
         completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        onComplete?.();
+        queryClient.invalidateQueries({
+          queryKey: ['has-staking-credentials'],
+        });
       } else if (error) {
         setState('idle');
       }
@@ -79,7 +75,7 @@ export default function AddCredential({
     };
     saveUserAndCompleteQuest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, error, refresh]);
+  }, [state, error]);
 
   async function handleAddCredential() {
     try {

@@ -11,7 +11,7 @@ export interface QuestWithStatus extends Quest {
 }
 
 export const useQuests = () => {
-  const { userId, isLoading: userIdLoading } = useUserId();
+  const { data: userId, isLoading: userIdLoading } = useUserId();
 
   const {
     data: activeQuests,
