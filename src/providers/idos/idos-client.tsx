@@ -5,63 +5,85 @@ import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { handleSaveUserWallets } from '@/handlers/user-wallets';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
-import { removeUserFromLocalStorage } from '@/storage/idos-profile';
 import { _idOSClient, useIdosStore } from '@/stores/idosStore';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+
+const useSigner = () => {
+  const walletConnector = useContext(WalletConnectorContext);
+  const evmSigner = useEthersSigner();
+
+  const enabledCondition = walletConnector?.isConnected
+    ? walletConnector?.connectedWallet?.type === 'evm'
+      ? !!evmSigner
+      : !!walletConnector.connectedWallet
+    : false;
+
+  return useQuery({
+    queryKey: ['signer', walletConnector?.connectedWallet?.address],
+    enabled: enabledCondition,
+    queryFn: async () => {
+      try {
+        if (
+          !walletConnector?.isConnected ||
+          !walletConnector?.connectedWallet
+        ) {
+          return null;
+        }
+
+        let _signer: any = null;
+        if (walletConnector.connectedWallet.type === 'evm' && evmSigner) {
+          _signer = evmSigner;
+        }
+        if (walletConnector.connectedWallet.type === 'near') {
+          const nearWallet = walletConnector.nearWallet;
+          if (nearWallet?.selector.isSignedIn()) {
+            _signer = await nearWallet.selector.wallet();
+          }
+        }
+        if (walletConnector.connectedWallet.type === 'stellar') {
+          const stellarWallet = walletConnector.stellarWallet;
+          if (
+            stellarWallet?.isConnected &&
+            stellarWallet.address &&
+            stellarWallet.kit
+          ) {
+            _signer = await createStellarSigner(
+              stellarWallet.publicKey as string,
+              stellarWallet.address as string,
+            );
+          }
+        }
+        if (walletConnector.connectedWallet.type === 'xrpl') {
+          const xrplWallet = walletConnector.xrplWallet;
+          if (xrplWallet?.isConnected && xrplWallet.address) {
+            return GemWallet;
+          }
+        }
+        return _signer;
+      } catch (error) {
+        return null;
+      }
+    },
+  });
+};
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
-  const queryClient = useQueryClient();
-  const evmSigner = useEthersSigner();
-  const walletConnector = useContext(WalletConnectorContext);
+  const { data: signer, isLoading: isLoadingSigner } = useSigner();
 
-  const { idOSClient, setIdOSClient, initializing } = useIdosStore();
-
-  useEffect(() => {
-    if (!walletConnector?.isConnected) {
-      queryClient.removeQueries({ queryKey: ['shared-credential'] });
-      removeUserFromLocalStorage();
-    }
-  }, [walletConnector?.isConnected, queryClient]);
+  const { idOSClient, setIdOSClient, initializing, setSettingSigner } =
+    useIdosStore();
 
   useEffect(() => {
-    if (idOSClient || !walletConnector?.connectedWallet || !evmSigner) return;
+    if (idOSClient || !signer || isLoadingSigner) return;
 
     const setupClient = async () => {
       try {
+        setSettingSigner(true);
         console.log('setupClient');
         const client = await _idOSClient.createClient();
-        let _signer: any = undefined;
-        if (walletConnector?.connectedWallet) {
-          if (walletConnector.connectedWallet.type === 'evm') {
-            _signer = evmSigner;
-          } else if (walletConnector.connectedWallet.type === 'near') {
-            const nearWallet = walletConnector.nearWallet;
-            if (nearWallet?.selector.isSignedIn()) {
-              _signer = await nearWallet.selector.wallet();
-            }
-          } else if (walletConnector.connectedWallet.type === 'stellar') {
-            const stellarWallet = walletConnector.stellarWallet;
-            if (
-              stellarWallet?.isConnected &&
-              stellarWallet.address &&
-              stellarWallet.kit
-            ) {
-              _signer = await createStellarSigner(
-                stellarWallet.publicKey as string,
-                stellarWallet.address as string,
-              );
-            }
-          } else if (walletConnector.connectedWallet.type === 'xrpl') {
-            const xrplWallet = walletConnector.xrplWallet;
-            if (xrplWallet?.isConnected && xrplWallet.address) {
-              _signer = GemWallet;
-            }
-          }
-        }
-
         if (client.state === 'idle') {
-          const _withSigner = await client.withUserSigner(_signer);
+          const _withSigner = await client.withUserSigner(signer);
           // setWithSigner(_withSigner);
           if (await _withSigner.hasProfile()) {
             const client = await _withSigner.logIn();
@@ -75,12 +97,14 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         }
       } catch (error) {
         console.error('Failed to initialize idOS client:', error);
+      } finally {
+        setSettingSigner(false);
       }
     };
     setupClient();
     // Removing wallet dependencies to prevent reinitialization on connection failures
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletConnector?.isConnected, evmSigner]);
+  }, [signer, isLoadingSigner, idOSClient]);
 
   if (initializing) {
     return (
