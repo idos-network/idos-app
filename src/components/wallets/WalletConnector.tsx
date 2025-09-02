@@ -1,5 +1,7 @@
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 
+console.log('HELLO FROM STAGING');
+
 function WalletConnectorButton({
   onClick,
   label,
