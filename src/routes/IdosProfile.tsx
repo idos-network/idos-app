@@ -1,18 +1,10 @@
-
+import FaceSignBanner from '@/components/NotaBank/components/FaceSignBanner';
 import OnboardingStepper, {
   useHasStakingCredential,
 } from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
 import Spinner from '@/components/Spinner';
-import FaceSignBanner from '@/components/NotaBank/components/FaceSignBanner';
-import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
-import { CredentialsCard, WalletsCard } from '@/components/profile';
-import Spinner from '@/components/Spinner';
-import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
-import { env, isProduction } from '@/env';
-import { useSpecificCredential } from '@/hooks/useCredentials';
-import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
-import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
+import { isProduction } from '@/env';
 import { useToast } from '@/hooks/useToast';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 
