@@ -2,7 +2,7 @@ import { queryClient } from '@/providers/tanstack-query/query-client';
 import { createIDOSClient, type idOSClient } from '@idos-network/client';
 import { create } from 'zustand';
 
-export const _idOSClient = createIDOSClient({
+export const _idOSClient = new idOSClientConfiguration({
   nodeUrl: 'https://nodes.staging.idos.network/',
   enclaveOptions: {
     container: '#idOS-enclave',
