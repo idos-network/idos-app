@@ -28,7 +28,6 @@ export default async function handler(request: Request, _context: Context) {
 
     const message = `Sign this message to authenticate with idOS App.\n\nAddress: ${publicAddress}\nNonce: ${nonce}\nTimestamp: ${Date.now()}`;
 
-    // TODO: save message to db
     return new Response(
       JSON.stringify({
         message,

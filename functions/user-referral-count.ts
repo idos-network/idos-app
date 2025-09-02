@@ -8,15 +8,13 @@ async function getUserReferralCountHandler(
   request: AuthenticatedRequest,
   context: Context,
 ) {
-  const { referralCode } = context.params;
+  const { userId } = context.params;
 
-  if (!referralCode) {
+  if (!userId) {
     throw new ValidationError('Referral code is required');
   }
 
-  // For referral count, we need to check if the user is authorized to view this referral code
-  // This might need adjustment based on your business logic
-  if (request.userId !== referralCode) {
+  if (request.userId !== userId) {
     return new Response(
       JSON.stringify({
         error: 'Unauthorized to view referral count for another user',
@@ -29,10 +27,10 @@ async function getUserReferralCountHandler(
   }
 
   try {
-    const user = await getUserReferralCount(
+    const count = await getUserReferralCount(
       generateReferralCode(request.userId),
     );
-    return new Response(JSON.stringify(user), {
+    return new Response(JSON.stringify(count), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -45,6 +43,6 @@ async function getUserReferralCountHandler(
 export default withAuth(getUserReferralCountHandler);
 
 export const config: Config = {
-  path: '/api/user/:referralCode/referral-count',
+  path: '/api/user/:userId/referral-count',
   method: 'GET',
 };
