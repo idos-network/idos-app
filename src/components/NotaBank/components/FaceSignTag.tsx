@@ -1,9 +1,14 @@
+import { isProduction } from '@/env';
 import { forwardRef } from 'react';
 
 const FaceSignTag = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
+  if (isProduction) {
+    return null;
+  }
+
   return (
     <div
       ref={ref}

@@ -1,8 +1,18 @@
+
 import OnboardingStepper, {
   useHasStakingCredential,
 } from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
 import Spinner from '@/components/Spinner';
+import FaceSignBanner from '@/components/NotaBank/components/FaceSignBanner';
+import OnboardingStepper from '@/components/onboarding/OnboardingStepper';
+import { CredentialsCard, WalletsCard } from '@/components/profile';
+import Spinner from '@/components/Spinner';
+import { useIdOS, useIdOSLoggedIn } from '@/context/idos-context';
+import { env, isProduction } from '@/env';
+import { useSpecificCredential } from '@/hooks/useCredentials';
+import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
+import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useToast } from '@/hooks/useToast';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 
@@ -40,7 +50,7 @@ export function IdosProfile() {
               onError={(err) => showToast({ type: 'error', message: err })}
               onSuccess={(msg) => showToast({ type: 'success', message: msg })}
             />
-            {/* <FaceSignBanner /> */}
+            {!isProduction && <FaceSignBanner />}
             <WalletsCard refetchMainEvm={refetchMainEvm} />
           </div>
         </div>

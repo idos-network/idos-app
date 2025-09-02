@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { isProduction } from '@/env';
 import { AlertCircleIcon, ChevronLeftIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -32,6 +33,11 @@ const MobileFaceSign = () => (
 
 export default function FaceSignSetupDialog() {
   const [isMobile, setIsMobile] = useState(false);
+
+  if (isProduction) {
+    return null;
+  }
+
   return (
     <Dialog
       onOpenChange={(open) => {

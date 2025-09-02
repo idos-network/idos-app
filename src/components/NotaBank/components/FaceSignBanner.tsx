@@ -1,6 +1,11 @@
+import { isProduction } from '@/env';
 import FaceSignSetupDialog from './FaceSignSetupDialog';
 
 export default function FaceSignBanner() {
+  if (isProduction) {
+    return null;
+  }
+
   return (
     <div className="mx-auto flex-1">
       {/* Background gradients */}

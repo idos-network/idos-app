@@ -11,6 +11,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useIdOS } from '@/context/idos-context';
+import { isProduction } from '@/env';
 import { CopyIcon } from 'lucide-react';
 import { useState } from 'react';
 import { formatEther } from 'viem';
@@ -27,6 +28,10 @@ export default function FaceSignInfoDialog() {
   const { data: balance } = useBalance({
     address,
   });
+
+  if (isProduction) {
+    return null;
+  }
 
   return (
     <Dialog>
