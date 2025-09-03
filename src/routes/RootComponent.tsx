@@ -16,6 +16,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import AccessRestricted from './AccessRestricted';
 import MobileRestricted from './MobileRestricted';
 import { RootDocument } from './RootDocument';
+import CookieBanner from '@/components/CookieBanner';
 
 export function RootComponent() {
   const isMobile = useIsMobile();
@@ -63,6 +64,7 @@ export function RootComponent() {
           </TanstackQueryProvider.Provider>
         </ToastProvider>
       </ReferralProvider>
+      <CookieBanner />
     </RootDocument>
   );
 }
