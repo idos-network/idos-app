@@ -16,8 +16,16 @@
     />
   </head>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="icon" href="/favicon-60x60.png" />
+  <link rel="icon" type="image/svg+xml" href="/favicon-32x32.png" />
+</head>
+
+<body>
+  <div id="root"></div>
+  <!-- Load FaceTecSDK as a global variable -->
+  <script src="/core-sdk/FaceTecSDK.js/FaceTecSDK.js"></script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
