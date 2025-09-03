@@ -1,14 +1,13 @@
 import { useIdOS } from '@/context/idos-context';
 import { env } from '@/env';
-import { useSpecificCredential } from '@/hooks/useCredentials';
-import { getCurrentUserFromLocalStorage } from '@/storage/idos-profile';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type {
   idOSClient,
   idOSClientWithUserSigner,
 } from '@idos-network/client';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useUserWallets } from '../profile/wallets/WalletsCard';
 import {
   AddCredential,
   AddEVMWallet,
@@ -16,8 +15,6 @@ import {
   GetStarted,
   VerifyIdentity,
 } from './steps';
-
-const savedUser = getCurrentUserFromLocalStorage();
 
 const canAccessWalletIdentifier = (idOSClient: idOSClient | null) =>
   !!idOSClient && ['with-user-signer', 'logged-in'].includes(idOSClient.state);
@@ -84,9 +81,11 @@ export const useUserId = () => {
 };
 
 export default function OnboardingStepper() {
-  const { hasCredential: _hasStakingCredential } = useSpecificCredential(
-    env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
-  );
+  const { data: wallets = [] } = useUserWallets();
+  const { data: stakingCreds } = useHasStakingCredential();
+  const hasStakingCredential =
+    Array.isArray(stakingCreds) && !!stakingCreds?.length;
+  const hasEvmWallet = wallets.find((wallet) => wallet.wallet_type === 'EVM');
   const { stepIndex, setStepIndex } = useOnboardingStore();
   const { data: userId } = useUserId();
   const steps = [
@@ -97,12 +96,17 @@ export default function OnboardingStepper() {
     { id: 'step-five', component: <AddEVMWallet /> }, // Set up primary EVM wallet only for non EVM wallets
   ];
 
-  const initialeStep = userId ? 3 : savedUser ? 2 : 0;
+  const initialeStep = useMemo(
+    () => (userId ? (hasStakingCredential ? (hasEvmWallet ? null : 4) : 3) : 0),
+    [hasEvmWallet, hasStakingCredential, stepIndex],
+  );
 
   useEffect(() => {
-    if (initialeStep < stepIndex) return;
-    setStepIndex(initialeStep);
-  }, [initialeStep]);
+    if (initialeStep === null) return;
+    if (initialeStep > stepIndex) {
+      setStepIndex(initialeStep);
+    }
+  }, [initialeStep, stepIndex]);
 
   useEffect(() => {
     return () => {

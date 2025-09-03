@@ -4,6 +4,8 @@ import OnboardingStepper, {
   useUserId,
 } from '@/components/onboarding/OnboardingStepper';
 import { CredentialsCard, WalletsCard } from '@/components/profile';
+import WalletAdder from '@/components/profile/wallets/WalletAdder';
+import { useUserWallets } from '@/components/profile/wallets/WalletsCard';
 import Spinner from '@/components/Spinner';
 import { isProduction } from '@/env';
 import { useToast } from '@/hooks/useToast';
@@ -14,6 +16,8 @@ export function IdosProfile() {
   const { refetch: refetchMainEvm } = useUserMainEvm();
   const { showToast } = useToast();
   const { settingSigner } = useIdosStore();
+  const { data: wallets = [] } = useUserWallets();
+  const hasEvmWallet = wallets.find((wallet) => wallet?.wallet_type === 'EVM');
   const { data: stakingCreds, isLoading: stakingCredsLoading } =
     useHasStakingCredential();
   const { isLoading: isLoadingUserId } = useUserId();
@@ -23,6 +27,7 @@ export function IdosProfile() {
   console.log({ stakingCreds, isLoadingUserId, settingSigner });
   const newLoading = stakingCredsLoading || isLoadingUserId || settingSigner;
 
+  const showProfile = hasEvmWallet && hasStakingCredential;
   if (newLoading) {
     return (
       <div className="container mx-auto flex justify-center items-center h-screen -translate-y-20">
@@ -32,7 +37,8 @@ export function IdosProfile() {
   }
   return (
     <div className="flex items-start justify-center">
-      {hasStakingCredential ? (
+      <WalletAdder />
+      {showProfile ? (
         <div className="mx-auto flex flex-col px-32 pt-10 w-fit min-w-[1050px]">
           <div className="gap-3 flex flex-col mb-10">
             <div className="text-2xl font-medium text-neutral-50">
