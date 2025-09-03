@@ -20,6 +20,7 @@ export function IdosProfile() {
   const hasStakingCredential =
     Array.isArray(stakingCreds) && !!stakingCreds?.length;
 
+  console.log({ stakingCreds, isLoadingUserId, settingSigner });
   const newLoading = stakingCredsLoading || isLoadingUserId || settingSigner;
 
   if (newLoading) {
