@@ -3,39 +3,25 @@ import SmallPrimaryButton from './SmallPrimaryButton';
 import SmallSecondaryButton from './SmallSecondaryButton';
 
 const CookieBanner = () => {
-  const [isVisible, setIsVisible] = useState(false);
   const [consent, setConsent] = useState<string | null>(null);
 
   useEffect(() => {
     const existingConsent = localStorage.getItem('cookieConsent');
-    if (!existingConsent) {
-      setIsVisible(true);
-    } else {
+    if (existingConsent) {
       setConsent(JSON.parse(existingConsent));
     }
   }, []);
 
-  const handleAccept = () => {
+  const handleCookie = (accepted: boolean) => {
     const consentData = {
-      accepted: true,
+      accepted: accepted,
       timestamp: new Date().toISOString(),
     };
     localStorage.setItem('cookieConsent', JSON.stringify(consentData));
     setConsent(JSON.stringify(consentData));
-    setIsVisible(false);
   };
 
-  const handleDecline = () => {
-    const consentData = {
-      accepted: false,
-      timestamp: new Date().toISOString(),
-    };
-    localStorage.setItem('cookieConsent', JSON.stringify(consentData));
-    setConsent(JSON.stringify(consentData));
-    setIsVisible(false);
-  };
-
-  if (!isVisible) {
+  if (consent) {
     return null;
   }
 
@@ -64,39 +50,16 @@ const CookieBanner = () => {
         </div>
 
         <div className="cookies_banner-buttons flex gap-3 items-center">
-          <SmallSecondaryButton onClick={handleDecline}>
+          <SmallSecondaryButton onClick={() => handleCookie(false)}>
             <p>Decline</p>
           </SmallSecondaryButton>
-          <SmallPrimaryButton onClick={handleAccept}>
+          <SmallPrimaryButton onClick={() => handleCookie(true)}>
             <p>Accept</p>
           </SmallPrimaryButton>
         </div>
       </div>
     </div>
   );
-};
-
-export const useCookieConsent = () => {
-  const [consent, setConsent] = useState(null);
-
-  useEffect(() => {
-    const checkConsent = () => {
-      const existingConsent = localStorage.getItem('cookieConsent');
-      if (existingConsent) {
-        setConsent(JSON.parse(existingConsent));
-      }
-    };
-
-    checkConsent();
-
-    window.addEventListener('storage', checkConsent);
-
-    return () => {
-      window.removeEventListener('storage', checkConsent);
-    };
-  }, []);
-
-  return consent;
 };
 
 export default CookieBanner;
