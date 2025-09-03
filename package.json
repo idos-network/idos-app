@@ -16,7 +16,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "netlify dev:exec drizzle-kit studio",
-    "db:setup": "createdb idos_dev && npm run db:generate && npm run db:migrate"
+    "db:setup": "createdb idos_dev && npm run db:generate && npm run db:migrate",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-beta.2",
@@ -106,6 +107,7 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "netlify-cli": "^23.1.1",
+    "patch-package": "^8.0.0",
     "postcss": "^8.5.4",
     "prettier": "^3.4.2",
     "tailwindcss": "^4.1.8",
