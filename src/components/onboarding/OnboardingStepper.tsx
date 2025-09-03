@@ -3,8 +3,12 @@ import { env } from '@/env';
 import { useSpecificCredential } from '@/hooks/useCredentials';
 import { getCurrentUserFromLocalStorage } from '@/storage/idos-profile';
 import { useOnboardingStore } from '@/stores/onboarding-store';
+import type {
+  idOSClient,
+  idOSClientWithUserSigner,
+} from '@idos-network/client';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import {
   AddCredential,
   AddEVMWallet,
@@ -15,18 +19,32 @@ import {
 
 const savedUser = getCurrentUserFromLocalStorage();
 
+const canAccessWalletIdentifier = (idOSClient: idOSClient | null) =>
+  !!idOSClient && ['with-user-signer', 'logged-in'].includes(idOSClient.state);
+
 export const useWalletIdentifier = () => {
   const { idOSClient } = useIdOS();
-  useMemo(() => {
-    return idOSClient && idOSClient.state === 'with-user-signer'
-      ? idOSClient.walletIdentifier
-      : null;
-  }, [idOSClient]);
+  const withSigner = idOSClient as idOSClientWithUserSigner;
+
+  const _canAccessWalletIdentifier = canAccessWalletIdentifier(idOSClient);
+
+  console.log({ canAccessWalletIdentifier });
+
+  return useQuery({
+    queryKey: [
+      'wallet-identifier',
+      _canAccessWalletIdentifier ? withSigner?.walletIdentifier : null,
+    ],
+    queryFn: () => {
+      return _canAccessWalletIdentifier ? withSigner.walletIdentifier : null;
+    },
+    enabled: _canAccessWalletIdentifier,
+  });
 };
 
 export const useHasStakingCredential = () => {
   const { idOSClient } = useIdOS();
-  const walletIdentifier = useWalletIdentifier();
+  const { data: walletIdentifier } = useWalletIdentifier();
   return useQuery({
     queryKey: ['has-staking-credentials', walletIdentifier],
     queryFn: async () => {
@@ -52,7 +70,7 @@ export const useHasStakingCredential = () => {
 
 export const useUserId = () => {
   const { idOSClient } = useIdOS();
-  const walletIdentifier = useWalletIdentifier();
+  const { data: walletIdentifier } = useWalletIdentifier();
   return useQuery({
     queryKey: ['userId', walletIdentifier],
     queryFn: () => {
