@@ -1,12 +1,13 @@
 import FaceSignInfoDialog from '@/components/NotaBank/components/FaceSignInfoDialog';
 import { isProduction } from '@/env';
-import { useFetchWallets } from '@/hooks/useFetchWallets';
-import { useToast } from '@/hooks/useToast';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import InfoIcon from '@/icons/info';
 import MoreVertIcon from '@/icons/more-vert';
+import type { IdosWallet } from '@/interfaces/idos-profile';
+import { useIdosStore } from '@/stores/idosStore';
 import { addressGradient } from '@/utils/gradient';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { WalletActionModal } from './WalletActionModal';
 import WalletAddButton from './WalletAddButton';
@@ -15,8 +16,21 @@ interface WalletsCardProps {
   refetchMainEvm: () => void;
 }
 
+export const useUserWallets = () => {
+  const { idOSClient } = useIdosStore();
+  return useQuery({
+    queryKey: ['user-wallets'],
+    enabled: !!idOSClient && idOSClient.state === 'logged-in',
+    queryFn: async () => {
+      if (!idOSClient || idOSClient.state !== 'logged-in') return [];
+      const wallets = await idOSClient.getWallets();
+      return wallets as IdosWallet[];
+    },
+  });
+};
+
 export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
-  const { wallets, isLoading, error, refetch } = useFetchWallets();
+  const { data: wallets = [], isLoading, error, refetch } = useUserWallets();
   const { connectedWallet } = useWalletConnector();
   const { mainEvm } = useUserMainEvm();
   const [actionModalPosition, setActionModalPosition] = useState<{
@@ -31,7 +45,6 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
     y: number;
   } | null>(null);
   const [tooltipText, setTooltipText] = useState<string>('');
-  const { showToast } = useToast();
 
   if (isLoading) return null;
   if (error) return <div>Error: {error.message}</div>;
@@ -72,11 +85,7 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
             </button>
           </div>
         </div>
-        <WalletAddButton
-          onWalletAdded={refetch}
-          onError={(err) => showToast({ type: 'error', message: err })}
-          onSuccess={(msg) => showToast({ type: 'success', message: msg })}
-        />
+        <WalletAddButton />
       </div>
       {/* Table Section */}
       <div className="flex-grow overflow-x-auto">

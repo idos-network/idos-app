@@ -19,9 +19,8 @@ export function XrplWalletProvider({ children }: PropsWithChildren) {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [_error, setError] = useState<string | null>(null);
-  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+  const [, setIsInstallModalOpen] = useState(false);
   const [balance, setBalance] = useState<bigint>(0n);
-
   // Try to restore connection from localStorage (optional, for UX parity)
   useEffect(() => {
     // No persistent storage for GemWallet, so just set loading to false
@@ -32,19 +31,10 @@ export function XrplWalletProvider({ children }: PropsWithChildren) {
     setIsLoading(true);
     setError(null);
 
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Timeout')), 150);
-    });
     try {
-      const installed = await Promise.race([
-        GemWallet.isInstalled(),
-        timeoutPromise,
-      ]);
-      if (!installed?.result?.isInstalled) {
-        setIsInstallModalOpen(true);
-        setIsLoading(false);
-        return;
-      }
+      const installed = await GemWallet.isInstalled();
+      setIsInstallModalOpen(installed?.result?.isInstalled);
+      setIsLoading(false);
 
       const result = await getGemWalletPublicKey(GemWallet);
       if (!result) throw new Error('Failed to get wallet info');
@@ -138,7 +128,7 @@ export function XrplWalletProvider({ children }: PropsWithChildren) {
     <XrplWalletContext.Provider value={contextValue}>
       {children}
       <GemWalletInstallModal
-        isOpen={isInstallModalOpen}
+        isOpen={false}
         onClose={() => setIsInstallModalOpen(false)}
       />
     </XrplWalletContext.Provider>

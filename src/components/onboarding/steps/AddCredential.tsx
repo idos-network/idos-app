@@ -37,6 +37,7 @@ export default function AddCredential() {
   const { nextStep } = useOnboardingStore();
   console.log('RENDER ADD CREDENTIAL');
   useEffect(() => {
+    if (!wallet) return;
     const saveUserAndCompleteQuest = async () => {
       if (state === 'created' && wallet && wallet.type !== 'evm') {
         nextStep();
@@ -65,9 +66,15 @@ export default function AddCredential() {
           }),
         );
         completeQuest(idOSLoggedIn!.user.id, 'create_idos_profile');
-        queryClient.invalidateQueries({
-          queryKey: ['has-staking-credentials'],
-        });
+        if (wallet && wallet.type !== 'evm') {
+          // resetting "has-staking-credentials" will take user to profile
+          queryClient.invalidateQueries({
+            queryKey: ['has-staking-credentials'],
+          });
+        } else {
+          setState('created');
+          nextStep();
+        }
       } else if (error) {
         setState('idle');
       }
@@ -75,7 +82,7 @@ export default function AddCredential() {
     };
     saveUserAndCompleteQuest();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, error]);
+  }, [state, error, wallet]);
 
   async function handleAddCredential() {
     try {

@@ -1,13 +1,13 @@
-import { getUserById, saveUser, updateUser } from '@/api/user';
+import { updateUser } from '@/api/user';
+import { handleOpenWalletPopup } from '@/components/profile/wallets/WalletAdder';
+import { useUserWallets } from '@/components/profile/wallets/WalletsCard';
 import { useIdOSLoggedIn } from '@/context/idos-context';
-import { useToast } from '@/hooks/useToast';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
 import AirdropIcon from '@/icons/airdrop';
 import WalletIcon from '@/icons/wallet';
 import { useReferralCode } from '@/providers/quests/referral-provider';
 import { queryClient } from '@/providers/tanstack-query/query-client';
-import { useEffect, useState } from 'react';
-import EVMWalletAdd from '../components/EVMWalletAdd';
+import { useIdosStore } from '@/stores/idosStore';
+import { useEffect } from 'react';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
@@ -15,47 +15,24 @@ import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
 
 export default function AddEVMWallet() {
-  const { state, setState, error } = useStepState();
-  const { showToast } = useToast();
+  const { state } = useStepState();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { referralCode } = useReferralCode();
-  const [walletAddress, setWalletAddress] = useState<string>('');
-  const walletConnector = useWalletConnector();
-  const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
+  const { addingWallet } = useIdosStore();
+  const { data: wallets = [] } = useUserWallets();
+  const hasEvmWallet = wallets.find((wallet) => wallet.wallet_type === 'EVM');
+  console.log('RENDER ADD EVM WALLET', state);
 
   useEffect(() => {
-    const saveUserAndCompleteQuest = async () => {
-      // Safeguard against a user that has a profile and a credential
-      // but has not been registered on the db
-      const user = await getUserById(idOSLoggedIn!.user.id);
-      if (user[0]) {
-        updateUser({
-          id: idOSLoggedIn!.user.id,
-          mainEvm: walletAddress,
-          referrerCode: referralCode || '',
-        });
-      } else {
-        saveUser({
-          id: idOSLoggedIn!.user.id,
-          mainEvm: walletAddress,
-          referrerCode: referralCode || '',
-        });
-      }
-      localStorage.setItem(
-        'showCompleteToast',
-        JSON.stringify({
-          type: 'success',
-          message: 'Onboarding completed successfully.',
-        }),
-      );
+    if (hasEvmWallet) {
+      updateUser({
+        id: idOSLoggedIn!.user.id,
+        mainEvm: hasEvmWallet?.address,
+        referrerCode: referralCode || '',
+      });
       queryClient.invalidateQueries({ queryKey: ['has-staking-credentials'] });
-    };
-    if (error) {
-      setState('idle');
     }
-    saveUserAndCompleteQuest();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, error]);
+  }, [hasEvmWallet]);
 
   return (
     <div className="flex flex-col gap-10 h-[600px] w-[740px]">
@@ -64,7 +41,7 @@ export default function AddEVMWallet() {
           <TopBar activeStep="step-five" />
           <TextBlock
             title="Set up your primary wallet"
-            subtitle="This is required to participate in airdrops"
+            subtitle="This is required to receive token allocations*"
           />
         </>
       )}
@@ -86,25 +63,12 @@ export default function AddEVMWallet() {
             />
           </div>
           <div className="flex justify-center mt-auto">
-            {wallet && wallet.type === 'evm' ? (
-              <StepperButton
-                onClick={() => {
-                  if (wallet.address) setWalletAddress(wallet.address);
-                  setState('created');
-                }}
-              >
-                Add EVM wallet
-              </StepperButton>
-            ) : (
-              <EVMWalletAdd
-                onWalletAdded={(address) => {
-                  if (address) setWalletAddress(address);
-                  setState('created');
-                }}
-                onError={(err) => showToast({ type: 'error', message: err })}
-                // onSuccess={(msg) => showToast({ type: 'success', message: msg })}
-              />
-            )}
+            <StepperButton
+              onClick={handleOpenWalletPopup}
+              disabled={addingWallet}
+            >
+              {addingWallet ? 'Waiting for wallet...' : 'Add EVM wallet'}
+            </StepperButton>
           </div>
         </div>
       )}
