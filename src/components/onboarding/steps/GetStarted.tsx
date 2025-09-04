@@ -18,7 +18,7 @@ export default function GetStarted() {
         showToast({
           type: 'onboarding',
           message: '',
-          duration: 450000,
+          duration: 45000,
         });
         localStorage.setItem('onboardingToastShown', 'true');
       }, 750);
@@ -26,7 +26,7 @@ export default function GetStarted() {
   }, []);
 
   return (
-    <div className="relative w-[910px] h-full rounded-[40px] bg-red-500  from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
+    <div className="relative w-[910px] h-full rounded-[40px] bg-gradient-to-r  from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
       <div className="h-full w-full bg-idos-grey1/90 flex flex-col gap-10 p-10 rounded-[40px]">
         <img
           src="/idOS-cubes-1.png"
