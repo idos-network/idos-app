@@ -36,10 +36,10 @@ export default function WalletGate() {
           <WalletConnector />
           <div className="flex items-center justify-center gap-3 mt-10 mx-10">
             <div className="text-sm text-neutral-400">
+              {' '}
               By connecting a wallet I agree to the{' '}
               <a
-                // TODO: Add user agreement link
-                href="/user-agreement"
+                href="https://www.idos.network/legal/user-agreement"
                 className="text-aquamarine-600 hover:text-aquamarine-400 underline"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -48,8 +48,7 @@ export default function WalletGate() {
               </a>{' '}
               and confirm I read the{' '}
               <a
-                // TODO: Add privacy policy link
-                href="/privacy-policy"
+                href="https://www.idos.network/legal/privacy-policy"
                 className="text-aquamarine-600 hover:text-aquamarine-400 underline"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -58,8 +57,7 @@ export default function WalletGate() {
               </a>{' '}
               and{' '}
               <a
-                // TODO: Add transparency document link
-                href="/transparency-document"
+                href="https://www.idos.network/legal/transparency-document"
                 className="text-aquamarine-600 hover:text-aquamarine-400 underline"
                 target="_blank"
                 rel="noopener noreferrer"

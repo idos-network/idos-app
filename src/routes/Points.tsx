@@ -6,6 +6,24 @@ import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
+const PointsDisclaimer = () => (
+  <div className="text-xs text-neutral-400 text-center mt-7">
+    Points have no monetary value, cannot be traded or exchanged, confer no
+    rights, and are only issued for social reputation building, linked to
+    reusing credentials and interaction with the App. The program may change
+    and/or be discontinued. You are not eligible if, in the jurisdiction of your
+    nationality or residence, such a program would be illegal.{' '}
+    <a
+      href="https://www.idos.network/legal/user-agreement"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-aquamarine-600 underline"
+    >
+      Terms apply
+    </a>
+  </div>
+);
+
 export function Points() {
   const { isCompleted: profileQuestCompleted, isLoading } =
     useProfileQuestCompleted();
@@ -30,7 +48,7 @@ export function Points() {
       <div className="container mx-auto max-w-[1050px] flex flex-col px-32 pt-10">
         <div className="gap-3 flex flex-col mb-10">
           <div className="text-2xl font-medium text-neutral-50">
-            idOS Points
+            idOS Points*
           </div>
           <p className="text-neutral-400 text-base font-normal font-['Inter']">
             Global overview of your idOS Points.{' '}
@@ -47,6 +65,7 @@ export function Points() {
           </div>
           <QuestsCard />
         </div>
+        <PointsDisclaimer />
       </div>
     </div>
   );

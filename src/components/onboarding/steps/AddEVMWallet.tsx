@@ -14,6 +14,29 @@ import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
 
+const Disclaimer = () => (
+  <div className="text-xs text-neutral-400 text-center">
+    This is a marketing communication. White Paper{' '}
+    <a
+      href="https://www.idos.network/legal/white-paper"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-aquamarine-600 underline"
+    >
+      here
+    </a>{' '}
+    Not reviewed or approved by any EU authority. Issuer solely responsible.{' '}
+    <a
+      href="https://www.idos.network/legal/user-agreement"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-aquamarine-600 underline"
+    >
+      Terms apply
+    </a>
+  </div>
+);
+
 export default function AddEVMWallet() {
   const { state } = useStepState();
   const idOSLoggedIn = useIdOSLoggedIn();
@@ -46,23 +69,26 @@ export default function AddEVMWallet() {
         </>
       )}
       {state === 'idle' && (
-        <div className="flex flex-col gap-14 flex-1">
-          <div className="w-full h-full flex flex-row gap-5">
-            <StepperCards
-              icon={
-                <WalletIcon
-                  color="var(--color-aquamarine-400)"
-                  className="w-8 h-8"
-                />
-              }
-              description="Choose a primary EVM wallet. Once you complete onboarding, you can add more wallets to your idOS profile, and update your primary wallet."
-            />
-            <StepperCards
-              icon={<AirdropIcon color="var(--color-aquamarine-400)" />}
-              description="This will be your default wallet for all token distributions."
-            />
+        <>
+          <div className="flex flex-col gap-14 flex-1">
+            <div className="w-full h-full flex flex-row gap-5">
+              <StepperCards
+                icon={
+                  <WalletIcon
+                    color="var(--color-aquamarine-400)"
+                    className="w-8 h-8"
+                  />
+                }
+                description="Choose a primary EVM wallet. Once you complete onboarding, you can add more wallets to your idOS profile, and update your primary wallet."
+              />
+              <StepperCards
+                icon={<AirdropIcon color="var(--color-aquamarine-400)" />}
+                description="This will be your default wallet for all token distributions."
+              />
+            </div>
           </div>
-          <div className="flex justify-center mt-auto">
+          <Disclaimer />
+          <div className="flex justify-center mt-[-10px]">
             <StepperButton
               onClick={handleOpenWalletPopup}
               disabled={addingWallet}
@@ -70,7 +96,7 @@ export default function AddEVMWallet() {
               {addingWallet ? 'Waiting for wallet...' : 'Add EVM wallet'}
             </StepperButton>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
