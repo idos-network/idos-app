@@ -3,33 +3,30 @@ import CredentialIcon from '@/icons/credential';
 import KeyIcon from '@/icons/key';
 import PersonIcon from '@/icons/person';
 import { useOnboardingStore } from '@/stores/onboarding-store';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import GetStartedTextBlock from '../components/GetStartedCards';
 import StepperButton from '../components/StepperButton';
 
 export default function GetStarted() {
   const { showToast } = useToast();
-  const [hasShownToast, setHasShownToast] = useState(() => {
-    return localStorage.getItem('onboardingToastShown') === 'true';
-  });
   const { nextStep } = useOnboardingStore();
 
   useEffect(() => {
-    if (!hasShownToast) {
+    const onboardingToastShown = localStorage.getItem('onboardingToastShown');
+    if (!onboardingToastShown) {
       setTimeout(() => {
         showToast({
           type: 'onboarding',
           message: '',
-          duration: 45000,
+          duration: 450000,
         });
         localStorage.setItem('onboardingToastShown', 'true');
       }, 750);
-      setHasShownToast(true);
     }
-  }, [showToast, hasShownToast]);
+  }, []);
 
   return (
-    <div className="relative w-[910px] h-full rounded-[40px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
+    <div className="relative w-[910px] h-full rounded-[40px] bg-red-500  from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">
       <div className="h-full w-full bg-idos-grey1/90 flex flex-col gap-10 p-10 rounded-[40px]">
         <img
           src="/idOS-cubes-1.png"

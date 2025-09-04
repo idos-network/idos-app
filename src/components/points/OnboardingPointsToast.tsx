@@ -16,33 +16,24 @@ export default function OnboardingPointsToast({
   }`;
 
   return (
-    <div className="relative w-[308px] h-[224px] p-6">
+    <div className="relative w-[308px]  p-6">
+      {/* Triangle at the top */}
+      {/* <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-3">
+        <div className="w-1 h-1 border-l-[8px] border-r-[8px] border-b-[8px] border-l-transparent border-r-transparent border-b-[#441983]" />
+        <div className="absolute top-[1px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[7px] border-r-[7px] border-b-[7px] border-l-transparent border-r-transparent border-b-neutral-900" />
+      </div> */}
+
+      <div className="absolute inset-0 backdrop-blur-md -z-10 bg-neutral-900 rounded-xl" />
       <div
-        className="absolute inset-0 backdrop-blur-md -z-10 bg-neutral-900/80"
-        style={{
-          clipPath:
-            'path("M 154 5 L 168 20 L 296 20 A 12 12 0 0 1 308 32 L 308 212 A 12 12 0 0 1 296 224 L 12 224 A 12 12 0 0 1 0 212 L 0 32 A 12 12 0 0 1 12 20 L 140 20 Z")',
-        }}
+        className={`absolute inset-0 w-full h-full z-10 rounded-xl border border-[#441983] ${contentAnimationClasses}`}
       />
-      <svg
-        className={`absolute inset-0 w-full h-full z-10 ${contentAnimationClasses}`}
-        viewBox="-1 0 310 225"
-        preserveAspectRatio="none"
-      >
-        <path
-          d="M 154 5 L 168 20 L 296 20 A 12 12 0 0 1 308 32 L 308 212 A 12 12 0 0 1 296 224 L 12 224 A 12 12 0 0 1 0 212 L 0 32 A 12 12 0 0 1 12 20 L 140 20 Z"
-          fill="transparent"
-          stroke="#441983"
-          strokeWidth="1.5"
-        />
-      </svg>
       <div
         className={`relative flex flex-col items-center justify-center w-full z-10 pt-4 gap-4 ${contentAnimationClasses}`}
       >
         <div className="flex items-center justify-between w-full">
           <div className="flex-1" />
           <h2 className="text-xl leading-7 font-semibold text-neutral-50">
-            Earn points!
+            Earn points*
           </h2>
           <div className="flex-1 flex justify-end">
             <button
@@ -56,6 +47,17 @@ export default function OnboardingPointsToast({
         <div className="flex items-center text-center font-['Inter'] font-light text-sm">
           Your journey starts here. Once you complete your idOS Profile, you
           will see more quests to earn points!
+        </div>
+        <div className="text-sm text-neutral-400">
+          *Subject to{' '}
+          <a
+            href="https://www.idos.network/legal/user-agreement"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-aquamarine-600 underline"
+          >
+            terms
+          </a>
         </div>
         <div className="flex justify-center w-full">
           <button
