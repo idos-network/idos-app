@@ -39,7 +39,7 @@ export function IdosProfile() {
     <div className="flex items-start justify-center">
       <WalletAdder />
       {showProfile ? (
-        <div className="mx-auto flex flex-col px-32 pt-10 w-fit min-w-[1050px]">
+        <div className="mx-auto flex flex-col pt-10 w-full max-w-[900px] md:px-20">
           <div className="gap-3 flex flex-col mb-10">
             <div className="text-2xl font-medium text-neutral-50">
               idOS Profile
