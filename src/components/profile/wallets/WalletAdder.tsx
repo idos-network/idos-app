@@ -8,8 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import invariant from 'tiny-invariant';
 
-const allowedOrigin = 'https://localhost:5174';
-//   || import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
+const allowedOrigin = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
 
 export const handleOpenWalletPopup = () => {
   const url = allowedOrigin;
