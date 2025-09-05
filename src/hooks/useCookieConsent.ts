@@ -8,7 +8,6 @@ export function useCookieConsent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load consent from localStorage first, then sync with backend if user is logged in
   useEffect(() => {
     const loadConsent = async () => {
       setIsLoading(true);
@@ -63,7 +62,6 @@ export function useCookieConsent() {
         try {
           await saveUserCookieConsent(userId, accepted);
         } catch (err) {
-          console.warn('Failed to sync cookie consent with backend:', err);
           setError('Failed to sync with server, but consent is saved locally');
         }
       }

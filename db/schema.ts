@@ -15,7 +15,7 @@ export const users = pgTable(
     id: varchar('id', { length: 36 }).primaryKey().unique(),
     mainEvm: varchar('mainEvm', { length: 255 }).default(''),
     referrerCode: varchar('referrerCode').default(''),
-    cookieConsent: boolean('cookieConsent').default(false),
+    cookieConsent: boolean('cookieConsent'),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt')
       .defaultNow()

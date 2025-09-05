@@ -4,7 +4,7 @@ export const idOSUserSchema = z.object({
   id: z.string(),
   mainEvm: z.string(),
   referrerCode: z.string().optional(),
-  cookieConsent: z.boolean().optional(),
+  cookieConsent: z.nullable(z.boolean()),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 });
