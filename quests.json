@@ -37,6 +37,19 @@
   },
   {
     "id": 4,
+    "name": "subscribe_newsletter",
+    "title": "Subscribe our newsletter",
+    "description": "Join our newsletter to get the \n latest developments on idOS",
+    "link": "",
+    "internal": true,
+    "buttonText": "Join us",
+    "pointsReward": 10,
+    "isActive": true,
+    "isRepeatable": false,
+    "iframe": "<iframe src=\"https://embeds.beehiiv.com/145653e3-3ed6-47be-8e1a-f91df22071bf?slim=true\" data-test-id=\"beehiiv-embed\" height=\"52\" frameborder=\"0\" scrolling=\"no\" style=\" width: 100%; borderRadius: 0px; backgroundColor: transparent; zIndex: 1; position: 'relative';\"></iframe>"
+  },
+  {
+    "id": 5,
     "name": "referral_program",
     "title": "Refer a friend",
     "description": "Refer a friend! Once they create an idOS profile, you will earn points. The more friends you refer, the more points you earn.",
@@ -48,7 +61,7 @@
     "isRepeatable": true
   },
   {
-    "id": 5,
+    "id": 6,
     "name": "daily_check",
     "title": "Daily check",
     "description": "Login daily to earn points. \n You can claim points only once per day. \n (resets at 00:00 UTC)",
@@ -60,7 +73,7 @@
     "isRepeatable": true
   },
   {
-    "id": 6,
+    "id": 7,
     "name": "complete_kyc",
     "title": "Complete KYC",
     "description": "To access all of the features of this app, complete a KYC journey and add the credential encrypted to your idOS profile. Noone (not even idOS) will have access unless you share an Access Grant!",
@@ -72,7 +85,7 @@
     "isRepeatable": false
   },
   {
-    "id": 7,
+    "id": 8,
     "name": "add_face_as_signer",
     "title": "Add face as signer",
     "description": "Create your idOS FaceSign to manage your account with idOS' privacy-preserving biometrics.",
@@ -84,7 +97,7 @@
     "isRepeatable": false
   },
   {
-    "id": 8,
+    "id": 9,
     "name": "share_authorization_grant",
     "title": "Share an Access Grant",
     "description": "Share an Access Grant to your credential to onboard into a new service without verifying your data again.",
@@ -96,7 +109,7 @@
     "isRepeatable": false
   },
   {
-    "id": 10,
+    "id": 11,
     "name": "staking_event",
     "title": "Participate in Staking Event",
     "description": "Stake any amount of NEAR or ETH in the idOS Staking Event to bootstrap security for the idOS network.",
@@ -108,7 +121,7 @@
     "isRepeatable": false
   },
   {
-    "id": 11,
+    "id": 12,
     "name": "ico_event",
     "title": "Participate in ICO Event",
     "description": "Contribute any amount to the IDOS ICO.",
