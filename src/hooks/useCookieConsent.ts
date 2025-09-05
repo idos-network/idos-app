@@ -3,7 +3,7 @@ import {
   saveUserCookieConsent,
 } from '@/api/user-cookie-consent';
 import { useCallback, useEffect, useState } from 'react';
-import { useUserId } from './useUserId';
+import { useUserId } from '@/hooks/useUserId';
 
 export function useCookieConsent() {
   const { userId, isLoading: userLoading } = useUserId();
