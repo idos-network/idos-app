@@ -25,6 +25,12 @@ export default function QuestsModal({
   const [isCheckingTime, setIsCheckingTime] = useState<boolean>(false);
   const { data: userId } = useUserId();
 
+  const [consentGiven, setConsentGiven] = useState(false);
+
+  const handleCheckboxChange = () => {
+    setConsentGiven(!consentGiven);
+  };
+
   const getDailyCheckTimeRemaining = useCallback(async () => {
     if (!userId) return 0;
     return await getDailyQuestTimeRemaining(userId);
@@ -50,6 +56,7 @@ export default function QuestsModal({
         onClose();
       }
     };
+
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       document.addEventListener('mousedown', handleClickOutside);
@@ -61,6 +68,23 @@ export default function QuestsModal({
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    const handleIframeMessage = (event: any) => {
+      if (event.origin === 'https://embeds.beehiiv.com') {
+        const data = event.data;
+        if (data && data.type === 'BEEHIIV_SUBSCRIBER_FORM_SUBMITTED') {
+          handleQuestClick(quest);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleIframeMessage);
+
+    return () => {
+      window.removeEventListener('message', handleIframeMessage);
+    };
+  }, []);
 
   if (!isOpen) return null;
 
@@ -101,28 +125,58 @@ export default function QuestsModal({
                 {quest.description}
               </span>
             </div>
-            {/* Action Buttons */}
             <div className="flex justify-center gap-5">
-              <MediumPrimaryButton
-                onClick={() => handleQuestClick(quest)}
-                disabled={
-                  quest.status === 'Completed' ||
-                  (quest.name === 'daily_check' &&
-                    (timeRemaining > 0 || isCheckingTime))
-                }
-              >
-                {quest.status === 'Completed'
-                  ? 'Completed'
-                  : quest.name === 'daily_check'
-                    ? isCheckingTime
-                      ? 'Checking...'
-                      : timeRemaining === 0
-                        ? quest.buttonText
-                        : `Try again in ${formatTimeRemaining(timeRemaining)}`
-                    : !quest.internal && pendingQuest === quest.name
-                      ? 'Complete quest'
-                      : quest.buttonText}
-              </MediumPrimaryButton>
+              {quest.name === 'subscribe_newsletter' &&
+              quest.iframe &&
+              quest.status !== 'Completed' ? (
+                <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+                  <label className="text-xs flex items-center mb-4">
+                    <input
+                      type="checkbox"
+                      checked={consentGiven}
+                      onChange={handleCheckboxChange}
+                      style={{ marginRight: '0.5rem' }}
+                    />
+                    I freely give consent to process my personal data for the
+                    purposes of sending newsletters and/or other communication.
+                  </label>
+
+                  <div className="relative h-13 rounded-lg overflow-hidden bg-neutral-900">
+                    <div dangerouslySetInnerHTML={{ __html: quest.iframe }} />
+
+                    <div
+                      className="absolute top-0 left-0 w-full h-full bg-white bg-opacity-40 z-[2] rounded-lg transition-all duration-500"
+                      style={{
+                        backdropFilter: 'blur(4px)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                        pointerEvents: consentGiven ? 'none' : 'auto',
+                        opacity: consentGiven ? 0 : 1,
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <MediumPrimaryButton
+                  onClick={() => handleQuestClick(quest)}
+                  disabled={
+                    quest.status === 'Completed' ||
+                    (quest.name === 'daily_check' &&
+                      (timeRemaining > 0 || isCheckingTime))
+                  }
+                >
+                  {quest.status === 'Completed'
+                    ? 'Completed'
+                    : quest.name === 'daily_check'
+                      ? isCheckingTime
+                        ? 'Checking...'
+                        : timeRemaining === 0
+                          ? quest.buttonText
+                          : `Try again in ${formatTimeRemaining(timeRemaining)}`
+                      : !quest.internal && pendingQuest === quest.name
+                        ? 'Complete quest'
+                        : quest.buttonText}
+                </MediumPrimaryButton>
+              )}
             </div>
           </div>
         </div>

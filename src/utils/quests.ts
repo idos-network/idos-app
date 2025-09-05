@@ -15,6 +15,7 @@ export const questSchema = z.object({
   pointsReward: z.number(),
   isActive: z.boolean(),
   isRepeatable: z.boolean(),
+  iframe: z.optional(z.string()),
 });
 
 export type Quest = z.infer<typeof questSchema>;
