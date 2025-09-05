@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
   boolean,
   index,
@@ -15,7 +15,7 @@ export const users = pgTable(
     id: varchar('id', { length: 36 }).primaryKey().unique(),
     mainEvm: varchar('mainEvm', { length: 255 }).default(''),
     referrerCode: varchar('referrerCode').default(''),
-    cookieConsent: boolean('cookieConsent'),
+    cookieConsent: boolean('cookieConsent').default(sql`null`),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt')
       .defaultNow()

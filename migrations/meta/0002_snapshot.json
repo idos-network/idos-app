@@ -1,5 +1,5 @@
 {
-  "id": "a1ccc422-7ed9-47b0-86d3-4bf51fc8ac73",
+  "id": "c7f15bdd-da57-49ac-a3e1-a5f59777d6c4",
   "prevId": "d50c1dcb-184d-4d79-9714-390c074151ab",
   "version": "7",
   "dialect": "postgresql",
@@ -257,7 +257,8 @@
           "name": "cookieConsent",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "null"
         },
         "createdAt": {
           "name": "createdAt",
