@@ -6,10 +6,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { useUserId } from '@/hooks/useUserId';
 
 export function useCookieConsent() {
-  const { userId, isLoading: userLoading } = useUserId();
+  const userIdQuery = useUserId();
   const [consent, setConsent] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const userId = userIdQuery.userId;
+  const userLoading = userIdQuery.isLoading;
 
   useEffect(() => {
     const loadConsent = async () => {
