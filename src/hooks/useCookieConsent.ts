@@ -11,7 +11,7 @@ export function useCookieConsent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // @ts-expect-error
+  // @ts-expect-error started failling on ci with Property 'userId' does not exist on type
   const userId = userIdQuery.userId;
   const userLoading = userIdQuery.isLoading;
 
