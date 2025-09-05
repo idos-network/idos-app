@@ -1,27 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useCookieConsent } from '@/hooks/useCookieConsent';
 import SmallPrimaryButton from './SmallPrimaryButton';
 import SmallSecondaryButton from './SmallSecondaryButton';
 
 const CookieBanner = () => {
-  const [consent, setConsent] = useState<string | null>(null);
-
-  useEffect(() => {
-    const existingConsent = localStorage.getItem('cookieConsent');
-    if (existingConsent) {
-      setConsent(JSON.parse(existingConsent));
-    }
-  }, []);
+  const { consent, isLoading, updateConsent } = useCookieConsent();
 
   const handleCookie = (accepted: boolean) => {
-    const consentData = {
-      accepted: accepted,
-      timestamp: new Date().toISOString(),
-    };
-    localStorage.setItem('cookieConsent', JSON.stringify(consentData));
-    setConsent(JSON.stringify(consentData));
+    updateConsent(accepted);
   };
 
-  if (consent) {
+  // Don't show banner if loading, or if consent has been given
+  if (isLoading || consent !== null) {
     return null;
   }
 
