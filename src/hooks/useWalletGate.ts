@@ -10,7 +10,7 @@ export function useWalletGate() {
 
   useEffect(() => {
     if (!isConnected && location.pathname !== '/') {
-      // navigate({ to: '/' });
+      navigate({ to: '/' });
     } else if (isConnected && location.pathname === '/') {
       navigate({ to: '/idos-profile' });
     }
