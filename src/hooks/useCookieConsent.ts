@@ -6,7 +6,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useUserId } from '@/hooks/useUserId';
 
 export function useCookieConsent() {
-  const userIdQuery = useUserId();
+  const userIdQuery: { userId: string | null; isLoading: boolean } =
+    useUserId();
   const [consent, setConsent] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
