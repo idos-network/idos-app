@@ -35,7 +35,6 @@ export default function AddCredential() {
   const { signMessageAsync } = useSignMessage();
   const { completeQuest } = useCompleteQuest();
   const { nextStep } = useOnboardingStore();
-  console.log('RENDER ADD CREDENTIAL');
   useEffect(() => {
     const saveUserAndCompleteQuest = async () => {
       if (state === 'created' && wallet && wallet.type !== 'evm') {

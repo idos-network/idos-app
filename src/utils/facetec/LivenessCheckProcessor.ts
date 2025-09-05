@@ -3,8 +3,8 @@
 //
 
 // Core
-import { Config } from "../Config.js";
-import type { FaceTecFaceScanProcessor, FaceTecFaceScanResultCallback, FaceTecSessionResult } from "../core-sdk/FaceTecSDK.js/FaceTecPublicApi.js";
+import { env } from "@/env";
+import type { FaceTecFaceScanProcessor, FaceTecFaceScanResultCallback, FaceTecSessionResult } from "../../../public/facetec/FaceTecSDK.js/FaceTecPublicApi.js";
 
 // FaceTecSDK is loaded as a global variable via script tag
 declare global {
@@ -26,14 +26,21 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   //
   success: boolean;
 
-  constructor(sessionToken: string) {
+  callback: (status: boolean, errorMessage?: string) => void;
+  userId: string;
+
+  constructor(sessionToken: string, userId: string, callback: (status: boolean, errorMessage?: string) => void) {
     //
     // DEVELOPER NOTE:  These properties are for demonstration purposes only so the Sample App can get information about what is happening in the processor.
     // In the code in your own App, you can pass around signals, flags, intermediates, and results however you would like.
     //
+    this.userId = userId;
     this.success = false;
     this.latestSessionResult = null;
     this.cancelledDueToNetworkError = false;
+
+    // Set a callback
+    this.callback = callback;
 
     //
     // Part 1:  Starting the FaceTec Session
@@ -70,22 +77,21 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     //
     // Part 4:  Get essential data off the FaceTecSessionResult
     //
-    var parameters = {
+    const parameters = {
       faceScan: sessionResult.faceScan,
       auditTrailImage: sessionResult.auditTrail[0],
       lowQualityAuditTrailImage: sessionResult.lowQualityAuditTrail[0],
-      sessionId: sessionResult.sessionId
+      sessionId: sessionResult.sessionId,
+      deviceKey: env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
+      userAgent: FaceTecSDK.createFaceTecAPIUserAgentString(sessionResult.sessionId as string)
     };
 
     //
     // Part 5:  Make the Networking Call to Your Servers.  Below is just example code, you are free to customize based on how your own API works.
     //
     this.latestNetworkRequest = new XMLHttpRequest();
-    this.latestNetworkRequest.open("POST", Config.BaseURL + "/liveness-3d");
+    this.latestNetworkRequest.open("POST", `/api/face-sign/${this.userId}/onboard`);
     this.latestNetworkRequest.setRequestHeader("Content-Type", "application/json");
-
-    this.latestNetworkRequest.setRequestHeader("X-Device-Key", Config.DeviceKeyIdentifier);
-    this.latestNetworkRequest.setRequestHeader("X-User-Agent", FaceTecSDK.createFaceTecAPIUserAgentString(sessionResult.sessionId as string));
 
     this.latestNetworkRequest.onreadystatechange = (): void => {
       //
@@ -135,14 +141,14 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     // Part 7:  Demonstrates updating the Progress Bar based on the progress event.
     //
     this.latestNetworkRequest.upload.onprogress = (event: ProgressEvent): void => {
-      var progress = event.loaded / event.total;
+      const progress = event.loaded / event.total;
       faceScanResultCallback.uploadProgress(progress);
     };
 
     //
     // Part 8:  Actually send the request.
     //
-    var jsonStringToUpload = JSON.stringify(parameters);
+    const jsonStringToUpload = JSON.stringify(parameters);
     this.latestNetworkRequest.send(jsonStringToUpload);
 
     //
@@ -165,13 +171,12 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     // DEVELOPER NOTE:  onFaceTecSDKCompletelyDone() is called after you signal the FaceTec SDK with success() or cancel().
     // Calling a custom function on the Sample App Controller is done for demonstration purposes to show you that here is where you get control back from the FaceTec SDK.
     //
-    this.success = this.latestSessionResult!.isCompletelyDone;
+    this.success = this.latestSessionResult?.isCompletelyDone ?? false;
 
     // Log success message
     if (this.success) {
-      console.log("Liveness Confirmed");
+      this.callback(this.success);
     }
-
   };
 
   // Helper function to ensure the session is only cancelled once
@@ -181,13 +186,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
       this.cancelledDueToNetworkError = true;
       faceScanResultCallback.cancel();
     }
-  };
 
-  //
-  // DEVELOPER NOTE:  This public convenience method is for demonstration purposes only so the Sample App can get information about what is happening in the processor.
-  // In your code, you may not even want or need to do this.
-  //
-  public isSuccess = (): boolean => {
-    return this.success;
+    this.callback(false, networkErrorMessage);
   };
 }

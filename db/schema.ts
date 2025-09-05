@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm';
 import {
+  boolean,
   index,
   integer,
   pgTable,
@@ -14,6 +15,10 @@ export const users = pgTable(
     id: varchar('id', { length: 36 }).primaryKey().unique(),
     mainEvm: varchar('mainEvm', { length: 255 }).default(''),
     referrerCode: varchar('referrerCode').default(''),
+    faceSignToken: varchar('faceSignToken'),
+    faceSignTokenCreatedAt: timestamp('faceSignTokenCreatedAt'),
+    faceSignDone: boolean('faceSignDone').default(false),
+    faceSignHash: varchar('faceSignHash', { length: 300 }),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt')
       .defaultNow()
