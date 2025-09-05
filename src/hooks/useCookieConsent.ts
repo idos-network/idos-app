@@ -1,6 +1,6 @@
 import {
-    getUserCookieConsent,
-    saveUserCookieConsent,
+  getUserCookieConsent,
+  saveUserCookieConsent,
 } from '@/api/user-cookie-consent';
 import { useCallback, useEffect, useState } from 'react';
 import { useUserId } from './useUserId';
@@ -24,7 +24,12 @@ export function useCookieConsent() {
           setConsent(parsedConsent);
 
           // If user is logged in and consent is a valid boolean, sync with backend
-          if (userId && !userLoading && parsedConsent !== null && parsedConsent !== undefined) {
+          if (
+            userId &&
+            !userLoading &&
+            parsedConsent !== null &&
+            parsedConsent !== undefined
+          ) {
             try {
               await saveUserCookieConsent(userId, parsedConsent);
             } catch (err) {
@@ -67,7 +72,12 @@ export function useCookieConsent() {
         localStorage.setItem('cookieConsent', JSON.stringify(accepted));
 
         // Sync with backend if user is logged in and consent is a valid boolean
-        if (userId && !userLoading && accepted !== null && accepted !== undefined) {
+        if (
+          userId &&
+          !userLoading &&
+          accepted !== null &&
+          accepted !== undefined
+        ) {
           try {
             await saveUserCookieConsent(userId, accepted);
           } catch (err) {
