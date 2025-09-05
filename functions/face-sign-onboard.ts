@@ -29,6 +29,7 @@ export default async (request: Request, context: Context) => {
       lowQualityAuditTrailImage,
       externalDatabaseRefID: userId,
       sessionId,
+      storeAsFaceVector: true,
     }),
   });
 
