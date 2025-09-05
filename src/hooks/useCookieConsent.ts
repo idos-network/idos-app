@@ -11,7 +11,7 @@ export function useCookieConsent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const userId = userIdQuery.userId;
+  const userId = userIdQuery.userId || null;
   const userLoading = userIdQuery.isLoading;
 
   useEffect(() => {
