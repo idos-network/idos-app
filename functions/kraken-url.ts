@@ -7,34 +7,31 @@ const krakenClientId = process.env.KRAKEN_CLIENT_ID as string;
 const krakenLevel = process.env.KRAKEN_LEVEL as string;
 const krakenPrivateKey = process.env.KRAKEN_PRIVATE_KEY?.replace(/\\n/g, '\n') as string;
 
-
 export default async (request: Request, _context: Context) => {
-    const connectedWallet = request.url.split("?")[1].split("=")[1];
-    invariant(krakenApiUrl, "`KRAKEN_API_URL` is not set");
-    invariant(krakenClientId, "`KRAKEN_CLIENT_ID` is not set");
-    invariant(krakenLevel, "`KRAKEN_LEVEL` is not set");
-    invariant(krakenPrivateKey, "`KRAKEN_PRIVATE_KEY` is not set");
+  const connectedWallet = request.url.split("?")[1].split("=")[1];
+  invariant(krakenApiUrl, "`KRAKEN_API_URL` is not set");
+  invariant(krakenClientId, "`KRAKEN_CLIENT_ID` is not set");
+  invariant(krakenLevel, "`KRAKEN_LEVEL` is not set");
+  invariant(krakenPrivateKey, "`KRAKEN_PRIVATE_KEY` is not set");
 
-    const payload = {
-        clientId: krakenClientId,
-        kyc: true,
-        level: krakenLevel,
-        state: Date.now().toString(),
-    };
-    try {
+  const payload = {
+    clientId: krakenClientId,
+    kyc: true,
+    level: krakenLevel,
+    state: Date.now().toString(),
+  };
+  try {
 
-        const token = jwt.sign(payload, krakenPrivateKey, { algorithm: "ES512" });
+    const token = jwt.sign(payload, krakenPrivateKey, { algorithm: "ES512" });
 
-        return new Response(JSON.stringify({ url: `${krakenApiUrl}/kyc?token=${token}&provider=${"sumsub"}&walletAddress=${connectedWallet}` }), { status: 200 });
-    } catch (error) {
-        console.error('Error in kraken-url:', error);
-        throw error;
-    }
+    return new Response(JSON.stringify({ url: `${krakenApiUrl}/kyc?token=${token}&provider=${"sumsub"}&walletAddress=${connectedWallet}` }), { status: 200 });
+  } catch (error) {
+    console.error('Error in kraken-url:', error);
+    throw error;
+  }
 }
 
-
-
 export const config: Config = {
-    path: '/api/kraken-url',
-    method: 'GET',
+  path: '/api/kraken-url',
+  method: 'GET',
 };
