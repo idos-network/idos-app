@@ -16,6 +16,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import AccessRestricted from './AccessRestricted';
 import MobileRestricted from './MobileRestricted';
 import { RootDocument } from './RootDocument';
+import CookieBanner from '@/components/CookieBanner';
 
 export function RootComponent() {
   const isMobile = useIsMobile();
@@ -54,6 +55,7 @@ export function RootComponent() {
                         <Outlet />
                         <TanStackRouterDevtools position="bottom-right" />
                         <ReactQueryDevtools buttonPosition="bottom-right" />
+                        <CookieBanner />
                       </IDOSClientProvider>
                     </WalletConnectorProvider>
                   </XrplWalletProvider>

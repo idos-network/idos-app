@@ -15,6 +15,13 @@
       "when": 1756300608685,
       "tag": "0001_cute_kylun",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757108337904,
+      "tag": "0002_broken_stark_industries",
+      "breakpoints": true
     }
   ]
 }

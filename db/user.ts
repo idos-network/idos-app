@@ -60,3 +60,28 @@ export async function getUserTotalPoints(userId: string): Promise<number> {
 
   return totalPoints;
 }
+
+export async function saveUserCookieConsent(userId: string, accepted: boolean) {
+  return await db
+    .update(users)
+    .set({
+      cookieConsent: accepted,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
+}
+
+export async function getUserCookieConsent(userId: string): Promise<boolean | null> {
+  const result = await db
+    .select({
+      cookieConsent: users.cookieConsent,
+    })
+    .from(users)
+    .where(eq(users.id, userId));
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  return result[0].cookieConsent;
+}
