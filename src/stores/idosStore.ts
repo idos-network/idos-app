@@ -1,4 +1,5 @@
 import { queryClient } from '@/providers/tanstack-query/query-client';
+import { clearTokens } from '@/storage/auth';
 import { createIDOSClient, type idOSClient } from '@idos-network/client';
 import { create } from 'zustand';
 
@@ -34,6 +35,8 @@ export const useIdosStore = create<IdosStore>((set) => ({
     if (idOSClient && 'logOut' in idOSClient) {
       const idleClient = await idOSClient.logOut();
       set({ idOSClient: idleClient, initializing: true });
+      // Clear JWT tokens when logging out
+      clearTokens();
       window.location.reload();
       queryClient.removeQueries();
     }

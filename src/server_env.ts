@@ -6,6 +6,7 @@ const schema = z.object({
       ? z.string().min(1)
       : z.string().optional(),
   DATABASE_URL: z.string().default('postgres://localhost:5432/idos_dev'),
+  JWT_SECRET: process.env.NODE_ENV === 'production' ? z.string().min(1) : z.string().optional(),
 });
 
 export const env = schema.parse(process.env);

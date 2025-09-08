@@ -6,6 +6,7 @@ import { handleSaveUserWallets } from '@/handlers/user-wallets';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { _idOSClient, useIdosStore } from '@/stores/idosStore';
+import { loginBackend } from '@/utils/api-auth';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 import { useQuery } from '@tanstack/react-query';
 
@@ -70,6 +71,7 @@ const useSigner = () => {
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const { data: signer, isLoading: isLoadingSigner } = useSigner();
+  const walletConnector = useContext(WalletConnectorContext);
 
   const { idOSClient, setIdOSClient, initializing, setSettingSigner } =
     useIdosStore();
@@ -91,6 +93,50 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
             const walletsArray = userWallets as IdosWallet[];
             handleSaveUserWallets(client.user.id, walletsArray);
             setIdOSClient(client);
+
+            // Authenticate with backend using the connected wallet
+            try {
+              if (walletConnector?.isConnected && walletConnector?.connectedWallet) {
+                const { address, type } = walletConnector.connectedWallet;
+                
+                // Create signer function based on wallet type
+                const signMessage = async (message: string) => {
+                  if (type === 'evm' && signer) {
+                    return await signer.signMessage(message);
+                  } else if (type === 'near') {
+                    const nearWallet = walletConnector.nearWallet;
+                    if (nearWallet?.selector.isSignedIn()) {
+                      const wallet = await nearWallet.selector.wallet();
+                      return await wallet.signMessage({ message });
+                    }
+                  } else if (type === 'stellar') {
+                    const stellarWallet = walletConnector.stellarWallet;
+                    if (stellarWallet?.isConnected && stellarWallet.kit) {
+                      return await stellarWallet.kit.signMessage(message);
+                    }
+                  } else if (type === 'xrpl') {
+                    const xrplWallet = walletConnector.xrplWallet;
+                    if (xrplWallet?.isConnected) {
+                      return await GemWallet.signMessage(message);
+                    }
+                  }
+                  throw new Error('Unable to sign message with current wallet');
+                };
+
+                // Get public keys for non-EVM wallets
+                const public_key = type !== 'evm' ? [address] : undefined;
+
+                await loginBackend({
+                  address,
+                  walletType: type,
+                  signMessage,
+                  public_key,
+                });
+              }
+            } catch (error) {
+              console.error('Failed to authenticate with backend:', error);
+              // Don't fail the idOS setup if backend auth fails
+            }
           } else {
             setIdOSClient(_withSigner);
           }

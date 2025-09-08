@@ -33,3 +33,20 @@ export async function getUserWallets(userId: string) {
     .from(userWallets)
     .where(eq(userWallets.userId, userId));
 }
+
+export async function getUserIdByWallet(address: string, walletType: string): Promise<string | null> {
+  const res = await db
+    .select({
+      userId: userWallets.userId,
+    })
+    .from(userWallets)
+    .where(
+      and(
+        eq(userWallets.address, address),
+        eq(userWallets.walletType, walletType),
+      ),
+    )
+    .limit(1);
+
+  return res.length ? res[0].userId : null;
+}
