@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { useIdOSLoggedIn } from '@/context/idos-context';
 import { isProduction } from '@/env';
@@ -15,10 +15,7 @@ import encodeQR from 'qr';
 import { useEffect, useState } from 'react';
 import { faceTec } from '../../../utils/facetec';
 
-
-function QRCode({
-  userId,
-}: { userId: string }) {
+function QRCode({ userId }: { userId: string }) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,9 +24,7 @@ function QRCode({
     }
   }, [qrCodeUrl, userId]);
 
-  let body = (
-    <div className="text-xl text-center">Loading QR Code...</div>
-  );
+  let body = <div className="text-xl text-center">Loading QR Code...</div>;
 
   if (qrCodeUrl !== null) {
     body = (
@@ -37,10 +32,10 @@ function QRCode({
         {/* Placeholder for QR code */}
         <div
           className="w-[190px] h-[190px] bg-white rounded-lg flex items-center justify-center"
-          dangerouslySetInnerHTML={{ __html: encodeQR(qrCodeUrl, "svg") }}
+          dangerouslySetInnerHTML={{ __html: encodeQR(qrCodeUrl, 'svg') }}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -54,14 +49,14 @@ function QRCode({
         Scan the QR code with your smartphone to continue the face scan and
         verification on your mobile.
       </p>
-        <p className="text-center mb-5 text-idos-grey5">
-          We are waiting for confirmation
-          <span className="inline-block text-2xl ml-1">
-            <span className="animate-pulse">.</span>
-            <span className="animate-pulse delay-200">.</span>
-            <span className="animate-pulse delay-500">.</span>
-          </span>
-        </p>
+      <p className="text-center mb-5 text-idos-grey5">
+        We are waiting for confirmation
+        <span className="inline-block text-2xl ml-1">
+          <span className="animate-pulse">.</span>
+          <span className="animate-pulse delay-200">.</span>
+          <span className="animate-pulse delay-500">.</span>
+        </span>
+      </p>
     </div>
   );
 }
@@ -70,7 +65,11 @@ export default function FaceSignSetupDialog({
   mobile = false,
   userId,
   onDone,
-}: { mobile?: boolean, userId?: string, onDone: (result: boolean) => void }) {
+}: {
+  mobile?: boolean;
+  userId?: string;
+  onDone: (result: boolean) => void;
+}) {
   const [qrCodeView, setQrCodeView] = useState(false);
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const [faceSignResult, setFaceSignResult] = useState<null | boolean>(null);
@@ -79,37 +78,37 @@ export default function FaceSignSetupDialog({
   const currentUserId = userId ?? idOSLoggedIn?.user.id ?? undefined;
 
   if (!currentUserId) {
-    throw new Error("FaceSignSetupDialog: No user ID available");
+    throw new Error('FaceSignSetupDialog: No user ID available');
   }
 
   useEffect(() => {
     // Initialize FaceTec when component mounts
     faceTec.init(currentUserId);
 
-    const checkFaceSignStatus = (interval?: any) => getFaceSignStatus(currentUserId).then(status => {
-      if (status.faceSignHash) {
-        if (interval) {
-          clearInterval(interval);
+    const checkFaceSignStatus = (interval?: any) =>
+      getFaceSignStatus(currentUserId).then((status) => {
+        if (status.faceSignHash) {
+          if (interval) {
+            clearInterval(interval);
+          }
+          setQrCodeView(false);
+          setFaceSignResult(true);
         }
-        setQrCodeView(false);
-        setFaceSignResult(true);
-      }
 
-      if (status.faceSignDone) {
-        onDone(status.faceSignDone);
-      }
-    });
+        if (status.faceSignDone) {
+          onDone(status.faceSignDone);
+        }
+      });
 
     // Also get the state from current user
     const interval = setInterval(() => {
       checkFaceSignStatus(interval);
     }, 5000);
     checkFaceSignStatus();
-    
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLivenessCheck = () => {
     setFaceSignInProgress(true);
@@ -160,8 +159,7 @@ export default function FaceSignSetupDialog({
             <AlertCircleIcon />
             <AlertDescription>
               <p>
-                Learn about idOS FaceSign Terms & Conditions and Privacy
-                Policy.
+                Learn about idOS FaceSign Terms & Conditions and Privacy Policy.
               </p>
             </AlertDescription>
           </Alert>
@@ -170,23 +168,27 @@ export default function FaceSignSetupDialog({
           <div className="flex flex-col gap-5 w-full mt-2">
             <Button
               className="bg-aquamarine-400"
-              onClick={() => mobile ? handleLivenessCheck() : setQrCodeView(true)}
+              onClick={() =>
+                mobile ? handleLivenessCheck() : setQrCodeView(true)
+              }
             >
-              {mobile ? "Start Liveness Check" : "Continue in Mobile"}
+              {mobile ? 'Start Liveness Check' : 'Continue in Mobile'}
             </Button>
-            {!mobile && <Button
-              variant="underline"
-              className="bg-neutral-700 hover:bg-neutral-600"
-              onClick={() => handleLivenessCheck()}
-            >
-              <span className="text-neutral-100 text-xs font-medium">
-                Continue on this device
-              </span>
-            </Button>}
+            {!mobile && (
+              <Button
+                variant="underline"
+                className="bg-neutral-700 hover:bg-neutral-600"
+                onClick={() => handleLivenessCheck()}
+              >
+                <span className="text-neutral-100 text-xs font-medium">
+                  Continue on this device
+                </span>
+              </Button>
+            )}
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (faceSignResult === false) {
@@ -199,7 +201,8 @@ export default function FaceSignSetupDialog({
           <AlertCircleIcon />
           <AlertDescription>
             <p>
-              {faceSignError || "An unknown error occurred during the FaceSign process."}
+              {faceSignError ||
+                'An unknown error occurred during the FaceSign process.'}
             </p>
           </AlertDescription>
         </Alert>
@@ -220,7 +223,8 @@ export default function FaceSignSetupDialog({
           <AlertCircleIcon />
           <AlertDescription>
             <p>
-              FaceSign has been successfully set up. You can now return to your browser to continue.
+              FaceSign has been successfully set up. You can now return to your
+              browser to continue.
             </p>
           </AlertDescription>
         </Alert>
@@ -239,7 +243,8 @@ export default function FaceSignSetupDialog({
           <AlertCircleIcon />
           <AlertDescription>
             <p>
-              FaceSign has been captured successfully. You will be now asked for a credentials creation. 
+              FaceSign has been captured successfully. You will be now asked for
+              a credentials creation.
             </p>
           </AlertDescription>
         </Alert>
@@ -274,9 +279,7 @@ export default function FaceSignSetupDialog({
             <img src="/idos-face-sign-logo.svg" alt="Face Sign" />
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 mt-12">
-          {body}
-        </div>
+        <div className="grid gap-4 mt-12">{body}</div>
         <DialogFooter></DialogFooter>
       </DialogContent>
     </Dialog>

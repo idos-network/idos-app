@@ -3,8 +3,12 @@
 //
 
 // Core
-import { env } from "@/env";
-import type { FaceTecFaceScanProcessor, FaceTecFaceScanResultCallback, FaceTecSessionResult } from "../../../public/facetec/FaceTecSDK.js/FaceTecPublicApi.js";
+import { env } from '@/env';
+import type {
+  FaceTecFaceScanProcessor,
+  FaceTecFaceScanResultCallback,
+  FaceTecSessionResult,
+} from '../../../public/facetec/FaceTecSDK.js/FaceTecPublicApi.js';
 
 // FaceTecSDK is loaded as a global variable via script tag
 declare global {
@@ -29,7 +33,11 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   callback: (status: boolean, errorMessage?: string) => void;
   userId: string;
 
-  constructor(sessionToken: string, userId: string, callback: (status: boolean, errorMessage?: string) => void) {
+  constructor(
+    sessionToken: string,
+    userId: string,
+    callback: (status: boolean, errorMessage?: string) => void,
+  ) {
     //
     // DEVELOPER NOTE:  These properties are for demonstration purposes only so the Sample App can get information about what is happening in the processor.
     // In the code in your own App, you can pass around signals, flags, intermediates, and results however you would like.
@@ -49,23 +57,26 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     // - FaceTecFaceScanProcessor:  A class that implements FaceTecFaceScanProcessor, which handles the FaceScan when the User completes a Session.  In this example, "this" implements the class.
     // - sessionToken:  A valid Session Token you just created by calling your API to get a Session Token from the Server SDK.
     //
-    new FaceTecSDK.FaceTecSession(
-      this,
-      sessionToken
-    );
+    new FaceTecSDK.FaceTecSession(this, sessionToken);
   }
 
   //
   // Part 2:  Handling the Result of a FaceScan
   //
-  public processSessionResultWhileFaceTecSDKWaits = (sessionResult: FaceTecSessionResult, faceScanResultCallback: FaceTecFaceScanResultCallback): void => {
+  public processSessionResultWhileFaceTecSDKWaits = (
+    sessionResult: FaceTecSessionResult,
+    faceScanResultCallback: FaceTecFaceScanResultCallback,
+  ): void => {
     // Save the current sessionResult
     this.latestSessionResult = sessionResult;
 
     //
     // Part 3:  Handles early exit scenarios where there is no FaceScan to handle -- i.e. User Cancellation, Timeouts, etc.
     //
-    if (sessionResult.status !== FaceTecSDK.FaceTecSessionStatus.SessionCompletedSuccessfully) {
+    if (
+      sessionResult.status !==
+      FaceTecSDK.FaceTecSessionStatus.SessionCompletedSuccessfully
+    ) {
       this.latestNetworkRequest.abort();
       faceScanResultCallback.cancel();
       return;
@@ -83,15 +94,23 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
       lowQualityAuditTrailImage: sessionResult.lowQualityAuditTrail[0],
       sessionId: sessionResult.sessionId,
       deviceKey: env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
-      userAgent: FaceTecSDK.createFaceTecAPIUserAgentString(sessionResult.sessionId as string)
+      userAgent: FaceTecSDK.createFaceTecAPIUserAgentString(
+        sessionResult.sessionId as string,
+      ),
     };
 
     //
     // Part 5:  Make the Networking Call to Your Servers.  Below is just example code, you are free to customize based on how your own API works.
     //
     this.latestNetworkRequest = new XMLHttpRequest();
-    this.latestNetworkRequest.open("POST", `/api/face-sign/${this.userId}/onboard`);
-    this.latestNetworkRequest.setRequestHeader("Content-Type", "application/json");
+    this.latestNetworkRequest.open(
+      'POST',
+      `/api/face-sign/${this.userId}/onboard`,
+    );
+    this.latestNetworkRequest.setRequestHeader(
+      'Content-Type',
+      'application/json',
+    );
 
     this.latestNetworkRequest.onreadystatechange = (): void => {
       //
@@ -102,45 +121,66 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
 
       if (this.latestNetworkRequest.readyState === XMLHttpRequest.DONE) {
         try {
-          const responseJSON = JSON.parse(this.latestNetworkRequest.responseText);
+          const responseJSON = JSON.parse(
+            this.latestNetworkRequest.responseText,
+          );
           const scanResultBlob = responseJSON.scanResultBlob;
 
           // In v9.2.0+, we key off a new property called wasProcessed to determine if we successfully processed the Session result on the Server.
           // Device SDK UI flow is now driven by the proceedToNextStep function, which should receive the scanResultBlob from the Server SDK response.
-          if (responseJSON.wasProcessed === true && responseJSON.error === false) {
+          if (
+            responseJSON.wasProcessed === true &&
+            responseJSON.error === false
+          ) {
             // Demonstrates dynamically setting the Success Screen Message.
-            FaceTecSDK.FaceTecCustomization.setOverrideResultScreenSuccessMessage("Face Scanned\n3D Liveness Proven");
+            FaceTecSDK.FaceTecCustomization.setOverrideResultScreenSuccessMessage(
+              'Face Scanned\n3D Liveness Proven',
+            );
 
             // In v9.2.0+, simply pass in scanResultBlob to the proceedToNextStep function to advance the User flow.
             // scanResultBlob is a proprietary, encrypted blob that controls the logic for what happens next for the User.
             faceScanResultCallback.proceedToNextStep(scanResultBlob);
-          }
-          else {
+          } else {
             // CASE:  UNEXPECTED response from API.  Our Sample Code keys off a wasProcessed boolean on the root of the JSON object --> You define your own API contracts with yourself and may choose to do something different here based on the error.
-            if (responseJSON.error === true && responseJSON.errorMessage != null) {
-              this.cancelDueToNetworkError(responseJSON.errorMessage, faceScanResultCallback);
-            }
-            else {
-              this.cancelDueToNetworkError("Unexpected API response, cancelling out.", faceScanResultCallback);
+            if (
+              responseJSON.error === true &&
+              responseJSON.errorMessage != null
+            ) {
+              this.cancelDueToNetworkError(
+                responseJSON.errorMessage,
+                faceScanResultCallback,
+              );
+            } else {
+              this.cancelDueToNetworkError(
+                'Unexpected API response, cancelling out.',
+                faceScanResultCallback,
+              );
             }
           }
-        }
-        catch (_e) {
+        } catch (_e) {
           // CASE:  Parsing the response into JSON failed --> You define your own API contracts with yourself and may choose to do something different here based on the error.  Solid server-side code should ensure you don't get to this case.
-          this.cancelDueToNetworkError("Exception while handling API response, cancelling out.", faceScanResultCallback);
+          this.cancelDueToNetworkError(
+            'Exception while handling API response, cancelling out.',
+            faceScanResultCallback,
+          );
         }
       }
     };
 
     this.latestNetworkRequest.onerror = (): void => {
       // CASE:  Network Request itself is erroring --> You define your own API contracts with yourself and may choose to do something different here based on the error.
-      this.cancelDueToNetworkError("XHR error, cancelling.", faceScanResultCallback);
+      this.cancelDueToNetworkError(
+        'XHR error, cancelling.',
+        faceScanResultCallback,
+      );
     };
 
     //
     // Part 7:  Demonstrates updating the Progress Bar based on the progress event.
     //
-    this.latestNetworkRequest.upload.onprogress = (event: ProgressEvent): void => {
+    this.latestNetworkRequest.upload.onprogress = (
+      event: ProgressEvent,
+    ): void => {
       const progress = event.loaded / event.total;
       faceScanResultCallback.uploadProgress(progress);
     };
@@ -159,7 +199,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
         return;
       }
 
-      faceScanResultCallback.uploadMessageOverride("Still Uploading...");
+      faceScanResultCallback.uploadMessageOverride('Still Uploading...');
     }, 6000);
   };
 
@@ -180,7 +220,10 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   };
 
   // Helper function to ensure the session is only cancelled once
-  public cancelDueToNetworkError = (networkErrorMessage: string, faceScanResultCallback: FaceTecFaceScanResultCallback): void => {
+  public cancelDueToNetworkError = (
+    networkErrorMessage: string,
+    faceScanResultCallback: FaceTecFaceScanResultCallback,
+  ): void => {
     if (this.cancelledDueToNetworkError === false) {
       console.error(networkErrorMessage);
       this.cancelledDueToNetworkError = true;

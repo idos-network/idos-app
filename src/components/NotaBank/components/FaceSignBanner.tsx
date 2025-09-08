@@ -73,7 +73,11 @@ export default function FaceSignBanner() {
             >
               Create
             </Button>
-            {faceSignInProgress && <FaceSignSetupDialog onDone={() => setFaceSignInProgress(false)} />}
+            {faceSignInProgress && (
+              <FaceSignSetupDialog
+                onDone={() => setFaceSignInProgress(false)}
+              />
+            )}
           </div>
         </div>
       </div>
