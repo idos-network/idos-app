@@ -84,7 +84,7 @@ export default function QuestsModal({
     return () => {
       window.removeEventListener('message', handleIframeMessage);
     };
-  }, []);
+  }, [handleQuestClick, quest]);
 
   if (!isOpen) return null;
 
