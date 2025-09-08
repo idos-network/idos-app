@@ -16,6 +16,10 @@ export const users = pgTable(
     mainEvm: varchar('mainEvm', { length: 255 }).default(''),
     referrerCode: varchar('referrerCode').default(''),
     cookieConsent: boolean('cookieConsent').default(sql`null`),
+    faceSignToken: varchar('faceSignToken'),
+    faceSignTokenCreatedAt: timestamp('faceSignTokenCreatedAt'),
+    faceSignDone: boolean('faceSignDone').default(false),
+    faceSignHash: varchar('faceSignHash', { length: 300 }),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt')
       .defaultNow()

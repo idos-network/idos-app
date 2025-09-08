@@ -17,7 +17,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "netlify dev:exec drizzle-kit studio",
     "db:setup": "createdb idos_dev && npm run db:generate && npm run db:migrate",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "facetec-browser-sdk": "live-server --host=localhost --port=8000"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-beta.2",
@@ -68,9 +69,11 @@
     "drizzle-orm": "^0.44.4",
     "go-try": "^3.0.2",
     "jsonwebtoken": "^9.0.2",
+    "live-server": "^1.2.1",
     "lucide-react": "^0.535.0",
     "near-api-js": "4.0.3",
     "postgres": "^3.4.7",
+    "qr": "^0.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^3.1.0",

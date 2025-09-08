@@ -1,0 +1,28 @@
+/* FaceTec Fluid Container Styling - No Backdrop, Responsive */
+
+#DOM_FT_mainInterfaceNonOverlayContainer {
+  top: initial !important;
+  display: flex !important;
+}
+
+#DOM_FT_PRIMARY_TOPLEVEL_mainContainer {
+  justify-content: center;
+}
+
+#DOM_FT_overlayContainer {
+  transition: opacity 500ms;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+#DOM_FT_feedbackBarContainer {
+  background-color: rgba(245, 245, 245, 1) !important;
+  border-radius: 100px !important;
+}
+
+#DOM_FT_feedbackBarElement {
+  color: rgba(9, 9, 9, 1) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 24px !important;
+}

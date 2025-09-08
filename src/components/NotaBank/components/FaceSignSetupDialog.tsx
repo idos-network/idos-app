@@ -1,3 +1,4 @@
+import { getFaceSignMobileUrl, getFaceSignStatus } from '@/api/face-sign';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -6,63 +7,271 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
+import { useIdOSLoggedIn } from '@/context/idos-context';
 import { isProduction } from '@/env';
 import { AlertCircleIcon, ChevronLeftIcon } from 'lucide-react';
-import { useState } from 'react';
+import encodeQR from 'qr';
+import { useEffect, useState } from 'react';
+import { faceTec } from '../../../utils/facetec';
 
-const MobileFaceSign = () => (
-  <div className="flex flex-col justify-center items-center gap-3">
-    {/* QR Code - replace the placeholder with actual QR */}
-    <div className="bg-white rounded-2xl w-[180px] h-[180px] mb-6 flex items-center justify-center">
-      {/* Placeholder for QR code */}
-      <div className="w-[160px] h-[160px] bg-black rounded-lg flex items-center justify-center">
-        <span className="text-white text-xs">QR Code</span>
+function QRCode({ userId }: { userId: string }) {
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!qrCodeUrl && userId) {
+      getFaceSignMobileUrl(userId).then(setQrCodeUrl);
+    }
+  }, [qrCodeUrl, userId]);
+
+  let body = <div className="text-xl text-center">Loading QR Code...</div>;
+
+  if (qrCodeUrl !== null) {
+    body = (
+      <div className="bg-white rounded-2xl w-[210px] h-[210px] mb-6 flex items-center justify-center">
+        {/* Placeholder for QR code */}
+        <div
+          className="w-[190px] h-[190px] bg-white rounded-lg flex items-center justify-center"
+          dangerouslySetInnerHTML={{ __html: encodeQR(qrCodeUrl, 'svg') }}
+        />
       </div>
-    </div>
-    <h3 className="text-neutral-50 text-2xl font-medium">
-      Set Up idOS FaceSign
-    </h3>
-    <p className="text-neutral-400 text-sm max-w-[270px] text-center">
-      Scan the QR code with your smartphone to continue the face scan and
-      verification on your mobile.
-    </p>
-  </div>
-);
+    );
+  }
 
-export default function FaceSignSetupDialog() {
-  const [isMobile, setIsMobile] = useState(false);
+  return (
+    <div className="flex flex-col justify-center items-center gap-3">
+      {/* QR Code - replace the placeholder with actual QR */}
+      {body}
+      <h3 className="text-neutral-50 text-2xl font-medium">
+        Set Up idOS FaceSign
+      </h3>
+      <p className="text-neutral-400 text-sm max-w-[270px] text-center">
+        Scan the QR code with your smartphone to continue the face scan and
+        verification on your mobile.
+      </p>
+      <p className="text-center mb-5 text-idos-grey5">
+        We are waiting for confirmation
+        <span className="inline-block text-2xl ml-1">
+          <span className="animate-pulse">.</span>
+          <span className="animate-pulse delay-200">.</span>
+          <span className="animate-pulse delay-500">.</span>
+        </span>
+      </p>
+    </div>
+  );
+}
+
+export default function FaceSignSetupDialog({
+  mobile = false,
+  userId,
+  onDone,
+}: {
+  mobile?: boolean;
+  userId?: string;
+  onDone: (result: boolean) => void;
+}) {
+  const [qrCodeView, setQrCodeView] = useState(false);
+  const [faceSignInProgress, setFaceSignInProgress] = useState(false);
+  const [faceSignResult, setFaceSignResult] = useState<null | boolean>(null);
+  const [faceSignError, setFaceSignError] = useState<string | null>(null);
+  const idOSLoggedIn = useIdOSLoggedIn();
+  const currentUserId = userId ?? idOSLoggedIn?.user.id ?? undefined;
+
+  if (!currentUserId) {
+    throw new Error('FaceSignSetupDialog: No user ID available');
+  }
+
+  useEffect(() => {
+    // Initialize FaceTec when component mounts
+    faceTec.init(currentUserId);
+
+    const checkFaceSignStatus = (interval?: any) =>
+      getFaceSignStatus(currentUserId).then((status) => {
+        if (status.faceSignHash) {
+          if (interval) {
+            clearInterval(interval);
+          }
+          setQrCodeView(false);
+          setFaceSignResult(true);
+        }
+
+        if (status.faceSignDone) {
+          onDone(status.faceSignDone);
+        }
+      });
+
+    // Also get the state from current user
+    const interval = setInterval(() => {
+      checkFaceSignStatus(interval);
+    }, 5000);
+    checkFaceSignStatus();
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleLivenessCheck = () => {
+    setFaceSignInProgress(true);
+
+    faceTec.onLivenessCheckClick((status, errorMessage?: string) => {
+      setFaceSignInProgress(false);
+      setFaceSignResult(status);
+      setFaceSignError(errorMessage || null);
+    });
+  };
 
   if (isProduction) {
     return null;
+  }
+
+  if (faceSignInProgress) {
+    return (
+      <div className="fixed inset-0 bg-[#090909] opacity-80 transition-opacity ease-in-out delay-150 duration-300 z-10"></div>
+    );
+  }
+
+  let body = null;
+
+  if (qrCodeView) {
+    body = <QRCode userId={currentUserId} />;
+  } else {
+    body = (
+      <div className="flex flex-col justify-center items-center gap-12">
+        {/* FaceSign Image */}
+        <img
+          src="/face-sign-creation.svg"
+          alt="Face Sign"
+          className="max-w-[136px]"
+        />
+
+        {/* FaceSign Description */}
+        <div className="flex flex-col items-center text-center gap-3">
+          <h3 className="text-neutral-50 text-2xl font-medium">
+            Set Up idOS FaceSign
+          </h3>
+          <p className="text-neutral-400 text-sm max-w-[270px]">
+            First, position your face in the camera frame. Then follow the
+            instructions given.
+          </p>
+
+          {/* Alerts */}
+          <Alert variant="success" className="mt-3 text-left">
+            <AlertCircleIcon />
+            <AlertDescription>
+              <p>
+                Learn about idOS FaceSign Terms & Conditions and Privacy Policy.
+              </p>
+            </AlertDescription>
+          </Alert>
+
+          {/* Actions */}
+          <div className="flex flex-col gap-5 w-full mt-2">
+            <Button
+              className="bg-aquamarine-400"
+              onClick={() =>
+                mobile ? handleLivenessCheck() : setQrCodeView(true)
+              }
+            >
+              {mobile ? 'Start Liveness Check' : 'Continue in Mobile'}
+            </Button>
+            {!mobile && (
+              <Button
+                variant="underline"
+                className="bg-neutral-700 hover:bg-neutral-600"
+                onClick={() => handleLivenessCheck()}
+              >
+                <span className="text-neutral-100 text-xs font-medium">
+                  Continue on this device
+                </span>
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (faceSignResult === false) {
+    body = (
+      <div className="flex flex-col justify-center items-center gap-6">
+        <h3 className="text-neutral-50 text-2xl font-medium">
+          FaceSign Failed
+        </h3>
+        <Alert variant="destructive" className="mt-3 text-left">
+          <AlertCircleIcon />
+          <AlertDescription>
+            <p>
+              {faceSignError ||
+                'An unknown error occurred during the FaceSign process.'}
+            </p>
+          </AlertDescription>
+        </Alert>
+        <p className="text-neutral-400 text-sm max-w-[270px] text-center">
+          Unfortunately, we couldn't verify your identity. Please try again.
+        </p>
+      </div>
+    );
+  }
+
+  if (faceSignResult === true && mobile) {
+    body = (
+      <div className="flex flex-col justify-center items-center gap-6">
+        <h3 className="text-neutral-50 text-2xl font-medium">
+          FaceSign Successful
+        </h3>
+        <Alert variant="success" className="mt-3 text-left">
+          <AlertCircleIcon />
+          <AlertDescription>
+            <p>
+              FaceSign has been successfully set up. You can now return to your
+              browser to continue.
+            </p>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (faceSignResult === true && !mobile) {
+    // Let's ask for DWG
+    body = (
+      <div className="flex flex-col justify-center items-center gap-6">
+        <h3 className="text-neutral-50 text-2xl font-medium">
+          FaceSign Successful
+        </h3>
+        <Alert variant="success" className="mt-3 text-left">
+          <AlertCircleIcon />
+          <AlertDescription>
+            <p>
+              FaceSign has been captured successfully. You will be now asked for
+              a credentials creation.
+            </p>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
     <Dialog
       onOpenChange={(open) => {
         if (!open) {
-          setIsMobile(false);
+          setQrCodeView(false);
+          // Manually closed
+          onDone(false);
         }
       }}
+      open={!faceSignInProgress}
     >
-      <DialogTrigger asChild>
-        <Button
-          className="bg-aquamarine-400 hover:bg-aquamarine-300 text-green-900 font-medium  text-base rounded-2xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-green-400/25"
-          size="lg"
-        >
-          Create
-        </Button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-[#1A1A1A] border-none">
         <DialogHeader>
           <DialogTitle className="flex justify-center mt-9">
-            {isMobile && (
+            {qrCodeView && faceSignResult === null && (
               <Button
                 variant="underline"
                 size="icon"
                 className="absolute left-4 top-6 -translate-y-1/2 text-neutral-400 hover:text-white"
-                onClick={() => setIsMobile(false)}
+                onClick={() => setQrCodeView(false)}
               >
                 <ChevronLeftIcon className="min-h-5 min-w-5" />
               </Button>
@@ -70,61 +279,7 @@ export default function FaceSignSetupDialog() {
             <img src="/idos-face-sign-logo.svg" alt="Face Sign" />
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 mt-12">
-          {isMobile ? (
-            <MobileFaceSign />
-          ) : (
-            <div className="flex flex-col justify-center items-center gap-12">
-              {/* FaceSign Image */}
-              <img
-                src="/face-sign-creation.svg"
-                alt="Face Sign"
-                className="max-w-[136px]"
-              />
-
-              {/* FaceSign Description */}
-              <div className="flex flex-col items-center text-center gap-3">
-                <h3 className="text-neutral-50 text-2xl font-medium">
-                  Set Up idOS FaceSign
-                </h3>
-                <p className="text-neutral-400 text-sm max-w-[270px]">
-                  First, position your face in the camera frame. Then follow the
-                  instructions given.
-                </p>
-
-                {/* Alerts */}
-                <Alert variant="success" className="mt-3 text-left">
-                  <AlertCircleIcon />
-                  <AlertDescription>
-                    <p>
-                      Learn about idOS FaceSign Terms & Conditions and Privacy
-                      Policy.
-                    </p>
-                  </AlertDescription>
-                </Alert>
-
-                {/* Actions */}
-                <div className="flex flex-col gap-5 w-full mt-2">
-                  <Button
-                    className="bg-aquamarine-400"
-                    onClick={() => setIsMobile(true)}
-                  >
-                    Continue in Mobile
-                  </Button>
-                  <Button
-                    variant="underline"
-                    className="bg-neutral-700 hover:bg-neutral-600"
-                    onClick={() => setIsMobile(false)}
-                  >
-                    <span className="text-neutral-100 text-xs font-medium">
-                      Continue on this device
-                    </span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        <div className="grid gap-4 mt-12">{body}</div>
         <DialogFooter></DialogFooter>
       </DialogContent>
     </Dialog>

@@ -6,10 +6,12 @@ import {
   createRoute,
   Outlet,
 } from '@tanstack/react-router';
+import { z } from 'zod';
 import AppLayout from './components/layout/AppLayout';
 import NotaBankLogo from './components/NotaBank/components/NotaBankLogo';
 import { StakingEventLayout } from './components/staking-event/layout/StakingEventLayout';
 import { Stake } from './components/staking-event/views/Stake';
+import { FaceSignMobile } from './routes/FaceSignMobile';
 import { Home } from './routes/Home';
 import { IdosIco } from './routes/IdosIco';
 import { IdosProfile } from './routes/IdosProfile';
@@ -108,9 +110,22 @@ export const pointsRoute = createRoute({
   component: Points,
 });
 
+// FaceTec mobile sign
+const mobileSignRouteSearchSchema = z.object({
+  token: z.string(),
+});
+
+export const faceTecMobileSignRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  validateSearch: (search) => mobileSignRouteSearchSchema.parse(search),
+  path: '/face-sign-mobile',
+  component: FaceSignMobile,
+});
+
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
+  faceTecMobileSignRoute,
   layoutRoute.addChildren([
     idosProfileRoute,
     ...(isProduction
