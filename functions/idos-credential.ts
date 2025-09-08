@@ -1,6 +1,6 @@
 import { type IdosDWG } from '@/interfaces/idos-credential';
 import type { Config, Context } from '@netlify/functions';
-// @ts-ignore
+// @ts-expect-error Missing types in this library
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import { encode as utf8Encode } from '@stablelib/utf8';

@@ -1,7 +1,11 @@
+import { Button } from '@/components/ui/button';
 import { isProduction } from '@/env';
+import { useState } from 'react';
 import FaceSignSetupDialog from './FaceSignSetupDialog';
 
 export default function FaceSignBanner() {
+  const [faceSignInProgress, setFaceSignInProgress] = useState(false);
+
   if (isProduction) {
     return null;
   }
@@ -62,7 +66,18 @@ export default function FaceSignBanner() {
 
           {/* Right side - Button */}
           <div className="flex-shrink-0">
-            <FaceSignSetupDialog />
+            <Button
+              className="bg-aquamarine-400 hover:bg-aquamarine-300 text-green-900 font-medium  text-base rounded-2xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-green-400/25"
+              size="lg"
+              onClick={() => setFaceSignInProgress(true)}
+            >
+              Create
+            </Button>
+            {faceSignInProgress && (
+              <FaceSignSetupDialog
+                onDone={() => setFaceSignInProgress(false)}
+              />
+            )}
           </div>
         </div>
       </div>

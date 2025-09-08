@@ -1,4 +1,4 @@
-import FaceSignInfoDialog from '@/components/NotaBank/components/FaceSignInfoDialog';
+import FaceSignTag from '@/components/NotaBank/components/FaceSignTag';
 import { isProduction } from '@/env';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
@@ -127,7 +127,7 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
                     <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center gap-3">
                       <span className="flex items-center gap-2 font-normal">
                         {wallet.wallet_type === 'face_sign' && !isProduction ? (
-                          <FaceSignInfoDialog />
+                          <FaceSignTag />
                         ) : (
                           wallet.wallet_type
                         )}
