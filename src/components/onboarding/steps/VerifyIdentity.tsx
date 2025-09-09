@@ -87,8 +87,7 @@ export default function VerifyIdentity() {
           await login();
           await saveUser({
             id: userId,
-            // @todo: handle non-evms
-            mainEvm: userAddress,
+            mainEvm: walletType === 'evm' ? userAddress : '',
             referrerCode: '',
             faceSignHash: '',
             faceSignToken: null,
