@@ -32,8 +32,6 @@ export default async (request: Request, context: Context) => {
 
   const json = await response.json();
 
-  console.log('FaceTec login response:', json);
-
   if (!response.ok) {
     return createResponse(
       {
