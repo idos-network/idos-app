@@ -126,7 +126,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
           );
           const scanResultBlob = responseJSON.scanResultBlob;
 
-          console.log("Response from API: ", responseJSON);
+          console.log('Response from API: ', responseJSON);
 
           // In v9.2.0+, we key off a new property called wasProcessed to determine if we successfully processed the Session result on the Server.
           // Device SDK UI flow is now driven by the proceedToNextStep function, which should receive the scanResultBlob from the Server SDK response.
