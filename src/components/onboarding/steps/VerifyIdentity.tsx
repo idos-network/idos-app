@@ -51,6 +51,7 @@ export default function VerifyIdentity() {
     idOSClient?.state === 'logged-in'
       ? idOSClient?.user.id
       : currentUser?.id || '';
+  const isloggedIn = idOSClient?.state === 'logged-in';
   const userAddress = currentUser?.mainAddress || '';
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
   const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
@@ -177,7 +178,7 @@ export default function VerifyIdentity() {
           )}
         {state === 'idle' && (
           <div className="flex justify-center mt-auto">
-            {!userId && (
+            {!isloggedIn && (
               <StepperButton onClick={handleProofOfHumanity}>
                 Verify you are human
               </StepperButton>
