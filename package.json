@@ -24,10 +24,10 @@
     "@creit.tech/stellar-wallets-kit": "^1.7.5",
     "@digitalbazaar/ed25519-verification-key-2020": "^4.2.0",
     "@gemwallet/api": "^3.8.0",
-    "@idos-network/client": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/client@1039",
-    "@idos-network/consumer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/consumer@1039",
-    "@idos-network/issuer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/issuer@1039",
-    "@idos-network/utils": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/utils@1039",
+    "@idos-network/client": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/client@1112",
+    "@idos-network/consumer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/consumer@1112",
+    "@idos-network/issuer": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/issuer@1112",
+    "@idos-network/utils": "https://pkg.pr.new/idos-network/idos-sdk-js/@idos-network/utils@1112",
     "@ipregistry/client": "^6.0.0",
     "@kwilteam/kwil-js": "^0.9.4",
     "@near-js/accounts": "^2.2.5",
@@ -70,6 +70,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.535.0",
     "near-api-js": "4.0.3",
+    "patch-package": "^8.0.0",
     "postgres": "^3.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -83,8 +84,7 @@
     "vite-plugin-node-polyfills": "^0.23.0",
     "wagmi": "^2.15.4",
     "xrpl": "^4.4.0",
-    "zod": "^3.25.48",
-    "patch-package": "^8.0.0"
+    "zod": "^3.25.48"
   },
   "overrides": {
     "@meteorwallet/sdk": {
@@ -115,6 +115,7 @@
     "tw-animate-css": "^1.3.6",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.18.1",
+    "unenv": "^1.10.0",
     "vite": "^6.0.5",
     "vite-compatible-readable-stream": "^3.6.1",
     "vite-tsconfig-paths": "^5.1.4"
