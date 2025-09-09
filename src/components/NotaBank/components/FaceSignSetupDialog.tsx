@@ -101,10 +101,6 @@ export default function FaceSignSetupDialog({
               nextStep();
             });
           }
-
-          if (result.faceSignDone) {
-            onDone(result.faceSignDone);
-          }
         })
         .catch((error) => {
           console.error('Error checking face sign status:', error);
