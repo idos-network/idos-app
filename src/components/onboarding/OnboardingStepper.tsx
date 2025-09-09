@@ -126,6 +126,14 @@ export default function OnboardingStepper() {
     [hasEvmWallet, hasStakingCredential, stepIndex],
   );
 
+  console.log({
+    initialeStep,
+    hasFaceSign,
+    hasStakingCredential,
+    hasEvmWallet,
+    stepIndex,
+  });
+
   useEffect(() => {
     if (initialeStep === null) return;
     if (initialeStep > stepIndex) {
