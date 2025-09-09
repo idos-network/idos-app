@@ -1,7 +1,7 @@
+import { saveUser } from '@/api/user';
 import FaceSignSetupDialog from '@/components/NotaBank/components/FaceSignSetupDialog';
 import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
-import { saveUser } from '@/db/user';
 import { env } from '@/env';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
