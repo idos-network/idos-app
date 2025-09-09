@@ -1,5 +1,6 @@
 import FaceSignBanner from '@/components/NotaBank/components/FaceSignBanner';
 import OnboardingStepper, {
+  useHasFaceSign,
   useHasStakingCredential,
   useUserId,
 } from '@/components/onboarding/OnboardingStepper';
@@ -23,8 +24,8 @@ export function IdosProfile() {
   const { isLoading: isLoadingUserId } = useUserId();
   const hasStakingCredential =
     Array.isArray(stakingCreds) && !!stakingCreds?.length;
+  const { data: hasFaceSign } = useHasFaceSign();
 
-  console.log({ stakingCreds, isLoadingUserId, settingSigner });
   const newLoading = stakingCredsLoading || isLoadingUserId || settingSigner;
 
   const showProfile = hasEvmWallet && hasStakingCredential;
@@ -53,7 +54,7 @@ export function IdosProfile() {
               onError={(err) => showToast({ type: 'error', message: err })}
               onSuccess={(msg) => showToast({ type: 'success', message: msg })}
             />
-            {!isProduction && <FaceSignBanner />}
+            {!isProduction && !hasFaceSign && <FaceSignBanner />}
             <WalletsCard refetchMainEvm={refetchMainEvm} />
           </div>
         </div>

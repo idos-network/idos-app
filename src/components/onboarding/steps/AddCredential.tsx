@@ -22,6 +22,7 @@ import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
+import { useUserId } from '../OnboardingStepper';
 import { useStepState } from './useStepState';
 
 export default function AddCredential() {
@@ -35,6 +36,8 @@ export default function AddCredential() {
   const { signMessageAsync } = useSignMessage();
   const { completeQuest } = useCompleteQuest();
   const { nextStep } = useOnboardingStore();
+  const { data: userId } = useUserId();
+
   useEffect(() => {
     if (!wallet) return;
     const saveUserAndCompleteQuest = async () => {
@@ -148,7 +151,7 @@ export default function AddCredential() {
             />
           </div>
           <div className="flex justify-center mt-auto">
-            <StepperButton onClick={handleAddCredential}>
+            <StepperButton onClick={handleAddCredential} disabled={!userId}>
               Add Credential
             </StepperButton>
           </div>

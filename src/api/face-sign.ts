@@ -16,7 +16,7 @@ export const checkToken = async (token: string): Promise<string> => {
 
 export const getFaceSignStatus = async (
   userId: string,
-): Promise<{ faceSignHash: boolean; faceSignDone: boolean }> => {
+): Promise<{ faceSignHash: string; faceSignDone: boolean }> => {
   const response = await axiosInstance.get(`/face-sign/${userId}/status`, {
     headers: { Accept: 'application/json' },
   });
