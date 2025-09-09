@@ -1,4 +1,5 @@
 import { useIdOS } from '@/context/idos-context';
+import { getUserById } from '@/db/user';
 import { env } from '@/env';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type {
@@ -24,8 +25,6 @@ export const useWalletIdentifier = () => {
   const withSigner = idOSClient as idOSClientWithUserSigner;
 
   const _canAccessWalletIdentifier = canAccessWalletIdentifier(idOSClient);
-
-  console.log({ canAccessWalletIdentifier });
 
   return useQuery({
     queryKey: [
@@ -80,24 +79,50 @@ export const useUserId = () => {
   });
 };
 
+export const useHasFaceSign = () => {
+  const { data: userId } = useUserId();
+  return useQuery({
+    queryKey: ['hasFaceSign', userId],
+    queryFn: () => {
+      return userId
+        ? getUserById(userId)
+            .then((res) => res[0].faceSignHash)
+            .catch(() => null)
+        : null;
+    },
+    enabled: !!userId,
+  });
+};
+
+const steps = [
+  { id: 'step-one', component: <GetStarted /> }, // Get started
+  { id: 'step-two', component: <CreatePrivateKey /> }, // Create your private key
+  { id: 'step-three', component: <VerifyIdentity /> }, // Verify identity after which idOS profile is created
+  { id: 'step-four', component: <AddCredential /> }, // Add a credential
+  { id: 'step-five', component: <AddEVMWallet /> }, // Set up primary EVM wallet only for non EVM wallets
+];
+
 export default function OnboardingStepper() {
   const { data: wallets = [] } = useUserWallets();
   const { data: stakingCreds } = useHasStakingCredential();
+  const { data: hasFaceSign } = useHasFaceSign();
   const hasStakingCredential =
     Array.isArray(stakingCreds) && !!stakingCreds?.length;
   const hasEvmWallet = wallets.find((wallet) => wallet.wallet_type === 'EVM');
   const { stepIndex, setStepIndex } = useOnboardingStore();
   const { data: userId } = useUserId();
-  const steps = [
-    { id: 'step-one', component: <GetStarted /> }, // Get started
-    { id: 'step-two', component: <CreatePrivateKey /> }, // Create your private key
-    { id: 'step-three', component: <VerifyIdentity /> }, // Verify identity after which idOS profile is created
-    { id: 'step-four', component: <AddCredential /> }, // Add a credential
-    { id: 'step-five', component: <AddEVMWallet /> }, // Set up primary EVM wallet only for non EVM wallets
-  ];
 
   const initialeStep = useMemo(
-    () => (userId ? (hasStakingCredential ? (hasEvmWallet ? null : 4) : 3) : 0),
+    () =>
+      userId
+        ? hasFaceSign
+          ? hasStakingCredential
+            ? hasEvmWallet
+              ? null
+              : 4 // no EVM wallet
+            : 3 // no staking credential
+          : 2 // no face sign
+        : 0,
     [hasEvmWallet, hasStakingCredential, stepIndex],
   );
 

@@ -9,7 +9,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useIdOSLoggedIn } from '@/context/idos-context';
+import { updateUserFaceSign } from '@/db/user';
 import { isProduction } from '@/env';
+import { useOnboardingStore } from '@/stores/onboarding-store';
 import { AlertCircleIcon, ChevronLeftIcon } from 'lucide-react';
 import encodeQR from 'qr';
 import { useEffect, useState } from 'react';
@@ -75,6 +77,7 @@ export default function FaceSignSetupDialog({
   const [faceSignResult, setFaceSignResult] = useState<null | boolean>(null);
   const [faceSignError, setFaceSignError] = useState<string | null>(null);
   const idOSLoggedIn = useIdOSLoggedIn();
+  const { nextStep } = useOnboardingStore();
   const currentUserId = userId ?? idOSLoggedIn?.user.id ?? undefined;
 
   if (!currentUserId) {
@@ -86,19 +89,26 @@ export default function FaceSignSetupDialog({
     faceTec.init(currentUserId);
 
     const checkFaceSignStatus = (interval?: any) =>
-      getFaceSignStatus(currentUserId).then((status) => {
-        if (status.faceSignHash) {
-          if (interval) {
-            clearInterval(interval);
+      getFaceSignStatus(currentUserId)
+        .then((result) => {
+          if (result.faceSignHash) {
+            if (interval) {
+              clearInterval(interval);
+            }
+            setQrCodeView(false);
+            setFaceSignResult(true);
+            updateUserFaceSign(currentUserId, result.faceSignHash).then(() => {
+              nextStep();
+            });
           }
-          setQrCodeView(false);
-          setFaceSignResult(true);
-        }
 
-        if (status.faceSignDone) {
-          onDone(status.faceSignDone);
-        }
-      });
+          if (result.faceSignDone) {
+            onDone(result.faceSignDone);
+          }
+        })
+        .catch((error) => {
+          console.error('Error checking face sign status:', error);
+        });
 
     // Also get the state from current user
     const interval = setInterval(() => {

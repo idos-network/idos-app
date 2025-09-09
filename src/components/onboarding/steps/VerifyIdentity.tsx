@@ -1,5 +1,7 @@
+import FaceSignSetupDialog from '@/components/NotaBank/components/FaceSignSetupDialog';
 import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
+import { saveUser } from '@/db/user';
 import { env } from '@/env';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
@@ -11,7 +13,7 @@ import {
 } from '@/storage/idos-profile';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
@@ -41,15 +43,26 @@ export default function VerifyIdentity() {
   const walletType = (wallet && wallet.type) || '';
   const { nextStep } = useOnboardingStore();
   const { mutate: login } = useLogin();
+  const [faceSignInProgress, setFaceSignInProgress] = useState(false);
+  const { idOSClient } = useIdOS();
 
   const currentUser = getCurrentUserFromLocalStorage();
-  const userId = currentUser?.id || '';
+  const userId =
+    idOSClient?.state === 'logged-in'
+      ? idOSClient?.user.id
+      : currentUser?.id || '';
   const userAddress = currentUser?.mainAddress || '';
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
   const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
   const publicKey = currentUser?.publicKey || '';
   const encryptionPasswordStore =
     currentUser?.encryptionPasswordStore || 'user';
+
+  useEffect(() => {
+    if (idOSClient && idOSClient.state === 'logged-in') {
+      return setFaceSignInProgress(true);
+    }
+  }, [idOSClient]);
 
   useEffect(() => {
     if (state === 'verified') {
@@ -71,7 +84,16 @@ export default function VerifyIdentity() {
           setState('idle');
         } else {
           await login();
-          nextStep();
+          await saveUser({
+            id: userId,
+            // @todo: handle non-evms
+            mainEvm: userAddress,
+            referrerCode: '',
+            faceSignHash: '',
+            faceSignToken: null,
+            faceSignTokenCreatedAt: null,
+          });
+          // nextStep();
         }
       };
       handleProfile();
@@ -86,6 +108,7 @@ export default function VerifyIdentity() {
     ownershipProofSignature,
     publicKey,
     walletType,
+    idOSClient,
   ]);
 
   // Auto-advance after 3 seconds when verifying
@@ -94,7 +117,6 @@ export default function VerifyIdentity() {
       const timer = setTimeout(() => {
         setState('verified');
       }, 3000);
-
       return () => clearTimeout(timer);
     }
   }, [state, setState]);
@@ -155,9 +177,11 @@ export default function VerifyIdentity() {
           )}
         {state === 'idle' && (
           <div className="flex justify-center mt-auto">
-            <StepperButton onClick={handleProofOfHumanity}>
-              Verify you are human
-            </StepperButton>
+            {!userId && (
+              <StepperButton onClick={handleProofOfHumanity}>
+                Verify you are human
+              </StepperButton>
+            )}
           </div>
         )}
         {state === 'verifying' && (
@@ -198,6 +222,9 @@ export default function VerifyIdentity() {
           </>
         )}
       </div>
+      {faceSignInProgress && (
+        <FaceSignSetupDialog userId={userId} onDone={() => nextStep()} />
+      )}
     </div>
   );
 }
