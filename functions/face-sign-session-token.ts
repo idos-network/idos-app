@@ -14,11 +14,14 @@ export default async (request: Request, context: Context) => {
   const { key, deviceIdentifier } = await request.json();
 
   const response = await fetch(`${facetecServer}session-token`, {
-    method: 'GET',
+    method: 'POST',
     headers: {
-      'X-Device-Key': key,
-      'X-Device-Identifier': deviceIdentifier,
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      key,
+      deviceIdentifier,
+    }),
   });
 
   if (!response.ok) {
