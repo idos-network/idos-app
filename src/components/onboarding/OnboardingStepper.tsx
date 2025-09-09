@@ -1,5 +1,6 @@
 import { getUserById } from '@/api/user';
 import { useIdOS } from '@/context/idos-context';
+import { getUserById } from '@/db/user';
 import { env } from '@/env';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type {

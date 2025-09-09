@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useIdOSLoggedIn } from '@/context/idos-context';
+import { updateUserFaceSign } from '@/db/user';
 import { isProduction } from '@/env';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import { AlertCircleIcon, ChevronLeftIcon } from 'lucide-react';
