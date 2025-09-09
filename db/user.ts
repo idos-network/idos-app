@@ -25,6 +25,7 @@ export async function updateUserFaceSign(
     faceSignHash,
     faceSignToken: null,
     faceSignTokenCreatedAt: null,
+    faceSignDone: !!faceSignHash,
   }).where(eq(users.id, userId));
 }
 

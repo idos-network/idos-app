@@ -33,7 +33,8 @@ export default async (request: Request, context: Context) => {
     );
   }
 
-  const { sessionToken } = await response.json();
+  const responseData = await response.json();
+  const { sessionToken } = responseData;
 
   return new Response(
     JSON.stringify({ sessionToken }),

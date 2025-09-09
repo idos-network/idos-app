@@ -1,4 +1,5 @@
 import { getGeoblock } from '@/api/geoblock';
+import CookieBanner from '@/components/CookieBanner';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { IDOSClientProvider } from '@/providers/idos/idos-client';
 import { ReferralProvider } from '@/providers/quests/referral-provider';
@@ -16,7 +17,6 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import AccessRestricted from './AccessRestricted';
 import MobileRestricted from './MobileRestricted';
 import { RootDocument } from './RootDocument';
-import CookieBanner from '@/components/CookieBanner';
 
 export function RootComponent() {
   const isMobile = useIsMobile();
@@ -33,7 +33,7 @@ export function RootComponent() {
     );
   }
 
-  if (isMobile) {
+  if (isMobile && !location.href.includes('face-sign-mobile')) {
     return (
       <RootDocument>
         <MobileRestricted />
