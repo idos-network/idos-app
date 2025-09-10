@@ -18,6 +18,7 @@ import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
+import { useHasFaceSign } from '../OnboardingStepper';
 import { useStepState } from './useStepState';
 
 const useLogin = () => {
@@ -45,6 +46,7 @@ export default function VerifyIdentity() {
   const { mutate: login } = useLogin();
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const { idOSClient } = useIdOS();
+  const { data: hasFaceSign } = useHasFaceSign();
 
   const currentUser = getCurrentUserFromLocalStorage();
   const userId =
@@ -122,6 +124,10 @@ export default function VerifyIdentity() {
   }, [state, setState]);
 
   function handleProofOfHumanity() {
+    if (!hasFaceSign && isloggedIn) {
+      setFaceSignInProgress(true);
+      return;
+    }
     setState('verifying');
   }
 
@@ -177,11 +183,9 @@ export default function VerifyIdentity() {
           )}
         {state === 'idle' && (
           <div className="flex justify-center mt-auto">
-            {!isloggedIn && (
-              <StepperButton onClick={handleProofOfHumanity}>
-                Verify you are human
-              </StepperButton>
-            )}
+            <StepperButton onClick={handleProofOfHumanity}>
+              Verify you are human
+            </StepperButton>
           </div>
         )}
         {state === 'verifying' && (
@@ -223,7 +227,10 @@ export default function VerifyIdentity() {
         )}
       </div>
       {faceSignInProgress && (
-        <FaceSignSetupDialog userId={userId} onDone={() => nextStep()} />
+        <FaceSignSetupDialog
+          userId={userId}
+          onDone={() => setFaceSignInProgress(false)}
+        />
       )}
     </div>
   );
