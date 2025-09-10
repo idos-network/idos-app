@@ -55,7 +55,7 @@ export function RootComponent() {
                         <Outlet />
                         <TanStackRouterDevtools position="bottom-right" />
                         <ReactQueryDevtools buttonPosition="bottom-right" />
-                        <CookieBanner />
+                        {!isMobile && <CookieBanner />}
                       </IDOSClientProvider>
                     </WalletConnectorProvider>
                   </XrplWalletProvider>
