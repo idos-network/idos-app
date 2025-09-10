@@ -70,7 +70,7 @@ export default function FaceSignSetupDialog({
 }: {
   mobile?: boolean;
   userId?: string;
-  onDone: (result: boolean) => void;
+  onDone: () => void;
 }) {
   const [qrCodeView, setQrCodeView] = useState(false);
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
@@ -120,6 +120,8 @@ export default function FaceSignSetupDialog({
     setFaceSignInProgress(true);
 
     faceTec.onLivenessCheckClick((status, errorMessage?: string) => {
+      console.log('status', status);
+      console.log('errorMessage', errorMessage);
       setFaceSignInProgress(false);
       setFaceSignResult(status);
       setFaceSignError(errorMessage || null);
@@ -263,8 +265,7 @@ export default function FaceSignSetupDialog({
       onOpenChange={(open) => {
         if (!open) {
           setQrCodeView(false);
-          // Manually closed
-          onDone(false);
+          onDone();
         }
       }}
       open={!faceSignInProgress}
