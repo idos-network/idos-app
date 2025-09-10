@@ -10,6 +10,7 @@ CREATE TABLE "user_tokens" (
 	CONSTRAINT "user_tokens_user_address_unique" UNIQUE("userId","publicAddress")
 );
 --> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN "cookieConsent" boolean DEFAULT null;--> statement-breakpoint
 CREATE INDEX "user_tokens_user_id_idx" ON "user_tokens" USING btree ("userId");--> statement-breakpoint
 CREATE INDEX "user_tokens_public_address_idx" ON "user_tokens" USING btree ("publicAddress");--> statement-breakpoint
 CREATE INDEX "user_tokens_wallet_type_idx" ON "user_tokens" USING btree ("walletType");--> statement-breakpoint
