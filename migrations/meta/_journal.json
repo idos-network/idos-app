@@ -19,13 +19,6 @@
     {
       "idx": 2,
       "version": "7",
-      "when": 1757108337904,
-      "tag": "0002_broken_stark_industries",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
       "when": 1756980647840,
       "tag": "0002_green_frightful_four",
       "breakpoints": true
@@ -40,8 +33,8 @@
     {
       "idx": 4,
       "version": "7",
-      "when": 1757468500425,
-      "tag": "0004_elite_cannonball",
+      "when": 1757528147450,
+      "tag": "0004_fantastic_mandrill",
       "breakpoints": true
     }
   ]
