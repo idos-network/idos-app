@@ -92,11 +92,12 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
             const userWallets = await client.getWallets();
             const walletsArray = userWallets as IdosWallet[];
             handleSaveUserWallets(client.user.id, walletsArray);
-            setIdOSClient(client);
 
             if (!isAuthenticated) {
               await authenticate();
             }
+
+            setIdOSClient(client);
           } else {
             setIdOSClient(_withSigner);
           }
