@@ -27,7 +27,7 @@ const CookieBanner = () => {
           the above data, click "decline".
           <br />
           <a
-            href="/legal/privacy-policy"
+            href="https://www.idos.network/legal/privacy-policy"
             className="footer_block-link"
             style={{
               color: '#7a7a7a',

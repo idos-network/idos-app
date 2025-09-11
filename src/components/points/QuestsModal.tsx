@@ -137,8 +137,29 @@ export default function QuestsModal({
                       onChange={handleCheckboxChange}
                       style={{ marginRight: '0.5rem' }}
                     />
-                    I freely give consent to process my personal data for the
-                    purposes of sending newsletters and/or other communication.
+                    <span>
+                      I freely give consent to process my personal data for the
+                      purposes of sending newsletters and/or other
+                      communication. I have the right to withdraw my consent at
+                      any time with effect for the future, by clicking an
+                      unsubscribe link. The withdrawal of consent shall not
+                      affect the lawfulness of processing based on consent
+                      before its withdrawal. I confirm that I have reviewed the{' '}
+                      <a
+                        className="text-aquamarine-400"
+                        href="https://www.idos.network/legal/privacy-policy"
+                      >
+                        privacy policy
+                      </a>{' '}
+                      and the{' '}
+                      <a
+                        className="text-aquamarine-400"
+                        href="https://drive.google.com/file/d/1lzrdgD_dwusE4xsKw_oTUcu8Hq3YU60b/view?usp=sharing"
+                      >
+                        transparency document
+                      </a>
+                      .
+                    </span>
                   </label>
 
                   <div className="relative h-13 rounded-lg overflow-hidden bg-neutral-900">
