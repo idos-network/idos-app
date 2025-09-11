@@ -139,6 +139,17 @@ export default function QuestsModal({
                     />
                     I freely give consent to process my personal data for the
                     purposes of sending newsletters and/or other communication.
+                    I have the right to withdraw my consent at any time with
+                    effect for the future, by clicking an unsubscribe link. The
+                    withdrawal of consent shall not affect the lawfulness of
+                    processing based on consent before its withdrawal. I confirm
+                    that I have reviewed the privacy policy{' '}
+                    <a>https://www.idos.network/legal/privacy-policy</a> and the
+                    transparency document{' '}
+                    <a>
+                      https://drive.google.com/file/d/1lzrdgD_dwusE4xsKw_oTUcu8Hq3YU60b/view?usp=sharing
+                    </a>
+                    .
                   </label>
 
                   <div className="relative h-13 rounded-lg overflow-hidden bg-neutral-900">

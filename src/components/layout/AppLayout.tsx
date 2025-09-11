@@ -3,6 +3,7 @@ import Sidebar from '@/components/layout/Sidebar';
 import { useWalletGate } from '@/hooks/useWalletGate';
 import { Outlet } from '@tanstack/react-router';
 import { Toaster } from 'sonner';
+import Footer from '@/components/layout/Footer';
 
 export default function AppLayout() {
   useWalletGate();
@@ -16,6 +17,7 @@ export default function AppLayout() {
         <main className="flex-1 p-8 text-idos-seasalt">
           <Outlet />
         </main>
+        <Footer />
       </div>
     </div>
   );
