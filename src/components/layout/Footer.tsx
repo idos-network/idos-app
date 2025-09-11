@@ -7,7 +7,7 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          User Aggreement
+          User Agreement
         </a>
       </div>
 
