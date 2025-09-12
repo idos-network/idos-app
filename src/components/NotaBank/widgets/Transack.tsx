@@ -75,7 +75,7 @@ export const TransakProvider = memo(function TransakProvider({
 
   useEffect(() => {
     Transak.on(Transak.EVENTS.TRANSAK_WIDGET_CLOSE, (orderData) => {
-      console.log('Transak widget closed:', orderData);
+      console.log('Transak widget closed: ', orderData);
       transak?.logoutUser();
 
       setTimeout(() => {
