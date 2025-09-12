@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="mt-auto  justify-evenly flex gap-4 items-center h-13 pb-4 pt-4 border-t border-gray-800 -mx-6 px-4">
+    <footer className="justify-evenly flex gap-4 items-center h-13 pb-4  border-t border-gray-800 px-4">
       <div className=" p-4">
         <a
           href="https://www.idos.network/legal/user-agreement"
