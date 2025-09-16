@@ -92,7 +92,7 @@ export default function VerifyIdentity() {
             mainEvm: walletType === 'evm' ? userAddress : '',
             referrerCode: '',
             faceSignHash: '',
-            faceSignToken: null,
+            faceSignUserId: null,
             faceSignTokenCreatedAt: null,
           });
           // nextStep();

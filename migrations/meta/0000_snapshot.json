@@ -1,5 +1,5 @@
 {
-  "id": "cce7c94b-7283-449a-b893-cad788ecf8a5",
+  "id": "710d2995-ef9a-4ab2-9657-ee0c96fcf3f4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -260,8 +260,8 @@
           "notNull": false,
           "default": "null"
         },
-        "faceSignToken": {
-          "name": "faceSignToken",
+        "faceSignUserId": {
+          "name": "faceSignUserId",
           "type": "varchar",
           "primaryKey": false,
           "notNull": false

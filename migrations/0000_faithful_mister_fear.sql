@@ -21,7 +21,7 @@ CREATE TABLE "users" (
 	"mainEvm" varchar(255) DEFAULT '',
 	"referrerCode" varchar DEFAULT '',
 	"cookieConsent" boolean DEFAULT null,
-	"faceSignToken" varchar,
+	"faceSignUserId" varchar,
 	"faceSignTokenCreatedAt" timestamp,
 	"faceSignDone" boolean DEFAULT false,
 	"faceSignHash" varchar(300),
