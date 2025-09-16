@@ -1,5 +1,5 @@
 {
-  "id": "98224b7e-73d4-45c6-b3a8-16b8231b8629",
+  "id": "cce7c94b-7283-449a-b893-cad788ecf8a5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -112,6 +112,123 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.user_wallets": {
+      "name": "user_wallets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "user_wallets_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "userId": {
+          "name": "userId",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "walletType": {
+          "name": "walletType",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_wallets_user_id_idx": {
+          "name": "user_wallets_user_id_idx",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_wallets_address_idx": {
+          "name": "user_wallets_address_idx",
+          "columns": [
+            {
+              "expression": "address",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_wallets_wallet_type_idx": {
+          "name": "user_wallets_wallet_type_idx",
+          "columns": [
+            {
+              "expression": "walletType",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_wallets_user_address_unique": {
+          "name": "user_wallets_user_address_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "userId",
+            "address"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.users": {
       "name": "users",
       "schema": "",
@@ -135,6 +252,38 @@
           "primaryKey": false,
           "notNull": false,
           "default": "''"
+        },
+        "cookieConsent": {
+          "name": "cookieConsent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "null"
+        },
+        "faceSignToken": {
+          "name": "faceSignToken",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "faceSignTokenCreatedAt": {
+          "name": "faceSignTokenCreatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "faceSignDone": {
+          "name": "faceSignDone",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "faceSignHash": {
+          "name": "faceSignHash",
+          "type": "varchar(300)",
+          "primaryKey": false,
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",

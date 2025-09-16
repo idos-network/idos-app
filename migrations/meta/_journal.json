@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1754427304468,
-      "tag": "0000_powerful_archangel",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1756300608685,
-      "tag": "0001_cute_kylun",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1757108337904,
-      "tag": "0002_broken_stark_industries",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1756980647840,
-      "tag": "0002_green_frightful_four",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1757045813615,
-      "tag": "0003_panoramic_hammerhead",
+      "when": 1758015407471,
+      "tag": "0000_sticky_kylun",
       "breakpoints": true
     }
   ]
