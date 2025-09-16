@@ -23,7 +23,7 @@ export async function updateUserFaceSign(
 ) {
   return await db.update(users).set({
     faceSignHash,
-    faceSignToken: null,
+    faceSignUserId: null,
     faceSignTokenCreatedAt: null,
     faceSignDone: !!faceSignHash,
   }).where(eq(users.id, userId));
@@ -39,17 +39,17 @@ export async function generateFaceScanToken(userId: string) {
 
   if (
     user.faceSignTokenCreatedAt &&
-    user.faceSignToken &&
+    user.faceSignUserId &&
     new Date(user.faceSignTokenCreatedAt).getTime() > Date.now() - 30 * 60 * 1000
   ) {
     // Token is new and valid
-    return user.faceSignToken;
+    return user.faceSignUserId;
   }
 
   const token = crypto.randomBytes(32).toString('hex');
 
   await db.update(users).set({
-    faceSignToken: token,
+    faceSignUserId: token,
     faceSignTokenCreatedAt: new Date(),
   }).where(eq(users.id, userId));
 
@@ -57,7 +57,7 @@ export async function generateFaceScanToken(userId: string) {
 }
 
 export async function getUserByFaceSignToken(token: string) {
-  const user = await db.select().from(users).where(eq(users.faceSignToken, token))
+  const user = await db.select().from(users).where(eq(users.faceSignUserId, token))
     .then(res => res[0]);
 
   if (!user) {
