@@ -1,5 +1,5 @@
 [build]
-  command = "npm ci --include=dev && npm run db:migrate && npm run build"
+  command = "npm install --legacy-peer-deps && npm run db:migrate && npm run build"
   publish = "dist"
 
 [dev]
