@@ -2,10 +2,6 @@
   command = "npm ci --include=dev && npm run db:migrate && npm run build"
   publish = "dist"
 
-[build.environment]
-  NODE_VERSION = "22.19.0"
-  NPM_FLAGS = "--legacy-peer-deps"
-
 [dev]
   targetPort = 5173
   port = 8888
