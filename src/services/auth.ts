@@ -131,16 +131,6 @@ class AuthService {
   public logout(): void {
     this.clearTokens();
   }
-
-  public async authenticateWithWallet(): Promise<AuthTokens | null> {
-    try {
-      // TODO: Implement wallet connection logic
-      return null;
-    } catch (error) {
-      console.error('Error authenticating with wallet:', error);
-      return null;
-    }
-  }
 }
 
 export const authService = AuthService.getInstance();
