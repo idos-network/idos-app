@@ -1,7 +1,7 @@
 import CloseButton from '@/components/CloseButton';
 import { useHandleQuestClick } from '@/hooks/useHandleQuestClick';
 import type { QuestWithStatus } from '@/hooks/useQuests';
-import { getDailyQuestTimeRemaining } from '@/utils/quests';
+import { getDailyQuestTimeRemaining } from '@/utils/daily-quest';
 import { formatTimeRemaining } from '@/utils/time';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
