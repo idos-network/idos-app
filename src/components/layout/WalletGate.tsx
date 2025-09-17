@@ -57,7 +57,7 @@ export default function WalletGate() {
               </a>{' '}
               and{' '}
               <a
-                href="https://www.idos.network/legal/transparency-document"
+                href="https://drive.google.com/file/d/1lzrdgD_dwusE4xsKw_oTUcu8Hq3YU60b/view?usp=sharing"
                 className="text-aquamarine-600 hover:text-aquamarine-400 underline"
                 target="_blank"
                 rel="noopener noreferrer"
