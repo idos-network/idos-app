@@ -1,4 +1,8 @@
-import { getFaceSignMobileUrl, getFaceSignStatus, getPublicKey } from '@/api/face-sign';
+import {
+  getFaceSignMobileUrl,
+  getFaceSignStatus,
+  getPublicKey,
+} from '@/api/face-sign';
 import { updateUserFaceSign } from '@/api/update-user-face-sign';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';

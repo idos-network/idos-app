@@ -20,7 +20,7 @@ export const getPublicKey = async (): Promise<string> => {
   });
 
   return response.data;
-}
+};
 
 export const getFaceSignStatus = async (
   userId: string,
