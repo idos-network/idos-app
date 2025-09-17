@@ -41,7 +41,7 @@ const CookieBanner = () => {
           withdrawal. With my action I also confirm that I have read and taken
           note of the Privacy Policy and the{' '}
           <a
-            href="https://drive.google.com/file/d/1lzrdgD_dwusE4xsKw_oTUcu8Hq3YU60b/view"
+            href="https://drive.google.com/file/d/1lzrdgD_dwusE4xsKw_oTUcu8Hq3YU60b/view?usp=sharing"
             className="footer_block-link"
             style={{
               color: '#7a7a7a',
