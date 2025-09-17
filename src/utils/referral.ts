@@ -26,7 +26,7 @@ export function handleReferralCodeFromUrl(): string | null {
 
     const url = new URL(window.location.href);
     url.searchParams.delete(REFERRAL_PARAM);
-    window.history.replaceState({}, document.title, url.toString());
+    history.pushState({}, '', '/leaderboard');
   }
 
   return referralCode;

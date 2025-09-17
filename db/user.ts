@@ -3,16 +3,27 @@ import { generateReferralCode, questsConfig } from '@/utils/quests';
 import { count, eq } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { db, users } from './index';
+import { createReferral, updateReferralCount } from './referrals';
 import { getUserQuestsSummary } from './user-quests';
 
 export async function saveUser(data: any) {
   const user = idOSUserSchema.parse(data);
 
-  return await db.insert(users).values(user).onConflictDoNothing();
+  createReferral(user.id);
+  if (user.referrerCode && user.referrerCode !== '') {
+    updateReferralCount(user.referrerCode);
+  }
+
+  return await db.insert(users).values(user);
 }
 
 export async function updateUser(data: any) {
   const user = idOSUserSchema.parse(data);
+
+  createReferral(user.id);
+  if (user.referrerCode && user.referrerCode !== '') {
+    updateReferralCount(user.referrerCode);
+  }
 
   return await db.update(users).set(user).where(eq(users.id, user.id));
 }
@@ -172,4 +183,14 @@ export async function getUserCookieConsent(
   }
 
   return result[0].cookieConsent;
+}
+
+export async function userNameExists(name: string) {
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.name, name))
+    .limit(1);
+
+  return !!result[0];
 }
