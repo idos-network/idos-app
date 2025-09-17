@@ -7,18 +7,17 @@ import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import FrameIcon from '@/icons/frame';
 import PersonIcon from '@/icons/person';
+import { queryClient } from '@/providers/tanstack-query/query-client';
 import {
   getCurrentUserFromLocalStorage,
   updateUserStateInLocalStorage,
 } from '@/storage/idos-profile';
-import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
-import { useHasFaceSign } from '../OnboardingStepper';
 import { useStepState } from './useStepState';
 
 const useLogin = () => {
@@ -42,18 +41,15 @@ export default function VerifyIdentity() {
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const walletType = (wallet && wallet.type) || '';
-  const { nextStep } = useOnboardingStore();
   const { mutate: login } = useLogin();
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const { idOSClient } = useIdOS();
-  const { data: hasFaceSign } = useHasFaceSign();
 
   const currentUser = getCurrentUserFromLocalStorage();
   const userId =
     idOSClient?.state === 'logged-in'
       ? idOSClient?.user.id
       : currentUser?.id || '';
-  const isloggedIn = idOSClient?.state === 'logged-in';
   const userAddress = currentUser?.mainAddress || '';
   const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
   const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
@@ -61,75 +57,48 @@ export default function VerifyIdentity() {
   const encryptionPasswordStore =
     currentUser?.encryptionPasswordStore || 'user';
 
-  useEffect(() => {
-    if (idOSClient && idOSClient.state === 'logged-in') {
-      return setFaceSignInProgress(true);
+  const handleFaceSignSuccess = useCallback(async () => {
+    updateUserStateInLocalStorage(userAddress, { humanVerified: true });
+    setState('creating');
+    const response = await handleCreateIdOSProfile(
+      userId,
+      userEncryptionPublicKey,
+      userAddress,
+      env.VITE_OWNERSHIP_PROOF_MESSAGE,
+      ownershipProofSignature,
+      publicKey,
+      walletType,
+      encryptionPasswordStore,
+    );
+    if (!response) {
+      updateUserStateInLocalStorage(userAddress, { humanVerified: false });
+      setState('idle');
+    } else {
+      await login();
+      await saveUser({
+        id: userId,
+        mainEvm: walletType === 'evm' ? userAddress : '',
+        referrerCode: '',
+        faceSignHash: '',
+        faceSignUserId: null,
+        faceSignTokenCreatedAt: null,
+      });
+      queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
     }
-  }, [idOSClient]);
-
-  useEffect(() => {
-    if (state === 'verified') {
-      updateUserStateInLocalStorage(userAddress, { humanVerified: true });
-      const handleProfile = async () => {
-        setState('creating');
-        const response = await handleCreateIdOSProfile(
-          userId,
-          userEncryptionPublicKey,
-          userAddress,
-          env.VITE_OWNERSHIP_PROOF_MESSAGE,
-          ownershipProofSignature,
-          publicKey,
-          walletType,
-          encryptionPasswordStore,
-        );
-        if (!response) {
-          updateUserStateInLocalStorage(userAddress, { humanVerified: false });
-          setState('idle');
-        } else {
-          await login();
-          await saveUser({
-            id: userId,
-            mainEvm: walletType === 'evm' ? userAddress : '',
-            referrerCode: '',
-            faceSignHash: '',
-            faceSignUserId: null,
-            faceSignTokenCreatedAt: null,
-          });
-          // nextStep();
-        }
-      };
-      handleProfile();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    state,
-    nextStep,
-    userAddress,
     userId,
+    userAddress,
     userEncryptionPublicKey,
     ownershipProofSignature,
     publicKey,
     walletType,
-    idOSClient,
+    encryptionPasswordStore,
+    login,
+    saveUser,
+    setState,
+    updateUserStateInLocalStorage,
+    handleCreateIdOSProfile,
   ]);
-
-  // Auto-advance after 3 seconds when verifying
-  useEffect(() => {
-    if (state === 'verifying') {
-      const timer = setTimeout(() => {
-        setState('verified');
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [state, setState]);
-
-  function handleProofOfHumanity() {
-    if (!hasFaceSign && isloggedIn) {
-      setFaceSignInProgress(true);
-      return;
-    }
-    setState('verifying');
-  }
 
   return (
     <div className="flex flex-col gap-10 h-[600px] w-[740px]">
@@ -183,7 +152,11 @@ export default function VerifyIdentity() {
           )}
         {state === 'idle' && (
           <div className="flex justify-center mt-auto">
-            <StepperButton onClick={handleProofOfHumanity}>
+            <StepperButton
+              onClick={() => {
+                setFaceSignInProgress(true);
+              }}
+            >
               Verify you are human
             </StepperButton>
           </div>
@@ -229,7 +202,10 @@ export default function VerifyIdentity() {
       {faceSignInProgress && (
         <FaceSignSetupDialog
           userId={userId}
-          onDone={() => setFaceSignInProgress(false)}
+          onDone={() => {
+            setFaceSignInProgress(false);
+            handleFaceSignSuccess();
+          }}
         />
       )}
     </div>

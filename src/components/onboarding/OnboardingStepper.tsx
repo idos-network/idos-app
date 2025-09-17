@@ -123,7 +123,7 @@ export default function OnboardingStepper() {
             : 3 // no staking credential
           : 2 // no face sign
         : 0,
-    [hasEvmWallet, hasStakingCredential, stepIndex],
+    [hasEvmWallet, hasStakingCredential, stepIndex, hasFaceSign],
   );
 
   console.log({
