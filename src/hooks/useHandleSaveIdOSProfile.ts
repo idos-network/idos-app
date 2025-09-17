@@ -1,6 +1,8 @@
+import { saveUser } from '@/api/user';
 import { useIdOS } from '@/context/idos-context';
 import type { ConnectedWallet } from '@/context/wallet-connector-context';
 import { env } from '@/env';
+import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
 import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
@@ -23,10 +25,12 @@ export function useHandleSaveIdOSProfile({
   onNext,
   wallet,
   setState,
+  login,
 }: {
   onNext: () => void;
   wallet: ConnectedWallet | null;
   setState: (state: string) => void;
+  login: () => void;
 }) {
   const { selector } = useNearWallet();
   const { signMessageAsync } = useSignMessage();
@@ -130,12 +134,32 @@ export function useHandleSaveIdOSProfile({
         publicKey: publicKey as string,
       };
 
-      const savedUser = saveNewUserToLocalStorage(userPayload);
+      saveNewUserToLocalStorage(userPayload);
+      setState('creating_profile');
 
-      Promise.resolve(savedUser);
+      const response = await handleCreateIdOSProfile(
+        userId,
+        encryptionProfile.userEncryptionPublicKey as string,
+        wallet.address as string,
+        env.VITE_OWNERSHIP_PROOF_MESSAGE,
+        ownershipProofSignature as string,
+        publicKey as string,
+        wallet.type as string,
+        encryptionProfile.encryptionPasswordStore as string,
+      );
+      if (!response) Promise.reject(new Error('Failed to create idOS profile'));
+      await saveUser({
+        id: userId,
+        mainEvm: wallet.type === 'evm' ? wallet.address : '',
+        referrerCode: '',
+        faceSignHash: '',
+        faceSignUserId: null,
+        faceSignTokenCreatedAt: null,
+      });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       setState('created');
+      await login();
       onNext();
     },
     onError: () => {

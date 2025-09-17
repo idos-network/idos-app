@@ -10,17 +10,20 @@ import StepperButton from '../components/StepperButton';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
+import { useLogin } from './VerifyIdentity';
 
 export default function CreatePrivateKey() {
   const { state, setState, loading, error } = useStepState();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const { nextStep } = useOnboardingStore();
+  const { mutate: login } = useLogin();
 
   const { mutate: handleSaveIdOSProfile } = useHandleSaveIdOSProfile({
     onNext: nextStep,
     wallet: wallet as ConnectedWallet,
     setState,
+    login,
   });
   const { idOSClient } = useIdOS();
 
@@ -91,6 +94,18 @@ export default function CreatePrivateKey() {
           <div className="flex justify-center">
             <StepperButton disabled={true}>
               Waiting for signature...
+            </StepperButton>
+          </div>
+        </>
+      )}
+      {state === 'creating_profile' && (
+        <>
+          <div className="flex justify-center flex-1 items-center">
+            <Spinner />
+          </div>
+          <div className="flex justify-center">
+            <StepperButton disabled={true}>
+              Creating your idOS profile...
             </StepperButton>
           </div>
         </>

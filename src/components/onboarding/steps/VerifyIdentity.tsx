@@ -1,17 +1,12 @@
-import { saveUser } from '@/api/user';
 import FaceSignSetupDialog from '@/components/NotaBank/components/FaceSignSetupDialog';
 import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
-import { env } from '@/env';
-import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
 import FrameIcon from '@/icons/frame';
 import PersonIcon from '@/icons/person';
 import {
   getCurrentUserFromLocalStorage,
   updateUserStateInLocalStorage,
 } from '@/storage/idos-profile';
-import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import StepperButton from '../components/StepperButton';
@@ -21,7 +16,7 @@ import TopBar from '../components/TopBar';
 import { useHasFaceSign } from '../OnboardingStepper';
 import { useStepState } from './useStepState';
 
-const useLogin = () => {
+export const useLogin = () => {
   const { idOSClient, setIdOSClient } = useIdOS();
   return useMutation({
     mutationKey: ['login'],
@@ -39,11 +34,6 @@ const useLogin = () => {
 
 export default function VerifyIdentity() {
   const { state, setState } = useStepState();
-  const walletConnector = useWalletConnector();
-  const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const walletType = (wallet && wallet.type) || '';
-  const { nextStep } = useOnboardingStore();
-  const { mutate: login } = useLogin();
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const { idOSClient } = useIdOS();
   const { data: hasFaceSign } = useHasFaceSign();
@@ -55,63 +45,13 @@ export default function VerifyIdentity() {
       : currentUser?.id || '';
   const isloggedIn = idOSClient?.state === 'logged-in';
   const userAddress = currentUser?.mainAddress || '';
-  const userEncryptionPublicKey = currentUser?.userEncryptionPublicKey || '';
-  const ownershipProofSignature = currentUser?.ownershipProofSignature || '';
-  const publicKey = currentUser?.publicKey || '';
-  const encryptionPasswordStore =
-    currentUser?.encryptionPasswordStore || 'user';
-
-  useEffect(() => {
-    if (idOSClient && idOSClient.state === 'logged-in') {
-      return setFaceSignInProgress(true);
-    }
-  }, [idOSClient]);
 
   useEffect(() => {
     if (state === 'verified') {
       updateUserStateInLocalStorage(userAddress, { humanVerified: true });
-      const handleProfile = async () => {
-        setState('creating');
-        const response = await handleCreateIdOSProfile(
-          userId,
-          userEncryptionPublicKey,
-          userAddress,
-          env.VITE_OWNERSHIP_PROOF_MESSAGE,
-          ownershipProofSignature,
-          publicKey,
-          walletType,
-          encryptionPasswordStore,
-        );
-        if (!response) {
-          updateUserStateInLocalStorage(userAddress, { humanVerified: false });
-          setState('idle');
-        } else {
-          await login();
-          await saveUser({
-            id: userId,
-            mainEvm: walletType === 'evm' ? userAddress : '',
-            referrerCode: '',
-            faceSignHash: '',
-            faceSignUserId: null,
-            faceSignTokenCreatedAt: null,
-          });
-          // nextStep();
-        }
-      };
-      handleProfile();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    state,
-    nextStep,
-    userAddress,
-    userId,
-    userEncryptionPublicKey,
-    ownershipProofSignature,
-    publicKey,
-    walletType,
-    idOSClient,
-  ]);
+  }, [state, userAddress]);
 
   // Auto-advance after 3 seconds when verifying
   useEffect(() => {
