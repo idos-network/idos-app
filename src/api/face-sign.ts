@@ -14,6 +14,14 @@ export const checkToken = async (token: string): Promise<string> => {
   return response.data.userId;
 };
 
+export const getPublicKey = async (): Promise<string> => {
+  const response = await axiosInstance.get(`/face-sign/public-key`, {
+    headers: { Accept: 'plain/text' },
+  });
+
+  return response.data;
+}
+
 export const getFaceSignStatus = async (
   userId: string,
 ): Promise<{ faceSignHash: string; faceSignDone: boolean }> => {

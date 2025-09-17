@@ -22,7 +22,7 @@ export class FaceTecContainer {
     return (window as any).FaceTecSDK;
   }
 
-  public init = (userId: string): void => {
+  public init = (userId: string, publicKey: string): void => {
     // Check if FaceTecSDK is available
     if (!this.FaceTecSDK) {
       console.error(
@@ -37,7 +37,7 @@ export class FaceTecContainer {
     this.FaceTecSDK.setImagesDirectory('/facetec/FaceTecSDK.js/FaceTec_images');
     this.FaceTecSDK.initializeInDevelopmentMode(
       env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
-      env.VITE_FACETEC_PUBLIC_FACE_SCAN_ENCRYPTION_KEY,
+      publicKey,
       (initializationSuccess: boolean) => {
         console.log('FaceTec SDK initialized status: ', initializationSuccess);
         if (initializationSuccess) {
