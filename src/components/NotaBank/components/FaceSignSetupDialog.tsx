@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dialog';
 import { useIdOSLoggedIn } from '@/context/idos-context';
 import { isProduction } from '@/env';
-import { useOnboardingStore } from '@/stores/onboarding-store';
 import { AlertCircleIcon, ChevronLeftIcon } from 'lucide-react';
 import encodeQR from 'qr';
 import { useEffect, useState } from 'react';
@@ -81,7 +80,6 @@ export default function FaceSignSetupDialog({
   const [faceSignResult, setFaceSignResult] = useState<null | boolean>(null);
   const [faceSignError, setFaceSignError] = useState<string | null>(null);
   const idOSLoggedIn = useIdOSLoggedIn();
-  const { nextStep } = useOnboardingStore();
   const currentUserId = userId ?? idOSLoggedIn?.user.id ?? undefined;
 
   if (!currentUserId) {
@@ -104,7 +102,7 @@ export default function FaceSignSetupDialog({
             setQrCodeView(false);
             setFaceSignResult(true);
             updateUserFaceSign(currentUserId, result.faceSignHash).then(() => {
-              nextStep();
+              onDone();
             });
           }
         })
