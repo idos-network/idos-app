@@ -4,12 +4,14 @@ import UserIcon from '@/components/icons/user';
 import WalletBar from '@/components/wallets/WalletBar';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
+import { leaderboardRoute } from '@/routes';
 import { useIdosStore } from '@/stores/idosStore';
 import { Link } from '@tanstack/react-router';
 import { formatNearAmount } from 'near-api-js/lib/utils/format';
 import { useEffect, useRef, useState } from 'react';
 import { formatEther, formatUnits } from 'viem';
 import PointsHeaderFrame from '../points/PointsHeaderFrame';
+import SmallPrimaryButton from '../SmallPrimaryButton';
 
 const evmNetworks = {
   1: 'ethereum',
@@ -57,6 +59,9 @@ export default function Header() {
             ref={pointsFrameRef}
             highlight={hasOnboardingToast}
           />
+          <Link to={leaderboardRoute.to}>
+            <SmallPrimaryButton>Leaderboard</SmallPrimaryButton>
+          </Link>
           {wallet && wallet.type === 'evm' && (
             <WalletBar
               network={
