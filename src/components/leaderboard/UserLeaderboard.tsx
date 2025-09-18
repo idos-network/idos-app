@@ -1,12 +1,15 @@
+import SmallPrimaryButton from '@/components/SmallPrimaryButton';
 import Spinner from '@/components/Spinner';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useUserId } from '@/hooks/useUserId';
+import { useNavigate } from '@tanstack/react-router';
 
 export function UserLeaderboard() {
   const { data: userId } = useUserId();
   const { userPosition, isLoading, error } = useLeaderboard({
     userId,
   });
+  const navigate = useNavigate();
 
   if (!userId) {
     return (
@@ -14,8 +17,18 @@ export function UserLeaderboard() {
         <div className="flex">
           <h2 className="font-normal text-xl text-neutral-50">Your Position</h2>
         </div>
-        <div className="text-center text-neutral-400">
-          Please log in to view your leaderboard position.
+        <div className="flex flex-col gap-4 justify-center items-center">
+          <div className="text-center text-neutral-400">
+            Please complete the onboarding process to view your leaderboard
+            position.
+          </div>
+          <div>
+            <SmallPrimaryButton
+              onClick={() => navigate({ to: '/idos-profile' })}
+            >
+              Complete Onboarding
+            </SmallPrimaryButton>
+          </div>
         </div>
       </div>
     );
