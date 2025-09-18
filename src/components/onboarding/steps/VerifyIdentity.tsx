@@ -202,9 +202,11 @@ export default function VerifyIdentity() {
       {faceSignInProgress && (
         <FaceSignSetupDialog
           userId={userId}
-          onDone={() => {
+          onDone={(success) => {
             setFaceSignInProgress(false);
-            handleFaceSignSuccess();
+            if (success) {
+              handleFaceSignSuccess();
+            }
           }}
         />
       )}

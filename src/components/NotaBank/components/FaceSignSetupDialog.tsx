@@ -73,7 +73,7 @@ export default function FaceSignSetupDialog({
 }: {
   mobile?: boolean;
   userId?: string;
-  onDone: () => void;
+  onDone: (success: boolean) => void;
 }) {
   const [qrCodeView, setQrCodeView] = useState(false);
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
@@ -102,7 +102,7 @@ export default function FaceSignSetupDialog({
             setQrCodeView(false);
             setFaceSignResult(true);
             updateUserFaceSign(currentUserId, result.faceSignHash).then(() => {
-              onDone();
+              onDone(true);
             });
           }
         })
@@ -269,7 +269,7 @@ export default function FaceSignSetupDialog({
       onOpenChange={(open) => {
         if (!open) {
           setQrCodeView(false);
-          onDone();
+          onDone(false);
         }
       }}
       open={!faceSignInProgress}
