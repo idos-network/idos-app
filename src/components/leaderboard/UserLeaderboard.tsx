@@ -2,14 +2,14 @@ import SmallPrimaryButton from '@/components/SmallPrimaryButton';
 import Spinner from '@/components/Spinner';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useUserId } from '@/hooks/useUserId';
-import { useNavigate } from '@tanstack/react-router';
+import { idosProfileRoute } from '@/routes';
+import { Link } from '@tanstack/react-router';
 
 export function UserLeaderboard() {
   const { data: userId } = useUserId();
   const { userPosition, isLoading, error } = useLeaderboard({
     userId,
   });
-  const navigate = useNavigate();
 
   if (!userId) {
     return (
@@ -23,11 +23,9 @@ export function UserLeaderboard() {
             position.
           </div>
           <div>
-            <SmallPrimaryButton
-              onClick={() => navigate({ to: '/idos-profile' })}
-            >
-              Complete Onboarding
-            </SmallPrimaryButton>
+            <Link to={idosProfileRoute.to}>
+              <SmallPrimaryButton>Complete Onboarding</SmallPrimaryButton>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,21 +1,7 @@
 import CloseButton from '@/components/CloseButton';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { WalletConnector } from '../wallets/WalletConnector';
-
-function XRPLAutoConnect() {
-  const walletConnector = useWalletConnector();
-  useEffect(() => {
-    if (
-      localStorage.getItem('xrpl-connected') === 'true' &&
-      !walletConnector.isConnected
-    ) {
-      walletConnector.connectXRPL();
-    }
-  }, [walletConnector]);
-  return null;
-}
 
 export default function WalletGate({
   isOpen,
@@ -63,7 +49,6 @@ export default function WalletGate({
         </div>
         {/* Body */}
         <div className="px-6 pb-6 bg-neutral-800/60">
-          <XRPLAutoConnect />
           <div className="flex flex-col items-center gap-4">
             <span className="text-base font-semibold text-center text-idos-seasalt">
               Connect your wallet to get started.
