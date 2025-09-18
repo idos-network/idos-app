@@ -35,7 +35,6 @@ export const env = createEnv({
       .default('https://nodes.staging.idos.network/'),
     VITE_NODE_ENV: z.string().default('development'),
     VITE_FACETEC_DEVICE_KEY_IDENTIFIER: z.string().min(1),
-    VITE_FACETEC_PUBLIC_FACE_SCAN_ENCRYPTION_KEY: z.string().min(1),
   },
 
   /**

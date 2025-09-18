@@ -52,7 +52,7 @@ export default async (request: Request, context: Context) => {
     }, 400);
   }
 
-  await updateUserFaceSign(userId, json.faceBiometricId);
+  await updateUserFaceSign(userId, json.faceSignUserId);
 
   return createResponse({
     success: true,
