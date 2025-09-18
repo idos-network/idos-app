@@ -15,13 +15,7 @@ export interface LeaderboardEntry {
   position: number;
 }
 
-async function getLeaderboardTotals(options?: {
-  limit?: number;
-  offset?: number;
-}): Promise<LeaderboardEntry[]> {
-  const limit = options?.limit ?? 100;
-  const offset = options?.offset ?? 0;
-
+async function getCompleteLeaderboard(): Promise<LeaderboardEntry[]> {
   const questPointsMap = await getQuestPoints();
   const socialPointsMap = await getSocialPoints();
   const contributionPointsMap = await getContributionPoints();
@@ -72,45 +66,49 @@ async function getLeaderboardTotals(options?: {
     previousPoints = entry.totalPoints;
   }
 
-  let startIndex = 0;
-  if (offset > 0) {
-    startIndex = entriesWithPositions.findIndex(
-      (entry) => entry.position > offset,
-    );
-    if (startIndex === -1) {
-      return [];
-    }
-  }
-
-  let endIndex = entriesWithPositions.length;
-  if (limit > 0) {
-    const targetPosition = offset + limit;
-    endIndex = entriesWithPositions.findIndex(
-      (entry) => entry.position > targetPosition,
-    );
-    if (endIndex === -1) {
-      endIndex = entriesWithPositions.length;
-    }
-  }
-
-  return entriesWithPositions.slice(startIndex, endIndex);
+  return entriesWithPositions;
 }
 
 export default async (request: Request) => {
   const url = new URL(request.url);
-  const limit = Number(url.searchParams.get('limit') ?? '100');
+  const userId = url.searchParams.get('userId');
+  const limitParam = url.searchParams.get('limit');
   const offset = Number(url.searchParams.get('offset') ?? '0');
 
+  const completeLeaderboard = await getCompleteLeaderboard();
+
+  if (userId) {
+    const userPosition = completeLeaderboard.find(
+      (entry) => entry.userId === userId,
+    );
+    if (!userPosition) {
+      return new Response(
+        JSON.stringify({ error: 'User not found on leaderboard' }),
+        { status: 404 },
+      );
+    }
+    return new Response(JSON.stringify({ data: userPosition }), {
+      status: 200,
+    });
+  }
+
+  if (!limitParam) {
+    return new Response(JSON.stringify({ data: completeLeaderboard }), {
+      status: 200,
+    });
+  }
+
+  const limit = Number(limitParam);
   const safeLimit =
-    Number.isFinite(limit) && limit > 0 && limit <= 500 ? limit : 100;
+    Number.isFinite(limit) && limit > 0 && limit <= 1000 ? limit : 1000;
   const safeOffset = Number.isFinite(offset) && offset >= 0 ? offset : 0;
 
-  const data = await getLeaderboardTotals({
-    limit: safeLimit,
-    offset: safeOffset,
-  });
+  const paginatedData = completeLeaderboard.slice(
+    safeOffset,
+    safeOffset + safeLimit,
+  );
 
-  return new Response(JSON.stringify({ data }), { status: 200 });
+  return new Response(JSON.stringify({ data: paginatedData }), { status: 200 });
 };
 
 export const config: Config = {

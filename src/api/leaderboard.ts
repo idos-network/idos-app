@@ -42,3 +42,37 @@ export const getLeaderboard = async (opts?: {
 
   return parsed.data;
 };
+
+export const getUserPosition = async (
+  userId: string,
+): Promise<LeaderboardEntryData | null> => {
+  const params = new URLSearchParams();
+  params.set('userId', userId);
+
+  try {
+    const response = await axiosInstance.get(
+      `/leaderboard?${params.toString()}`,
+    );
+    const parsed = parseWithSchema(
+      response.data,
+      z.object({
+        data: z.object({
+          userId: z.string(),
+          totalPoints: z.number(),
+          questPoints: z.number(),
+          socialPoints: z.number(),
+          contributionPoints: z.number(),
+          referralCount: z.number(),
+          position: z.number(),
+        }),
+      }),
+    );
+
+    return parsed.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+};

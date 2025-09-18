@@ -1,29 +1,41 @@
-import { getLeaderboard, type LeaderboardEntryData } from '@/api/leaderboard';
-import { useQuery } from '@tanstack/react-query';
+import { GeneralLeaderboard } from '@/components/leaderboard/GeneralLeaderboard';
+import { UserLeaderboard } from '@/components/leaderboard/UserLeaderboard';
+import Spinner from '@/components/Spinner';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useUserId } from '@/hooks/useUserId';
 
 export function Leaderboard() {
-  const { data } = useQuery<LeaderboardEntryData[]>({
-    queryKey: ['leaderboard'],
-    queryFn: () => getLeaderboard({ limit: 5, offset: 0 }),
+  const { data: userId } = useUserId();
+  const { isLoading, error } = useLeaderboard({
+    userId,
+    limit: 5,
+    offset: 0,
   });
 
-  return (
-    <div>
-      <div>Leaderboard</div>
-      <div>
-        {data?.map((item) => (
-          <div key={item.userId} className="mb-2 p-2 border rounded">
-            <div className="font-semibold">
-              {item.position}. {item.userId} - {item.totalPoints} total points
-            </div>
-            <div className="text-sm text-gray-600">
-              Quest: {item.questPoints} | Social: {item.socialPoints} |
-              Contribution: {item.contributionPoints} | Referrals:{' '}
-              {item.referralCount}
-            </div>
-          </div>
-        ))}
+  if (isLoading) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="flex justify-center items-center p-8">
+          <Spinner />
+        </div>
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="text-center p-8 text-red-600">
+          Error loading leaderboard. Please try again.
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 space-y-8">
+      <UserLeaderboard />
+      <GeneralLeaderboard limit={5} offset={0} />
     </div>
   );
 }
