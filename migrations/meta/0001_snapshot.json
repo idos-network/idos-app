@@ -1,5 +1,5 @@
 {
-  "id": "5699e1d6-8be6-47ba-bd90-dacca00f4b0e",
+  "id": "9ecb616c-8bdd-4099-9582-d9e60a074222",
   "prevId": "710d2995-ef9a-4ab2-9657-ee0c96fcf3f4",
   "version": "7",
   "dialect": "postgresql",
@@ -241,10 +241,9 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": false,
-          "default": "''"
+          "notNull": false
         },
         "mainEvm": {
           "name": "mainEvm",
@@ -362,6 +361,13 @@
           "nullsNotDistinct": false,
           "columns": [
             "id"
+          ]
+        },
+        "users_name_unique": {
+          "name": "users_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
           ]
         }
       },

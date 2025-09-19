@@ -13,7 +13,7 @@ export const users = pgTable(
   'users',
   {
     id: varchar('id', { length: 36 }).primaryKey().unique(),
-    name: varchar('name', { length: 255 }).default(''),
+    name: varchar('name').unique(),
     mainEvm: varchar('mainEvm', { length: 255 }).default(''),
     referrerCode: varchar('referrerCode').default(''),
     cookieConsent: boolean('cookieConsent').default(sql`null`),

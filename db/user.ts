@@ -8,7 +8,7 @@ import { getUserQuestsSummary } from './user-quests';
 export async function saveUser(data: any) {
   const user = idOSUserSchema.parse(data);
 
-  return await db.insert(users).values(user).onConflictDoNothing();
+  return await db.insert(users).values(user);
 }
 
 export async function updateUser(data: any) {
