@@ -59,9 +59,10 @@ export function Points() {
         </div>
 
         <div className="flex flex-col gap-6 justify-between">
-          <div className="flex gap-5 font-medium text-xl text-neutral-50 justify-between mt-10">
-            Complete quests and refer your friens to get Quest Points
-          </div>
+          <span className="flex font-medium text-xl text-neutral-300 mt-10">
+            Complete quests and refer your friends to get{' '}
+            <span className="text-[#FF9E7F] ml-1">Quest Points</span>
+          </span>
           <div className="flex gap-5">
             <QuestsCard />
             <ReferralCard />

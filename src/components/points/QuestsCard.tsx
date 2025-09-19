@@ -39,21 +39,14 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6 w-full">
-      {/* Header Section */}
-      <div className="flex">
-        <h1 className="font-normal text-xl text-neutral-50">All Quests</h1>
-      </div>
-
       {/* Table Section */}
       <div className="flex-grow overflow-x-auto">
         <table className="w-full table-auto text-sm font-['Inter']">
           <thead>
             <tr className="text-left text-neutral-400 text-sm bg-neutral-800 h-[52px]">
-              <th className="w-3/5 px-4 font-normal rounded-l-[20px]">Quest</th>
-              <th className="w-1/5 px-4 font-normal">Points</th>
-              <th className="w-1/5 px-4 font-normal rounded-r-[20px]">
-                Status
-              </th>
+              <th className="w-3/5 px-4 font-light rounded-l-[20px]">Quest</th>
+              <th className="w-1/5 px-4 font-light">Points</th>
+              <th className="w-1/5 px-4 font-light rounded-r-[20px]">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -63,7 +56,7 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
               return (
                 <tr
                   key={quest.id}
-                  className={`text-base h-[52px] ${!isLastRow ? 'border-neutral-800 border-b' : ''} ${
+                  className={`text-sm font-['Urbanist'] h-[52px] ${!isLastRow ? 'border-neutral-800 border-b' : ''} ${
                     isCompleted
                       ? 'text-neutral-400'
                       : 'text-neutral-200 hover:text-[#C99BFF]'
@@ -88,19 +81,19 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
                       {quest.pointsReward}
                     </div>
                   </td>
-                  <td className="w-2/3 px-4 font-['Inter'] font-medium pr-8">
-                    <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center justify-center gap-3">
+                  <td className="w-2/3 px-4 font-['Inter'] font-normal pr-8">
+                    <div className="truncate font-['Inter'] text-neutral-200 flex items-center justify-center gap-3">
                       <span className="flex items-center gap-2 font-normal">
                         {quest.status === 'Completed' ? (
-                          <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#00FFB933] text-[#00FFB9]">
+                          <div className="flex text-[13px] font-normal items-center py-[2.5px] px-[5px] rounded-sm bg-[#00FFB933] text-[#00FFB9]">
                             Done
                           </div>
                         ) : quest.isRepeatable === true ? (
-                          <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#7A7A7A33] text-[#C99BFF]">
+                          <div className="flex text-[13px] font-normal items-center py-[2.5px] px-[5px] rounded-sm bg-[#7A7A7A33] text-[#C99BFF]">
                             Ongoing
                           </div>
                         ) : (
-                          <div className="flex text-[13px] font-medium items-center py-[2.5px] px-[5px] rounded-sm bg-[#7A7A7A33] text-[#FFBB33]">
+                          <div className="flex text-[13px] font-normal items-center py-[2.5px] px-[5px] rounded-sm bg-[#7A7A7A33] text-[#FFBB33]">
                             To do
                           </div>
                         )}
@@ -111,13 +104,13 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
               );
             })}
             {allQuests.length === 0 && (
-              <tr className="text-neutral-400 text-base h-[52px]">
+              <tr className="text-neutral-400 text-sm h-[52px]">
                 <td colSpan={3} className="px-4 text-center">
                   No quests available
                 </td>
               </tr>
             )}
-            <tr className="text-neutral-400 text-base h-[52px] border-neutral-800 border-t">
+            <tr className="text-neutral-400 text-sm h-[52px] border-neutral-800 border-t">
               <td colSpan={3} className="px-4 text-left">
                 More quests coming soon
               </td>
