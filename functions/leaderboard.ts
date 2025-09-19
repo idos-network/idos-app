@@ -1,0 +1,128 @@
+import {
+  getContributionPoints,
+  getQuestPoints,
+  getSocialPoints,
+} from '@/db/leaderboard';
+import type { Config } from '@netlify/functions';
+
+export interface LeaderboardEntry {
+  name: string;
+  totalPoints: number;
+  questPoints: number;
+  socialPoints: number;
+  contributionPoints: number;
+  referralCount: number;
+  position: number;
+}
+
+async function getCompleteLeaderboard(): Promise<LeaderboardEntry[]> {
+  const questPointsMap = await getQuestPoints();
+  const socialPointsMap = await getSocialPoints();
+  const contributionPointsMap = await getContributionPoints();
+
+  const leaderboardEntries: Omit<LeaderboardEntry, 'position'>[] = [];
+
+  const allUserIds = new Set(questPointsMap.keys());
+  socialPointsMap.forEach((_, userId) => allUserIds.add(userId));
+  contributionPointsMap.forEach((_, userId) => allUserIds.add(userId));
+
+  for (const userId of allUserIds) {
+    const questData = questPointsMap.get(userId);
+    const questPoints = questData?.questPoints ?? 0;
+    const socialPoints = socialPointsMap.get(userId) ?? 0;
+    const contributionPoints = contributionPointsMap.get(userId) ?? 0;
+    const referralCount = questData?.referralCount ?? 0;
+    const name = questData?.name ?? '';
+
+    const totalPoints = questPoints + socialPoints + contributionPoints;
+
+    leaderboardEntries.push({
+      name,
+      totalPoints,
+      questPoints,
+      socialPoints,
+      contributionPoints,
+      referralCount,
+    });
+  }
+
+  leaderboardEntries.sort((a, b) => b.totalPoints - a.totalPoints);
+
+  const entriesWithPositions: LeaderboardEntry[] = [];
+  let currentPosition = 1;
+  let previousPoints: number | null = null;
+
+  for (let i = 0; i < leaderboardEntries.length; i++) {
+    const entry = leaderboardEntries[i];
+
+    if (previousPoints === null || entry.totalPoints !== previousPoints) {
+      currentPosition = i + 1;
+    }
+
+    entriesWithPositions.push({
+      ...entry,
+      position: currentPosition,
+    });
+
+    previousPoints = entry.totalPoints;
+  }
+
+  return entriesWithPositions;
+}
+
+export default async (request: Request) => {
+  const url = new URL(request.url);
+  const userId = url.searchParams.get('userId');
+  const limitParam = url.searchParams.get('limit');
+  const offset = Number(url.searchParams.get('offset') ?? '0');
+
+  const completeLeaderboard = await getCompleteLeaderboard();
+
+  if (userId) {
+    const questPointsMap = await getQuestPoints();
+    const questData = questPointsMap.get(userId);
+
+    if (!questData) {
+      return new Response(
+        JSON.stringify({ error: 'User not found on leaderboard' }),
+        { status: 404 },
+      );
+    }
+
+    const userPosition = completeLeaderboard.find(
+      (entry) => entry.name === questData.name,
+    );
+    if (!userPosition) {
+      return new Response(
+        JSON.stringify({ error: 'User not found on leaderboard' }),
+        { status: 404 },
+      );
+    }
+    return new Response(JSON.stringify({ data: userPosition }), {
+      status: 200,
+    });
+  }
+
+  if (!limitParam) {
+    return new Response(JSON.stringify({ data: completeLeaderboard }), {
+      status: 200,
+    });
+  }
+
+  const limit = Number(limitParam);
+  const safeLimit =
+    Number.isFinite(limit) && limit > 0 && limit <= 1000 ? limit : 1000;
+  const safeOffset = Number.isFinite(offset) && offset >= 0 ? offset : 0;
+
+  const paginatedData = completeLeaderboard.slice(
+    safeOffset,
+    safeOffset + safeLimit,
+  );
+
+  return new Response(JSON.stringify({ data: paginatedData }), { status: 200 });
+};
+
+export const config: Config = {
+  path: '/api/leaderboard',
+  method: 'GET',
+};
