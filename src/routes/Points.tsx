@@ -1,6 +1,8 @@
+import MindshareCard from '@/components/points/MindshareCard';
 import PointsFrame from '@/components/points/PointsFrame';
 import QuestsCard from '@/components/points/QuestsCard';
 import ReferralCard from '@/components/points/ReferralCard';
+import XCard from '@/components/points/XCard';
 import Spinner from '@/components/Spinner';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useNavigate } from '@tanstack/react-router';
@@ -66,6 +68,20 @@ export function Points() {
           <div className="flex gap-5">
             <QuestsCard />
             <ReferralCard />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-6 justify-between">
+          <span className="flex font-medium text-xl text-neutral-300 mt-10">
+            Talk about idOS on X to get{' '}
+            <span className="text-[#A0F73C] ml-1">Social Points</span>
+            <div className="flex text-sm font-normal items-center px-3 rounded-xl bg-[#00FFB933] text-aquamarine-400 ml-4">
+              Coming soon
+            </div>
+          </span>
+          <div className="flex gap-5">
+            <XCard />
+            <MindshareCard />
           </div>
         </div>
         <PointsDisclaimer />
