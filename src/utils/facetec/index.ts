@@ -138,15 +138,7 @@ export class FaceTecContainer {
 
     console.log('Starting liveness check...');
     this.getSessionToken((sessionToken: string) => {
-      const livenessCheckProcessor = new LivenessCheckProcessor(
-        sessionToken,
-        this.userId!,
-        onDone,
-      );
-      livenessCheckProcessor.onFaceTecSDKCompletelyDone = () => {
-        console.log('Liveness check completed or cancelled');
-        onDone(false, 'Liveness check completed or cancelled');
-      };
+      new LivenessCheckProcessor(sessionToken, this.userId!, onDone);
     });
   };
 

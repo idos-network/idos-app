@@ -218,6 +218,12 @@ export default function FaceSignSetupDialog({
             </p>
           </AlertDescription>
         </Alert>
+        <Button
+          className="bg-aquamarine-400"
+          onClick={() => setFaceSignResult(null)}
+        >
+          Retry
+        </Button>
         <p className="text-neutral-400 text-sm max-w-[270px] text-center">
           Unfortunately, we couldn't verify your identity. Please try again.
         </p>
