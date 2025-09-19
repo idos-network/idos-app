@@ -3,6 +3,7 @@ import { type PropsWithChildren, useContext, useEffect } from 'react';
 
 import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { handleSaveUserWallets } from '@/handlers/user-wallets';
+import { useAuth } from '@/hooks/useAuth';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { _idOSClient, useIdosStore } from '@/stores/idosStore';
@@ -70,6 +71,7 @@ const useSigner = () => {
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const { data: signer, isLoading: isLoadingSigner } = useSigner();
+  const { authenticate, isAuthenticated } = useAuth();
 
   const { idOSClient, setIdOSClient, initializing, setSettingSigner } =
     useIdosStore();
@@ -90,6 +92,11 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
             const userWallets = await client.getWallets();
             const walletsArray = userWallets as IdosWallet[];
             handleSaveUserWallets(client.user.id, walletsArray);
+
+            if (!isAuthenticated) {
+              await authenticate();
+            }
+
             setIdOSClient(client);
           } else {
             setIdOSClient(_withSigner);
