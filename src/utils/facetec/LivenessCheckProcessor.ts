@@ -213,10 +213,46 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     //
     this.success = this.latestSessionResult?.isCompletelyDone ?? false;
 
-    // Log success message
+    // Handle both success and cancellation scenarios
     if (this.success) {
-      this.callback(this.success);
+      this.callback(true);
+    } else {
+      // Handle cancellation and failure scenarios
+      const errorMessage = this.getCancellationReason();
+      this.callback(false, errorMessage);
     }
+  };
+
+  // Helper function to get the cancellation reason
+  private getCancellationReason = (): string => {
+    if (this.cancelledDueToNetworkError) {
+      return 'Network error occurred';
+    }
+
+    if (this.latestSessionResult) {
+      switch (this.latestSessionResult.status) {
+        case FaceTecSDK.FaceTecSessionStatus.UserCancelled:
+          return 'User cancelled the session';
+        case FaceTecSDK.FaceTecSessionStatus.UserCancelledFromNewUserGuidance:
+          return 'User cancelled from guidance';
+        case FaceTecSDK.FaceTecSessionStatus.UserCancelledFromRetryGuidance:
+          return 'User cancelled from retry guidance';
+        case FaceTecSDK.FaceTecSessionStatus.Timeout:
+          return 'Session timed out';
+        case FaceTecSDK.FaceTecSessionStatus.CameraNotEnabled:
+          return 'Camera not enabled';
+        case FaceTecSDK.FaceTecSessionStatus.CameraNotRunning:
+          return 'Camera not running';
+        case FaceTecSDK.FaceTecSessionStatus.ContextSwitch:
+          return 'Context switch occurred';
+        case FaceTecSDK.FaceTecSessionStatus.ProgrammaticallyCancelled:
+          return 'Programmatically cancelled';
+        default:
+          return 'Session cancelled';
+      }
+    }
+
+    return 'Session cancelled for unknown reason';
   };
 
   // Helper function to ensure the session is only cancelled once
