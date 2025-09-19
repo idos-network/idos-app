@@ -13,6 +13,7 @@ export const users = pgTable(
   'users',
   {
     id: varchar('id', { length: 36 }).primaryKey().unique(),
+    name: varchar('name', { length: 255 }).default(''),
     mainEvm: varchar('mainEvm', { length: 255 }).default(''),
     referrerCode: varchar('referrerCode').default(''),
     cookieConsent: boolean('cookieConsent').default(sql`null`),
@@ -28,6 +29,7 @@ export const users = pgTable(
   (table) => [
     index('main_evm_idx').on(table.mainEvm),
     index('referrer_code_idx').on(table.referrerCode),
+    index('name_idx').on(table.name),
   ],
 );
 

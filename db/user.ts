@@ -1,7 +1,7 @@
 import { idOSUserSchema } from '@/interfaces/user';
 import { generateReferralCode, questsConfig } from '@/utils/quests';
 import { count, eq } from 'drizzle-orm';
-import crypto from "node:crypto";
+import crypto from 'node:crypto';
 import { db, users } from './index';
 import { getUserQuestsSummary } from './user-quests';
 
@@ -17,21 +17,21 @@ export async function updateUser(data: any) {
   return await db.update(users).set(user).where(eq(users.id, user.id));
 }
 
-export async function updateUserFaceSign(
-  userId: string,
-  faceSignHash: string,
-) {
-  return await db.update(users).set({
-    faceSignHash,
-    faceSignUserId: null,
-    faceSignTokenCreatedAt: null,
-    faceSignDone: !!faceSignHash,
-  }).where(eq(users.id, userId));
+export async function updateUserFaceSign(userId: string, faceSignHash: string) {
+  return await db
+    .update(users)
+    .set({
+      faceSignHash,
+      faceSignUserId: null,
+      faceSignTokenCreatedAt: null,
+      faceSignDone: !!faceSignHash,
+    })
+    .where(eq(users.id, userId));
 }
 
 export async function generateFaceScanToken(userId: string) {
   // Only for users without face-scans
-  const user = await getUserById(userId).then(res => res[0]);
+  const user = await getUserById(userId).then((res) => res[0]);
 
   if (!user || user.faceSignDone) {
     throw new Error("This user can't do face sign.");
@@ -40,7 +40,8 @@ export async function generateFaceScanToken(userId: string) {
   if (
     user.faceSignTokenCreatedAt &&
     user.faceSignUserId &&
-    new Date(user.faceSignTokenCreatedAt).getTime() > Date.now() - 30 * 60 * 1000
+    new Date(user.faceSignTokenCreatedAt).getTime() >
+      Date.now() - 30 * 60 * 1000
   ) {
     // Token is new and valid
     return user.faceSignUserId;
@@ -48,17 +49,23 @@ export async function generateFaceScanToken(userId: string) {
 
   const token = crypto.randomBytes(32).toString('hex');
 
-  await db.update(users).set({
-    faceSignUserId: token,
-    faceSignTokenCreatedAt: new Date(),
-  }).where(eq(users.id, userId));
+  await db
+    .update(users)
+    .set({
+      faceSignUserId: token,
+      faceSignTokenCreatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
 
   return token;
 }
 
 export async function getUserByFaceSignToken(token: string) {
-  const user = await db.select().from(users).where(eq(users.faceSignUserId, token))
-    .then(res => res[0]);
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.faceSignUserId, token))
+    .then((res) => res[0]);
 
   if (!user) {
     return null;
@@ -67,7 +74,8 @@ export async function getUserByFaceSignToken(token: string) {
   // Check token validity (30 minutes)
   if (
     !user.faceSignTokenCreatedAt ||
-    new Date(user.faceSignTokenCreatedAt).getTime() < Date.now() - 30 * 60 * 1000
+    new Date(user.faceSignTokenCreatedAt).getTime() <
+      Date.now() - 30 * 60 * 1000
   ) {
     return null;
   }
@@ -130,7 +138,9 @@ export async function saveUserCookieConsent(userId: string, accepted: boolean) {
     .where(eq(users.id, userId));
 }
 
-export async function getUserCookieConsent(userId: string): Promise<boolean | null> {
+export async function getUserCookieConsent(
+  userId: string,
+): Promise<boolean | null> {
   const result = await db
     .select({
       cookieConsent: users.cookieConsent,
@@ -143,4 +153,14 @@ export async function getUserCookieConsent(userId: string): Promise<boolean | nu
   }
 
   return result[0].cookieConsent;
+}
+
+export async function userNameExists(name: string) {
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.name, name))
+    .limit(1);
+
+  return !!result[0];
 }

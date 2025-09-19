@@ -6,7 +6,7 @@ import {
 import type { Config } from '@netlify/functions';
 
 export interface LeaderboardEntry {
-  userId: string;
+  name: string;
   totalPoints: number;
   questPoints: number;
   socialPoints: number;
@@ -32,11 +32,12 @@ async function getCompleteLeaderboard(): Promise<LeaderboardEntry[]> {
     const socialPoints = socialPointsMap.get(userId) ?? 0;
     const contributionPoints = contributionPointsMap.get(userId) ?? 0;
     const referralCount = questData?.referralCount ?? 0;
+    const name = questData?.name ?? '';
 
     const totalPoints = questPoints + socialPoints + contributionPoints;
 
     leaderboardEntries.push({
-      userId,
+      name,
       totalPoints,
       questPoints,
       socialPoints,
@@ -78,8 +79,18 @@ export default async (request: Request) => {
   const completeLeaderboard = await getCompleteLeaderboard();
 
   if (userId) {
+    const questPointsMap = await getQuestPoints();
+    const questData = questPointsMap.get(userId);
+
+    if (!questData) {
+      return new Response(
+        JSON.stringify({ error: 'User not found on leaderboard' }),
+        { status: 404 },
+      );
+    }
+
     const userPosition = completeLeaderboard.find(
-      (entry) => entry.userId === userId,
+      (entry) => entry.name === questData.name,
     );
     if (!userPosition) {
       return new Response(

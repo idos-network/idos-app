@@ -3,7 +3,7 @@ import axiosInstance from './axios';
 import { parseWithSchema } from './parser';
 
 export interface LeaderboardEntryData {
-  userId: string;
+  name: string;
   totalPoints: number;
   questPoints: number;
   socialPoints: number;
@@ -28,7 +28,7 @@ export const getLeaderboard = async (opts?: {
     z.object({
       data: z.array(
         z.object({
-          userId: z.string(),
+          name: z.string(),
           totalPoints: z.number(),
           questPoints: z.number(),
           socialPoints: z.number(),
@@ -57,7 +57,7 @@ export const getUserPosition = async (
       response.data,
       z.object({
         data: z.object({
-          userId: z.string(),
+          name: z.string(),
           totalPoints: z.number(),
           questPoints: z.number(),
           socialPoints: z.number(),

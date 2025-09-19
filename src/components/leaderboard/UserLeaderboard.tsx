@@ -91,7 +91,7 @@ export function UserLeaderboard() {
           <tbody>
             <tr className="text-base h-[52px] text-neutral-200">
               <td className="px-4">{userPosition.position}</td>
-              <td className="px-4 truncate">{userId}</td>
+              <td className="px-4 truncate">{userPosition.name}</td>
               <td className="px-4">{userPosition.referralCount}</td>
               <td className="px-4">{userPosition.questPoints}</td>
               <td className="px-4">{userPosition.socialPoints}</td>

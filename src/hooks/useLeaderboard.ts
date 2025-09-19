@@ -1,4 +1,8 @@
-import { getLeaderboard, type LeaderboardEntryData } from '@/api/leaderboard';
+import {
+  getLeaderboard,
+  getUserPosition,
+  type LeaderboardEntryData,
+} from '@/api/leaderboard';
 import { useQuery } from '@tanstack/react-query';
 
 interface UseLeaderboardOptions {
@@ -21,13 +25,28 @@ export const useLeaderboard = ({
 }: UseLeaderboardOptions = {}): UseLeaderboardResult => {
   const {
     data: allData,
-    isLoading,
-    error,
+    isLoading: leaderboardLoading,
+    error: leaderboardError,
   } = useQuery<LeaderboardEntryData[]>({
     queryKey: ['leaderboard', 'complete'],
     queryFn: () => getLeaderboard(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  const {
+    data: userPosition,
+    isLoading: userPositionLoading,
+    error: userPositionError,
+  } = useQuery<LeaderboardEntryData | null>({
+    queryKey: ['leaderboard', 'userPosition', userId],
+    queryFn: () => getUserPosition(userId!),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const isLoading =
+    leaderboardLoading || (userId ? userPositionLoading : false);
+  const error = leaderboardError || userPositionError;
 
   if (!allData) {
     return {
@@ -38,15 +57,11 @@ export const useLeaderboard = ({
     };
   }
 
-  const userPosition = userId
-    ? allData.find((entry) => entry.userId === userId) || null
-    : null;
-
   const leaderboard = allData.slice(offset, offset + limit);
 
   return {
     leaderboard,
-    userPosition,
+    userPosition: userPosition ?? null,
     isLoading,
     error,
   };

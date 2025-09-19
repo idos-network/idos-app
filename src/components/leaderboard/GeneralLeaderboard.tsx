@@ -66,11 +66,11 @@ export function GeneralLeaderboard({
               const isLastRow = index === leaderboard.length - 1;
               return (
                 <tr
-                  key={item.userId}
+                  key={item.name}
                   className={`text-base h-[52px] ${!isLastRow ? 'border-neutral-800 border-b' : ''} text-neutral-200`}
                 >
                   <td className="px-4">{item.position}</td>
-                  <td className="px-4 truncate">{item.userId}</td>
+                  <td className="px-4 truncate">{item.name}</td>
                   <td className="px-4">{item.referralCount}</td>
 
                   <td className="px-4">{item.questPoints}</td>

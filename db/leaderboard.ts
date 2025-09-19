@@ -4,6 +4,7 @@ import { db, userQuests, users } from './index';
 
 export interface QuestPointsEntry {
   userId: string;
+  name: string;
   questPoints: number;
   referralCount: number;
 }
@@ -54,14 +55,16 @@ export async function getQuestPoints(): Promise<Map<string, QuestPointsEntry>> {
     }
   }
 
-  const allUsers = await db.select({ id: users.id }).from(users);
+  const allUsers = await db
+    .select({ id: users.id, name: users.name })
+    .from(users);
 
   const referralQuest = questLookup.get('referral_program');
   const referralPoints = referralQuest?.pointsReward ?? 0;
 
   const questDataByUser = new Map<string, QuestPointsEntry>();
 
-  for (const { id } of allUsers) {
+  for (const { id, name } of allUsers) {
     const questPoints = questPointsByUser.get(id) ?? 0;
     const code = generateReferralCode(id);
     const referralCount = refCodeToCount.get(code) ?? 0;
@@ -73,6 +76,7 @@ export async function getQuestPoints(): Promise<Map<string, QuestPointsEntry>> {
 
     questDataByUser.set(id, {
       userId: id,
+      name: name || '',
       questPoints: totalQuestPoints,
       referralCount,
     });
