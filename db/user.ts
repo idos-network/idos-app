@@ -1,7 +1,7 @@
 import { idOSUserSchema } from '@/interfaces/user';
 import { generateReferralCode, questsConfig } from '@/utils/quests';
 import { count, eq } from 'drizzle-orm';
-import crypto from "node:crypto";
+import crypto from 'node:crypto';
 import { db, users } from './index';
 import { getUserQuestsSummary } from './user-quests';
 
@@ -30,7 +30,7 @@ export async function updateUserFaceSign(
 
 export async function generateFaceScanToken(userId: string) {
   // Only for users without face-scans
-  const user = await getUserById(userId).then(res => res[0]);
+  const user = await getUserById(userId).then((res) => res[0]);
 
   if (!user || user.faceSignUserId !== null || user.faceSignDone) {
     throw new Error("This user can't do face sign.");
@@ -70,16 +70,28 @@ export async function getUserReferralCount(
   return result[0].count;
 }
 
-export async function getUserTotalPoints(userId: string): Promise<number> {
+export async function getUserPoints(userId: string): Promise<{
+  questPoints: number;
+  socialPoints: number;
+  contributionPoints: number;
+  totalPoints: number;
+}> {
   const [questSummaries, user] = await Promise.all([
     getUserQuestsSummary(userId),
     getUserById(userId),
   ]);
 
+  const getMultiplier = (count: number) => {
+    if (count >= 1000) return 3;
+    if (count >= 100) return 2.75;
+    if (count >= 25) return 2.5;
+    if (count >= 5) return 2;
+    return 1;
+  };
+
   const questLookup = new Map(questsConfig.map((quest) => [quest.name, quest]));
 
-  // Calculate points from completed quests
-  let totalPoints = questSummaries.reduce((points, summary) => {
+  let questPoints = questSummaries.reduce((points, summary) => {
     const quest = questLookup.get(summary.questName);
     if (quest) {
       points += quest.pointsReward * summary.completionCount;
@@ -87,17 +99,22 @@ export async function getUserTotalPoints(userId: string): Promise<number> {
     return points;
   }, 0);
 
-  // Add referral points
   if (user[0]?.id) {
     const referralCode = generateReferralCode(user[0].id);
     const referralCount = await getUserReferralCount(referralCode);
     const referralQuest = questLookup.get('referral_program');
     if (referralQuest && referralCount > 0) {
-      totalPoints += referralQuest.pointsReward * referralCount;
+      questPoints += referralQuest.pointsReward * referralCount;
     }
+    questPoints = Math.floor(questPoints * getMultiplier(referralCount));
   }
 
-  return totalPoints;
+  questPoints = Math.floor(questPoints);
+  const socialPoints = 0;
+  const contributionPoints = 0;
+  const totalPoints = questPoints + socialPoints + contributionPoints;
+
+  return { questPoints, socialPoints, contributionPoints, totalPoints };
 }
 
 export async function saveUserCookieConsent(userId: string, accepted: boolean) {
@@ -110,7 +127,9 @@ export async function saveUserCookieConsent(userId: string, accepted: boolean) {
     .where(eq(users.id, userId));
 }
 
-export async function getUserCookieConsent(userId: string): Promise<boolean | null> {
+export async function getUserCookieConsent(
+  userId: string,
+): Promise<boolean | null> {
   const result = await db
     .select({
       cookieConsent: users.cookieConsent,

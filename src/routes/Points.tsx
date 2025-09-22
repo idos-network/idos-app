@@ -1,6 +1,6 @@
 import PointsFrame from '@/components/points/PointsFrame';
 import QuestsCard from '@/components/points/QuestsCard';
-import ReferralLink from '@/components/points/ReferralLink';
+import ReferralCard from '@/components/points/ReferralCard';
 import Spinner from '@/components/Spinner';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useNavigate } from '@tanstack/react-router';
@@ -45,7 +45,7 @@ export function Points() {
 
   return (
     <div className="flex items-start justify-center">
-      <div className="container mx-auto max-w-[1050px] flex flex-col px-32 pt-10">
+      <div className="container mx-auto max-w-[1250px] flex flex-col px-32 pt-10">
         <div className="gap-3 flex flex-col mb-10">
           <div className="text-2xl font-medium text-neutral-50">
             idOS Points*
@@ -56,14 +56,43 @@ export function Points() {
         </div>
         <div className="flex gap-5 justify-between">
           <PointsFrame />
-          <ReferralLink />
         </div>
 
         <div className="flex flex-col gap-6 justify-between">
-          <div className="flex gap-5 font-medium text-xl text-neutral-50 justify-between mt-10">
-            Complete quests to earn points
+          <span className="flex font-medium text-xl text-neutral-300 mt-10">
+            Complete quests and refer your friends to get{' '}
+            <span className="text-[#FF9E7F] ml-1">Quest Points</span>
+          </span>
+          <div className="flex gap-5">
+            <QuestsCard />
+            <ReferralCard />
           </div>
-          <QuestsCard />
+        </div>
+
+        <div className="flex flex-col gap-6 justify-between">
+          <span className="flex font-medium text-xl text-neutral-300 mt-10">
+            Talk about idOS on X to get{' '}
+            <span className="text-[#A0F73C] ml-1">Social Points</span>
+            <div className="flex text-sm font-normal items-center px-3 rounded-xl bg-[#00FFB933] text-aquamarine-400 ml-4">
+              Coming soon
+            </div>
+          </span>
+          <div className="flex gap-5">
+            {/* TODO: Update this when social points are implemented */}
+            {/* <XCard />
+            <MindshareCard /> */}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-6 justify-between">
+          <span className="flex font-medium text-xl text-neutral-300 mt-10">
+            Contribute in the idOS Staking Event and ICO to get{' '}
+            <span className="text-[#00B3FF] ml-1">Contribution Points</span>
+            <div className="flex text-sm font-normal items-center px-3 rounded-xl bg-[#00FFB933] text-aquamarine-400 ml-4">
+              Coming soon
+            </div>
+          </span>
+          <div className="flex gap-5"></div>
         </div>
         <PointsDisclaimer />
       </div>
