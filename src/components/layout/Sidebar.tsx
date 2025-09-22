@@ -1,12 +1,13 @@
 import CalendarIcon from '@/components/icons/calendar';
 import LayersIcon from '@/components/icons/layers';
 import UserIcon from '@/components/icons/user';
-import { isProduction } from '@/env';
 import { useUiStore } from '@/stores/uiStore';
 import { Link } from '@tanstack/react-router';
 import { BankIcon } from '../icons/bank';
 import XIcon from '../icons/x-icon';
 import AppTag from '../NotaBank/components/Tag';
+
+const hideSideBar = import.meta.env.VITE_HIDE_SIDEBAR === 'true';
 
 export default function Sidebar() {
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useUiStore();
@@ -31,7 +32,7 @@ export default function Sidebar() {
             )}
           </Link>
 
-          {!isProduction && (
+          {!hideSideBar && (
             <>
               <Link
                 to="/notabank"
@@ -120,7 +121,7 @@ export default function Sidebar() {
                 </div>
               )}
             </Link>
-            {!isProduction && (
+            {!hideSideBar && (
               <>
                 <Link
                   to="/staking-event"
