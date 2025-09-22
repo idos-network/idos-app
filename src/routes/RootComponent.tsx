@@ -1,5 +1,6 @@
 import { getGeoblock } from '@/api/geoblock';
 import CookieBanner from '@/components/CookieBanner';
+import LegacyUsersMigrator from '@/components/NotaBank/components/LegacyUsersMigrator';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { IDOSClientProvider } from '@/providers/idos/idos-client';
 import { ReferralProvider } from '@/providers/quests/referral-provider';
@@ -56,6 +57,7 @@ export function RootComponent() {
                         <TanStackRouterDevtools position="bottom-right" />
                         <ReactQueryDevtools buttonPosition="bottom-right" />
                         {!isMobile && <CookieBanner />}
+                        <LegacyUsersMigrator />
                       </IDOSClientProvider>
                     </WalletConnectorProvider>
                   </XrplWalletProvider>
