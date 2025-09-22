@@ -137,6 +137,9 @@ export function useHandleSaveIdOSProfile({
         id: userId,
         mainEvm: wallet.type === 'evm' ? wallet.address : '',
         referrerCode: '',
+        faceSignUserId: null,
+        faceSignHash: null,
+        faceSignTokenCreatedAt: null,
       });
 
       Promise.resolve(savedUser);
