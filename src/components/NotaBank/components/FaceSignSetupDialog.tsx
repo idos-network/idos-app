@@ -14,7 +14,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useIdOSLoggedIn } from '@/context/idos-context';
-import { isProduction } from '@/env';
 import { AlertCircleIcon, ChevronLeftIcon } from 'lucide-react';
 import encodeQR from 'qr';
 import { useEffect, useState } from 'react';
@@ -131,10 +130,6 @@ export default function FaceSignSetupDialog({
       setFaceSignError(errorMessage || null);
     });
   };
-
-  if (isProduction) {
-    return null;
-  }
 
   if (faceSignInProgress) {
     return (
