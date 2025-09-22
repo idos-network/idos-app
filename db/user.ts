@@ -1,7 +1,7 @@
 import { idOSUserSchema } from '@/interfaces/user';
 import { generateReferralCode, questsConfig } from '@/utils/quests';
 import { count, eq } from 'drizzle-orm';
-import crypto from "node:crypto";
+import crypto from 'node:crypto';
 import { db, users } from './index';
 import { getUserQuestsSummary } from './user-quests';
 
@@ -17,21 +17,21 @@ export async function updateUser(data: any) {
   return await db.update(users).set(user).where(eq(users.id, user.id));
 }
 
-export async function updateUserFaceSign(
-  userId: string,
-  faceSignHash: string,
-) {
-  return await db.update(users).set({
-    faceSignHash,
-    faceSignUserId: null,
-    faceSignTokenCreatedAt: null,
-    faceSignDone: !!faceSignHash,
-  }).where(eq(users.id, userId));
+export async function updateUserFaceSign(userId: string, faceSignHash: string) {
+  return await db
+    .update(users)
+    .set({
+      faceSignHash,
+      faceSignUserId: null,
+      faceSignTokenCreatedAt: null,
+      faceSignDone: !!faceSignHash,
+    })
+    .where(eq(users.id, userId));
 }
 
 export async function generateFaceScanToken(userId: string) {
   // Only for users without face-scans
-  const user = await getUserById(userId).then(res => res[0]);
+  const user = await getUserById(userId).then((res) => res[0]);
 
   if (!user || user.faceSignDone) {
     throw new Error("This user can't do face sign.");
@@ -40,7 +40,8 @@ export async function generateFaceScanToken(userId: string) {
   if (
     user.faceSignTokenCreatedAt &&
     user.faceSignUserId &&
-    new Date(user.faceSignTokenCreatedAt).getTime() > Date.now() - 30 * 60 * 1000
+    new Date(user.faceSignTokenCreatedAt).getTime() >
+      Date.now() - 30 * 60 * 1000
   ) {
     // Token is new and valid
     return user.faceSignUserId;
@@ -48,17 +49,23 @@ export async function generateFaceScanToken(userId: string) {
 
   const token = crypto.randomBytes(32).toString('hex');
 
-  await db.update(users).set({
-    faceSignUserId: token,
-    faceSignTokenCreatedAt: new Date(),
-  }).where(eq(users.id, userId));
+  await db
+    .update(users)
+    .set({
+      faceSignUserId: token,
+      faceSignTokenCreatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
 
   return token;
 }
 
 export async function getUserByFaceSignToken(token: string) {
-  const user = await db.select().from(users).where(eq(users.faceSignUserId, token))
-    .then(res => res[0]);
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.faceSignUserId, token))
+    .then((res) => res[0]);
 
   if (!user) {
     return null;
@@ -67,7 +74,8 @@ export async function getUserByFaceSignToken(token: string) {
   // Check token validity (30 minutes)
   if (
     !user.faceSignTokenCreatedAt ||
-    new Date(user.faceSignTokenCreatedAt).getTime() < Date.now() - 30 * 60 * 1000
+    new Date(user.faceSignTokenCreatedAt).getTime() <
+      Date.now() - 30 * 60 * 1000
   ) {
     return null;
   }
@@ -90,7 +98,12 @@ export async function getUserReferralCount(
   return result[0].count;
 }
 
-export async function getUserTotalPoints(userId: string): Promise<number> {
+export async function getUserPoints(userId: string): Promise<{
+  questPoints: number;
+  socialPoints: number;
+  contributionPoints: number;
+  totalPoints: number;
+}> {
   const [questSummaries, user] = await Promise.all([
     getUserQuestsSummary(userId),
     getUserById(userId),
@@ -98,8 +111,7 @@ export async function getUserTotalPoints(userId: string): Promise<number> {
 
   const questLookup = new Map(questsConfig.map((quest) => [quest.name, quest]));
 
-  // Calculate points from completed quests
-  let totalPoints = questSummaries.reduce((points, summary) => {
+  let questPoints = questSummaries.reduce((points, summary) => {
     const quest = questLookup.get(summary.questName);
     if (quest) {
       points += quest.pointsReward * summary.completionCount;
@@ -107,17 +119,20 @@ export async function getUserTotalPoints(userId: string): Promise<number> {
     return points;
   }, 0);
 
-  // Add referral points
   if (user[0]?.id) {
     const referralCode = generateReferralCode(user[0].id);
     const referralCount = await getUserReferralCount(referralCode);
     const referralQuest = questLookup.get('referral_program');
     if (referralQuest && referralCount > 0) {
-      totalPoints += referralQuest.pointsReward * referralCount;
+      questPoints += referralQuest.pointsReward * referralCount;
     }
   }
 
-  return totalPoints;
+  const socialPoints = 0;
+  const contributionPoints = 0;
+  const totalPoints = questPoints + socialPoints + contributionPoints;
+
+  return { questPoints, socialPoints, contributionPoints, totalPoints };
 }
 
 export async function saveUserCookieConsent(userId: string, accepted: boolean) {
@@ -130,7 +145,9 @@ export async function saveUserCookieConsent(userId: string, accepted: boolean) {
     .where(eq(users.id, userId));
 }
 
-export async function getUserCookieConsent(userId: string): Promise<boolean | null> {
+export async function getUserCookieConsent(
+  userId: string,
+): Promise<boolean | null> {
   const result = await db
     .select({
       cookieConsent: users.cookieConsent,

@@ -11,7 +11,9 @@ export default function PointsFrame() {
         </div>
         <div className="flex gap-2 items-center h-8">
           <img src="/idos-points-logo.png" alt="Points" className="h-8 w-8" />
-          <div className="text-3xl font-medium text-neutral-50">{points}</div>
+          <div className="text-3xl font-medium text-neutral-50">
+            {points.totalPoints}
+          </div>
         </div>
       </div>
       <div className="flex flex-col flex-1 p-6 items-start justify-between bg-neutral-800/60 rounded-lg border border-neutral-800 gap-4">
@@ -41,7 +43,7 @@ export default function PointsFrame() {
                 <div className="absolute -left-2.5 -top-2.5 w-8 h-8 bg-[#FAFAFA66] rounded-full"></div>
               </div>
               <span className="text-neutral-50 font-['Inter'] text-sm font-medium ml-10">
-                {points} Points
+                {points.questPoints} Points
               </span>
             </div>
 
@@ -52,7 +54,7 @@ export default function PointsFrame() {
                 <div className="absolute -left-2.5 -top-2.5 w-8 h-8 bg-[#09090933] rounded-full"></div>
               </div>{' '}
               <span className="text-neutral-900 font-['Inter'] text-sm font-medium ml-10">
-                {/* {socialPoints} Points */}-
+                {points.socialPoints} Points
               </span>
             </div>
 
@@ -63,7 +65,7 @@ export default function PointsFrame() {
                 <div className="absolute -left-2.5 -top-2.5 w-8 h-8 bg-[#FAFAFA33] rounded-full"></div>
               </div>
               <span className="text-neutral-50 font-['Inter'] text-sm font-medium ml-10">
-                {/* {contributionPoints} Points */}-
+                {points.contributionPoints} Points
               </span>
             </div>
           </div>

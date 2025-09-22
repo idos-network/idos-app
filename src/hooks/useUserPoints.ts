@@ -1,4 +1,4 @@
-import { getUserTotalPoints } from '@/api/user';
+import { getUserPoints } from '@/api/user';
 import { useQuery } from '@tanstack/react-query';
 import { useUserId } from './useUserId';
 
@@ -12,13 +12,18 @@ export function useUserPoints() {
     refetch,
   } = useQuery({
     queryKey: ['userPoints', userId],
-    queryFn: () => getUserTotalPoints(userId!),
+    queryFn: () => getUserPoints(userId!),
     enabled: !!userId && !userIdLoading,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   return {
-    points: points ?? 0,
+    points: points ?? {
+      questPoints: 0,
+      socialPoints: 0,
+      contributionPoints: 0,
+      totalPoints: 0,
+    },
     isLoading: userIdLoading || isLoading,
     error,
     refetch,
