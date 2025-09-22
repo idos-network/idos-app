@@ -5,8 +5,8 @@ export default function PointsFrame() {
 
   return (
     <div className="flex gap-4 w-full">
-      <div className="flex flex-col h-full w-[210px] p-6 items-start justify-start bg-neutral-800/60 rounded-lg border border-neutral-800 gap-4">
-        <div className="flex items-center h-8 font-['Inter'] text-sm font-normal text-neutral-400">
+      <div className="flex flex-col h-full w-[210px] p-6 items-start bg-neutral-800/60 rounded-lg border border-neutral-800 gap-8">
+        <div className="flex items-center font-['Inter'] text-sm font-normal text-neutral-400">
           My Total Points
         </div>
         <div className="flex gap-2 items-center h-8">
@@ -16,8 +16,8 @@ export default function PointsFrame() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col flex-1 p-6 items-start justify-between bg-neutral-800/60 rounded-lg border border-neutral-800 gap-4">
-        <div className="flex items-center h-8 font-['Inter'] text-sm font-normal text-neutral-400">
+      <div className="flex flex-col flex-1 p-6 items-start bg-neutral-800/60 rounded-lg border border-neutral-800 gap-4">
+        <div className="flex items-center font-['Inter'] text-sm font-normal text-neutral-400">
           idOS Points breakdown{' '}
         </div>
         <div className="flex flex-col w-full h-full gap-4">
@@ -54,7 +54,10 @@ export default function PointsFrame() {
                 <div className="absolute -left-2.5 -top-2.5 w-8 h-8 bg-[#09090933] rounded-full"></div>
               </div>{' '}
               <span className="text-neutral-900 font-['Inter'] text-sm font-medium ml-10">
-                {points.socialPoints} Points
+                {/* TODO: Update this when social points are implemented */}
+                {points.socialPoints === 0
+                  ? '-'
+                  : `${points.socialPoints} Points`}{' '}
               </span>
             </div>
 
@@ -65,7 +68,10 @@ export default function PointsFrame() {
                 <div className="absolute -left-2.5 -top-2.5 w-8 h-8 bg-[#FAFAFA33] rounded-full"></div>
               </div>
               <span className="text-neutral-50 font-['Inter'] text-sm font-medium ml-10">
-                {points.contributionPoints} Points
+                {/* TODO: Update this when contribution points are implemented */}
+                {points.contributionPoints === 0
+                  ? '-'
+                  : `${points.contributionPoints} Points`}{' '}
               </span>
             </div>
           </div>

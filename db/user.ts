@@ -109,6 +109,14 @@ export async function getUserPoints(userId: string): Promise<{
     getUserById(userId),
   ]);
 
+  const getMultiplier = (count: number) => {
+    if (count >= 1000) return 3;
+    if (count >= 100) return 2.75;
+    if (count >= 25) return 2.5;
+    if (count >= 5) return 2;
+    return 1;
+  };
+
   const questLookup = new Map(questsConfig.map((quest) => [quest.name, quest]));
 
   let questPoints = questSummaries.reduce((points, summary) => {
@@ -126,8 +134,10 @@ export async function getUserPoints(userId: string): Promise<{
     if (referralQuest && referralCount > 0) {
       questPoints += referralQuest.pointsReward * referralCount;
     }
+    questPoints = Math.floor(questPoints * getMultiplier(referralCount));
   }
 
+  questPoints = Math.floor(questPoints);
   const socialPoints = 0;
   const contributionPoints = 0;
   const totalPoints = questPoints + socialPoints + contributionPoints;

@@ -1,8 +1,6 @@
-import MindshareCard from '@/components/points/MindshareCard';
 import PointsFrame from '@/components/points/PointsFrame';
 import QuestsCard from '@/components/points/QuestsCard';
 import ReferralCard from '@/components/points/ReferralCard';
-import XCard from '@/components/points/XCard';
 import Spinner from '@/components/Spinner';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useNavigate } from '@tanstack/react-router';
@@ -80,8 +78,9 @@ export function Points() {
             </div>
           </span>
           <div className="flex gap-5">
-            <XCard />
-            <MindshareCard />
+            {/* TODO: Update this when social points are implemented */}
+            {/* <XCard />
+            <MindshareCard /> */}
           </div>
         </div>
 

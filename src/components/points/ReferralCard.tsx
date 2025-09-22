@@ -32,7 +32,6 @@ export default function ReferralCard() {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Calculate multiplier based on referral count
   const getMultiplier = (count: number) => {
     if (count >= 1000) return 300;
     if (count >= 100) return 275;
@@ -46,7 +45,6 @@ export default function ReferralCard() {
     : 100;
   const currentCount = referralCount.data || 0;
 
-  // Determine current tier for progress bar
   const getCurrentTier = (count: number) => {
     if (count >= 1000) return 4;
     if (count >= 100) return 3;
