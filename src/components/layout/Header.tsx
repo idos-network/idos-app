@@ -1,13 +1,10 @@
-import CalendarIcon from '@/components/icons/calendar';
-import LayersIcon from '@/components/icons/layers';
-import UserIcon from '@/components/icons/user';
 import WalletBar from '@/components/wallets/WalletBar';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import { useIdosStore } from '@/stores/idosStore';
-import { Link } from '@tanstack/react-router';
+import { useUiStore } from '@/stores/uiStore';
 import { formatNearAmount } from 'near-api-js/lib/utils/format';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { formatEther, formatUnits } from 'viem';
 import PointsHeaderFrame from '../points/PointsHeaderFrame';
 
@@ -17,7 +14,7 @@ const evmNetworks = {
 };
 
 export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isMobileMenuOpen, toggleMobileMenu } = useUiStore();
   const { idOSClient } = useIdosStore();
   const hasProfile = idOSClient?.state === 'logged-in';
   const walletConnector = useWalletConnector();
@@ -36,7 +33,7 @@ export default function Header() {
       <header className="flex items-center justify-start gap-5 border-gray-800 border-b text-idos-seasalt h-18 px-6 sticky top-0 z-20 backdrop-blur-sm bg-neutral-950/60">
         {/* Mobile menu button */}
         <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          onClick={toggleMobileMenu}
           className="lg:hidden flex flex-col space-y-1 w-6 h-6 justify-center"
           aria-label="Toggle mobile menu"
         >
@@ -112,58 +109,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile menu overlay */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-18 bg-neutral-950/95 z-10 backdrop-blur-sm">
-          <div className="p-6 border-b border-gray-800">
-            <img src="/idos-logo.png" width="141" alt="idOS Logo" />
-          </div>
-          <nav className="flex flex-col p-6 space-y-4">
-            <Link
-              to="/idos-profile"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 px-3 py-4"
-            >
-              {({ isActive }) => (
-                <div
-                  className={`flex items-center gap-4 w-full ${isActive ? 'text-aquamarine-400' : ''}`}
-                >
-                  <UserIcon className="h-6 w-6" isActive={isActive} />
-                  <span className="text-lg font-medium">idOS Profile</span>
-                </div>
-              )}
-            </Link>
-            <Link
-              to="/staking-event"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 px-3 py-4"
-            >
-              {({ isActive }) => (
-                <div
-                  className={`flex items-center gap-4 w-full ${isActive ? 'text-aquamarine-400' : ''}`}
-                >
-                  <CalendarIcon className="h-6 w-6" isActive={isActive} />
-                  <span className="text-lg font-medium">Staking Event</span>
-                </div>
-              )}
-            </Link>
-            <Link
-              to="/idos-staking"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 px-3 py-4"
-            >
-              {({ isActive }) => (
-                <div
-                  className={`flex items-center gap-4 w-full ${isActive ? 'text-aquamarine-400' : ''}`}
-                >
-                  <LayersIcon className="h-6 w-6" isActive={isActive} />
-                  <span className="text-lg font-medium">idOS Staking</span>
-                </div>
-              )}
-            </Link>
-          </nav>
-        </div>
-      )}
+      {/* Mobile menu overlay moved to Sidebar */}
     </>
   );
 }
