@@ -1,6 +1,6 @@
-import type { Config, Context } from '@netlify/functions';
-import { getUserTotalPoints } from '@/db/user';
+import { getUserPoints } from '@/db/user';
 import { UserNotFoundError } from '@/utils/errors';
+import type { Config, Context } from '@netlify/functions';
 
 export default async (_request: Request, context: Context) => {
   const { userId } = context.params;
@@ -10,8 +10,8 @@ export default async (_request: Request, context: Context) => {
   }
 
   try {
-    const totalPoints = await getUserTotalPoints(userId);
-    return new Response(JSON.stringify({ totalPoints }), { status: 200 });
+    const points = await getUserPoints(userId);
+    return new Response(JSON.stringify(points), { status: 200 });
   } catch (error) {
     console.error('Error in user-points:', error);
     throw error;
