@@ -101,11 +101,11 @@ export default function Sidebar() {
         </footer>
       </aside>
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-18 bg-neutral-950/95 z-10 backdrop-blur-sm">
+        <div className="lg:hidden fixed inset-0 top-18 bg-neutral-950/95 z-20 backdrop-blur-sm">
           <div className="p-6 border-b border-gray-800">
             <img src="/idos-logo.png" width="141" alt="idOS Logo" />
           </div>
-          <nav className="flex flex-col p-6 space-y-4">
+          <nav className="flex flex-col p-6 space-y-4 text-base">
             <Link
               to="/idos-profile"
               onClick={() => setIsMobileMenuOpen(false)}
@@ -116,7 +116,7 @@ export default function Sidebar() {
                   className={`flex items-center gap-4 w-full ${isActive ? 'text-aquamarine-400' : ''}`}
                 >
                   <UserIcon className="h-6 w-6" isActive={isActive} />
-                  <span className="text-lg font-medium">idOS Profile</span>
+                  <span className="font-medium">idOS Profile</span>
                 </div>
               )}
             </Link>
@@ -132,7 +132,7 @@ export default function Sidebar() {
                       className={`flex items-center gap-4 w-full ${isActive ? 'text-aquamarine-400' : ''}`}
                     >
                       <CalendarIcon className="h-6 w-6" isActive={isActive} />
-                      <span className="text-lg font-medium">Staking Event</span>
+                      <span className="font-medium">Staking Event</span>
                     </div>
                   )}
                 </Link>
@@ -146,7 +146,7 @@ export default function Sidebar() {
                       className={`flex items-center gap-4 w-full ${isActive ? 'text-aquamarine-400' : ''}`}
                     >
                       <LayersIcon className="h-6 w-6" isActive={isActive} />
-                      <span className="text-lg font-medium">idOS Staking</span>
+                      <span className="font-medium">idOS Staking</span>
                     </div>
                   )}
                 </Link>
