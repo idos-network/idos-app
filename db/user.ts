@@ -33,19 +33,8 @@ export async function generateFaceScanToken(userId: string) {
   // Only for users without face-scans
   const user = await getUserById(userId).then(res => res[0]);
 
-  if (!user) {
-    const token = crypto.randomBytes(32).toString('hex');
-
-    await db.update(users).set({
-      faceSignUserId: token,
-      faceSignTokenCreatedAt: new Date(),
-    }).where(eq(users.id, userId));
-
-    return token;
-  }
-
-  if (user.faceSignDone) {
-    throw new Error("This user already has a face sign.");
+  if (!user || user.faceSignDone) {
+    throw new Error("This user can't do face sign.");
   }
 
   if (
@@ -57,6 +46,14 @@ export async function generateFaceScanToken(userId: string) {
     return user.faceSignUserId;
   }
 
+  const token = crypto.randomBytes(32).toString('hex');
+
+  await db.update(users).set({
+    faceSignUserId: token,
+    faceSignTokenCreatedAt: new Date(),
+  }).where(eq(users.id, userId));
+
+  return token;
 }
 
 export async function getUserByFaceSignToken(token: string) {
