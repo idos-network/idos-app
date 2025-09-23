@@ -3,7 +3,6 @@ import {
   getFaceSignStatus,
   getPublicKey,
 } from '@/api/face-sign';
-import { updateUserFaceSign } from '@/api/update-user-face-sign';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -98,15 +97,13 @@ export default function FaceSignSetupDialog({
     const checkFaceSignStatus = (interval?: any) =>
       getFaceSignStatus(currentUserId)
         .then((result) => {
-          if (result.faceSignHash) {
+          if (result.faceSignDone) {
             if (interval) {
               clearInterval(interval);
             }
             setQrCodeView(false);
             setFaceSignResult(true);
-            updateUserFaceSign(currentUserId, result.faceSignHash).then(() => {
-              onDone(true);
-            });
+            onDone(true)
           }
         })
         .catch((error) => {

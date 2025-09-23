@@ -7,7 +7,6 @@ export const idOSUserSchema = z.object({
   cookieConsent: z.nullable(z.boolean()).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  faceSignHash: z.nullable(z.string()).optional(),
   faceSignUserId: z.nullable(z.string()).optional(),
   faceSignTokenCreatedAt: z.nullable(z.coerce.date()).optional(),
 });

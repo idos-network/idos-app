@@ -18,10 +18,10 @@ export default async (_request: Request, context: Context) => {
 
   return createResponse({
     // If true liveness was enrolled and we should ask for DWG
-    faceSignHash: !!user.faceSignHash,
+    faceSignDone: user.faceSignUserId !== null,
 
     // If true, user completed full onboarding incl. DWG
-    faceSignDone: !!user.faceSignDone,
+    popCredentialsWritten: !!user.faceSignDone,
   }, 200);
 };
 

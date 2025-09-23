@@ -15,6 +15,13 @@
       "when": 1758552934234,
       "tag": "0001_acoustic_squadron_supreme",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758614414207,
+      "tag": "0002_bouncy_garia",
+      "breakpoints": true
     }
   ]
 }
