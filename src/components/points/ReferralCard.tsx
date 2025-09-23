@@ -87,7 +87,7 @@ export default function ReferralCard() {
           <div className="text-sm font-light text-neutral-400">
             Users referred
           </div>
-          <div className="text-xl font-medium font-['Urbanist'] text-[#FF9E7F]">
+          <div className="text-xl font-medium font-['Urbanist'] text-neutral-50">
             {referralCount.isLoading ? (
               <div className="w-6 h-6 border-2 border-neutral-600 border-t-[#FF9E7F] rounded-full animate-spin" />
             ) : referralCount.isError ? (
@@ -97,11 +97,11 @@ export default function ReferralCard() {
             )}
           </div>
         </div>
-        <div className="flex flex-col gap-2 flex-1 bg-neutral-800/60 rounded-lg p-3 border border-neutral-800">
+        <div className="flex flex-col gap-2 flex-1 bg-neutral-800/60 rounded-lg p-3 border border-[#442B20]">
           <div className="text-sm font-light text-neutral-400">
             Referral multiplier
           </div>
-          <div className="text-xl font-medium font-['Urbanist'] text-[#FF9E7F]">
+          <div className="text-xl font-medium font-['Urbanist'] text-[#FFBA1A]">
             {referralCount.isLoading ? (
               <div className="w-6 h-6 border-2 border-neutral-600 border-t-[#FF9E7F] rounded-full animate-spin" />
             ) : referralCount.isError ? (
@@ -152,7 +152,7 @@ export default function ReferralCard() {
             <div></div>
             <div className="relative">
               <div
-                className={`h-1.5 rounded-full bg-[#FFC4AF]`}
+                className={`h-1.5 rounded-full bg-[#FFE9AC]`}
                 style={{
                   border: currentTier === 0 ? '0.5px solid #FDE5E2' : 'none',
                   boxShadow: currentTier === 0 ? '0 0 6px #FF5D2E' : 'none',
@@ -164,7 +164,7 @@ export default function ReferralCard() {
             </div>
             <div className="relative">
               <div
-                className={`h-1.5 rounded-full bg-[#FF9E7F]`}
+                className={`h-1.5 rounded-full bg-[#FFD04A]`}
                 style={{
                   border: currentTier === 1 ? '0.5px solid #FDE5E2' : 'none',
                   boxShadow: currentTier === 1 ? '0 0 6px #FF5D2E' : 'none',
@@ -176,7 +176,7 @@ export default function ReferralCard() {
             </div>
             <div className="relative">
               <div
-                className={`h-1.5 rounded-full bg-[#FF7A50]`}
+                className={`h-1.5 rounded-full bg-[#FFBA1A]`}
                 style={{
                   border: currentTier === 2 ? '0.5px solid #FDE5E2' : 'none',
                   boxShadow: currentTier === 2 ? '0 0 6px #FF5D2E' : 'none',
@@ -188,7 +188,7 @@ export default function ReferralCard() {
             </div>
             <div className="relative">
               <div
-                className={`h-1.5 rounded-full bg-[#FF5D2E]`}
+                className={`h-1.5 rounded-full bg-[#FF9715]`}
                 style={{
                   border: currentTier === 3 ? '0.5px solid #FDE5E2' : 'none',
                   boxShadow: currentTier === 3 ? '0 0 6px #FF5D2E' : 'none',
@@ -200,7 +200,7 @@ export default function ReferralCard() {
             </div>
             <div className="relative">
               <div
-                className={`h-1.5 rounded-full bg-[#FF4109]`}
+                className={`h-1.5 rounded-full bg-[#FE6612]`}
                 style={{
                   border: currentTier === 4 ? '0.5px solid #FDE5E2' : 'none',
                   boxShadow: currentTier === 4 ? '0 0 6px #FF5D2E' : 'none',
