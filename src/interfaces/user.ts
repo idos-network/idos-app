@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const idOSUserSchema = z.object({
   id: z.string(),
+  name: z.string().optional(),
   mainEvm: z.string(),
   referrerCode: z.string().optional(),
   cookieConsent: z.nullable(z.boolean()).optional(),
