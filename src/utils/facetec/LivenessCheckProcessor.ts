@@ -69,7 +69,8 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   ): void => {
     // Save the current sessionResult
     this.latestSessionResult = sessionResult;
-
+    debugger
+    console.log('sessionResult', sessionResult);
     //
     // Part 3:  Handles early exit scenarios where there is no FaceScan to handle -- i.e. User Cancellation, Timeouts, etc.
     //
