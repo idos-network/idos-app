@@ -1,5 +1,6 @@
 import ConnectModal from '@/components/leaderboard/ConnectModal';
 import { GeneralLeaderboard } from '@/components/leaderboard/GeneralLeaderboard';
+import { LeaderboardTitle } from '@/components/leaderboard/LeaderboardTitle';
 import { UserLeaderboard } from '@/components/leaderboard/UserLeaderboard';
 import PointsDisclaimer from '@/components/points/PointsDisclaimer';
 import SmallPrimaryButton from '@/components/SmallPrimaryButton';
@@ -21,6 +22,9 @@ export function Leaderboard() {
     useState(false);
   const navigate = useNavigate();
   const wasConnectedRef = useRef(isConnected);
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const offset = (page - 1) * limit;
 
   useEffect(() => {
     const wasConnected = wasConnectedRef.current;
@@ -53,9 +57,9 @@ export function Leaderboard() {
 
   if (!isConnected) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="flex flex-col items-center gap-14">
-          <div className="flex flex-col p-6 rounded-xl bg-[#00382D99] w-full gap-5">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid grid-cols-[max-content] gap-14 justify-center">
+          <div className="flex flex-col p-6 rounded-xl bg-[#00382D99] gap-5">
             <div className="flex text-2xl text-neutral-50 font-normal">
               Get started
             </div>
@@ -76,11 +80,16 @@ export function Leaderboard() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col w-full gap-5">
-            <div className="flex text-xl text-neutral-50 font-medium">
-              idOS Points Leaderboard
-            </div>
-            <GeneralLeaderboard limit={20} offset={0} />
+          <div className="flex flex-col gap-5">
+            <LeaderboardTitle
+              title="idOS Points Leaderboard"
+              subtitle="Top 20 users"
+            />
+            <GeneralLeaderboard
+              limit={limit}
+              offset={offset}
+              onPageChange={(p) => setPage(p)}
+            />
           </div>
         </div>
 
@@ -94,9 +103,25 @@ export function Leaderboard() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <UserLeaderboard />
-      <GeneralLeaderboard limit={20} offset={0} />
+    <div className="max-w-7xl mx-auto p-6 space-y-14">
+      <div className="flex flex-col w-full gap-5">
+        <LeaderboardTitle
+          title="My total idOS Points"
+          subtitle="Points Leaderboard"
+        />
+        <UserLeaderboard />
+      </div>
+      <div className="flex flex-col w-full gap-5">
+        <LeaderboardTitle
+          title="idOS Points Leaderboard"
+          subtitle="Top 20 users"
+        />
+        <GeneralLeaderboard
+          limit={limit}
+          offset={offset}
+          onPageChange={(p) => setPage(p)}
+        />
+      </div>
       <PointsDisclaimer />
     </div>
   );

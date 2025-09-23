@@ -18,6 +18,11 @@ async function getCompleteLeaderboard(): Promise<LeaderboardEntry[]> {
 
   const leaderboardEntries = await getLeaderboardEntries();
 
+  // Filter out users with 0 points to avoid cluttering the leaderboard
+  // const filteredEntries = leaderboardEntries.filter(
+  //   (entry) => entry.totalPoints > 0,
+  // );
+
   const entriesWithPositions: LeaderboardEntry[] = [];
   let currentPosition = 1;
   let previousPoints: number | null = null;
@@ -88,7 +93,13 @@ export default async (request: Request) => {
     safeOffset + safeLimit,
   );
 
-  return new Response(JSON.stringify({ data: paginatedData }), { status: 200 });
+  return new Response(
+    JSON.stringify({
+      data: paginatedData,
+      total: completeLeaderboard.length,
+    }),
+    { status: 200 },
+  );
 };
 
 export const config: Config = {
