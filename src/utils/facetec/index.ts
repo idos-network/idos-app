@@ -39,7 +39,8 @@ export class FaceTecContainer {
 
     this.FaceTecSDK.setResourceDirectory('/facetec/FaceTecSDK.js/resources');
     this.FaceTecSDK.setImagesDirectory('/facetec/FaceTecSDK.js/FaceTec_images');
-    this.FaceTecSDK.initializeInDevelopmentMode(
+    this.FaceTecSDK.initializeInProductionMode(
+      env.VITE_FACETEC_PRODUCTION_KEY,
       env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
       publicKey,
       (initializationSuccess: boolean) => {
