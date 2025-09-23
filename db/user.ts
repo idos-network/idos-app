@@ -53,8 +53,7 @@ export async function generateFaceScanToken(userId: string) {
   if (
     user.faceSignTokenCreatedAt &&
     user.faceSignToken &&
-    new Date(user.faceSignTokenCreatedAt).getTime() >
-    Date.now() - 30 * 60 * 1000
+    new Date(user.faceSignTokenCreatedAt).getTime() > Date.now() - 30 * 60 * 1000
   ) {
     // Token is new and valid
     return user.faceSignToken;
