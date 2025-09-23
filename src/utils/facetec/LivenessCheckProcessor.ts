@@ -23,6 +23,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   private cancelledDueToNetworkError: boolean;
   latestNetworkRequest: XMLHttpRequest = new XMLHttpRequest();
   public latestSessionResult: FaceTecSessionResult | null;
+  private lastNetworkErrorMessage: string | null;
 
   //
   // DEVELOPER NOTE:  These properties are for demonstration purposes only so the Sample App can get information about what is happening in the processor.
@@ -46,6 +47,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     this.success = false;
     this.latestSessionResult = null;
     this.cancelledDueToNetworkError = false;
+    this.lastNetworkErrorMessage = null;
 
     // Set a callback
     this.callback = callback;
@@ -69,8 +71,8 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   ): void => {
     // Save the current sessionResult
     this.latestSessionResult = sessionResult;
-    debugger
-    console.log('sessionResult', sessionResult);
+    this.lastNetworkErrorMessage = null;
+
     //
     // Part 3:  Handles early exit scenarios where there is no FaceScan to handle -- i.e. User Cancellation, Timeouts, etc.
     //
@@ -227,6 +229,10 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   // Helper function to get the cancellation reason
   private getCancellationReason = (): string => {
     if (this.cancelledDueToNetworkError) {
+      if (this.lastNetworkErrorMessage) {
+        return this.lastNetworkErrorMessage;
+      }
+
       return 'Network error occurred';
     }
 
@@ -263,6 +269,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   ): void => {
     if (this.cancelledDueToNetworkError === false) {
       console.error(networkErrorMessage);
+      this.lastNetworkErrorMessage = networkErrorMessage;
       this.cancelledDueToNetworkError = true;
       faceScanResultCallback.cancel();
     }

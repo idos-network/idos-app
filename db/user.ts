@@ -1,31 +1,24 @@
-import { idOSUserSchema } from '@/interfaces/user';
+import { saveUserSchema } from '@/interfaces/user';
 import { generateReferralCode, questsConfig } from '@/utils/quests';
 import { count, eq } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { db, users } from './index';
-import { createReferral, updateReferralCount } from './referrals';
 import { getUserQuestsSummary } from './user-quests';
 
 export async function saveUser(data: any) {
-  const user = idOSUserSchema.parse(data);
-
-  createReferral(user.id);
-  if (user.referrerCode && user.referrerCode !== '') {
-    updateReferralCount(user.referrerCode);
-  }
-
-  return await db.insert(users).values(user);
+  const user = saveUserSchema.parse(data);
+  return await db.insert(users).values(user).onConflictDoNothing();
 }
 
 export async function updateUser(data: any) {
-  const user = idOSUserSchema.parse(data);
-
-  createReferral(user.id);
-  if (user.referrerCode && user.referrerCode !== '') {
-    updateReferralCount(user.referrerCode);
-  }
-
+  const user = saveUserSchema.parse(data);
   return await db.update(users).set(user).where(eq(users.id, user.id));
+}
+
+export async function setUserPopCredentialId(userId: string, credentialId: string) {
+  return await db.update(users).set({
+    popCredentialsId: credentialId,
+  }).where(eq(users.id, userId));
 }
 
 export async function updateUserFaceSign(
@@ -46,15 +39,14 @@ export async function generateFaceScanToken(userId: string) {
   // Only for users without face-scans
   const user = await getUserById(userId).then((res) => res[0]);
 
-  if (!user || user.faceSignUserId !== null || user.faceSignDone) {
+  if (!user || user.faceSignUserId !== null || user.popCredentialsId) {
     throw new Error("This user can't do face sign.");
   }
 
   if (
     user.faceSignTokenCreatedAt &&
     user.faceSignToken &&
-    new Date(user.faceSignTokenCreatedAt).getTime() >
-    Date.now() - 30 * 60 * 1000
+    new Date(user.faceSignTokenCreatedAt).getTime() > Date.now() - 30 * 60 * 1000
   ) {
     // Token is new and valid
     return user.faceSignToken;
