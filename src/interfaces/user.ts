@@ -9,13 +9,12 @@ export const saveUserSchema = z.object({
 
 export const idOSUserSchema = z.object({
   id: z.string(),
-  name: z.string().optional(),
+  name: z.nullable(z.string().optional()),
   mainEvm: z.string(),
   referrerCode: z.string().optional(),
   cookieConsent: z.nullable(z.boolean()).optional(),
   faceSignUserId: z.string().optional(),
-  faceSignTokenCreatedAt: z.coerce.date().optional(),
-  faceSignDone: z.boolean().optional(),
+  faceSignTokenCreatedAt: z.nullable(z.coerce.date().optional()),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 });
