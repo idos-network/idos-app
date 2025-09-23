@@ -1,5 +1,6 @@
 import ConnectModal from '@/components/leaderboard/ConnectModal';
 import { GeneralLeaderboard } from '@/components/leaderboard/GeneralLeaderboard';
+import { LeaderboardTitle } from '@/components/leaderboard/LeaderboardTitle';
 import { UserLeaderboard } from '@/components/leaderboard/UserLeaderboard';
 import PointsDisclaimer from '@/components/points/PointsDisclaimer';
 import SmallPrimaryButton from '@/components/SmallPrimaryButton';
@@ -53,7 +54,7 @@ export function Leaderboard() {
 
   if (!isConnected) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6">
         <div className="flex flex-col items-center gap-14">
           <div className="flex flex-col p-6 rounded-xl bg-[#00382D99] w-full gap-5">
             <div className="flex text-2xl text-neutral-50 font-normal">
@@ -77,9 +78,10 @@ export function Leaderboard() {
             </div>
           </div>
           <div className="flex flex-col w-full gap-5">
-            <div className="flex text-xl text-neutral-50 font-medium">
-              idOS Points Leaderboard
-            </div>
+            <LeaderboardTitle
+              title="idOS Points Leaderboard"
+              subtitle="Top 20 users"
+            />
             <GeneralLeaderboard limit={20} offset={0} />
           </div>
         </div>
@@ -94,9 +96,21 @@ export function Leaderboard() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <UserLeaderboard />
-      <GeneralLeaderboard limit={20} offset={0} />
+    <div className="max-w-7xl mx-auto p-6 space-y-14">
+      <div className="flex flex-col w-full gap-5">
+        <LeaderboardTitle
+          title="My total idOS Points"
+          subtitle="Points Leaderboard"
+        />
+        <UserLeaderboard />
+      </div>
+      <div className="flex flex-col w-full gap-5">
+        <LeaderboardTitle
+          title="idOS Points Leaderboard"
+          subtitle="Top 20 users"
+        />
+        <GeneralLeaderboard limit={20} offset={0} />
+      </div>
       <PointsDisclaimer />
     </div>
   );

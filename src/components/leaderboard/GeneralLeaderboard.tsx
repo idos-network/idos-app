@@ -40,21 +40,36 @@ export function GeneralLeaderboard({
   }
 
   return (
-    <div className="flex h-full flex-col gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6 w-full">
-      <div className="flex-grow overflow-x-auto">
-        <table className="w-full table-auto text-sm font-['Inter']">
+    <div className="flex flex-col gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6 w-fit">
+      <div className="overflow-x-auto">
+        <table className="table-fixed text-xs font-['Inter']">
           <thead>
-            <tr className="text-left text-neutral-400 text-sm bg-neutral-800 h-[52px]">
-              <th className="w-[10%] px-4 font-normal rounded-l-[20px]">
+            <tr className="text-left text-neutral-400 text-xs bg-neutral-800 h-[44px]">
+              <th className="w-[70px] px-4 font-normal rounded-l-[20px]">
                 Rank
               </th>
-              <th className="w-[35%] px-4 font-normal">Name</th>
-              <th className="w-[15%] px-4 font-normal">Total</th>
-              <th className="w-[10%] px-4 font-normal">Referrals</th>
-              <th className="w-[10%] px-4 font-normal">Quest</th>
-              <th className="w-[10%] px-4 font-normal">Social</th>
-              <th className="w-[10%] px-4 font-normal rounded-r-[20px]">
-                Contrib.
+              <th className="w-[240px] px-4 font-normal">Name</th>
+              <th className="w-[110px] px-4 font-normal">Total Points</th>
+              <th className="w-[110px] px-4 font-normal text-[#F1A039]">
+                Quest Points
+              </th>
+              <th className="w-[10px] px-4 font-normal">Mindshare</th>
+              <th className="w-[155px] px-4 font-normal text-[#EEFF41]">
+                <span className="inline-flex items-center gap-2">
+                  Social Points
+                  <span className="inline-flex items-center h-4 px-2 rounded-xl bg-[#00FFB933] text-aquamarine-400 text-[10px] font-normal">
+                    Soon
+                  </span>
+                </span>
+              </th>
+              <th className="w-[140px] px-4 font-normal">Total Contribution</th>
+              <th className="w-[200px] px-4 font-normal text-[#2CB2FF] rounded-r-[20px]">
+                <span className="inline-flex items-center gap-2">
+                  Contribution Points
+                  <span className="inline-flex items-center h-4 px-2 rounded-xl bg-[#00FFB933] text-aquamarine-400 text-[10px] font-normal">
+                    Soon
+                  </span>
+                </span>
               </th>
             </tr>
           </thead>
@@ -64,11 +79,11 @@ export function GeneralLeaderboard({
               return (
                 <tr
                   key={item.name}
-                  className={`text-base h-[52px] ${!isLastRow ? 'border-neutral-800 border-b' : ''} text-neutral-200`}
+                  className={`font-[Urbanist] text-sm font-medium h-[44px] ${!isLastRow ? 'border-neutral-800 border-b' : ''} text-neutral-400`}
                 >
-                  <td className="px-4">{item.position}</td>
+                  <td className="px-4">#{item.position}</td>
                   <td className="px-4 truncate">{item.name}</td>
-                  <td className="px-4 font-medium">
+                  <td className="px-4 font-light text-sm text-neutral-200">
                     <div className="flex items-center">
                       <img
                         src="/idos-points-logo.png"
@@ -78,9 +93,11 @@ export function GeneralLeaderboard({
                       {item.totalPoints}
                     </div>
                   </td>
-                  <td className="px-4">{item.referralCount}</td>
                   <td className="px-4">{item.questPoints}</td>
+                  <td className="px-4">-</td>
                   <td className="px-4">{item.socialPoints}</td>
+                  <td className="px-4">-</td>
+
                   <td className="px-4">{item.contributionPoints}</td>
                 </tr>
               );
