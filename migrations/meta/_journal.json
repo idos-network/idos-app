@@ -22,6 +22,13 @@
       "when": 1758614414207,
       "tag": "0002_bouncy_garia",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1758619715627,
+      "tag": "0003_natural_daredevil",
+      "breakpoints": true
     }
   ]
 }

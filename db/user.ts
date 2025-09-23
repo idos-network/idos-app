@@ -23,6 +23,7 @@ export async function updateUserFaceSign(
 ) {
   return await db.update(users).set({
     faceSignUserId,
+    faceSignToken: null,
     faceSignTokenCreatedAt: null,
   }).where(eq(users.id, userId));
 }
@@ -37,18 +38,17 @@ export async function generateFaceScanToken(userId: string) {
 
   if (
     user.faceSignTokenCreatedAt &&
-    user.faceSignUserId &&
-    new Date(user.faceSignTokenCreatedAt).getTime() >
-    Date.now() - 30 * 60 * 1000
+    user.faceSignToken &&
+    new Date(user.faceSignTokenCreatedAt).getTime() > Date.now() - 30 * 60 * 1000
   ) {
     // Token is new and valid
-    return user.faceSignUserId;
+    return user.faceSignToken;
   }
 
   const token = crypto.randomBytes(32).toString('hex');
 
   await db.update(users).set({
-    faceSignUserId: token,
+    faceSignToken: token,
     faceSignTokenCreatedAt: new Date(),
   }).where(eq(users.id, userId));
 

@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "faceSignToken" varchar DEFAULT null;
