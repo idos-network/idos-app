@@ -5,9 +5,12 @@ import crypto from 'node:crypto';
 import { db, users } from './index';
 import { getUserQuestsSummary } from './user-quests';
 
-export async function saveUser(data: any) {
+export async function saveUser(data: any, name: string) {
   const user = saveUserSchema.parse(data);
-  return await db.insert(users).values(user).onConflictDoNothing();
+  return await db.insert(users).values({
+    ...user,
+    name,
+  }).onConflictDoNothing();
 }
 
 export async function updateUser(data: any) {
