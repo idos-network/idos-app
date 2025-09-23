@@ -16,6 +16,7 @@ import { Home } from './routes/Home';
 import { IdosIco } from './routes/IdosIco';
 import { IdosProfile } from './routes/IdosProfile';
 import { IdosStaking } from './routes/IdosStaking';
+import { Leaderboard } from './routes/Leaderboard';
 import {
   notabankBuyRoute,
   notabankIndexRoute,
@@ -122,6 +123,13 @@ export const faceTecMobileSignRoute = createRoute({
   component: FaceSignMobile,
 });
 
+// Leaderboard route
+export const leaderboardRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/leaderboard',
+  component: Leaderboard,
+});
+
 // Create route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -150,5 +158,6 @@ export const routeTree = rootRoute.addChildren([
     idosIcoRoute,
     idosStakingRoute,
     pointsRoute,
+    leaderboardRoute,
   ]),
 ]);

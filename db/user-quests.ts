@@ -1,8 +1,9 @@
-import { db, userQuests } from './index';
-import { eq, and, desc, count, min, max } from 'drizzle-orm';
-import { getQuestByName, questsConfig } from '@/utils/quests';
-import { QuestNotFoundError, QuestNotRepeatableError } from '@/utils/errors';
 import type { UserQuestSummary } from '@/interfaces/user-quests';
+import { QuestNotFoundError, QuestNotRepeatableError } from '@/utils/errors';
+import { getQuestByName, questsConfig } from '@/utils/quests';
+import { and, count, desc, eq, max, min } from 'drizzle-orm';
+import { db, userQuests } from './index';
+import { refreshLeaderboard } from './leaderboard';
 
 export const completeUserQuest = async (
   userId: string,
@@ -32,6 +33,8 @@ export const completeUserQuest = async (
     userId,
     questName,
   });
+
+  await refreshLeaderboard();
 
   return { success: true, data: result };
 };

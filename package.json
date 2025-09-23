@@ -17,6 +17,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "netlify dev:exec drizzle-kit studio",
     "db:setup": "createdb idos_dev && npm run db:generate && npm run db:migrate",
+    "db:populate-quests": "tsx scripts/populate-quests.ts",
     "postinstall": "patch-package",
     "facetec-browser-sdk": "live-server --host=localhost --port=8000"
   },
@@ -72,6 +73,7 @@
     "live-server": "^1.2.1",
     "lucide-react": "^0.535.0",
     "near-api-js": "4.0.3",
+    "patch-package": "^8.0.0",
     "postgres": "^3.4.7",
     "qr": "^0.5.1",
     "react": "^18.2.0",
@@ -86,8 +88,7 @@
     "vite-plugin-node-polyfills": "^0.23.0",
     "wagmi": "^2.15.4",
     "xrpl": "^4.4.0",
-    "zod": "^3.25.48",
-    "patch-package": "^8.0.0"
+    "zod": "^3.25.48"
   },
   "overrides": {
     "@meteorwallet/sdk": {
@@ -96,6 +97,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@faker-js/faker": "^10.0.0",
     "@netlify/neon": "^0.1.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.15.29",
