@@ -17,6 +17,7 @@ const BUTTON_TEXT_COLOR = '#1a1a1a';
 
 export class FaceTecContainer {
   private userId: string | null = null;
+  public initialized: boolean = false;
 
   private get FaceTecSDK() {
     return (window as any).FaceTecSDK;
@@ -42,6 +43,7 @@ export class FaceTecContainer {
         console.log('FaceTec SDK initialized status: ', initializationSuccess);
         if (initializationSuccess) {
           this.setupCustomization();
+          this.initialized = true;
         }
       },
     );
