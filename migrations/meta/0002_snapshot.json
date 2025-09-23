@@ -219,7 +219,10 @@
         "user_wallets_user_address_unique": {
           "name": "user_wallets_user_address_unique",
           "nullsNotDistinct": false,
-          "columns": ["userId", "address"]
+          "columns": [
+            "userId",
+            "address"
+          ]
         }
       },
       "policies": {},
@@ -329,12 +332,16 @@
         "users_id_unique": {
           "name": "users_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["id"]
+          "columns": [
+            "id"
+          ]
         },
         "users_faceSignUserId_unique": {
           "name": "users_faceSignUserId_unique",
           "nullsNotDistinct": false,
-          "columns": ["faceSignUserId"]
+          "columns": [
+            "faceSignUserId"
+          ]
         }
       },
       "policies": {},
