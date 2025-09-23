@@ -180,6 +180,7 @@ export default function FaceSignSetupDialog({
           <div className="flex flex-col gap-5 w-full mt-2">
             <Button
               className="bg-aquamarine-400"
+              disabled={!faceTec.initialized}
               onClick={() =>
                 mobile ? handleLivenessCheck() : setQrCodeView(true)
               }
@@ -189,6 +190,7 @@ export default function FaceSignSetupDialog({
             {!mobile && (
               <Button
                 variant="underline"
+                disabled={!faceTec.initialized}
                 className="bg-neutral-700 hover:bg-neutral-600"
                 onClick={() => handleLivenessCheck()}
               >
