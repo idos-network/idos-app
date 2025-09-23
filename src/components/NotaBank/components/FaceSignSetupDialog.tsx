@@ -100,7 +100,7 @@ export default function FaceSignSetupDialog({
             }
             setQrCodeView(false);
             setFaceSignResult(true);
-            onDone(true)
+            onDone(true);
           }
         })
         .catch((error) => {
