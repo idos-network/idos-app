@@ -35,6 +35,12 @@ const provider = new JsonRpcProvider({
   url: env.VITE_NEAR_RPC_URL,
 });
 
+export const getNearBalance = async (accountId: string) => {
+  const account = new NearAccount(accountId, provider);
+  const balance = await account.getBalance();
+  return balance;
+};
+
 export function NearWalletProvider({ children }: PropsWithChildren) {
   const [selector, setSelector] = useState<WalletSelector | null>(null);
   const [modal, setModal] = useState<WalletSelectorModal | null>(null);
@@ -77,12 +83,9 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
                       existingAccounts[0]?.accountId,
                     )
                   )?.[0] || '';
-                const account = new NearAccount(
-                  existingAccounts[0]?.accountId,
-                  provider,
-                );
-                const balance = await account.getBalance();
-                setBalance(balance);
+                // @todo: bring this back once we need to fetch balance
+                // const balance = await getNearBalance(existingAccounts[0]?.accountId)
+                // setBalance(balance);
                 setPublicKey(publicKey);
               } catch (error) {
                 console.error('Failed to restore NEAR public key:', error);
@@ -135,22 +138,22 @@ export function NearWalletProvider({ children }: PropsWithChildren) {
               await getNearFullAccessPublicKeys(signedInAccounts[0]?.accountId)
             )?.[0] || '';
 
-          const account = new NearAccount(
-            signedInAccounts[0]?.accountId,
-            provider,
-          );
-          const balance = await account.getBalance();
-          setBalance(balance);
+          // const account = new NearAccount(
+          //   signedInAccounts[0]?.accountId,
+          //   provider,
+          // );
+          // const balance = await getNearBalance(signedInAccounts[0]?.accountId);
+          // setBalance(balance);
           setPublicKey(publicKey);
           setAccounts(signedInAccounts);
         } catch (error) {
           console.error('Failed to get NEAR public key on sign in:', error);
           // Still set accounts even if public key fails
-          const account = new NearAccount(
-            signedInAccounts[0]?.accountId,
-            provider,
-          );
-          const balance = await account.getBalance();
+          // const account = new NearAccount(
+          //   signedInAccounts[0]?.accountId,
+          //   provider,
+          // );
+          const balance = await getNearBalance(signedInAccounts[0]?.accountId);
           setBalance(balance);
           setAccounts(signedInAccounts);
         }
