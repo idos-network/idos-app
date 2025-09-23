@@ -102,6 +102,7 @@ export default function FaceSignSetupDialog({
             if (interval) {
               clearInterval(interval);
             }
+            alert(JSON.stringify(result));
             setQrCodeView(false);
             setFaceSignResult(true);
             onDone(true);
