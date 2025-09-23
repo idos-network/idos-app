@@ -135,7 +135,7 @@ export default async (request: Request, _context: Context) => {
   } catch (error) {
     return new Response(
       JSON.stringify({
-        error: JSON.stringify(error),
+        error,
         success: false,
         message: 'Internal server error.',
       }),
