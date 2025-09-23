@@ -132,10 +132,13 @@ export default async (request: Request, _context: Context) => {
     await setUserPopCredentialId(userId, result.originalCredential.id);
 
     return new Response(JSON.stringify(result), { status: 200 });
-  } catch (error) {
+  } catch (err) {
     return new Response(
       JSON.stringify({
-        error,
+        // @ts-expect-error expected
+        error: err.message,
+        // @ts-expect-error Expected
+        stack: err.stack, // ⚠️ includes full stack trace
         success: false,
         message: 'Internal server error.',
       }),
