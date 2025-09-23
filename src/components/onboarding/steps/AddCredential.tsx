@@ -59,7 +59,6 @@ export default function AddCredential() {
             mainEvm: wallet.address,
             referrerCode: referralCode || '',
             faceSignUserId: null,
-            faceSignHash: null,
             faceSignTokenCreatedAt: null,
           });
         }

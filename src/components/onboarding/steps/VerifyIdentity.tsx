@@ -80,7 +80,6 @@ export default function VerifyIdentity() {
         mainEvm: walletType === 'evm' ? userAddress : '',
         referrerCode: '',
         faceSignUserId: null,
-        faceSignHash: null,
         faceSignTokenCreatedAt: null,
       });
       queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
