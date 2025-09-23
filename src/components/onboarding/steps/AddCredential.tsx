@@ -58,8 +58,6 @@ export default function AddCredential() {
             id: idOSLoggedIn!.user.id,
             mainEvm: wallet.address,
             referrerCode: referralCode || '',
-            faceSignUserId: null,
-            faceSignTokenCreatedAt: null,
           });
         }
         localStorage.setItem(
