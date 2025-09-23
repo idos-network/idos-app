@@ -88,7 +88,13 @@ export default async (request: Request) => {
     safeOffset + safeLimit,
   );
 
-  return new Response(JSON.stringify({ data: paginatedData }), { status: 200 });
+  return new Response(
+    JSON.stringify({
+      data: paginatedData,
+      total: completeLeaderboard.length,
+    }),
+    { status: 200 },
+  );
 };
 
 export const config: Config = {

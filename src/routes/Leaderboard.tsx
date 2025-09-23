@@ -22,6 +22,9 @@ export function Leaderboard() {
     useState(false);
   const navigate = useNavigate();
   const wasConnectedRef = useRef(isConnected);
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const offset = (page - 1) * limit;
 
   useEffect(() => {
     const wasConnected = wasConnectedRef.current;
@@ -55,8 +58,8 @@ export function Leaderboard() {
   if (!isConnected) {
     return (
       <div className="max-w-7xl mx-auto p-6">
-        <div className="flex flex-col items-center gap-14">
-          <div className="flex flex-col p-6 rounded-xl bg-[#00382D99] w-full gap-5">
+        <div className="grid grid-cols-[max-content] gap-14 justify-center">
+          <div className="flex flex-col p-6 rounded-xl bg-[#00382D99] gap-5">
             <div className="flex text-2xl text-neutral-50 font-normal">
               Get started
             </div>
@@ -77,12 +80,16 @@ export function Leaderboard() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col w-full gap-5">
+          <div className="flex flex-col gap-5">
             <LeaderboardTitle
               title="idOS Points Leaderboard"
               subtitle="Top 20 users"
             />
-            <GeneralLeaderboard limit={20} offset={0} />
+            <GeneralLeaderboard
+              limit={limit}
+              offset={offset}
+              onPageChange={(p) => setPage(p)}
+            />
           </div>
         </div>
 
@@ -109,7 +116,11 @@ export function Leaderboard() {
           title="idOS Points Leaderboard"
           subtitle="Top 20 users"
         />
-        <GeneralLeaderboard limit={20} offset={0} />
+        <GeneralLeaderboard
+          limit={limit}
+          offset={offset}
+          onPageChange={(p) => setPage(p)}
+        />
       </div>
       <PointsDisclaimer />
     </div>

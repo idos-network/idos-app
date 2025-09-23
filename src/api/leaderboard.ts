@@ -17,7 +17,7 @@ export interface LeaderboardEntryData {
 export const getLeaderboard = async (opts?: {
   limit?: number;
   offset?: number;
-}): Promise<LeaderboardEntryData[]> => {
+}): Promise<{ data: LeaderboardEntryData[]; total?: number }> => {
   const params = new URLSearchParams();
   if (opts?.limit) params.set('limit', String(opts.limit));
   if (opts?.offset) params.set('offset', String(opts.offset));
@@ -41,10 +41,11 @@ export const getLeaderboard = async (opts?: {
           position: z.number(),
         }),
       ),
+      total: z.number().optional(),
     }),
   );
 
-  return parsed.data;
+  return { data: parsed.data, total: parsed.total };
 };
 
 export const getUserPosition = async (

@@ -1,19 +1,32 @@
 import Spinner from '@/components/Spinner';
+import DropdownArrowIcon from '@/components/icons/dropdown-arrow';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
+import { useMemo } from 'react';
 
 interface GeneralLeaderboardProps {
   limit?: number;
   offset?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export function GeneralLeaderboard({
   limit = 5,
   offset = 0,
+  onPageChange,
 }: GeneralLeaderboardProps) {
-  const { leaderboard, isLoading, error } = useLeaderboard({
+  const { leaderboard, total, isLoading, error } = useLeaderboard({
     limit,
     offset,
   });
+
+  const currentPage = useMemo(
+    () => Math.floor(offset / limit) + 1,
+    [offset, limit],
+  );
+  const totalPages = useMemo(
+    () => (total ? Math.max(1, Math.ceil(total / limit)) : 1),
+    [total, limit],
+  );
 
   if (isLoading) {
     return (
@@ -105,6 +118,65 @@ export function GeneralLeaderboard({
           </tbody>
         </table>
       </div>
+      {total && totalPages > 1 && (
+        <div className="flex font-['Inter'] items-center justify-center gap-2 text-xs text-neutral-300">
+          <button
+            className={`px-2 py-3 rounded-lg border text-neutral-50 border-neutral-800 flex items-center justify-center ${currentPage === 1 ? 'text-neutral-700 cursor-not-allowed' : 'hover:bg-[#26262666] cursor-pointer'}`}
+            disabled={currentPage === 1}
+            onClick={() => onPageChange?.(currentPage - 1)}
+          >
+            <DropdownArrowIcon className="rotate-90" />
+          </button>
+          {(() => {
+            const maxButtons = 5;
+            const pages: number[] = [];
+            const start = Math.max(
+              1,
+              Math.min(currentPage - 2, totalPages - maxButtons + 1),
+            );
+            const end = Math.min(totalPages, start + maxButtons - 1);
+            for (let p = start; p <= end; p++) pages.push(p);
+            return (
+              <div className="flex items-center">
+                {start > 1 && (
+                  <button
+                    className="h-8 px-3 rounded-lg font-light hover:bg-neutral-700 hover:cursor-pointer"
+                    onClick={() => onPageChange?.(1)}
+                  >
+                    1
+                  </button>
+                )}
+                {start > 2 && <span className="px-1">…</span>}
+                {pages.map((p) => (
+                  <button
+                    key={p}
+                    className={`h-8 px-3 rounded-lg font-light hover:cursor-pointer ${p === currentPage ? 'bg-neutral-800 text-neutral-100' : 'hover:bg-[#26262666]'}`}
+                    onClick={() => onPageChange?.(p)}
+                  >
+                    {p}
+                  </button>
+                ))}
+                {end < totalPages - 1 && <span className="px-1">…</span>}
+                {end < totalPages && (
+                  <button
+                    className="h-8 px-3 rounded-lg font-light hover:cursor-pointer hover:bg-[#26262666]"
+                    onClick={() => onPageChange?.(totalPages)}
+                  >
+                    {totalPages}
+                  </button>
+                )}
+              </div>
+            );
+          })()}
+          <button
+            className={`px-2 py-3 rounded-lg border text-neutral-50 border-neutral-800 flex items-center justify-center ${currentPage >= totalPages ? 'text-neutral-700 cursor-not-allowed' : 'hover:bg-[#26262666] cursor-pointer'}`}
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange?.(currentPage + 1)}
+          >
+            <DropdownArrowIcon className="rotate-270" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

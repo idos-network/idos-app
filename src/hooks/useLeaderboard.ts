@@ -13,6 +13,7 @@ interface UseLeaderboardOptions {
 
 interface UseLeaderboardResult {
   leaderboard: LeaderboardEntryData[];
+  total: number | null;
   userPosition: LeaderboardEntryData | null;
   isLoading: boolean;
   error: any;
@@ -27,7 +28,7 @@ export const useLeaderboard = ({
     data: leaderboardData,
     isLoading: leaderboardLoading,
     error: leaderboardError,
-  } = useQuery<LeaderboardEntryData[]>({
+  } = useQuery<{ data: LeaderboardEntryData[]; total?: number }>({
     queryKey: ['leaderboard', 'paginated', limit, offset],
     queryFn: () => getLeaderboard({ limit, offset }),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -47,6 +48,7 @@ export const useLeaderboard = ({
   if (!leaderboardData) {
     return {
       leaderboard: [],
+      total: null,
       userPosition: null,
       isLoading: leaderboardLoading || (userId ? userPositionLoading : false),
       error: leaderboardError || userPositionError,
@@ -54,7 +56,8 @@ export const useLeaderboard = ({
   }
 
   return {
-    leaderboard: leaderboardData,
+    leaderboard: leaderboardData.data,
+    total: leaderboardData.total ?? null,
     userPosition: userPosition ?? null,
     isLoading: leaderboardLoading || (userId ? userPositionLoading : false),
     error: leaderboardError || userPositionError,
