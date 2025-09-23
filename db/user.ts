@@ -19,13 +19,11 @@ export async function updateUser(data: any) {
 
 export async function updateUserFaceSign(
   userId: string,
-  faceSignHash: string,
+  faceSignUserId: string,
 ) {
   return await db.update(users).set({
-    faceSignHash,
-    faceSignUserId: null,
+    faceSignUserId,
     faceSignTokenCreatedAt: null,
-    faceSignDone: !!faceSignHash,
   }).where(eq(users.id, userId));
 }
 
@@ -33,7 +31,7 @@ export async function generateFaceScanToken(userId: string) {
   // Only for users without face-scans
   const user = await getUserById(userId).then(res => res[0]);
 
-  if (!user || user.faceSignDone) {
+  if (!user || user.faceSignUserId !== null || user.faceSignDone) {
     throw new Error("This user can't do face sign.");
   }
 

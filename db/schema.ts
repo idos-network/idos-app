@@ -19,7 +19,6 @@ export const users = pgTable(
     faceSignUserId: varchar('faceSignUserId').unique(),
     faceSignTokenCreatedAt: timestamp('faceSignTokenCreatedAt'),
     faceSignDone: boolean('faceSignDone').default(false),
-    faceSignHash: varchar('faceSignHash', { length: 300 }),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt')
       .defaultNow()
