@@ -55,25 +55,6 @@ export async function generateFaceScanToken(userId: string) {
   return token;
 }
 
-export async function getUserByFaceSignToken(token: string) {
-  const user = await db.select().from(users).where(eq(users.faceSignToken, token))
-    .then(res => res[0]);
-
-  if (!user) {
-    return null;
-  }
-
-  // Check token validity (30 minutes)
-  if (
-    !user.faceSignTokenCreatedAt ||
-    new Date(user.faceSignTokenCreatedAt).getTime() < Date.now() - 30 * 60 * 1000
-  ) {
-    return null;
-  }
-
-  return user;
-}
-
 export function getUserById(userId: string) {
   return db.select().from(users).where(eq(users.id, userId));
 }
@@ -142,4 +123,23 @@ export async function getUserCookieConsent(userId: string): Promise<boolean | nu
   }
 
   return result[0].cookieConsent;
+}
+
+export async function getUserByFaceSignToken(token: string) {
+  const user = await db.select().from(users).where(eq(users.faceSignToken, token))
+    .then(res => res[0]);
+
+  if (!user) {
+    return null;
+  }
+
+  // Check token validity (30 minutes)
+  if (
+    !user.faceSignTokenCreatedAt ||
+    new Date(user.faceSignTokenCreatedAt).getTime() < Date.now() - 30 * 60 * 1000
+  ) {
+    return null;
+  }
+
+  return user;
 }
