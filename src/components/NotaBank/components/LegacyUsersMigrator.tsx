@@ -7,13 +7,17 @@ import { useEffect } from 'react';
 const useHasDbRecord = (id: string) => {
   return useQuery({
     queryKey: ['hasDbRecord', id],
-    queryFn: () => getUserById(id).then((res) => res.length > 0),
+    queryFn: () => {
+      if (id === '') return false;
+      return getUserById(id).then((res) => res.length > 0);
+    },
   });
 };
 
 export default function LegacyUsersMigrator() {
   const { idOSClient } = useIdosStore();
   const hasProfile = idOSClient?.state === 'logged-in';
+
   const { data: hasDbRecord, isLoading: hasDbRecordLoading } = useHasDbRecord(
     idOSClient?.state === 'logged-in' ? idOSClient?.user?.id : '',
   );

@@ -15,7 +15,7 @@ export default async (_request: Request, context: Context) => {
     // We need to map it to the idOSUserSchema
     return new Response(JSON.stringify(users.map(user => ({
       id: user.id,
-      name: user.name,
+      name: user.name ?? undefined,
       mainEvm: user.mainEvm,
       referrerCode: user.referrerCode,
       cookieConsent: user.cookieConsent,

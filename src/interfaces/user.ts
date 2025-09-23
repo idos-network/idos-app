@@ -9,7 +9,7 @@ export const saveUserSchema = z.object({
 
 export const idOSUserSchema = z.object({
   id: z.string(),
-  name: z.nullable(z.string().optional()),
+  name: z.string().optional(),
   mainEvm: z.string(),
   referrerCode: z.string().optional(),
   cookieConsent: z.nullable(z.boolean()).optional(),
