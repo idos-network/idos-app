@@ -15,6 +15,7 @@ export default async (request: Request, _context: Context) => {
         return new Response(JSON.stringify(result), { status: 200 });
       } catch (err) {
         console.log('Name collision, retrying with new name...');
+        console.log(err);
       }
     }
   } catch (error) {

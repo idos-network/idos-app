@@ -4,7 +4,6 @@ import axiosInstance from './axios';
 import { parseWithSchema } from './parser';
 
 export const saveUser = async (userData: IdOSUser): Promise<void> => {
-  console.log('saveUser', userData);
   const response = await axiosInstance.post('/user/save', userData);
   return response.data;
 };
