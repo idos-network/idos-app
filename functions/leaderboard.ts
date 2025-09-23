@@ -18,6 +18,11 @@ async function getCompleteLeaderboard(): Promise<LeaderboardEntry[]> {
 
   const leaderboardEntries = await getLeaderboardEntries();
 
+  // Filter out users with 0 points to avoid cluttering the leaderboard
+  // const filteredEntries = leaderboardEntries.filter(
+  //   (entry) => entry.totalPoints > 0,
+  // );
+
   const entriesWithPositions: LeaderboardEntry[] = [];
   let currentPosition = 1;
   let previousPoints: number | null = null;
