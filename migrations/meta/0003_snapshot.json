@@ -1,5 +1,5 @@
 {
-  "id": "bddc81cf-55fb-4a4b-8574-c89f7b10e0dd",
+  "id": "a1202b3b-0e54-4cfd-9ce5-2bf46b73b23d",
   "prevId": "eb18f323-bf1f-403b-93f0-c1021790da9d",
   "version": "7",
   "dialect": "postgresql",
@@ -279,12 +279,12 @@
           "primaryKey": false,
           "notNull": false
         },
-        "faceSignDone": {
-          "name": "faceSignDone",
-          "type": "boolean",
+        "popCredentialsId": {
+          "name": "popCredentialsId",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false,
-          "default": false
+          "default": "null"
         },
         "createdAt": {
           "name": "createdAt",

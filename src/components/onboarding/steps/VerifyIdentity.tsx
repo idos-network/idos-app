@@ -79,8 +79,6 @@ export default function VerifyIdentity() {
         id: userId,
         mainEvm: walletType === 'evm' ? userAddress : '',
         referrerCode: '',
-        faceSignUserId: null,
-        faceSignTokenCreatedAt: null,
       });
       queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
     }

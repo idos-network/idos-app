@@ -22,7 +22,7 @@ export const users = pgTable(
     faceSignUserId: varchar('faceSignUserId').unique(),
     faceSignToken: varchar('faceSignToken').default(sql`null`),
     faceSignTokenCreatedAt: timestamp('faceSignTokenCreatedAt'),
-    faceSignDone: boolean('faceSignDone').default(false),
+    popCredentialsId: varchar('popCredentialId').default(sql`null`),
     createdAt: timestamp('createdAt').defaultNow(),
     updatedAt: timestamp('updatedAt')
       .defaultNow()

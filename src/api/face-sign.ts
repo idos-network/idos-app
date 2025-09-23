@@ -24,7 +24,7 @@ export const getPublicKey = async (): Promise<string> => {
 
 export const getFaceSignStatus = async (
   userId: string,
-): Promise<{ faceSignDone: boolean; popCredentialsWritten: boolean }> => {
+): Promise<{ faceSignDone: boolean }> => {
   const response = await axiosInstance.get(`/face-sign/${userId}/status`, {
     headers: { Accept: 'application/json' },
   });

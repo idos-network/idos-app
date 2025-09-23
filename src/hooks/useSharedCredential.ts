@@ -1,7 +1,7 @@
 import { getSharedCredential } from '@/api/shared-credential';
 import { useIdOS } from '@/context/idos-context';
 import { useSharedStore } from '@/stores/shared-store';
-import type { Credentials } from '@idos-network/consumer';
+import type { Credential } from '@idos-network/consumer';
 import { useQuery } from '@tanstack/react-query';
 
 export const useSharedCredential = () => {
@@ -12,7 +12,7 @@ export const useSharedCredential = () => {
 
   return useQuery<{
     credentialId: string;
-    credentialContent: Credentials['credentialSubject'];
+    credentialContent: Credential['credentialSubject'];
   }>({
     queryKey: ['shared-credential'],
     queryFn: () => {
@@ -30,7 +30,7 @@ export const useSharedCredential = () => {
     // Use cached data immediately if available in store
     initialData: sharedCredential as unknown as {
       credentialId: string;
-      credentialContent: Credentials['credentialSubject'];
+      credentialContent: Credential['credentialSubject'];
     },
     staleTime: 0,
     gcTime: 0,

@@ -52,14 +52,23 @@ export default async (request: Request, context: Context) => {
     }, 400);
   }
 
-  await updateUserFaceSign(userId, json.faceSignUserId);
+  try {
+    await updateUserFaceSign(userId, json.faceSignUserId);
 
-  return createResponse({
-    success: true,
-    wasProcessed: true,
-    error: false,
-    scanResultBlob: json.scanResultBlob,
-  }, 200);
+    return createResponse({
+      success: true,
+      wasProcessed: true,
+      error: false,
+      scanResultBlob: json.scanResultBlob,
+    }, 200);
+  } catch (e) {
+    return createResponse({
+      success: false,
+      wasProcessed: true,
+      error: true,
+      errorMessage: "Duplicate FaceSign user ID, please use your original account.",
+    }, 400);
+  }
 };
 
 export const config: Config = {

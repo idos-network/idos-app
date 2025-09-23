@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "id": "ced51d64-d65f-44a2-b5f0-41a5cea129c7",
   "prevId": "bddc81cf-55fb-4a4b-8574-c89f7b10e0dd",
   "version": "7",
@@ -219,6 +220,13 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+=======
+  "id": "75fb22ae-2929-4539-8ba1-1aa3de25fd2d",
+  "prevId": "a1202b3b-0e54-4cfd-9ce5-2bf46b73b23d",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+>>>>>>> bed1b0e (feat(credentials): Facesign credentials)
     "public.user_quests": {
       "name": "user_quests",
       "schema": "",
@@ -454,6 +462,7 @@
           "primaryKey": true,
           "notNull": true
         },
+<<<<<<< HEAD
         "name": {
           "name": "name",
           "type": "varchar",
@@ -467,6 +476,8 @@
           "notNull": false,
           "default": "''"
         },
+=======
+>>>>>>> bed1b0e (feat(credentials): Facesign credentials)
         "mainEvm": {
           "name": "mainEvm",
           "type": "varchar(255)",
@@ -494,6 +505,7 @@
           "primaryKey": false,
           "notNull": false
         },
+<<<<<<< HEAD
         "faceSignToken": {
           "name": "faceSignToken",
           "type": "varchar",
@@ -501,18 +513,29 @@
           "notNull": false,
           "default": "null"
         },
+=======
+>>>>>>> bed1b0e (feat(credentials): Facesign credentials)
         "faceSignTokenCreatedAt": {
           "name": "faceSignTokenCreatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
+<<<<<<< HEAD
         "faceSignDone": {
           "name": "faceSignDone",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
+=======
+        "popCredentialId": {
+          "name": "popCredentialId",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "null"
+>>>>>>> bed1b0e (feat(credentials): Facesign credentials)
         },
         "createdAt": {
           "name": "createdAt",
@@ -559,6 +582,7 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+<<<<<<< HEAD
         },
         "name_idx": {
           "name": "name_idx",
@@ -589,6 +613,8 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+=======
+>>>>>>> bed1b0e (feat(credentials): Facesign credentials)
         }
       },
       "foreignKeys": {},
@@ -601,6 +627,7 @@
             "id"
           ]
         },
+<<<<<<< HEAD
         "users_name_unique": {
           "name": "users_name_unique",
           "nullsNotDistinct": false,
@@ -608,6 +635,8 @@
             "name"
           ]
         },
+=======
+>>>>>>> bed1b0e (feat(credentials): Facesign credentials)
         "users_faceSignUserId_unique": {
           "name": "users_faceSignUserId_unique",
           "nullsNotDistinct": false,
@@ -626,6 +655,7 @@
   "sequences": {},
   "roles": {},
   "policies": {},
+<<<<<<< HEAD
   "views": {
     "public.leaderboard_view": {
       "columns": {
@@ -690,6 +720,9 @@
       "materialized": true
     }
   },
+=======
+  "views": {},
+>>>>>>> bed1b0e (feat(credentials): Facesign credentials)
   "_meta": {
     "columns": {},
     "schemas": {},

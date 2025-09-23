@@ -17,7 +17,7 @@ export default async (request: Request, _context: Context) => {
   }
 
   const idOSIssuer = idOSIssuerClass.init({
-    nodeUrl: process.env.IDOS_NODE_URL as string,
+    nodeUrl: process.env.VITE_IDOS_NODE_URL as string,
     signingKeyPair: nacl.sign.keyPair.fromSecretKey(
       Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
     ),

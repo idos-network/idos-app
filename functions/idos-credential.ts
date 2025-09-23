@@ -1,19 +1,9 @@
+import { getUserById, setUserPopCredentialId } from '@/db/user';
 import { type IdosDWG } from '@/interfaces/idos-credential';
-import type { Config, Context } from '@netlify/functions';
-// @ts-expect-error Missing types in this library
-import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
+import type { Config, Context } from '@netlify/functions';
 import { encode as utf8Encode } from '@stablelib/utf8';
 import nacl from 'tweetnacl';
-import { z } from 'zod';
-
-// TODO: update for idOS App launch
-export const IDDocumentTypeSchema = z.enum([
-  'PASSPORT',
-  'DRIVERS',
-  'ID_CARD',
-] as const);
-export type IDDocumentType = z.infer<typeof IDDocumentTypeSchema>;
 
 export default async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
@@ -32,8 +22,30 @@ export default async (request: Request, _context: Context) => {
       userId: string;
     };
 
+  const user = await getUserById(userId).then(res => res[0]);
+
+  if (!user) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'User not found.',
+      }),
+      { status: 404 },
+    );
+  }
+
+  if (!user.faceSignUserId || user.popCredentialsId) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'User is in invalid state (did not complete face sign, or already has POP credentials).',
+      }),
+      { status: 400 },
+    );
+  }
+
   const idOSIssuer = await idOSIssuerClass.init({
-    nodeUrl: process.env.IDOS_NODE_URL as string,
+    nodeUrl: process.env.VITE_IDOS_NODE_URL as string,
     signingKeyPair: nacl.sign.keyPair.fromSecretKey(
       Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
     ),
@@ -43,73 +55,39 @@ export default async (request: Request, _context: Context) => {
     ),
   });
 
-  const id = process.env.CREDENTIAL_ID as string;
+  // facesign.fractal.id / facesign.staging.sandbox.fractal.id
   const issuerDomain = process.env.ISSUER_DOMAIN as string;
 
   const credentialFields = {
-    id: `https://idOS-app/credentials/${id}`,
+    id: `${issuerDomain}/credentials/${user.faceSignUserId}`,
     level: 'human',
     issued: new Date(),
     approvedAt: new Date(),
   };
 
-  const credentialId = crypto.randomUUID();
-
-  // TODO: update for idOS App launch
-  const credentialSubject = {
-    id: `https://idOS-app/subjects/${credentialId}`,
-    firstName: 'Cristiano',
-    familyName: 'Ronaldo',
-    dateOfBirth: new Date(),
-    placeOfBirth: 'Funchal',
-    idDocumentCountry: 'PT',
-    idDocumentNumber: '293902002',
-    idDocumentType: 'PASSPORT' as const,
-    idDocumentDateOfIssue: new Date(),
-    idDocumentFrontFile: Buffer.from('SOME_IMAGE'),
-    selfieFile: Buffer.from('SOME_IMAGE'),
-    residentialAddress: {
-      street: 'Main St',
-      houseNumber: '123',
-      additionalAddressInfo: 'Apt 1',
-      city: 'Funchal',
-      postalCode: '10001',
-      country: 'PT',
-    },
-    residentialAddressProofFile: Buffer.from('SOME_IMAGE'),
-    residentialAddressProofCategory: 'UTILITY_BILL',
-    residentialAddressProofDateOfIssue: new Date(),
-  };
-
-  const multibaseSigningKeyPair = await Ed25519VerificationKey2020.generate({
-    id: `${issuerDomain}/keys/1`,
-    controller: `${issuerDomain}/issuers/1`,
-  });
-
   const issuer = {
     id: `${issuerDomain}/keys/1`,
     controller: `${issuerDomain}/issuers/1`,
-    publicKeyMultibase: multibaseSigningKeyPair.publicKeyMultibase,
-    privateKeyMultibase: multibaseSigningKeyPair.privateKeyMultibase,
+    publicKeyMultibase: process.env.ISSUER_PUBLIC_KEY_MULTIBASE as string,
+    privateKeyMultibase: process.env.ISSUER_PRIVATE_KEY_MULTIBASE as string,
   };
 
-  const credential = await idOSIssuer.buildCredentials(
+  const plainContent = await idOSIssuer.buildFaceIdCredential(
     credentialFields,
-    credentialSubject,
+    {
+      faceSignUserId: user.faceSignUserId,
+    },
     issuer,
   );
-  const publicNotesId = crypto.randomUUID();
 
-  const credentialsPublicNotes = {
+  const publicNotes = {
     // `id` is required to make `editCredential` work.
-    id: publicNotesId,
+    id: crypto.randomUUID(),
     type: 'PoP',
     level: 'human',
     status: 'approved',
-    issuer: 'idOS',
+    issuer: 'FaceSign',
   };
-
-  const credentialContent = JSON.stringify(credential);
 
   if (!userEncryptionPublicKey) {
     return new Response(
@@ -126,29 +104,31 @@ export default async (request: Request, _context: Context) => {
     'base64',
   );
 
-  const credentialPayload = {
-    id: crypto.randomUUID(),
-    user_id: userId,
-    plaintextContent: utf8Encode(credentialContent),
+  const credentialParams = {
+    publicNotes: JSON.stringify(publicNotes),
+    plaintextContent: utf8Encode(JSON.stringify(plainContent)),
     recipientEncryptionPublicKey: recipientEncryptionPublicKey,
-    publicNotes: JSON.stringify(credentialsPublicNotes),
+  };
+
+  const dwgParams = {
+    id: idOSDWG.delegatedWriteGrant.id,
+    ownerWalletIdentifier:
+      idOSDWG.delegatedWriteGrant.owner_wallet_identifier,
+    consumerWalletIdentifier:
+      idOSDWG.delegatedWriteGrant.grantee_wallet_identifier,
+    issuerPublicKey: idOSDWG.delegatedWriteGrant.issuer_public_key,
+    accessGrantTimelock: idOSDWG.delegatedWriteGrant.access_grant_timelock,
+    notUsableBefore: idOSDWG.delegatedWriteGrant.not_usable_before,
+    notUsableAfter: idOSDWG.delegatedWriteGrant.not_usable_after,
+    signature: idOSDWG.signature,
   };
 
   const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
-    credentialPayload,
-    {
-      id: idOSDWG.delegatedWriteGrant.id,
-      ownerWalletIdentifier:
-        idOSDWG.delegatedWriteGrant.owner_wallet_identifier,
-      consumerWalletIdentifier:
-        idOSDWG.delegatedWriteGrant.grantee_wallet_identifier,
-      issuerPublicKey: idOSDWG.delegatedWriteGrant.issuer_public_key,
-      accessGrantTimelock: idOSDWG.delegatedWriteGrant.access_grant_timelock,
-      notUsableBefore: idOSDWG.delegatedWriteGrant.not_usable_before,
-      notUsableAfter: idOSDWG.delegatedWriteGrant.not_usable_after,
-      signature: idOSDWG.signature,
-    },
+    credentialParams,
+    dwgParams,
   );
+
+  await setUserPopCredentialId(userId, result.originalCredential.id);
 
   return new Response(JSON.stringify(result), { status: 200 });
 };
