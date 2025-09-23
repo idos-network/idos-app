@@ -10,7 +10,8 @@ import invariant from 'tiny-invariant';
 
 const allowedOrigin = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
 
-export const handleOpenWalletPopup = () => {
+// hidden_wallet example: "evm,near"
+export const handleOpenWalletPopup = (hiddenWallets: string = '') => {
   const url = allowedOrigin;
   invariant(url, 'VITE_EMBEDDED_WALLET_APP_URL is not set');
   const popupWidth = 400;
@@ -18,7 +19,7 @@ export const handleOpenWalletPopup = () => {
   const left = (window.screen.width - popupWidth) / 2;
   const top = (window.screen.height - popupHeight) / 2;
   window.open(
-    url,
+    `${url}?hidden_wallets=${hiddenWallets}`,
     'wallet-connection',
     `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=no`,
   );

@@ -153,7 +153,7 @@ export default function EVMWalletAdd({
   }, [walletPayload, onWalletAdded, onError, onSuccess, idOSLoggedIn]);
 
   // Open the embedded wallet popup
-  const handleOpenWalletPopup = () => {
+  const handleOpenWalletPopup = (hiddenWallets?: string) => {
     const url = import.meta.env.VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL;
     invariant(url, 'VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL is not set');
     setIsLoading(true);
@@ -162,7 +162,7 @@ export default function EVMWalletAdd({
     const left = (window.screen.width - popupWidth) / 2;
     const top = (window.screen.height - popupHeight) / 2;
     const popup = window.open(
-      url,
+      `${url}?hidden_wallets=${hiddenWallets}`,
       'wallet-connection',
       `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=no`,
     );
@@ -180,7 +180,10 @@ export default function EVMWalletAdd({
   };
 
   return (
-    <StepperButton onClick={handleOpenWalletPopup} disabled={isLoading}>
+    <StepperButton
+      onClick={() => handleOpenWalletPopup('near,xrpl,stellar')}
+      disabled={isLoading}
+    >
       {isLoading ? 'Waiting for wallet...' : 'Add EVM wallet'}
     </StepperButton>
   );
