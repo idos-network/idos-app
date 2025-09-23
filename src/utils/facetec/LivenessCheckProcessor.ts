@@ -214,7 +214,6 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     //
     this.success = this.latestSessionResult?.isCompletelyDone ?? false;
     console.log('this.latestSessionResult', this.latestSessionResult);
-    debugger
     // Handle both success and cancellation scenarios
     if (this.success) {
       this.callback(true);
