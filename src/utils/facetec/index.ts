@@ -22,7 +22,11 @@ export class FaceTecContainer {
     return (window as any).FaceTecSDK;
   }
 
-  public init = (userId: string, publicKey: string, onInitialized: () => void): void => {
+  public init = (
+    userId: string,
+    publicKey: string,
+    onInitialized: () => void,
+  ): void => {
     // Check if FaceTecSDK is available
     if (!this.FaceTecSDK) {
       console.error(
