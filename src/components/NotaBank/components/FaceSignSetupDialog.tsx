@@ -79,6 +79,7 @@ export default function FaceSignSetupDialog({
   const [faceSignResult, setFaceSignResult] = useState<null | boolean>(null);
   const [faceSignError, setFaceSignError] = useState<string | null>(null);
   const idOSLoggedIn = useIdOSLoggedIn();
+  const [faceTecInitialized, setFaceTecInitialized] = useState(false);
   const currentUserId = userId ?? idOSLoggedIn?.user.id ?? undefined;
 
   if (!currentUserId) {
@@ -88,7 +89,10 @@ export default function FaceSignSetupDialog({
   useEffect(() => {
     // Initialize FaceTec when component mounts
     getPublicKey().then((publicKey) => {
-      faceTec.init(currentUserId, publicKey);
+      faceTec.init(currentUserId, publicKey, () => {
+        console.log('FaceTec initialized');
+        setFaceTecInitialized(true);
+      });
     });
 
     const checkFaceSignStatus = (interval?: any) =>
@@ -177,7 +181,7 @@ export default function FaceSignSetupDialog({
           <div className="flex flex-col gap-5 w-full mt-2">
             <Button
               className="bg-aquamarine-400"
-              disabled={!faceTec.initialized}
+              disabled={!faceTecInitialized}
               onClick={() =>
                 mobile ? handleLivenessCheck() : setQrCodeView(true)
               }
@@ -187,7 +191,7 @@ export default function FaceSignSetupDialog({
             {!mobile && (
               <Button
                 variant="underline"
-                disabled={!faceTec.initialized}
+                disabled={!faceTecInitialized}
                 className="bg-neutral-700 hover:bg-neutral-600"
                 onClick={() => handleLivenessCheck()}
               >
