@@ -8,6 +8,7 @@ import type { IdosWallet } from '@/interfaces/idos-profile';
 import { _idOSClient, useIdosStore } from '@/stores/idosStore';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 import { useQuery } from '@tanstack/react-query';
+import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 
 const useSigner = () => {
   const walletConnector = useContext(WalletConnectorContext);
@@ -89,6 +90,15 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
             const client = await _withSigner.logIn();
             const userWallets = await client.getWallets();
             const walletsArray = userWallets as IdosWallet[];
+
+            const userPayload = {
+              id: client.user.id as string,
+              mainAddress: client.walletIdentifier as string,
+              userEncryptionPublicKey: client.user
+                .recipient_encryption_public_key as string,
+            };
+
+            saveNewUserToLocalStorage(userPayload as any);
             handleSaveUserWallets(client.user.id, walletsArray);
             setIdOSClient(client);
           } else {
