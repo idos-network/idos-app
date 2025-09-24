@@ -108,9 +108,11 @@ export default function WalletDetailsModal({
               <span className="text-xl font-semibold text-neutral-50">
                 {network === 'near' ? address : truncateAddress(address)}
               </span>
-              <span className="text-sm text-neutral-400 font-['Inter']">
+              {/* Balance */}
+              {/* <span className="text-sm text-neutral-400 font-['Inter']">
                 {balance}
               </span>
+              */}
               {/* Status */}
             </div>
             <div
