@@ -18,3 +18,13 @@ export function updateReferralCount(referralCode: string) {
 
   return result;
 }
+
+export async function getUserReferralCount(userId: string): Promise<number> {
+  const result = await db
+    .select({ referralCount: referrals.referralCount })
+    .from(referrals)
+    .where(eq(referrals.userId, userId))
+    .limit(1);
+
+  return result[0]?.referralCount ?? 0;
+}
