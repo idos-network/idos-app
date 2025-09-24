@@ -87,8 +87,8 @@ export const useHasFaceSign = () => {
     queryFn: () => {
       return userId
         ? getUserById(userId)
-            .then((res) => !!res[0].faceSignUserId)
-            .catch(() => null)
+          .then((res) => !!res[0].faceSignUserId)
+          .catch(() => null)
         : null;
     },
     enabled: !!userId,
@@ -116,7 +116,15 @@ export default function OnboardingStepper() {
   const hasUserIdInLocalStorage = !!getCurrentUserFromLocalStorage()?.id;
 
   const initialeStep = useMemo(() => {
-    if (!hasUserIdInLocalStorage) return 0;
+    // User has been deleted from local storage after issuing a PoP credentials
+    if (hasStakingCredential && !hasEvmWallet) {
+      return 4;
+    }
+
+    if (!hasUserIdInLocalStorage && !hasUserEncryptionKey && !hasFaceSign) {
+      return 0;
+    }
+
     if (!hasUserEncryptionKey) return 1;
     if (!hasFaceSign) return 2;
     if (!hasStakingCredential) return 3;
