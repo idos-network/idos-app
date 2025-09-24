@@ -282,7 +282,10 @@ export default function FaceSignSetupDialog({
       }}
       open={!faceSignInProgress}
     >
-      <DialogContent className="sm:max-w-[425px] bg-[#1A1A1A] border-none">
+      <DialogContent
+        className="sm:max-w-[425px] bg-[#1A1A1A] border-none"
+        showCloseButton={!(faceSignResult === true && mobile)}
+      >
         <DialogHeader>
           <DialogTitle className="flex justify-center mt-9">
             {qrCodeView && faceSignResult === null && (
