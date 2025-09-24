@@ -167,7 +167,19 @@ export default function FaceSignSetupDialog({
             <AlertCircleIcon />
             <AlertDescription>
               <p>
-                Learn about idOS FaceSign Terms & Conditions and Privacy Policy.
+                Learn about idOS {" "}
+                <a href="https://docs.idos.network/how-it-works/biometrics-and-idos-facesign-beta" target="_blank" rel="noopener noreferrer" className="underline">
+                  FaceSign 
+                </a>
+                {", "} {" view our "}
+                <a href="https://www.idos.network/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline">
+                  Privacy Policy
+                </a>
+                {" and our "}
+                <a href="https://www.idos.network/legal/user-agreement" target="_blank" rel="noopener noreferrer" className="underline">
+                  Terms & Conditions
+                </a>
+                {"."}
               </p>
             </AlertDescription>
           </Alert>
@@ -181,7 +193,7 @@ export default function FaceSignSetupDialog({
                 mobile ? handleLivenessCheck() : setQrCodeView(true)
               }
             >
-              {mobile ? 'Start Liveness Check' : 'Continue in Mobile'}
+              {mobile ? 'Start Liveness Check' : 'Continue on Mobile'}
             </Button>
             {!mobile && (
               <Button
