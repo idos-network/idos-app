@@ -105,9 +105,15 @@ export function LeaderboardTable({
                   </td>
                   <td className="px-4">{item.questPoints}</td>
                   <td className="px-4">-</td>
-                  <td className="px-4">{item.socialPoints}</td>
+                  <td className="px-4">
+                    {item.socialPoints === 0 ? '-' : item.socialPoints}
+                  </td>
                   <td className="px-4">-</td>
-                  <td className="px-4">{item.contributionPoints}</td>
+                  <td className="px-4">
+                    {item.contributionPoints === 0
+                      ? '-'
+                      : item.contributionPoints}
+                  </td>
                 </tr>
               );
             })}
