@@ -3,11 +3,21 @@ import { questsConfig } from '@/utils/quests';
 import { eq } from 'drizzle-orm';
 import crypto from 'node:crypto';
 import { db, users } from './index';
-import { getUserReferralCount } from './referrals';
+import {
+  createReferral,
+  getUserReferralCount,
+  updateReferralCount,
+} from './referrals';
 import { getUserQuestsSummary } from './user-quests';
 
 export async function saveUser(data: any, name: string) {
   const user = saveUserSchema.parse(data);
+
+  createReferral(user.id);
+  if (user.referrerCode && user.referrerCode !== '') {
+    updateReferralCount(user.referrerCode);
+  }
+
   return await db
     .insert(users)
     .values({
@@ -19,6 +29,12 @@ export async function saveUser(data: any, name: string) {
 
 export async function updateUser(data: any) {
   const user = saveUserSchema.parse(data);
+
+  createReferral(user.id);
+  if (user.referrerCode && user.referrerCode !== '') {
+    updateReferralCount(user.referrerCode);
+  }
+
   return await db.update(users).set(user).where(eq(users.id, user.id));
 }
 
