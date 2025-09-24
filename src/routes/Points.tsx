@@ -44,7 +44,7 @@ export function Points() {
         <div className="flex flex-col gap-6 justify-between">
           <span className="flex font-medium text-xl text-neutral-300 mt-10">
             Complete quests and refer your friends to get{' '}
-            <span className="text-[#FF9E7F] ml-1">Quest Points</span>
+            <span className="text-[#FFA015] ml-1">Quest Points</span>
           </span>
           <div className="flex gap-5">
             <QuestsCard />
@@ -69,7 +69,7 @@ export function Points() {
 
         <div className="flex flex-col gap-6 justify-between">
           <span className="flex font-medium text-xl text-neutral-300 mt-10">
-            Contribute in the idOS Event and ICO to get{' '}
+            Contribute to idOS events to get{' '}
             <span className="text-[#00B3FF] ml-1">Contribution Points</span>
             <div className="flex text-sm font-normal items-center px-3 rounded-xl bg-[#00FFB933] text-aquamarine-400 ml-4">
               Coming soon
