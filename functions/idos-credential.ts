@@ -55,8 +55,10 @@ export default async (request: Request, _context: Context) => {
     ),
   });
 
-  // facesign.fractal.id / facesign.staging.sandbox.fractal.id
-  const issuerDomain = process.env.ISSUER_DOMAIN as string;
+  let issuerDomain = process.env.ISSUER_DOMAIN as string;
+  if (issuerDomain.endsWith('/')) {
+    issuerDomain = issuerDomain.slice(0, -1);
+  }
 
   const credentialFields = {
     id: `${issuerDomain}/credentials/${user.faceSignUserId}`,
@@ -66,8 +68,7 @@ export default async (request: Request, _context: Context) => {
   };
 
   const issuer = {
-    id: `${issuerDomain}/keys/1`,
-    controller: `${issuerDomain}/issuers/1`,
+    issuer: `${issuerDomain}/idos`,
     publicKeyMultibase: process.env.ISSUER_PUBLIC_KEY_MULTIBASE as string,
     privateKeyMultibase: process.env.ISSUER_PRIVATE_KEY_MULTIBASE as string,
   };
