@@ -135,14 +135,17 @@ export class FaceTecContainer {
   };
 
   public onLivenessCheckClick = (
-    onDone: (status: boolean, errorMessage?: string) => void,
+    onDone: (
+      status: boolean,
+      duplicate: boolean,
+      errorMessage?: string,
+    ) => void,
   ): void => {
     if (!this.FaceTecSDK) {
       console.error('FaceTecSDK is not available');
       return;
     }
 
-    console.log('Starting liveness check...');
     this.getSessionToken((sessionToken: string) => {
       new LivenessCheckProcessor(sessionToken, this.userId!, onDone);
     });

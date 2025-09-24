@@ -77,6 +77,7 @@ export default function FaceSignSetupDialog({
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const [faceSignResult, setFaceSignResult] = useState<null | boolean>(null);
   const [faceSignError, setFaceSignError] = useState<string | null>(null);
+  const [faceSignDuplicate, setFaceSignDuplicate] = useState(false);
   const idOSLoggedIn = useIdOSLoggedIn();
   const [faceTecInitialized, setFaceTecInitialized] = useState(false);
   const currentUserId = userId ?? idOSLoggedIn?.user.id ?? undefined;
@@ -123,12 +124,11 @@ export default function FaceSignSetupDialog({
   const handleLivenessCheck = () => {
     setFaceSignInProgress(true);
 
-    faceTec.onLivenessCheckClick((status, errorMessage?: string) => {
-      console.log('status', status);
-      console.log('errorMessage', errorMessage);
+    faceTec.onLivenessCheckClick((status, duplicate, errorMessage?: string) => {
       setFaceSignInProgress(false);
       setFaceSignResult(status);
       setFaceSignError(errorMessage || null);
+      setFaceSignDuplicate(duplicate);
     });
   };
 
@@ -216,15 +216,19 @@ export default function FaceSignSetupDialog({
             </p>
           </AlertDescription>
         </Alert>
-        <Button
-          className="bg-aquamarine-400"
-          onClick={() => setFaceSignResult(null)}
-        >
-          Retry
-        </Button>
-        <p className="text-neutral-400 text-sm max-w-[270px] text-center">
-          Unfortunately, we couldn't verify your identity. Please try again.
-        </p>
+        {!faceSignDuplicate && (
+          <>
+            <Button
+              className="bg-aquamarine-400"
+              onClick={() => setFaceSignResult(null)}
+            >
+              Retry
+            </Button>
+            <p className="text-neutral-400 text-sm max-w-[270px] text-center">
+              Unfortunately, we couldn't verify your identity. Please try again.
+            </p>
+          </>
+        )}
       </div>
     );
   }

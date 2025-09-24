@@ -59,6 +59,7 @@ export default async (request: Request, context: Context) => {
       success: true,
       wasProcessed: true,
       error: false,
+      duplicate: false,
       scanResultBlob: json.scanResultBlob,
     }, 200);
   } catch (e) {
@@ -66,7 +67,8 @@ export default async (request: Request, context: Context) => {
       success: false,
       wasProcessed: true,
       error: true,
-      errorMessage: "Duplicate FaceSign user ID, please use your original account.",
+      duplicate: true,
+      errorMessage: "Sorry, you have already created an idOS profile with FaceSign on another wallet. Please disconnect and reconnect with that original wallet.",
     }, 400);
   }
 };
