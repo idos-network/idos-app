@@ -5,9 +5,9 @@ import { leaderboardRoute } from '@/routes';
 import { useIdosStore } from '@/stores/idosStore';
 import { useUiStore } from '@/stores/uiStore';
 import { Link } from '@tanstack/react-router';
-import { formatNearAmount } from 'near-api-js/lib/utils/format';
+//import { formatNearAmount } from 'near-api-js/lib/utils/format';
 import { useEffect, useRef } from 'react';
-import { formatEther, formatUnits } from 'viem';
+//import { formatEther, formatUnits } from 'viem';
 import PointsHeaderFrame from '../points/PointsHeaderFrame';
 import SmallPrimaryButton from '../SmallPrimaryButton';
 
@@ -71,11 +71,11 @@ export default function Header() {
               }
               address={wallet.address}
               profileStatus={hasProfile ? 'verified' : 'notVerified'}
-              balance={
-                wallet.balance
-                  ? formatEther(wallet.balance).slice(0, -14) + ' ETH'
-                  : '0 ETH'
-              }
+              // balance={
+              //   wallet.balance
+              //     ? formatEther(wallet.balance).slice(0, -14) + ' ETH'
+              //     : '0 ETH'
+              // }
             />
           )}
           {wallet && wallet.type === 'near' && (
@@ -83,11 +83,11 @@ export default function Header() {
               network="near"
               address={wallet.address}
               profileStatus={hasProfile ? 'verified' : 'notVerified'}
-              balance={
-                wallet.balance
-                  ? formatNearAmount(wallet.balance.toString(), 4) + ' NEAR'
-                  : '0 NEAR'
-              }
+              // balance={
+              //   wallet.balance
+              //     ? formatNearAmount(wallet.balance.toString(), 4) + ' NEAR'
+              //     : '0 NEAR'
+              // }
             />
           )}
           {wallet && wallet.type === 'stellar' && (
@@ -95,11 +95,11 @@ export default function Header() {
               network="stellar"
               address={wallet.address}
               profileStatus={hasProfile ? 'verified' : 'notVerified'}
-              balance={
-                wallet.balance
-                  ? formatUnits(wallet.balance, 6) + ' XLM'
-                  : '0 XLM'
-              }
+              // balance={
+              //   wallet.balance
+              //     ? formatUnits(wallet.balance, 6) + ' XLM'
+              //     : '0 XLM'
+              // }
             />
           )}
           {wallet && wallet.type === 'xrpl' && (
@@ -107,11 +107,11 @@ export default function Header() {
               network="xrpl"
               address={wallet.address}
               profileStatus={hasProfile ? 'verified' : 'notVerified'}
-              balance={
-                wallet.balance
-                  ? formatUnits(wallet.balance, 6).slice(0, -2) + ' XRP'
-                  : '0 XRP'
-              }
+              // balance={
+              //   wallet.balance
+              //     ? formatUnits(wallet.balance, 6).slice(0, -2) + ' XRP'
+              //     : '0 XRP'
+              // }
             />
           )}
         </div>

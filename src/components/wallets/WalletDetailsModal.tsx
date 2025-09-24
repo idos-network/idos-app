@@ -18,7 +18,7 @@ interface WalletDetailsModalProps {
   address: string;
   profileStatus: string;
   onClose: () => void;
-  balance: string;
+  /*balance: string;*/
 }
 
 export default function WalletDetailsModal({
@@ -26,7 +26,7 @@ export default function WalletDetailsModal({
   network,
   address,
   profileStatus,
-  balance,
+  /*balance,*/
   onClose,
 }: WalletDetailsModalProps) {
   const { disconnect } = useWalletConnector();

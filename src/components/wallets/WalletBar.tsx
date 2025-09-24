@@ -11,13 +11,13 @@ export default function WalletBar({
   network,
   address,
   profileStatus,
-  balance,
+  //balance,
 }: {
   network: string;
   address: string;
   profileStatus: string;
   chainId?: number;
-  balance: string;
+  //balance: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const selectedNetwork =
@@ -63,7 +63,7 @@ export default function WalletBar({
         network={network}
         address={address}
         profileStatus={profileStatus}
-        balance={balance}
+        /*balance={balance}*/
         onClose={() => setIsModalOpen(false)}
       />
     </>
