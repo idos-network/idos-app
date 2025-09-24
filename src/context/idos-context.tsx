@@ -23,11 +23,6 @@ export const useIdOS = () => {
   return { idOSClient, setIdOSClient, initializing };
 };
 
-export const useUnsafeIdOS = () => {
-  const { idOSClient, setIdOSClient, initializing } = useIdosStore();
-  return { idOSClient, setIdOSClient, initializing };
-};
-
 export const useIdOSLoggedIn = (): idOSClientLoggedIn | null => {
   const { idOSClient } = useIdosStore();
 
