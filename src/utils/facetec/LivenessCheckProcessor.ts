@@ -24,6 +24,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   latestNetworkRequest: XMLHttpRequest = new XMLHttpRequest();
   public latestSessionResult: FaceTecSessionResult | null;
   private lastNetworkErrorMessage: string | null;
+  private isDuplicate: boolean = false;
 
   //
   // DEVELOPER NOTE:  These properties are for demonstration purposes only so the Sample App can get information about what is happening in the processor.
@@ -31,13 +32,21 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   //
   success: boolean;
 
-  callback: (status: boolean, errorMessage?: string) => void;
+  callback: (
+    status: boolean,
+    duplicate: boolean,
+    errorMessage?: string,
+  ) => void;
   userId: string;
 
   constructor(
     sessionToken: string,
     userId: string,
-    callback: (status: boolean, errorMessage?: string) => void,
+    callback: (
+      status: boolean,
+      duplicate: boolean,
+      errorMessage?: string,
+    ) => void,
   ) {
     //
     // DEVELOPER NOTE:  These properties are for demonstration purposes only so the Sample App can get information about what is happening in the processor.
@@ -48,6 +57,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     this.latestSessionResult = null;
     this.cancelledDueToNetworkError = false;
     this.lastNetworkErrorMessage = null;
+    this.isDuplicate = false;
 
     // Set a callback
     this.callback = callback;
@@ -72,6 +82,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     // Save the current sessionResult
     this.latestSessionResult = sessionResult;
     this.lastNetworkErrorMessage = null;
+    this.isDuplicate = false;
 
     //
     // Part 3:  Handles early exit scenarios where there is no FaceScan to handle -- i.e. User Cancellation, Timeouts, etc.
@@ -151,11 +162,13 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
             ) {
               this.cancelDueToNetworkError(
                 responseJSON.errorMessage,
+                responseJSON.duplicate ?? false,
                 faceScanResultCallback,
               );
             } else {
               this.cancelDueToNetworkError(
                 'Unexpected API response, cancelling out.',
+                false,
                 faceScanResultCallback,
               );
             }
@@ -164,6 +177,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
           // CASE:  Parsing the response into JSON failed --> You define your own API contracts with yourself and may choose to do something different here based on the error.  Solid server-side code should ensure you don't get to this case.
           this.cancelDueToNetworkError(
             'Exception while handling API response, cancelling out.',
+            false,
             faceScanResultCallback,
           );
         }
@@ -174,6 +188,7 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
       // CASE:  Network Request itself is erroring --> You define your own API contracts with yourself and may choose to do something different here based on the error.
       this.cancelDueToNetworkError(
         'XHR error, cancelling.',
+        false,
         faceScanResultCallback,
       );
     };
@@ -218,11 +233,11 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     console.log('this.latestSessionResult', this.latestSessionResult);
     // Handle both success and cancellation scenarios
     if (this.success) {
-      this.callback(true);
+      this.callback(true, false);
     } else {
       // Handle cancellation and failure scenarios
       const errorMessage = this.getCancellationReason();
-      this.callback(false, errorMessage);
+      this.callback(false, this.isDuplicate, errorMessage);
     }
   };
 
@@ -265,15 +280,17 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
   // Helper function to ensure the session is only cancelled once
   public cancelDueToNetworkError = (
     networkErrorMessage: string,
+    isDuplicate: boolean,
     faceScanResultCallback: FaceTecFaceScanResultCallback,
   ): void => {
     if (this.cancelledDueToNetworkError === false) {
       console.error(networkErrorMessage);
       this.lastNetworkErrorMessage = networkErrorMessage;
+      this.isDuplicate = isDuplicate;
       this.cancelledDueToNetworkError = true;
       faceScanResultCallback.cancel();
     }
 
-    this.callback(false, networkErrorMessage);
+    this.callback(false, this.isDuplicate, networkErrorMessage);
   };
 }
