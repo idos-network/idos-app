@@ -56,8 +56,14 @@ export default function VerifyIdentity() {
   const publicKey = currentUser?.publicKey || '';
   const encryptionPasswordStore =
     currentUser?.encryptionPasswordStore || 'user';
+  const isLogged = idOSClient?.state === 'logged-in';
 
   const handleFaceSignSuccess = useCallback(async () => {
+    // in case user already have a profile (cleared db or having profile from another platform) just check if faceSignUserId exists again
+    if (isLogged) {
+      queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
+      return;
+    }
     updateUserStateInLocalStorage(userAddress, { humanVerified: true });
     setState('creating');
     const response = await handleCreateIdOSProfile(
@@ -95,6 +101,7 @@ export default function VerifyIdentity() {
     setState,
     updateUserStateInLocalStorage,
     handleCreateIdOSProfile,
+    isLogged,
   ]);
 
   return (
