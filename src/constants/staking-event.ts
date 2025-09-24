@@ -6,7 +6,7 @@ export const STAKING_ASSETS = [
   },
   {
     name: 'NEAR',
-    icon: '/near.png',
+    icon: '/near.webp',
     apy: '2.0', // TODO: update to final value
   },
 ];

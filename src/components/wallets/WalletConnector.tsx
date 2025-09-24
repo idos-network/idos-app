@@ -60,19 +60,19 @@ export function WalletConnector() {
       {/* <WalletConnectorButton
         onClick={() => walletConnector.connectNear()}
         label="Connect with NEAR"
-        iconSrc="/near.png"
+        iconSrc="/near.webp"
       /> */}
 
       {/* <WalletConnectorButton
         onClick={() => walletConnector.connectStellar()}
         label="Connect with Stellar"
-        iconSrc="/stellar.png"
+        iconSrc="/stellar.webp"
       /> */}
 
       {/* <WalletConnectorButton
         onClick={() => walletConnector.connectXRPL()}
         label="Connect with XRPL"
-        iconSrc="/xrpl.png"
+        iconSrc="/xrpl.webp"
       /> */}
     </div>
   );
