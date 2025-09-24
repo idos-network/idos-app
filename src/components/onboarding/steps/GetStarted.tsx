@@ -51,22 +51,24 @@ export default function GetStarted() {
         <div className="flex flex-row gap-5 z-5 mb-auto flex-1">
           <GetStartedTextBlock
             icon={<KeyIcon color="#181A20" className="w-7 h-7" />}
-            title="1. Create your private key"
-            subtitle="Generate a unique key to protect your idOS profile and encrypt your data."
+            title="1. Create your idOS Private Key"
+            subtitle="Sign to generate a unique key to encrypt your idOS Profile data."
           />
           <GetStartedTextBlock
             icon={<PersonIcon color="#181A20" className="w-7 h-7" />}
-            title="2. Verify your identity"
-            subtitle="Complete a light identity verification check with one of our trusted providers."
+            title="2. Verify you are a human"
+            subtitle="Complete privacy-preserving biometric proof of personhood with idOS FaceSign to finish creating your profile."
           />
           <GetStartedTextBlock
             icon={<CredentialIcon color="#181A20" />}
             title="3. Add a credential"
-            subtitle="Add a credential with your identity data to your idOS Profile. idOS won’t have access, unless you share an Access Grant."
+            subtitle="Add the anonymized proof of personhood credential to your idOS Profile. Nobody can see this data unless you give them access."
           />
         </div>
         <div className="flex justify-center z-5">
-          <StepperButton onClick={nextStep}>Create idOS profile</StepperButton>
+          <StepperButton onClick={nextStep}>
+            👤 Create idOS Profile
+          </StepperButton>
         </div>
       </div>
     </div>

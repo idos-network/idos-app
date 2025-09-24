@@ -110,18 +110,32 @@ export default function VerifyIdentity() {
                   title="Verify you are a human"
                   subtitle={
                     <>
-                      In a moment, we'll ask you to follow some instructions for
-                      a liveness check.
-                      <br />
-                      This will let us know that this is you, without exposing
-                      your identity.
+                      In a moment, we’ll ask you to follow some instructions for
+                      a privacy-preserving proof of personhood and uniqueness
+                      check using idOS FaceSign. This will prove your wallet is
+                      controlled by a unique human.
                     </>
                   }
                 />
                 <div className="w-full h-full flex flex-row gap-5 min-h-[120px]">
                   <StepperCards
                     icon={<FrameIcon color="var(--color-aquamarine-400)" />}
-                    description="Pictures of your face and personal data stays encrypted and is never shared without your consent."
+                    description={
+                      <>
+                        All biometric data is solely processed in a secure
+                        enclave and idOS or other third parties have no access
+                        to it (unless you grant it) as described in more details
+                        here in the{' '}
+                        <a
+                          href="https://www.idos.network/legal/privacy-policy"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-aquamarine-400 underline text-sm"
+                        >
+                          Privacy Policy
+                        </a>
+                      </>
+                    }
                   />
                   <StepperCards
                     icon={
@@ -134,15 +148,17 @@ export default function VerifyIdentity() {
                     description="Once verified, your Proof of Personhood credential can be reused across other supported platforms."
                   />
                 </div>
-                <span className="text-neutral-400 w-[860px] text-base text-center font-normal font-['Urbanist']">
-                  For privacy, idOS allows{' '}
-                  <span className="text-aquamarine-400">
-                    multiple profiles system-wide
-                  </span>{' '}
-                  but lets users prove uniqueness when needed. <br />{' '}
-                  <span className="text-aquamarine-400">This app </span>{' '}
-                  prevents quest farming and sybil attacks by limiting each
-                  human to one idOS profile.
+                <span className="text-neutral-400 block mb-2 w-[860px] text-base text-center font-normal font-['Urbanist']">
+                  Learn more about idOS FaceSign{' '}
+                  <a
+                    href="https://docs.idos.network/how-it-works/biometrics-and-idos-facesign-beta"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-aquamarine-400 underline"
+                  >
+                    here
+                  </a>
+                  .
                 </span>
               </div>
             </>
