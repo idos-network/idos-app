@@ -55,7 +55,7 @@ export default async (request: Request, _context: Context) => {
     ),
   });
 
-  let issuerDomain = process.env.ISSUER_DOMAIN as string;
+  let issuerDomain = process.env.FACETEC_SERVER as string;
   if (issuerDomain.endsWith('/')) {
     issuerDomain = issuerDomain.slice(0, -1);
   }
