@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const saveUserSchema = z.object({
   id: z.string().min(1),
-  mainEvm: z.string().min(1),
+  mainEvm: z.string().optional(),
   referrerCode: z.string().optional(),
   cookieConsent: z.nullable(z.boolean()).optional(),
 });
