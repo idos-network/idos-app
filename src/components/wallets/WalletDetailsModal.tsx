@@ -3,6 +3,7 @@ import SmallSecondaryButton from '@/components/SmallSecondaryButton';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import LogoutIcon from '@/icons/logout';
+import { clearUserDataFromLocalStorage } from '@/storage/idos-profile';
 import { useIdosStore } from '@/stores/idosStore';
 import truncateAddress from '@/utils/address';
 import { addressGradient } from '@/utils/gradient';
@@ -66,6 +67,7 @@ export default function WalletDetailsModal({
       await disconnect();
       localStorage.removeItem('onboardingToastShown');
       await resetStore();
+      clearUserDataFromLocalStorage();
       onClose();
     } catch (error) {
       showToast({
