@@ -1,4 +1,4 @@
-import { getLeaderboardEntries, refreshLeaderboard } from '@/db/leaderboard';
+import { getLeaderboardEntries } from '@/db/leaderboard';
 import type { Config } from '@netlify/functions';
 
 export interface LeaderboardEntry {
@@ -14,21 +14,18 @@ export interface LeaderboardEntry {
 }
 
 async function getCompleteLeaderboard(): Promise<LeaderboardEntry[]> {
-  await refreshLeaderboard();
-
   const leaderboardEntries = await getLeaderboardEntries();
 
-  // Filter out users with 0 points to avoid cluttering the leaderboard
-  // const filteredEntries = leaderboardEntries.filter(
-  //   (entry) => entry.totalPoints > 0,
-  // );
+  const filteredEntries = leaderboardEntries.filter(
+    (entry) => entry.totalPoints > 0,
+  );
 
   const entriesWithPositions: LeaderboardEntry[] = [];
   let currentPosition = 1;
   let previousPoints: number | null = null;
 
-  for (let i = 0; i < leaderboardEntries.length; i++) {
-    const entry = leaderboardEntries[i];
+  for (let i = 0; i < filteredEntries.length; i++) {
+    const entry = filteredEntries[i];
 
     if (previousPoints === null || entry.totalPoints !== previousPoints) {
       currentPosition = i + 1;
