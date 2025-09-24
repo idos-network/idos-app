@@ -59,12 +59,16 @@ export function LeaderboardTable({
                 Rank
               </th>
               <th className="w-[240px] px-4 font-normal">Name</th>
-              <th className="w-[110px] px-4 font-normal">Total Points</th>
-              <th className="w-[110px] px-4 font-normal text-[#F1A039]">
+              <th className="w-[110px] px-4 font-normal text-center">
+                Total Points
+              </th>
+              <th className="w-[110px] px-4 font-normal text-[#FFA015] text-center">
                 Quest Points
               </th>
-              <th className="w-[10px] px-4 font-normal">Mindshare</th>
-              <th className="w-[155px] px-4 font-normal text-[#EEFF41]">
+              <th className="w-[10px] px-4 font-normal text-center">
+                Mindshare
+              </th>
+              <th className="w-[155px] px-4 font-normal text-[#A0F73C] text-center">
                 <span className="inline-flex items-center gap-2">
                   Social Points
                   <span className="inline-flex items-center h-4 px-2 rounded-xl bg-[#00FFB933] text-aquamarine-400 text-[10px] font-normal">
@@ -72,8 +76,10 @@ export function LeaderboardTable({
                   </span>
                 </span>
               </th>
-              <th className="w-[140px] px-4 font-normal">Total Contribution</th>
-              <th className="w-[200px] px-4 font-normal text-[#2CB2FF] rounded-r-[20px]">
+              <th className="w-[140px] px-4 font-normal text-center">
+                Total Contribution
+              </th>
+              <th className="w-[200px] px-4 font-normal text-[#00B3FF] rounded-r-[20px] text-center">
                 <span className="inline-flex items-center gap-2">
                   Contribution Points
                   <span className="inline-flex items-center h-4 px-2 rounded-xl bg-[#00FFB933] text-aquamarine-400 text-[10px] font-normal">
@@ -94,7 +100,7 @@ export function LeaderboardTable({
                   <td className="px-4">#{item.position}</td>
                   <td className="px-4 truncate">{item.name}</td>
                   <td className="px-4 font-light text-sm text-neutral-200">
-                    <div className="flex items-center">
+                    <div className="flex items-center justify-center">
                       <img
                         src="/idos-points-logo.png"
                         alt="Points"
@@ -103,11 +109,17 @@ export function LeaderboardTable({
                       {item.totalPoints}
                     </div>
                   </td>
-                  <td className="px-4">{item.questPoints}</td>
-                  <td className="px-4">-</td>
-                  <td className="px-4">{item.socialPoints}</td>
-                  <td className="px-4">-</td>
-                  <td className="px-4">{item.contributionPoints}</td>
+                  <td className="px-4 text-center">{item.questPoints}</td>
+                  <td className="px-4 text-center">-</td>
+                  <td className="px-4 text-center">
+                    {item.socialPoints === 0 ? '-' : item.socialPoints}
+                  </td>
+                  <td className="px-4 text-center">-</td>
+                  <td className="px-4 text-center">
+                    {item.contributionPoints === 0
+                      ? '-'
+                      : item.contributionPoints}
+                  </td>
                 </tr>
               );
             })}
