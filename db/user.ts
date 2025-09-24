@@ -13,9 +13,9 @@ import { getUserQuestsSummary } from './user-quests';
 export async function saveUser(data: any, name: string) {
   const user = saveUserSchema.parse(data);
 
-  createReferral(user.id);
+  await createReferral(user.id);
   if (user.referrerCode && user.referrerCode !== '') {
-    updateReferralCount(user.referrerCode);
+    await updateReferralCount(user.referrerCode);
   }
 
   return await db
@@ -30,9 +30,9 @@ export async function saveUser(data: any, name: string) {
 export async function updateUser(data: any) {
   const user = saveUserSchema.parse(data);
 
-  createReferral(user.id);
+  await createReferral(user.id);
   if (user.referrerCode && user.referrerCode !== '') {
-    updateReferralCount(user.referrerCode);
+    await updateReferralCount(user.referrerCode);
   }
 
   return await db.update(users).set(user).where(eq(users.id, user.id));

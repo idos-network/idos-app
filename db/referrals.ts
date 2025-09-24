@@ -5,16 +5,19 @@ import { refreshLeaderboard } from './leaderboard';
 
 export function createReferral(userId: string) {
   const referralCode = generateReferralCode(userId);
-  return db.insert(referrals).values({ userId, referralCode });
+  return db
+    .insert(referrals)
+    .values({ userId, referralCode })
+    .onConflictDoNothing();
 }
 
-export function updateReferralCount(referralCode: string) {
-  const result = db
+export async function updateReferralCount(referralCode: string) {
+  const result = await db
     .update(referrals)
     .set({ referralCount: sql`${referrals.referralCount} + 1` })
     .where(eq(referrals.referralCode, referralCode));
 
-  refreshLeaderboard();
+  await refreshLeaderboard();
 
   return result;
 }
