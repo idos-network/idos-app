@@ -62,7 +62,7 @@ export default function VerifyIdentity() {
     // in case user already have a profile (cleared db or having profile from another platform) just check if faceSignUserId exists again
     if (isLogged) {
       queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
-      return
+      return;
     }
     updateUserStateInLocalStorage(userAddress, { humanVerified: true });
     setState('creating');
