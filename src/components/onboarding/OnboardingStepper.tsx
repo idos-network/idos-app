@@ -87,7 +87,7 @@ export const useHasFaceSign = () => {
     queryFn: () => {
       return userId
         ? getUserById(userId)
-            .then((res) => res[0].faceSignUserId !== null)
+            .then((res) => !!res[0].faceSignUserId)
             .catch(() => null)
         : null;
     },
