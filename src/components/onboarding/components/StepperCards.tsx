@@ -7,7 +7,7 @@ export default function StepperCards({
 }: {
   icon: ReactNode;
   title?: string;
-  description: string;
+  description: string | ReactNode;
 }) {
   return (
     <div className="relative w-full h-full rounded-[20px] bg-gradient-to-r from-[#292929] to-idos-grey1 p-[1px] overflow-hidden">

@@ -3,6 +3,7 @@ import SmallSecondaryButton from '@/components/SmallSecondaryButton';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import LogoutIcon from '@/icons/logout';
+import { useIdosStore } from '@/stores/idosStore';
 import truncateAddress from '@/utils/address';
 import { addressGradient } from '@/utils/gradient';
 import {
@@ -18,7 +19,6 @@ interface WalletDetailsModalProps {
   address: string;
   profileStatus: string;
   onClose: () => void;
-  /*balance: string;*/
 }
 
 export default function WalletDetailsModal({
@@ -26,11 +26,11 @@ export default function WalletDetailsModal({
   network,
   address,
   profileStatus,
-  /*balance,*/
   onClose,
 }: WalletDetailsModalProps) {
   const { disconnect } = useWalletConnector();
   const { showToast } = useToast();
+  const { resetStore } = useIdosStore();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -65,6 +65,7 @@ export default function WalletDetailsModal({
     try {
       await disconnect();
       localStorage.removeItem('onboardingToastShown');
+      await resetStore();
       onClose();
     } catch (error) {
       showToast({

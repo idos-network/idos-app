@@ -28,7 +28,7 @@ export function IdosProfile() {
 
   const newLoading = stakingCredsLoading || isLoadingUserId || settingSigner;
 
-  const showProfile = hasEvmWallet && hasStakingCredential;
+  const showProfile = hasEvmWallet && hasStakingCredential && hasFaceSign;
   if (newLoading) {
     return (
       <div className="container mx-auto flex justify-center items-center h-screen -translate-y-20">
