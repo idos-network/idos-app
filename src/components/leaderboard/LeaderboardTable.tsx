@@ -62,13 +62,13 @@ export function LeaderboardTable({
               <th className="w-[110px] px-4 font-normal text-center">
                 Total Points
               </th>
-              <th className="w-[110px] px-4 font-normal text-[#F1A039] text-center">
+              <th className="w-[110px] px-4 font-normal text-[#FFA015] text-center">
                 Quest Points
               </th>
               <th className="w-[10px] px-4 font-normal text-center">
                 Mindshare
               </th>
-              <th className="w-[155px] px-4 font-normal text-[#EEFF41] text-center">
+              <th className="w-[155px] px-4 font-normal text-[#A0F73C] text-center">
                 <span className="inline-flex items-center gap-2">
                   Social Points
                   <span className="inline-flex items-center h-4 px-2 rounded-xl bg-[#00FFB933] text-aquamarine-400 text-[10px] font-normal">
@@ -79,7 +79,7 @@ export function LeaderboardTable({
               <th className="w-[140px] px-4 font-normal text-center">
                 Total Contribution
               </th>
-              <th className="w-[200px] px-4 font-normal text-[#2CB2FF] rounded-r-[20px] text-center">
+              <th className="w-[200px] px-4 font-normal text-[#00B3FF] rounded-r-[20px] text-center">
                 <span className="inline-flex items-center gap-2">
                   Contribution Points
                   <span className="inline-flex items-center h-4 px-2 rounded-xl bg-[#00FFB933] text-aquamarine-400 text-[10px] font-normal">
