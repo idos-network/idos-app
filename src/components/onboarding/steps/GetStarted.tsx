@@ -66,7 +66,9 @@ export default function GetStarted() {
           />
         </div>
         <div className="flex justify-center z-5">
-          <StepperButton onClick={nextStep}>👤 Create idOS Profile</StepperButton>
+          <StepperButton onClick={nextStep}>
+            👤 Create idOS Profile
+          </StepperButton>
         </div>
       </div>
     </div>

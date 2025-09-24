@@ -110,8 +110,10 @@ export default function VerifyIdentity() {
                   title="Verify you are a human"
                   subtitle={
                     <>
-                      In a moment, we’ll ask you to follow some instructions for a privacy-preserving proof of personhood and uniqueness check using idOS FaceSign.
-                      This will prove your wallet is controlled by a unique human.
+                      In a moment, we’ll ask you to follow some instructions for
+                      a privacy-preserving proof of personhood and uniqueness
+                      check using idOS FaceSign. This will prove your wallet is
+                      controlled by a unique human.
                     </>
                   }
                 />
@@ -120,7 +122,18 @@ export default function VerifyIdentity() {
                     icon={<FrameIcon color="var(--color-aquamarine-400)" />}
                     description={
                       <>
-                        All biometric data is solely processed in a secure enclave and idOS or other third parties have no access to it (unless you grant it) as described in more details here in the <a href="https://www.idos.network/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-aquamarine-400 underline text-sm">Privacy Policy</a>
+                        All biometric data is solely processed in a secure
+                        enclave and idOS or other third parties have no access
+                        to it (unless you grant it) as described in more details
+                        here in the{' '}
+                        <a
+                          href="https://www.idos.network/legal/privacy-policy"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-aquamarine-400 underline text-sm"
+                        >
+                          Privacy Policy
+                        </a>
                       </>
                     }
                   />
@@ -136,7 +149,16 @@ export default function VerifyIdentity() {
                   />
                 </div>
                 <span className="text-neutral-400 block mb-2 w-[860px] text-base text-center font-normal font-['Urbanist']">
-                  Learn more about idOS FaceSign <a href="https://docs.idos.network/how-it-works/biometrics-and-idos-facesign-beta" target="_blank" rel="noopener noreferrer" className="text-aquamarine-400 underline">here</a>.
+                  Learn more about idOS FaceSign{' '}
+                  <a
+                    href="https://docs.idos.network/how-it-works/biometrics-and-idos-facesign-beta"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-aquamarine-400 underline"
+                  >
+                    here
+                  </a>
+                  .
                 </span>
               </div>
             </>

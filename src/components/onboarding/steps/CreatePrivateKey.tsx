@@ -55,7 +55,9 @@ export default function CreatePrivateKey() {
               <EncryptedIcon color="var(--color-aquamarine-400)" />
             </div>
             <span className="text-neutral-400 text-base text-center font-medium font-['Urbanist'] max-w-[560px] pt-8">
-              Create an idOS Private Key and either store it with a wallet signature in our idOS TSS-MPC Native Module for key abstraction powered by Partisia Blockchain. Learn more{" "}
+              Create an idOS Private Key and either store it with a wallet
+              signature in our idOS TSS-MPC Native Module for key abstraction
+              powered by Partisia Blockchain. Learn more{' '}
               <a
                 href="https://www.idos.network/blog/key-abstracted-self-sovereign-identity-idos-and-partisia-blockchain-mpc-tech-are-making-it-possible"
                 target="_blank"
