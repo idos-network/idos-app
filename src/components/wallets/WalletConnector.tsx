@@ -57,11 +57,11 @@ export function WalletConnector() {
         evmWallet={true}
       />
 
-      <WalletConnectorButton
+      {/* <WalletConnectorButton
         onClick={() => walletConnector.connectNear()}
         label="Connect with NEAR"
         iconSrc="/near.png"
-      />
+      /> */}
 
       {/* <WalletConnectorButton
         onClick={() => walletConnector.connectStellar()}
@@ -69,11 +69,11 @@ export function WalletConnector() {
         iconSrc="/stellar.png"
       /> */}
 
-      <WalletConnectorButton
+      {/* <WalletConnectorButton
         onClick={() => walletConnector.connectXRPL()}
         label="Connect with XRPL"
         iconSrc="/xrpl.png"
-      />
+      /> */}
     </div>
   );
 }
