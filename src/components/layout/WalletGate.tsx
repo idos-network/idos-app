@@ -20,11 +20,11 @@ export default function WalletGate() {
     <div className="grid grid-cols-2 min-h-screen bg-neutral-950">
       <XRPLAutoConnect />
       <div className="h-full">
-        <img src="/cube-hero.png" className="w-full h-full object-cover" />
+        <img src="/cube-hero.webp" className="w-full h-full object-cover" />
       </div>
       <div className="flex flex-col items-center justify-center gap-14 h-full">
         <div className="flex flex-col items-center justify-center gap-4">
-          <img src="/idos-logo.png" alt="idOS Logo" className="w-52 mb-4" />
+          <img src="/idos-logo.webp" alt="idOS Logo" className="w-52 mb-4" />
           <span className="text-2xl font-medium text-center">
             Portable Identity for the Stablecoin Economy
           </span>

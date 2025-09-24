@@ -15,7 +15,7 @@ export default function Sidebar() {
     <>
       <aside className="fixed left-0 top-0 h-screen w-64 flex-col gap-14 border-gray-800 border-r px-6 pt-8 hidden z-30 bg-ui-background-dark lg:flex">
         <div className="p-4">
-          <img src="/idos-logo.png" width="141" />
+          <img src="/idos-logo.webp" width="141" />
         </div>
         <nav className="flex flex-col gap-2 font-medium text-base">
           <Link
@@ -104,7 +104,7 @@ export default function Sidebar() {
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 top-18 bg-neutral-950/95 z-20 backdrop-blur-sm">
           <div className="p-6 border-b border-gray-800">
-            <img src="/idos-logo.png" width="141" alt="idOS Logo" />
+            <img src="/idos-logo.webp" width="141" alt="idOS Logo" />
           </div>
           <nav className="flex flex-col p-6 space-y-4 text-base">
             <Link
