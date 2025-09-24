@@ -38,11 +38,7 @@ export const getUserPoints = async (
   );
 };
 
-export const getUserReferralCount = async (
-  referralCode: string,
-): Promise<number> => {
-  const response = await axiosInstance.get(
-    `/user/${referralCode}/referral-count`,
-  );
+export const getUserReferralCount = async (userId: string): Promise<number> => {
+  const response = await axiosInstance.get(`/user/${userId}/referral-count`);
   return parseWithSchema(response.data, z.number());
 };

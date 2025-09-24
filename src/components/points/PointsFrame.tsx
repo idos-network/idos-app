@@ -22,8 +22,8 @@ export default function PointsFrame() {
         </div>
         <div className="flex flex-col w-full h-full gap-4">
           {/* Category labels */}
-          <div className="flex text-xs">
-            <span className="text-[#FF9E7F] font-medium flex-1">
+          <div className="flex text-xs gap-3">
+            <span className="text-[#FFA015] font-medium flex-1">
               Quest Points
             </span>
             <span className="text-[#A0F73C] font-medium flex-1">
@@ -35,23 +35,23 @@ export default function PointsFrame() {
           </div>
 
           {/* Points breakdown bars */}
-          <div className="relative w-full h-8 flex items-center">
+          <div className="relative w-full h-8 flex items-center gap-3">
             {/* Quest Points Bar */}
-            <div className="relative flex-1 h-8 bg-gradient-to-r from-[#FF5D2E] to-[#FF9B7B] rounded-full flex items-center justify-start -mr-4">
-              <div className="absolute left-2.5 w-3 h-3 bg-[#FAFAFA66] rounded-full">
+            <div className="relative flex-1 h-8 bg-gradient-to-r from-[#F1A039] to-[#FFD04A] rounded-full flex items-center justify-start">
+              <div className="absolute left-2.5 w-3 h-3 bg-[#09090933] rounded-full">
                 {' '}
-                <div className="absolute -left-2.5 -top-2.5 w-8 h-8 bg-[#FAFAFA66] rounded-full"></div>
+                <div className="absolute -left-2 -top-2 w-7 h-7 bg-[#09090933] rounded-full"></div>
               </div>
-              <span className="text-neutral-50 font-['Inter'] text-sm font-medium ml-10">
+              <span className="text-neutral-900 font-['Inter'] text-sm font-medium ml-10">
                 {points.questPoints} Points
               </span>
             </div>
 
             {/* Social Points Bar */}
-            <div className="relative flex-1 h-8 bg-gradient-to-r from-[#95F635] to-[#DAFCB9] rounded-full flex items-center justify-start z-10 -mr-4">
+            <div className="relative flex-1 h-8 bg-gradient-to-r from-[#EDFF38] to-[#F8FDB8] rounded-full flex items-center justify-start">
               <div className="absolute left-2.5 w-3 h-3 bg-[#09090933] rounded-full">
                 {' '}
-                <div className="absolute -left-2.5 -top-2.5 w-8 h-8 bg-[#09090933] rounded-full"></div>
+                <div className="absolute -left-2 -top-2 w-7 h-7 bg-[#09090933] rounded-full"></div>
               </div>{' '}
               <span className="text-neutral-900 font-['Inter'] text-sm font-medium ml-10">
                 {/* TODO: Update this when social points are implemented */}
@@ -62,10 +62,10 @@ export default function PointsFrame() {
             </div>
 
             {/* Contribution Points Bar */}
-            <div className="relative flex-1 h-8 bg-gradient-to-r from-[#00B3FF] to-[#0059A5] rounded-full flex items-center justify-start z-10 -mr-4">
+            <div className="relative flex-1 h-8 bg-gradient-to-r from-[#2CB2FF] to-[#AEE5FF] rounded-full flex items-center justify-start">
               <div className="absolute left-2.5 w-3 h-3 bg-[#FAFAFA33] rounded-full">
                 {' '}
-                <div className="absolute -left-2.5 -top-2.5 w-8 h-8 bg-[#FAFAFA33] rounded-full"></div>
+                <div className="absolute -left-2 -top-2 w-7 h-7 bg-[#FAFAFA66] rounded-full"></div>
               </div>
               <span className="text-neutral-50 font-['Inter'] text-sm font-medium ml-10">
                 {/* TODO: Update this when contribution points are implemented */}

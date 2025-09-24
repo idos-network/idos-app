@@ -112,7 +112,9 @@ export default function QuestsCard({ onError }: QuestsCardProps) {
             )}
             <tr className="text-neutral-400 text-sm h-[52px] border-neutral-800 border-t">
               <td colSpan={3} className="px-4 text-left">
-                More quests coming soon
+                <div className="inline-flex text-sm font-normal items-center justify-start px-3 rounded-xl bg-[#00FFB933] text-aquamarine-400">
+                  More quests coming soon
+                </div>
               </td>
             </tr>
           </tbody>

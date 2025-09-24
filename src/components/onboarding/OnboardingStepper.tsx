@@ -1,7 +1,7 @@
-import { getCurrentUserFromLocalStorage } from '@/storage/idos-profile';
 import { getUserById } from '@/api/user';
 import { useIdOS } from '@/context/idos-context';
 import { env } from '@/env';
+import { getCurrentUserFromLocalStorage } from '@/storage/idos-profile';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type {
   idOSClient,
@@ -111,21 +111,24 @@ export default function OnboardingStepper() {
     Array.isArray(stakingCreds) && !!stakingCreds?.length;
   const hasEvmWallet = wallets.find((wallet) => wallet.wallet_type === 'EVM');
   const { stepIndex, setStepIndex } = useOnboardingStore();
-  const { data: userId } = useUserId();
-  const hasUserEncryptionKey = !!getCurrentUserFromLocalStorage()?.userEncryptionPublicKey;
+  const hasUserEncryptionKey =
+    !!getCurrentUserFromLocalStorage()?.userEncryptionPublicKey;
   const hasUserIdInLocalStorage = !!getCurrentUserFromLocalStorage()?.id;
 
-  const initialeStep = useMemo(
-    () =>{
-      if(!hasUserIdInLocalStorage) return 0;
-      if(!hasUserEncryptionKey) return 1;
-      if(!hasFaceSign) return 2;
-      if(!hasStakingCredential) return 3;
-      if(!hasEvmWallet) return 4;
-      return null;
-    },
-    [hasUserIdInLocalStorage, hasUserEncryptionKey, hasFaceSign, hasStakingCredential, hasEvmWallet],
-  );
+  const initialeStep = useMemo(() => {
+    if (!hasUserIdInLocalStorage) return 0;
+    if (!hasUserEncryptionKey) return 1;
+    if (!hasFaceSign) return 2;
+    if (!hasStakingCredential) return 3;
+    if (!hasEvmWallet) return 4;
+    return null;
+  }, [
+    hasUserIdInLocalStorage,
+    hasUserEncryptionKey,
+    hasFaceSign,
+    hasStakingCredential,
+    hasEvmWallet,
+  ]);
 
   console.log({
     initialeStep,
