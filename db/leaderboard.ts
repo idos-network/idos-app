@@ -21,6 +21,7 @@ export async function getLeaderboardEntries(pageSize: number, page: number) {
       rank: leaderboardView.rank,
     })
     .from(leaderboardView)
+    .where(gt(leaderboardView.totalPoints, 0))
     .limit(pageSize)
     .offset((page - 1) * pageSize);
 }
