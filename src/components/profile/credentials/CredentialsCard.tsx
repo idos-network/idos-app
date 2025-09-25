@@ -20,12 +20,12 @@ interface CredentialsCardProps {
   onSuccess?: (message: string) => void;
 }
 
-const userUserCredentials = () => {
+const useUserCredentials = () => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { idOSClient } = useIdOS();
   // eslint-disable-next-line react-hooks/rules-of-hooks
   return useQuery({
-    queryKey: ['userCredentials'],
+    queryKey: ['credentials'],
     enabled: !!idOSClient && idOSClient.state === 'logged-in',
     queryFn: () => {
       return idOSClient && idOSClient.state === 'logged-in'
@@ -36,16 +36,28 @@ const userUserCredentials = () => {
   });
 };
 
+export const useFetchAllGrants = () => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { idOSClient } = useIdOS();
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return useQuery({
+    queryKey: ['grants'],
+    enabled: !!idOSClient && idOSClient.state === 'logged-in',
+    queryFn: async () => {
+      if (!idOSClient || idOSClient.state !== 'logged-in') return [] as any[];
+      return idOSClient.getAccessGrantsOwned();
+    },
+    retry: 1,
+  });
+};
+
 export default function CredentialsCard({
   onError,
   onSuccess,
 }: CredentialsCardProps) {
-  const {
-    data: credentials,
-    isLoading,
-    error,
-    refetch,
-  } = userUserCredentials();
+  const { data: credentials, isLoading, error, refetch } = useUserCredentials();
+  const { data: grants } = useFetchAllGrants();
   const [selectedCredentialId, setSelectedCredentialId] = useState<
     string | null
   >(null);
@@ -56,6 +68,16 @@ export default function CredentialsCard({
     y: number;
   } | null>(null);
 
+  const getSharesCount = (credentialId: string) => {
+    if (!grants || !credentials) return 0;
+
+    const credentialIds = credentials
+      .filter((credential) => credential.original_id === credentialId)
+      .map((credential) => credential.id);
+
+    return grants.filter((grant: any) => credentialIds.includes(grant.data_id))
+      .length;
+  };
   const {
     credential: detailedCredential,
     decryptedContent,
@@ -136,7 +158,7 @@ export default function CredentialsCard({
                   <td className="w-1/5 px-4">{parsed?.type || '-'}</td>
                   <td className="w-1/5 px-4">{parsed?.status || '-'}</td>
                   <td className="w-1/5 px-4">{parsed?.issuer || '-'}</td>
-                  <td className="w-1/5 px-4">{parsed?.shares ?? '-'}</td>
+                  <td className="w-1/5 px-4">{getSharesCount(cred.id)}</td>
                   <td className="w-16 px-4">
                     <button
                       onClick={(e) => {
