@@ -14,8 +14,12 @@ export async function saveUser(data: any, name: string) {
   const user = saveUserSchema.parse(data);
 
   await createReferral(user.id);
-  if (user.referrerCode && user.referrerCode !== '') {
-    await updateReferralCount(user.referrerCode);
+
+  const dbUser = await getUserById(user.id);
+  if (dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== '') {
+    if (user.referrerCode && user.referrerCode !== '') {
+      await updateReferralCount(user.referrerCode);
+    }
   }
 
   return await db
@@ -52,8 +56,12 @@ export async function updateUser(data: any) {
   const user = saveUserSchema.parse(data);
 
   await createReferral(user.id);
-  if (user.referrerCode && user.referrerCode !== '') {
-    await updateReferralCount(user.referrerCode);
+
+  const dbUser = await getUserById(user.id);
+  if (dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== '') {
+    if (user.referrerCode && user.referrerCode !== '') {
+      await updateReferralCount(user.referrerCode);
+    }
   }
 
   return await db.update(users).set(user).where(eq(users.id, user.id));
