@@ -63,20 +63,12 @@ export class FaceTecContainer {
       }
     };
 
-    if (env.VITE_FACETEC_PRODUCTION_KEY.includes('expiryDate')) {
-      this.FaceTecSDK.initializeInProductionMode(
-        env.VITE_FACETEC_PRODUCTION_KEY,
-        env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
-        publicKey,
-        afterInitialization,
-      );
-    } else {
-      this.FaceTecSDK.initializeInDevelopmentMode(
-        env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
-        publicKey,
-        afterInitialization,
-      );
-    }
+    this.FaceTecSDK.initializeInProductionMode(
+      env.VITE_FACETEC_PRODUCTION_KEY,
+      env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
+      publicKey,
+      afterInitialization,
+    );
   };
 
   private ensureImportedFaceTecSDK(): Promise<typeof FaceTecSDK> {
