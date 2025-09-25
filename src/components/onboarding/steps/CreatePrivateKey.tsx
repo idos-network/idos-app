@@ -54,7 +54,7 @@ export default function CreatePrivateKey() {
             <div className="rounded-full bg-[#00382D66] w-39 h-39 flex items-center justify-center">
               <EncryptedIcon color="var(--color-aquamarine-400)" />
             </div>
-            <span className="text-neutral-400 text-base text-center font-medium font-['Urbanist'] max-w-[560px] pt-8">
+            <span className="text-neutral-400 text-base text-center font-medium font-['Urbanist'] max-w-[85%] pt-8">
               Create an idOS Private Key and either store it with a wallet
               signature in our idOS TSS-MPC Native Module for key abstraction
               powered by Partisia Blockchain.{' '}
