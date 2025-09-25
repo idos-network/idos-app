@@ -147,9 +147,7 @@ export default function CredentialsCard({
           <tbody>
             {credentials?.map((cred, index) => {
               const isLastRow = index === credentials.length - 1;
-              console.log({ cred });
               const parsed = safeParse(cred.public_notes ?? '');
-              console.log({ parsed });
               if (!parsed) return null;
               return (
                 <tr
