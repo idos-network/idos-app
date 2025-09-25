@@ -13,17 +13,22 @@ export default async (_request: Request, context: Context) => {
     const users = await getUserById(userId);
 
     // We need to map it to the idOSUserSchema
-    return new Response(JSON.stringify(users.map(user => ({
-      id: user.id,
-      name: user.name ?? undefined,
-      mainEvm: user.mainEvm,
-      referrerCode: user.referrerCode,
-      cookieConsent: user.cookieConsent,
-      faceSignUserId: user.faceSignUserId ?? undefined,
-      faceSignTokenCreatedAt: user.faceSignTokenCreatedAt ?? undefined,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }))), { status: 200 });
+    return new Response(
+      JSON.stringify(
+        users.map((user) => ({
+          id: user.id,
+          name: user.name ?? undefined,
+          mainEvm: user.mainEvm,
+          referrerCode: user.referrerCode,
+          cookieConsent: user.cookieConsent,
+          faceSignUserId: user.faceSignUserId ?? undefined,
+          faceSignTokenCreatedAt: user.faceSignTokenCreatedAt ?? undefined,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        })),
+      ),
+      { status: 200 },
+    );
   } catch (error) {
     console.error('Error in user-get:', error);
     throw error;

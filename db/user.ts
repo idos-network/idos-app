@@ -24,6 +24,27 @@ export async function saveUser(data: any, name: string) {
       ...user,
       name,
     })
+    .onConflictDoUpdate({
+      target: users.id,
+      set: {
+        mainEvm: user.mainEvm,
+        referrerCode: user.referrerCode,
+        name: name,
+      },
+    });
+}
+
+export async function saveUserUnauth(userId: string, mainEvm: string) {
+  if (!userId) {
+    throw new Error('userId is required and cannot be null');
+  }
+
+  return await db
+    .insert(users)
+    .values({
+      id: userId,
+      mainEvm: mainEvm || '',
+    })
     .onConflictDoNothing();
 }
 

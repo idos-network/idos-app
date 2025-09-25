@@ -3,6 +3,11 @@ import { z } from 'zod';
 import axiosInstance from './axios';
 import { parseWithSchema } from './parser';
 
+export const saveUserUnauth = async (userData: IdOSUser): Promise<void> => {
+  const response = await axiosInstance.post('/user/save-unauth', userData);
+  return response.data;
+};
+
 export const saveUser = async (userData: IdOSUser): Promise<void> => {
   const response = await axiosInstance.post('/user/save', userData);
   return response.data;
