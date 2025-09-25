@@ -68,7 +68,6 @@ export default function CredentialsCard({
     y: number;
   } | null>(null);
 
-  // Helper function to count shares for a credential
   const getSharesCount = (credentialId: string) => {
     if (!grants || !credentials) return 0;
 
