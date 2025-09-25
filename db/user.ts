@@ -6,6 +6,7 @@ import { db, users } from './index';
 import {
   createReferral,
   getUserReferralCount,
+  getUserReferralCode,
   updateReferralCount,
 } from './referrals';
 import { getUserQuestsSummary } from './user-quests';
@@ -16,8 +17,14 @@ export async function saveUser(data: any, name: string) {
   await createReferral(user.id);
 
   const dbUser = await getUserById(user.id);
+  const userReferralCode = await getUserReferralCode(user.id);
+
   if (dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== '') {
-    if (user.referrerCode && user.referrerCode !== '') {
+    if (
+      user.referrerCode &&
+      user.referrerCode !== '' &&
+      user.referrerCode !== userReferralCode
+    ) {
       await updateReferralCount(user.referrerCode);
     }
   }
@@ -58,8 +65,14 @@ export async function updateUser(data: any) {
   await createReferral(user.id);
 
   const dbUser = await getUserById(user.id);
+  const userReferralCode = await getUserReferralCode(user.id);
+
   if (dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== '') {
-    if (user.referrerCode && user.referrerCode !== '') {
+    if (
+      user.referrerCode &&
+      user.referrerCode !== '' &&
+      user.referrerCode !== userReferralCode
+    ) {
       await updateReferralCount(user.referrerCode);
     }
   }
