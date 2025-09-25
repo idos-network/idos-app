@@ -13,3 +13,10 @@ export const createIdOSCredential = async (
   });
   return response.data;
 };
+
+export const clearIdOSCredential = async (userId: string) => {
+  const response = await axiosInstance.post('/idos-credential/clear', {
+    userId,
+  });
+  return response.data as { success: boolean };
+};

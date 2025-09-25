@@ -22,7 +22,7 @@ export default async (request: Request, _context: Context) => {
       userId: string;
     };
 
-  const user = await getUserById(userId).then(res => res[0]);
+  const user = await getUserById(userId).then((res) => res[0]);
 
   if (!user) {
     return new Response(
@@ -38,7 +38,8 @@ export default async (request: Request, _context: Context) => {
     return new Response(
       JSON.stringify({
         success: false,
-        message: 'User is in invalid state (did not complete face sign, or already has POP credentials).',
+        message:
+          'User is in invalid state (did not complete face sign, or already has POP credentials).',
       }),
       { status: 400 },
     );
@@ -113,8 +114,7 @@ export default async (request: Request, _context: Context) => {
 
   const dwgParams = {
     id: idOSDWG.delegatedWriteGrant.id,
-    ownerWalletIdentifier:
-      idOSDWG.delegatedWriteGrant.owner_wallet_identifier,
+    ownerWalletIdentifier: idOSDWG.delegatedWriteGrant.owner_wallet_identifier,
     consumerWalletIdentifier:
       idOSDWG.delegatedWriteGrant.grantee_wallet_identifier,
     issuerPublicKey: idOSDWG.delegatedWriteGrant.issuer_public_key,

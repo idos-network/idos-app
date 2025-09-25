@@ -1,4 +1,4 @@
-import { saveUser } from '@/api/user';
+import { saveUserUnauth } from '@/api/user';
 import { useIdOS } from '@/context/idos-context';
 import type { ConnectedWallet } from '@/context/wallet-connector-context';
 import { env } from '@/env';
@@ -133,10 +133,9 @@ export function useHandleSaveIdOSProfile({
 
       const savedUser = saveNewUserToLocalStorage(userPayload);
       // initial save for the user info (mainly the id, for faceSign completion tracking)
-      await saveUser({
+      await saveUserUnauth({
         id: userId,
         mainEvm: wallet.type === 'evm' ? wallet.address : '',
-        referrerCode: '',
       });
 
       Promise.resolve(savedUser);

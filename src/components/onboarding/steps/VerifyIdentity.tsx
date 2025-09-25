@@ -4,9 +4,12 @@ import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
 import { env } from '@/env';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
+import { handleSaveUserWallets } from '@/handlers/user-wallets';
+import { useAuth } from '@/hooks/useAuth';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import FrameIcon from '@/icons/frame';
 import PersonIcon from '@/icons/person';
+import type { IdosWallet } from '@/interfaces/idos-profile';
 import { queryClient } from '@/providers/tanstack-query/query-client';
 import {
   getCurrentUserFromLocalStorage,
@@ -22,6 +25,8 @@ import { useStepState } from './useStepState';
 
 const useLogin = () => {
   const { idOSClient, setIdOSClient } = useIdOS();
+  const { authenticate } = useAuth();
+
   return useMutation({
     mutationKey: ['login'],
     mutationFn: async () => {
@@ -29,6 +34,10 @@ const useLogin = () => {
         const loggedIn = await idOSClient.logIn();
         if (loggedIn) {
           setIdOSClient(loggedIn);
+          const userWallets = await loggedIn.getWallets();
+          const walletsArray = userWallets as IdosWallet[];
+          handleSaveUserWallets(loggedIn.user.id, walletsArray);
+          await authenticate();
         }
       }
       return Promise.resolve(undefined);
@@ -41,7 +50,7 @@ export default function VerifyIdentity() {
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const walletType = (wallet && wallet.type) || '';
-  const { mutate: login } = useLogin();
+  const { mutateAsync: login } = useLogin();
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const { idOSClient } = useIdOS();
 

@@ -1,4 +1,4 @@
-import { getUserById, saveUser } from '@/api/user';
+import { getUserById, saveUserUnauth } from '@/api/user';
 import { queryClient } from '@/providers/tanstack-query/query-client';
 import { useIdosStore } from '@/stores/idosStore';
 import { useQuery } from '@tanstack/react-query';
@@ -25,10 +25,9 @@ export default function LegacyUsersMigrator() {
   useEffect(() => {
     if (hasDbRecordLoading) return;
     if (hasProfile && !hasDbRecord) {
-      saveUser({
+      saveUserUnauth({
         id: idOSClient?.user?.id,
         mainEvm: idOSClient?.walletIdentifier,
-        referrerCode: '',
       });
       queryClient.invalidateQueries({
         queryKey: ['hasDbRecord', idOSClient?.user?.id],

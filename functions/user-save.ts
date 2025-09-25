@@ -1,26 +1,49 @@
-import { saveUser } from '@/db/user';
+import { saveUser, userNameExists } from '@/db/user';
 import type { Config, Context } from '@netlify/functions';
 import { generateUniqueName } from './utils/name-generator';
+import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 
-export default async (request: Request, _context: Context) => {
+async function saveUserHandler(
+  request: AuthenticatedRequest,
+  _context: Context,
+) {
   try {
     const data = await request.json();
 
+    if (data.id !== request.userId) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized to save user' }),
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+    }
+
+    let name: string;
+
     while (true) {
-      try {
-        const name = await generateUniqueName();
-        const result = await saveUser(data, name);
-        return new Response(JSON.stringify(result), { status: 200 });
-      } catch (err) {
-        console.log('Name collision, retrying with new name...');
-        console.log(err);
+      name = await generateUniqueName();
+      const exists = await userNameExists(name);
+      if (!exists) {
+        break;
       }
     }
+
+    const result = await saveUser(data, name);
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Error in user-save:', error);
-    throw error;
+    return new Response(JSON.stringify({ error: 'Failed to save user' }), {
+      status: 500,
+    });
   }
-};
+}
+
+export default withAuth(saveUserHandler);
 
 export const config: Config = {
   path: '/api/user/save',

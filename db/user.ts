@@ -24,6 +24,27 @@ export async function saveUser(data: any, name: string) {
       ...user,
       name,
     })
+    .onConflictDoUpdate({
+      target: users.id,
+      set: {
+        mainEvm: user.mainEvm,
+        referrerCode: user.referrerCode,
+        name: name,
+      },
+    });
+}
+
+export async function saveUserUnauth(userId: string, mainEvm: string) {
+  if (!userId) {
+    throw new Error('userId is required and cannot be null');
+  }
+
+  return await db
+    .insert(users)
+    .values({
+      id: userId,
+      mainEvm: mainEvm || '',
+    })
     .onConflictDoNothing();
 }
 
@@ -46,6 +67,15 @@ export async function setUserPopCredentialId(
     .update(users)
     .set({
       popCredentialsId: credentialId,
+    })
+    .where(eq(users.id, userId));
+}
+
+export async function clearUserPopCredentialId(userId: string) {
+  return await db
+    .update(users)
+    .set({
+      popCredentialsId: null,
     })
     .where(eq(users.id, userId));
 }

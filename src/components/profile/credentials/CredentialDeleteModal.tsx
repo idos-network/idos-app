@@ -4,6 +4,8 @@ import Spinner from '@/components/Spinner';
 import WarningIcon from '@/components/icons/warning';
 import { useIdOS } from '@/context/idos-context';
 import { useFetchGrants, useRevokeGrant } from '@/hooks/useGrants';
+import { clearIdOSCredential } from '@/api/idos-credential';
+import { useUserId } from '@/hooks/useUserId';
 import truncateAddress from '@/utils/address';
 import { timelockToMs } from '@/utils/time';
 import type { idOSCredential } from '@idos-network/client';
@@ -35,6 +37,7 @@ export function CredentialDeleteModal({
   });
 
   const revokeGrant = useRevokeGrant();
+  const { data: userId } = useUserId();
 
   const hasTimeLock =
     grants.data?.length &&
@@ -115,6 +118,15 @@ export function CredentialDeleteModal({
         console.warn(
           'removeCredential method not available in current idOS client version',
         );
+      }
+
+      // Clear PoP credential reference from DB
+      if (userId) {
+        try {
+          await clearIdOSCredential(userId);
+        } catch (_e) {
+          // Non-fatal: backend clear failed; credential is still removed in idOS
+        }
       }
       onSuccess?.();
       onClose();
