@@ -57,7 +57,7 @@ export function Leaderboard() {
 
   if (!isConnected) {
     return (
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-[1285px] mx-auto p-6">
         <div className="grid grid-cols-[max-content] gap-14 justify-center">
           <div className="flex flex-col p-6 rounded-xl bg-[#00382D99] gap-5">
             <div className="flex text-2xl text-neutral-50 font-normal">
@@ -103,7 +103,7 @@ export function Leaderboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-14">
+    <div className="max-w-[1285px] mx-auto p-6 space-y-14">
       <div className="flex flex-col w-full gap-5">
         <LeaderboardTitle
           title="My total idOS Points"
