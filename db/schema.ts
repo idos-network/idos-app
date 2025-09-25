@@ -5,6 +5,7 @@ import {
   integer,
   pgMaterializedView,
   pgTable,
+  serial,
   text,
   timestamp,
   unique,
@@ -140,6 +141,7 @@ export const userTokens = pgTable(
 );
 
 export const leaderboardView = pgMaterializedView('leaderboard_view', {
+  id: serial('id'),
   userId: varchar('userId', { length: 36 }).primaryKey(),
   name: varchar('name'),
   xHandle: varchar('xHandle'),
@@ -148,6 +150,7 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
   contributionPoints: integer('contributionPoints').notNull().default(0),
   referralCount: integer('referralCount').notNull().default(0),
   totalPoints: integer('totalPoints').notNull().default(0),
+  rank: integer('rank').notNull().default(0),
 }).as(sql`
   WITH quest_aggregates AS (
     SELECT 
@@ -199,6 +202,7 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
     CROSS JOIN referral_quest_points rqp
   )
   SELECT 
+    ROW_NUMBER() OVER (ORDER BY COALESCE(qpr.quest_points, 0) DESC, u."name" ASC) as "id",
     u."id" as "userId",
     u."name",
     u."xHandle",
@@ -206,7 +210,8 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
     0 as "socialPoints",
     0 as "contributionPoints",
     COALESCE(qpr."referralCount", 0) as "referralCount",
-    COALESCE(qpr.quest_points, 0) as "totalPoints"
+    COALESCE(qpr.quest_points, 0) as "totalPoints",
+    DENSE_RANK() OVER (ORDER BY COALESCE(qpr.quest_points, 0) DESC) as "rank"
   FROM ${users} u
   LEFT JOIN quest_points_with_referrals qpr ON qpr."userId" = u."id"
   ORDER BY "totalPoints" DESC, u."name" ASC
