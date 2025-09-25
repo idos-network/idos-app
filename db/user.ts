@@ -71,6 +71,15 @@ export async function setUserPopCredentialId(
     .where(eq(users.id, userId));
 }
 
+export async function clearUserPopCredentialId(userId: string) {
+  return await db
+    .update(users)
+    .set({
+      popCredentialsId: null,
+    })
+    .where(eq(users.id, userId));
+}
+
 export async function updateUserFaceSign(
   userId: string,
   faceSignUserId: string,
