@@ -94,10 +94,10 @@ export function LeaderboardTable({
               const isLastRow = index === data.length - 1;
               return (
                 <tr
-                  key={item.name}
+                  key={item.id}
                   className={`font-[Urbanist] text-sm font-medium h-[44px] ${!isLastRow ? 'border-neutral-800 border-b' : ''} text-neutral-400`}
                 >
-                  <td className="px-4">#{item.position}</td>
+                  <td className="px-4">#{item.rank}</td>
                   <td className="px-4 truncate">{item.name}</td>
                   <td className="px-4 font-light text-sm text-neutral-200">
                     <div className="flex items-center justify-center">
