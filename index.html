@@ -9,7 +9,8 @@
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="icon" href="/favicon-60x60.png" />
   <link rel="icon" type="image/svg+xml" href="/favicon-32x32.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
   <link rel="preload" fetchpriority="high" as="image" href="/cube-hero.webp" type="image/webp">
@@ -17,9 +18,6 @@
 
 <body>
   <div id="root"></div>
-
-  <!-- Load FaceTecSDK as a global variable -->
-  <script src="/facetec/FaceTecSDK.js/FaceTecSDK.js"></script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

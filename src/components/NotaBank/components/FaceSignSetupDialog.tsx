@@ -89,9 +89,15 @@ export default function FaceSignSetupDialog({
   useEffect(() => {
     // Initialize FaceTec when component mounts
     getPublicKey().then((publicKey) => {
-      faceTec.init(currentUserId, publicKey, () => {
-        console.log('FaceTec initialized');
-        setFaceTecInitialized(true);
+      faceTec.init(currentUserId, publicKey, (errorMessage?: string) => {
+        console.log('Facetec initialized callback', errorMessage);
+        if (errorMessage) {
+          setFaceSignError(errorMessage);
+        } else {
+          setFaceSignError(null);
+          setFaceSignResult(null);
+          setFaceTecInitialized(true);
+        }
       });
     });
 

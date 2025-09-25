@@ -70,6 +70,7 @@ export default async (request: Request, context: Context) => {
       duplicate: true,
       errorMessage: "Sorry, you have already created an idOS profile with FaceSign on another wallet. Please disconnect and reconnect with that original wallet.",
     }, 400);
+
   }
 };
 
