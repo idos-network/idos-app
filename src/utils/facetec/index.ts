@@ -1,13 +1,7 @@
 import { getSessionToken } from '@/api/face-sign.js';
 import { env } from '@/env';
 import { LivenessCheckProcessor } from '@/utils/facetec/LivenessCheckProcessor.js';
-
-// FaceTecSDK is loaded as a global variable via script tag
-declare global {
-  interface Window {
-    FaceTecSDK: any;
-  }
-}
+import type { FaceTecSDK } from '../../../public/facetec/FaceTecSDK.js/FaceTecSDK';
 
 const TRANSPARENT_COLOR = 'transparent';
 const BRANDING_COLOR = '#00fbb9';
@@ -17,41 +11,97 @@ const BUTTON_TEXT_COLOR = '#1a1a1a';
 
 export class FaceTecContainer {
   private userId: string | null = null;
+  private FaceTecSDK: typeof FaceTecSDK | null = null;
 
-  private get FaceTecSDK() {
-    return (window as any).FaceTecSDK;
-  }
-
-  public init = (
+  public init = async (
     userId: string,
     publicKey: string,
-    onInitialized: () => void,
-  ): void => {
-    // Check if FaceTecSDK is available
-    if (!this.FaceTecSDK) {
-      console.error(
-        'FaceTecSDK is not loaded. Make sure the script is included in your HTML.',
-      );
-      return;
-    }
-
+    onDone: (errorMessage?: string) => void,
+  ): Promise<void> => {
     this.userId = userId;
 
+    // Ensure FaceTecSDK is imported & initialized
+    this.FaceTecSDK = await this.ensureImportedFaceTecSDK();
     this.FaceTecSDK.setResourceDirectory('/facetec/FaceTecSDK.js/resources');
     this.FaceTecSDK.setImagesDirectory('/facetec/FaceTecSDK.js/FaceTec_images');
-    this.FaceTecSDK.initializeInProductionMode(
-      env.VITE_FACETEC_PRODUCTION_KEY,
-      env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
-      publicKey,
-      (initializationSuccess: boolean) => {
-        console.log('FaceTec SDK initialized status: ', initializationSuccess);
-        if (initializationSuccess) {
-          this.setupCustomization();
-          onInitialized();
-        }
-      },
-    );
+
+    if (
+      this.FaceTecSDK.getStatus() ===
+      this.FaceTecSDK.FaceTecSDKStatus.NeverInitialized
+    ) {
+      this.setupCustomization();
+    }
+
+    const afterInitialization = () => {
+      if (!this.FaceTecSDK) {
+        return onDone('FaceTecSDK is not available');
+      }
+
+      const faceTecStatus = this.FaceTecSDK.getStatus();
+      if (faceTecStatus === this.FaceTecSDK.FaceTecSDKStatus.Initialized) {
+        onDone();
+      } else if (
+        faceTecStatus === this.FaceTecSDK.FaceTecSDKStatus.NeverInitialized
+      ) {
+        window.console.info('FaceTecSDK: Never Initialized ... initializing');
+        // No reason to call onDone here, initialization is in progress
+      } else if (
+        faceTecStatus === this.FaceTecSDK.FaceTecSDKStatus.StillLoadingResources
+      ) {
+        window.console.info('FaceTecSDK: Loading resources ...');
+        // No reason to call onDone here, initialization is in progress
+      } else if (
+        faceTecStatus === this.FaceTecSDK.FaceTecSDKStatus.DeviceLockedOut
+      ) {
+        onDone(
+          'Device is locked out due to too many failed attempts. Please try again later.',
+        );
+      } else {
+        onDone(
+          `FaceTec initialization error: ${this.FaceTecSDK.getFriendlyDescriptionForFaceTecSDKStatus(faceTecStatus)}`,
+        );
+      }
+    };
+
+    if (env.VITE_FACETEC_PRODUCTION_KEY.includes('expiryDate')) {
+      this.FaceTecSDK.initializeInProductionMode(
+        env.VITE_FACETEC_PRODUCTION_KEY,
+        env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
+        publicKey,
+        afterInitialization,
+      );
+    } else {
+      this.FaceTecSDK.initializeInDevelopmentMode(
+        env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
+        publicKey,
+        afterInitialization,
+      );
+    }
   };
+
+  private ensureImportedFaceTecSDK(): Promise<typeof FaceTecSDK> {
+    return new Promise((resolve) => {
+      let script: HTMLScriptElement | undefined = document.getElementById(
+        'facetec-sdk-script',
+      ) as HTMLScriptElement | undefined;
+
+      if (script) {
+        // @ts-expect-error This is a hack for global variables from imported JS file.
+        resolve(window.FaceTecSDK as typeof FaceTecSDK);
+      } else {
+        script = document.createElement('script');
+        script.id = 'facetec-sdk-script';
+        script.type = 'text/javascript';
+        script.async = true;
+        script.src = `/facetec/FaceTecSDK.js/FaceTecSDK.js`;
+        script.onload = () => {
+          // @ts-expect-error This is a hack for global variables from imported JS file.
+          resolve(window.FaceTecSDK as typeof FaceTecSDK);
+        };
+        document.body.appendChild(script);
+      }
+    });
+  }
 
   private setupCustomization = (): void => {
     if (!this.FaceTecSDK) return;
@@ -154,6 +204,11 @@ export class FaceTecContainer {
   private getSessionToken = (
     callback: (sessionToken: string) => void,
   ): void => {
+    if (!this.FaceTecSDK) {
+      console.error('FaceTecSDK is not available');
+      return;
+    }
+
     getSessionToken(
       this.userId!,
       env.VITE_FACETEC_DEVICE_KEY_IDENTIFIER,
