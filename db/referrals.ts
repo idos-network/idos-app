@@ -31,3 +31,12 @@ export async function getUserReferralCount(userId: string): Promise<number> {
 
   return result[0]?.referralCount ?? 0;
 }
+
+export async function getUserReferralCode(userId: string) {
+  const result = await db
+    .select({ referralCode: referrals.referralCode })
+    .from(referrals)
+    .where(eq(referrals.userId, userId))
+    .limit(1);
+  return result[0]?.referralCode ?? '';
+}
