@@ -136,7 +136,7 @@ export default function CredentialsCard({
                   <td className="w-1/5 px-4">{parsed?.type || '-'}</td>
                   <td className="w-1/5 px-4">{parsed?.status || '-'}</td>
                   <td className="w-1/5 px-4">{parsed?.issuer || '-'}</td>
-                  <td className="w-1/5 px-4">{parsed?.shares ?? '1'}</td>
+                  <td className="w-1/5 px-4">{parsed?.shares ?? '-'}</td>
                   <td className="w-16 px-4">
                     <button
                       onClick={(e) => {
