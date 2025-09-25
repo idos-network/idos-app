@@ -79,6 +79,7 @@ export default function FaceSignSetupDialog({
   const [faceSignError, setFaceSignError] = useState<string | null>(null);
   const [faceSignDuplicate, setFaceSignDuplicate] = useState(false);
   const idOSLoggedIn = useIdOSLoggedIn();
+  const [isInitializing, setIsInitializing] = useState(false);
   const [faceTecInitialized, setFaceTecInitialized] = useState(false);
   const currentUserId = userId ?? idOSLoggedIn?.user.id ?? undefined;
 
@@ -88,12 +89,17 @@ export default function FaceSignSetupDialog({
 
   useEffect(() => {
     // Initialize FaceTec when component mounts
-    getPublicKey().then((publicKey) => {
-      faceTec.init(currentUserId, publicKey, () => {
-        console.log('FaceTec initialized');
-        setFaceTecInitialized(true);
+    setIsInitializing(true);
+    getPublicKey()
+      .then((publicKey) => {
+        faceTec.init(currentUserId, publicKey, () => {
+          console.log('FaceTec initialized');
+          setFaceTecInitialized(true);
+        });
+      })
+      .finally(() => {
+        setIsInitializing(false);
       });
-    });
 
     const checkFaceSignStatus = (interval?: any) =>
       getFaceSignStatus(currentUserId)
@@ -200,29 +206,35 @@ export default function FaceSignSetupDialog({
           </Alert>
 
           {/* Actions */}
-          <div className="flex flex-col gap-5 w-full mt-2">
-            <Button
-              className="bg-aquamarine-400"
-              disabled={!faceTecInitialized}
-              onClick={() =>
-                mobile ? handleLivenessCheck() : setQrCodeView(true)
-              }
-            >
-              {mobile ? 'Start Liveness Check' : 'Continue on Mobile'}
-            </Button>
-            {!mobile && (
+          {!isInitializing ? (
+            <div className="flex flex-col gap-5 w-full mt-2">
               <Button
-                variant="underline"
+                className="bg-aquamarine-400"
                 disabled={!faceTecInitialized}
-                className="bg-neutral-700 hover:bg-neutral-600"
-                onClick={() => handleLivenessCheck()}
+                onClick={() =>
+                  mobile ? handleLivenessCheck() : setQrCodeView(true)
+                }
               >
-                <span className="text-neutral-100 text-xs font-medium">
-                  Continue on this device
-                </span>
+                {mobile ? 'Start Liveness Check' : 'Continue on Mobile'}
               </Button>
-            )}
-          </div>
+              {!mobile && (
+                <Button
+                  variant="underline"
+                  disabled={!faceTecInitialized}
+                  className="bg-neutral-700 hover:bg-neutral-600"
+                  onClick={() => handleLivenessCheck()}
+                >
+                  <span className="text-neutral-100 text-xs font-medium">
+                    Continue on this device
+                  </span>
+                </Button>
+              )}
+            </div>
+          ) : (
+            <span className="text-neutral-400 text-sm max-w-[270px] text-center">
+              Initializing FaceSign...
+            </span>
+          )}
         </div>
       </div>
     );
