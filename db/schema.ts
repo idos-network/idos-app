@@ -140,6 +140,10 @@ export const userTokens = pgTable(
   ],
 );
 
+export const lockTable = pgTable('lock_table', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+});
+
 export const leaderboardView = pgMaterializedView('leaderboard_view', {
   id: serial('id'),
   userId: varchar('userId', { length: 36 }).primaryKey(),

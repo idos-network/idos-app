@@ -2,6 +2,7 @@ import { idOSProfileRequestSchema } from '@/interfaces/idos-profile';
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import type { Config, Context } from '@netlify/functions';
 import nacl from 'tweetnacl';
+import { db } from '@/db/connection';
 
 export default async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
@@ -60,7 +61,11 @@ export default async (request: Request, _context: Context) => {
     signature: ownershipProofSignature,
     public_key: publicKey,
   };
-  await idOSIssuerInstance.createUser(user, wallet);
+
+  await db.transaction(async (tx: any) => {
+    await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
+    await idOSIssuerInstance.createUser(user, wallet);
+  });
 
   return new Response(
     JSON.stringify({
