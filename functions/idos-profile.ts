@@ -69,7 +69,14 @@ export default async (request: Request, context: Context) => {
 
     await db.transaction(async (tx: any) => {
       await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
-      await idOSIssuerInstance.createUser(user, wallet);
+      // If user already exists
+      if (await idOSIssuerInstance.getUser(userId).catch(() => null)) {
+        // Just add wallet
+        await idOSIssuerInstance.upsertWalletAsInserter({...wallet, user_id: userId});
+      } else {
+        // Else, create both user and wallet
+        await idOSIssuerInstance.createUser(user, wallet);
+      }
     });
 
     return new Response(
