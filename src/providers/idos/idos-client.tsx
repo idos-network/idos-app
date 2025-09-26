@@ -124,7 +124,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
   }, [signer, isLoadingSigner, idOSClient]);
 
   useEffect(() => {
-    if (!idOSClient || isLoadingAuth) return;
+    if (!idOSClient || isLoadingAuth || isAuthenticated) return;
     if (idOSClient.state === 'logged-in') {
       authenticate();
     }
