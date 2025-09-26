@@ -131,7 +131,7 @@ export default async (request: Request, _context: Context) => {
 
   await setUserPopCredentialId(userId, result.originalCredential.id);
 
-  await setUserName(userId);
+  // await setUserName(userId);
 
   return new Response(JSON.stringify(result), { status: 200 });
 };
