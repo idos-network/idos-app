@@ -44,7 +44,7 @@
     "internal": true,
     "buttonText": "Join us",
     "pointsReward": 10,
-    "isActive": false,
+    "isActive": true,
     "isRepeatable": false,
     "iframe": "<iframe src=\"https://embeds.beehiiv.com/145653e3-3ed6-47be-8e1a-f91df22071bf?slim=true\" data-test-id=\"beehiiv-embed\" height=\"52\" frameborder=\"0\" scrolling=\"no\" style=\" width: 100%; borderRadius: 0px; backgroundColor: transparent; zIndex: 1; position: 'relative';\"></iframe>"
   },
