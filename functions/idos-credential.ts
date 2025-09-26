@@ -1,4 +1,4 @@
-import { getUserById, setUserPopCredentialId } from '@/db/user';
+import { getUserById, setUserName, setUserPopCredentialId } from '@/db/user';
 import { type IdosDWG } from '@/interfaces/idos-credential';
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import type { Config, Context } from '@netlify/functions';
@@ -130,6 +130,8 @@ export default async (request: Request, _context: Context) => {
   );
 
   await setUserPopCredentialId(userId, result.originalCredential.id);
+
+  await setUserName(userId);
 
   return new Response(JSON.stringify(result), { status: 200 });
 };
