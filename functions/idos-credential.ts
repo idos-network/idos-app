@@ -1,4 +1,4 @@
-import { getUserById, setUserName, setUserPopCredentialId } from '@/db/user';
+import { getUserById, setUserPopCredentialId } from '@/db/user';
 import { type IdosDWG } from '@/interfaces/idos-credential';
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import type { Config, Context } from '@netlify/functions';
