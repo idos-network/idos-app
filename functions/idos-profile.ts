@@ -9,79 +9,81 @@ export default async (request: Request, context: Context) => {
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
   const db = drizzle(pool);
 
-  // Ensure pool is closed after request
-  context.waitUntil(pool.end());
+  try {
+    if (request.method !== 'POST') {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'Method not allowed. Use POST.',
+        }),
+        {
+          status: 405,
+        },
+      );
+    }
 
-  if (request.method !== 'POST') {
+    const idOSIssuer = idOSIssuerClass.init({
+      nodeUrl: process.env.VITE_IDOS_NODE_URL as string,
+      signingKeyPair: nacl.sign.keyPair.fromSecretKey(
+        Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
+      ),
+      encryptionSecretKey: Buffer.from(
+        process.env.ISSUER_ENCRYPTION_SECRET_KEY as string,
+        'hex',
+      ),
+    });
+
+    const {
+      userId,
+      userEncryptionPublicKey,
+      address,
+      ownershipProofMessage,
+      ownershipProofSignature,
+      publicKey,
+      walletType,
+      encryptionPasswordStore,
+    } = idOSProfileRequestSchema.parse(await request.json());
+
+    const idOSIssuerInstance = await idOSIssuer;
+
+    const user = {
+      id: userId,
+      recipient_encryption_public_key: userEncryptionPublicKey,
+      encryption_password_store: encryptionPasswordStore as string,
+    };
+
+    const walletTypeMap: Record<string, string> = {
+      evm: 'EVM',
+      near: 'NEAR',
+      stellar: 'Stellar',
+      xrpl: 'XRPL',
+    };
+
+    const wallet = {
+      address,
+      wallet_type: walletTypeMap[walletType],
+      message: ownershipProofMessage,
+      signature: ownershipProofSignature,
+      public_key: publicKey,
+    };
+
+    await db.transaction(async (tx: any) => {
+      await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
+      await idOSIssuerInstance.createUser(user, wallet);
+    });
+
     return new Response(
       JSON.stringify({
-        success: false,
-        message: 'Method not allowed. Use POST.',
+        message: 'User created successfully',
       }),
       {
-        status: 405,
+        status: 200,
       },
     );
+  } finally {
+    // Ensure pool is closed after request
+    context.waitUntil(pool.end());
   }
-
-  const idOSIssuer = idOSIssuerClass.init({
-    nodeUrl: process.env.VITE_IDOS_NODE_URL as string,
-    signingKeyPair: nacl.sign.keyPair.fromSecretKey(
-      Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
-    ),
-    encryptionSecretKey: Buffer.from(
-      process.env.ISSUER_ENCRYPTION_SECRET_KEY as string,
-      'hex',
-    ),
-  });
-
-  const {
-    userId,
-    userEncryptionPublicKey,
-    address,
-    ownershipProofMessage,
-    ownershipProofSignature,
-    publicKey,
-    walletType,
-    encryptionPasswordStore,
-  } = idOSProfileRequestSchema.parse(await request.json());
-
-  const idOSIssuerInstance = await idOSIssuer;
-
-  const user = {
-    id: userId,
-    recipient_encryption_public_key: userEncryptionPublicKey,
-    encryption_password_store: encryptionPasswordStore as string,
-  };
-
-  const walletTypeMap: Record<string, string> = {
-    evm: 'EVM',
-    near: 'NEAR',
-    stellar: 'Stellar',
-    xrpl: 'XRPL',
-  };
-
-  const wallet = {
-    address,
-    wallet_type: walletTypeMap[walletType],
-    message: ownershipProofMessage,
-    signature: ownershipProofSignature,
-    public_key: publicKey,
-  };
-
-  await db.transaction(async (tx: any) => {
-    await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
-    await idOSIssuerInstance.createUser(user, wallet);
-  });
-
-  return new Response(
-    JSON.stringify({
-      message: 'User created successfully',
-    }),
-    {
-      status: 200,
-    },
-  );
 };
 
 export const config: Config = {
