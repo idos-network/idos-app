@@ -68,7 +68,7 @@ export function LeaderboardTable({
               <th className="w-[120px] px-4 font-normal text-[#FFA015] text-center">
                 Quest Points
               </th>
-              <th className="w-[10px] px-4 font-normal text-center">
+              <th className="w-[100px] px-4 font-normal text-center">
                 Mindshare
               </th>
               <th className="w-[165px] px-4 font-normal text-[#A0F73C] text-center">
