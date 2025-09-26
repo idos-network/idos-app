@@ -40,6 +40,7 @@
     "@near-wallet-selector/here-wallet": "8.10.2",
     "@near-wallet-selector/meteor-wallet": "8.10.2",
     "@near-wallet-selector/modal-ui": "8.10.2",
+    "@neondatabase/serverless": "^1.0.1",
     "@netlify/functions": "^4.1.9",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
