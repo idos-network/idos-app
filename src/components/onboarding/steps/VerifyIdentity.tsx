@@ -1,4 +1,4 @@
-import { saveUser } from '@/api/user';
+import { getUserById, saveUser } from '@/api/user';
 import FaceSignSetupDialog from '@/components/NotaBank/components/FaceSignSetupDialog';
 import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
@@ -72,20 +72,18 @@ export default function VerifyIdentity() {
     }
     updateUserStateInLocalStorage(userAddress, { humanVerified: true });
     setState('creating');
-    const response = await handleCreateIdOSProfile(
+    const profilePayload = {
       userId,
       userEncryptionPublicKey,
       userAddress,
-      env.VITE_OWNERSHIP_PROOF_MESSAGE,
+      ownershipProofMessage: env.VITE_OWNERSHIP_PROOF_MESSAGE,
       ownershipProofSignature,
       publicKey,
       walletType,
       encryptionPasswordStore,
-    );
-    if (!response) {
-      updateUserStateInLocalStorage(userAddress, { humanVerified: false });
-      setState('idle');
-    } else {
+    };
+    try {
+      await handleCreateIdOSProfile(profilePayload);
       await login();
       await saveUser({
         id: userId,
@@ -93,6 +91,22 @@ export default function VerifyIdentity() {
         referrerCode: '',
       });
       queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
+    } catch (error) {
+      console.error('Error in handleFaceSignSuccess:', error);
+      // in case of failure at idos profile creation. generate a new user id and then create new user with previous user info
+      const newUserId = crypto.randomUUID();
+      updateUserStateInLocalStorage(userAddress, { id: newUserId });
+
+      await handleCreateIdOSProfile({ ...profilePayload, userId: newUserId });
+      const [userInfo] = await getUserById(userId);
+      if (!userInfo) throw new Error('User info not found');
+
+      await saveUser({
+        ...userInfo,
+        id: newUserId,
+      });
+      // @todo: delete the user with wrong userId (this user id already exists in idos nodes)
+      setState('idle');
     }
   }, [
     userId,
