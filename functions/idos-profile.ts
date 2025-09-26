@@ -2,8 +2,16 @@ import { idOSProfileRequestSchema } from '@/interfaces/idos-profile';
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import type { Config, Context } from '@netlify/functions';
 import nacl from 'tweetnacl';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from '@neondatabase/serverless';
 
-export default async (request: Request, _context: Context) => {
+export default async (request: Request, context: Context) => {
+  const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
+  const db = drizzle(pool);
+
+  // Ensure pool is closed after request
+  context.waitUntil(pool.end());
+
   if (request.method !== 'POST') {
     return new Response(
       JSON.stringify({
@@ -61,7 +69,10 @@ export default async (request: Request, _context: Context) => {
     public_key: publicKey,
   };
 
-  await idOSIssuerInstance.createUser(user, wallet);
+  await db.transaction(async (tx: any) => {
+    await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
+    await idOSIssuerInstance.createUser(user, wallet);
+  });
 
   return new Response(
     JSON.stringify({
