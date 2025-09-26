@@ -1,7 +1,7 @@
-import { saveUser, userNameExists } from '@/db/user';
+import { saveUser } from '@/db/user';
 import type { Config, Context } from '@netlify/functions';
-import { generateUniqueName } from './utils/name-generator';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
+import { getUserName } from './utils/get-user-name';
 
 async function saveUserHandler(
   request: AuthenticatedRequest,
@@ -19,18 +19,9 @@ async function saveUserHandler(
         },
       );
     }
-
-    let name: string;
-
-    while (true) {
-      name = await generateUniqueName();
-      const exists = await userNameExists(name);
-      if (!exists) {
-        break;
-      }
-    }
-
+    const name = await getUserName(data.id);
     const result = await saveUser(data, name);
+
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
