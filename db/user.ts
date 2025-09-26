@@ -10,7 +10,6 @@ import {
   updateReferralCount,
 } from './referrals';
 import { getUserQuestsSummary } from './user-quests';
-import { getUserName } from 'functions/utils/get-user-name';
 
 export async function saveUser(data: any, name: string) {
   const user = saveUserSchema.parse(data);
@@ -79,18 +78,6 @@ export async function updateUser(data: any) {
   }
 
   return await db.update(users).set(user).where(eq(users.id, user.id));
-}
-
-export async function setUserName(userId: string) {
-  const user = await getUserById(userId);
-
-  if (user[0]?.name && user[0].name !== '') {
-    return;
-  }
-
-  const name = await getUserName(userId);
-
-  return await db.update(users).set({ name }).where(eq(users.id, userId));
 }
 
 export async function setUserPopCredentialId(
