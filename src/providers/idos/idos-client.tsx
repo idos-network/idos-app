@@ -72,7 +72,7 @@ const useSigner = () => {
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const { data: signer, isLoading: isLoadingSigner } = useSigner();
-  const { authenticate, isAuthenticated } = useAuth();
+  const { authenticate, isAuthenticated, isLoading: isLoadingAuth } = useAuth();
 
   const { idOSClient, setIdOSClient, initializing, setSettingSigner } =
     useIdosStore();
@@ -122,6 +122,13 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     // Removing wallet dependencies to prevent reinitialization on connection failures
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer, isLoadingSigner, idOSClient]);
+
+  useEffect(() => {
+    if (!idOSClient || isLoadingAuth) return;
+    if (idOSClient.state === 'logged-in') {
+      authenticate();
+    }
+  }, [idOSClient, authenticate, isAuthenticated, isLoadingAuth]);
 
   if (initializing) {
     return (
