@@ -18,6 +18,11 @@ export const updateUser = async (userData: IdOSUser): Promise<void> => {
   return response.data;
 };
 
+export const setUserName = async (userId: string): Promise<void> => {
+  const response = await axiosInstance.post('/user/set-name', { userId });
+  return response.data;
+};
+
 export const getUserById = async (userId: string): Promise<IdOSUser[]> => {
   const response = await axiosInstance.get(`/user/${userId}`);
   return parseWithSchema(response.data, z.array(idOSUserSchema));

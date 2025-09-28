@@ -13,6 +13,8 @@ import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { useHasStakingCredential } from '@/components/onboarding/OnboardingStepper';
 import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
+import { useUserNameEmpty } from '@/hooks/useUserNameEmpty';
+import { setUserName } from '@/api/user';
 
 const useSigner = () => {
   const walletConnector = useContext(WalletConnectorContext);
@@ -84,6 +86,8 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     isCompleted: profileQuestCompleted,
     isLoading: isLoadingProfileQuest,
   } = useProfileQuestCompleted();
+  const { isNameEmpty, isLoading: isLoadingUserNameEmpty } = useUserNameEmpty();
+
   useEffect(() => {
     if (idOSClient || !signer || isLoadingSigner) return;
 
@@ -155,6 +159,22 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     isLoadingAuth,
     profileQuestCompleted,
     stakingCreds,
+  ]);
+
+  useEffect(() => {
+    if (!idOSClient || isLoadingAuth || isLoadingUserNameEmpty) return;
+    if (idOSClient.state !== 'logged-in') return;
+
+    if (isAuthenticated && isNameEmpty) {
+      setUserName(idOSClient!.user.id);
+    }
+  }, [
+    idOSClient,
+    authenticate,
+    isAuthenticated,
+    isLoadingAuth,
+    isNameEmpty,
+    isLoadingUserNameEmpty,
   ]);
 
   if (initializing) {
