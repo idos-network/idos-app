@@ -2,23 +2,28 @@ import axiosInstance from './axios';
 
 export const saveUserCookieConsent = async (
   userId: string,
-  accepted: boolean,
+  accepted: number,
 ): Promise<void> => {
-  const response = await axiosInstance.post(`/user/${userId}/cookie-consent`, {
-    accepted,
-  });
+  const response = await axiosInstance.post(
+    `/user/${userId}/cookie-consent-save`,
+    {
+      accepted,
+    },
+  );
   return response.data;
 };
 
 export const getUserCookieConsent = async (
   userId: string,
-): Promise<boolean | null> => {
-  const response = await axiosInstance.get(`/user/${userId}/cookie-consent`);
+): Promise<number | null> => {
+  const response = await axiosInstance.get(
+    `/user/${userId}/cookie-consent-get`,
+  );
   const data = response.data;
 
   if (!data || data.accepted === undefined) {
     return null;
   }
 
-  return data.accepted;
+  return data.accepted as number;
 };

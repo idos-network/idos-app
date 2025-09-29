@@ -133,6 +133,7 @@ export default async (request: Request, context: Context) => {
 
     await db.transaction(async (tx: any) => {
       await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
+
     
       try {
         const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
