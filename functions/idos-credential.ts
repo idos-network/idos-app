@@ -132,10 +132,16 @@ export default async (request: Request, context: Context) => {
 
     await db.transaction(async (tx: any) => {
       await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
+
       const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
         credentialParams,
         dwgParams,
       );
+
+      if (!result.originalCredential.id) {
+        console.log(result);
+      }
+
       await setUserPopCredentialId(userId, result.originalCredential.id);
     });
 
@@ -146,10 +152,13 @@ export default async (request: Request, context: Context) => {
       }),
       { status: 200 },
     );
-  } finally {
+  } catch(err) {
+    console.log(err);
+  }
+  finally {
     // Ensure pool is closed after request
     context.waitUntil(pool.end());
-  }
+  } 
 };
 
 export const config: Config = {
