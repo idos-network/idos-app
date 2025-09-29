@@ -1,7 +1,9 @@
-import { saveUser, userNameExists } from '@/db/user';
+import { saveUser } from '@/db/user';
 import type { Config, Context } from '@netlify/functions';
-import { generateUniqueName } from './utils/name-generator';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
+import { getUserName } from './utils/get-user-name';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
 async function saveUserHandler(
   request: AuthenticatedRequest,
@@ -19,31 +21,23 @@ async function saveUserHandler(
         },
       );
     }
-
-    let name: string;
-
-    while (true) {
-      name = await generateUniqueName();
-      const exists = await userNameExists(name);
-      if (!exists) {
-        break;
-      }
-    }
-
+    const name = await getUserName(data.id);
     const result = await saveUser(data, name);
+
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Error in user-save:', error);
+    Sentry.captureException(error);
     return new Response(JSON.stringify({ error: 'Failed to save user' }), {
       status: 500,
     });
   }
 }
 
-export default withAuth(saveUserHandler);
+export default withSentry(withAuth(saveUserHandler));
 
 export const config: Config = {
   path: '/api/user/save',

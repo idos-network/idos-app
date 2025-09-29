@@ -63,11 +63,11 @@ export default function WalletDetailsModal({
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
+    clearUserDataFromLocalStorage();
     try {
       await disconnect();
       localStorage.removeItem('onboardingToastShown');
       await resetStore();
-      clearUserDataFromLocalStorage();
       onClose();
     } catch (error) {
       showToast({

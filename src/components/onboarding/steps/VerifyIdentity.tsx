@@ -5,7 +5,6 @@ import { useIdOS } from '@/context/idos-context';
 import { env } from '@/env';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
 import { handleSaveUserWallets } from '@/handlers/user-wallets';
-import { useAuth } from '@/hooks/useAuth';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import FrameIcon from '@/icons/frame';
 import PersonIcon from '@/icons/person';
@@ -25,7 +24,6 @@ import { useStepState } from './useStepState';
 
 const useLogin = () => {
   const { idOSClient, setIdOSClient } = useIdOS();
-  const { authenticate } = useAuth();
 
   return useMutation({
     mutationKey: ['login'],
@@ -37,7 +35,6 @@ const useLogin = () => {
           const userWallets = await loggedIn.getWallets();
           const walletsArray = userWallets as IdosWallet[];
           handleSaveUserWallets(loggedIn.user.id, walletsArray);
-          await authenticate();
         }
       }
       return Promise.resolve(undefined);

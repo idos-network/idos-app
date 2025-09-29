@@ -37,6 +37,7 @@ export const env = createEnv({
     // TODO: Make optional for development
     VITE_FACETEC_PRODUCTION_KEY: z.string().min(1),
     VITE_FACETEC_DEVICE_KEY_IDENTIFIER: z.string().min(1),
+    VITE_LOCKDOWN_MODE: z.string().default('false'),
   },
 
   /**

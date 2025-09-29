@@ -3,7 +3,8 @@ import axiosInstance from './axios';
 import { parseWithSchema } from './parser';
 
 export interface LeaderboardEntryData {
-  userId: string;
+  id: string;
+  userId?: string;
   name: string;
   xHandle: string | null;
   totalPoints: number;
@@ -11,7 +12,7 @@ export interface LeaderboardEntryData {
   socialPoints: number;
   contributionPoints: number;
   referralCount: number;
-  position: number;
+  rank: number;
 }
 
 export const getLeaderboard = async (opts?: {
@@ -30,7 +31,8 @@ export const getLeaderboard = async (opts?: {
     z.object({
       data: z.array(
         z.object({
-          userId: z.string(),
+          id: z.string(),
+          userId: z.string().optional(),
           name: z.string(),
           xHandle: z.string().nullable(),
           totalPoints: z.number(),
@@ -38,7 +40,7 @@ export const getLeaderboard = async (opts?: {
           socialPoints: z.number(),
           contributionPoints: z.number(),
           referralCount: z.number(),
-          position: z.number(),
+          rank: z.number(),
         }),
       ),
       total: z.number().optional(),
@@ -62,6 +64,7 @@ export const getUserPosition = async (
       response.data,
       z.object({
         data: z.object({
+          id: z.string(),
           userId: z.string(),
           name: z.string(),
           xHandle: z.string().nullable(),
@@ -70,7 +73,7 @@ export const getUserPosition = async (
           socialPoints: z.number(),
           contributionPoints: z.number(),
           referralCount: z.number(),
-          position: z.number(),
+          rank: z.number(),
         }),
       }),
     );

@@ -1,6 +1,7 @@
 import { clearUserPopCredentialId, getUserById } from '@/db/user';
 import type { Config, Context } from '@netlify/functions';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
+import { withSentry } from './utils/sentry';
 
 async function handler(request: AuthenticatedRequest, _context: Context) {
   if (request.method !== 'POST') {
@@ -45,7 +46,7 @@ async function handler(request: AuthenticatedRequest, _context: Context) {
   );
 }
 
-export default withAuth(handler);
+export default withSentry(withAuth(handler));
 
 export const config: Config = {
   path: '/api/idos-credential/clear',

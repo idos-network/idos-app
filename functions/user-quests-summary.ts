@@ -2,6 +2,8 @@ import { getUserQuestsSummary } from '@/db/user-quests';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
 async function getUserQuestsSummaryHandler(
   request: AuthenticatedRequest,
@@ -32,12 +34,13 @@ async function getUserQuestsSummaryHandler(
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    Sentry.captureException(error);
     console.error('Error in user-quests-summary:', error);
     throw error;
   }
 }
 
-export default withAuth(getUserQuestsSummaryHandler);
+export default withSentry(withAuth(getUserQuestsSummaryHandler));
 
 export const config: Config = {
   path: '/api/user-quests/:userId/summary',

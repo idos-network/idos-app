@@ -1,8 +1,10 @@
 import { getUserById } from '@/db/user';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
-export default async (_request: Request, context: Context) => {
+export default withSentry(async (_request: Request, context: Context) => {
   const { userId } = context.params;
 
   if (!userId) {
@@ -30,10 +32,11 @@ export default async (_request: Request, context: Context) => {
       { status: 200 },
     );
   } catch (error) {
+    Sentry.captureException(error);
     console.error('Error in user-get:', error);
     throw error;
   }
-};
+});
 
 export const config: Config = {
   path: '/api/user/:userId',

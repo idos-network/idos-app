@@ -2,6 +2,8 @@ import { getUserQuests } from '@/db/user-quests';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
 async function getUserQuestsHandler(
   request: AuthenticatedRequest,
@@ -32,12 +34,13 @@ async function getUserQuestsHandler(
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    Sentry.captureException(error);
     console.error('Error in user-quests-get:', error);
     throw error;
   }
 }
 
-export default withAuth(getUserQuestsHandler);
+export default withSentry(withAuth(getUserQuestsHandler));
 
 export const config: Config = {
   path: '/api/user-quests/:userId',

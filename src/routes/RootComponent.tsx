@@ -18,6 +18,8 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import AccessRestricted from './AccessRestricted';
 import MobileRestricted from './MobileRestricted';
 import { RootDocument } from './RootDocument';
+import { env } from '@/env';
+import LockdownMode from './LockdownMode';
 
 export function RootComponent() {
   const isMobile = useIsMobile();
@@ -30,6 +32,14 @@ export function RootComponent() {
     return (
       <RootDocument>
         <AccessRestricted />
+      </RootDocument>
+    );
+  }
+
+  if (env.VITE_LOCKDOWN_MODE === 'true') {
+    return (
+      <RootDocument>
+        <LockdownMode />
       </RootDocument>
     );
   }

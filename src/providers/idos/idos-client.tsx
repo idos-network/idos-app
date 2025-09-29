@@ -10,6 +10,9 @@ import { _idOSClient, useIdosStore } from '@/stores/idosStore';
 import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 import { useQuery } from '@tanstack/react-query';
 import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
+import { useHasStakingCredential } from '@/components/onboarding/OnboardingStepper';
+import { useCompleteQuest } from '@/hooks/useCompleteQuest';
+import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 
 const useSigner = () => {
   const walletConnector = useContext(WalletConnectorContext);
@@ -72,11 +75,15 @@ const useSigner = () => {
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const { data: signer, isLoading: isLoadingSigner } = useSigner();
-  const { authenticate, isAuthenticated } = useAuth();
-
+  const { authenticate, isAuthenticated, isLoading: isLoadingAuth } = useAuth();
+  const { data: stakingCreds } = useHasStakingCredential();
   const { idOSClient, setIdOSClient, initializing, setSettingSigner } =
     useIdosStore();
-
+  const { completeQuest } = useCompleteQuest();
+  const {
+    isCompleted: profileQuestCompleted,
+    isLoading: isLoadingProfileQuest,
+  } = useProfileQuestCompleted();
   useEffect(() => {
     if (idOSClient || !signer || isLoadingSigner) return;
 
@@ -122,6 +129,33 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     // Removing wallet dependencies to prevent reinitialization on connection failures
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer, isLoadingSigner, idOSClient]);
+
+  useEffect(() => {
+    if (!idOSClient || isLoadingAuth || isAuthenticated) return;
+    if (idOSClient.state === 'logged-in') {
+      authenticate();
+    }
+  }, [idOSClient, authenticate, isAuthenticated, isLoadingAuth]);
+
+  useEffect(() => {
+    if (!idOSClient || isLoadingAuth || isLoadingProfileQuest) return;
+    if (idOSClient.state !== 'logged-in') return;
+
+    const hasStakingCredential =
+      Array.isArray(stakingCreds) && !!stakingCreds?.length;
+    if (isAuthenticated && hasStakingCredential && !profileQuestCompleted) {
+      console.log('completeQuest', idOSClient!.user.id);
+      completeQuest(idOSClient!.user.id, 'create_idos_profile');
+    }
+  }, [
+    idOSClient,
+    authenticate,
+    isAuthenticated,
+    isLoadingProfileQuest,
+    isLoadingAuth,
+    profileQuestCompleted,
+    stakingCreds,
+  ]);
 
   if (initializing) {
     return (

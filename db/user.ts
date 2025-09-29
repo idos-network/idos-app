@@ -6,16 +6,28 @@ import { db, users } from './index';
 import {
   createReferral,
   getUserReferralCount,
+  getUserReferralCode,
   updateReferralCount,
 } from './referrals';
 import { getUserQuestsSummary } from './user-quests';
+import { getUserName } from 'functions/utils/get-user-name';
 
 export async function saveUser(data: any, name: string) {
   const user = saveUserSchema.parse(data);
 
   await createReferral(user.id);
-  if (user.referrerCode && user.referrerCode !== '') {
-    await updateReferralCount(user.referrerCode);
+
+  const dbUser = await getUserById(user.id);
+  const userReferralCode = await getUserReferralCode(user.id);
+
+  if (dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== '') {
+    if (
+      user.referrerCode &&
+      user.referrerCode !== '' &&
+      user.referrerCode !== userReferralCode
+    ) {
+      await updateReferralCount(user.referrerCode);
+    }
   }
 
   return await db
@@ -52,11 +64,32 @@ export async function updateUser(data: any) {
   const user = saveUserSchema.parse(data);
 
   await createReferral(user.id);
-  if (user.referrerCode && user.referrerCode !== '') {
-    await updateReferralCount(user.referrerCode);
+
+  const dbUser = await getUserById(user.id);
+  const userReferralCode = await getUserReferralCode(user.id);
+
+  if (dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== '') {
+    if (
+      user.referrerCode &&
+      user.referrerCode !== '' &&
+      user.referrerCode !== userReferralCode
+    ) {
+      await updateReferralCount(user.referrerCode);
+    }
   }
 
   return await db.update(users).set(user).where(eq(users.id, user.id));
+}
+
+export async function setUserName(userId: string) {
+  const user = await getUserById(userId);
+
+  if (user[0]?.name && user[0].name !== '') {
+    return;
+  }
+
+  const name = await getUserName(userId);
+  return await db.update(users).set({ name }).where(eq(users.id, userId));
 }
 
 export async function setUserPopCredentialId(
