@@ -10,6 +10,7 @@ import { Pool } from '@neondatabase/serverless';
 export default async (request: Request, context: Context) => {
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
   const db = drizzle(pool);
+
   try {
     if (request.method !== 'POST') {
       return new Response(
@@ -117,7 +118,7 @@ export default async (request: Request, context: Context) => {
       recipientEncryptionPublicKey: recipientEncryptionPublicKey,
     };
 
-    const dwgParams = {
+     const dwgParams = {
       id: idOSDWG.delegatedWriteGrant.id,
       ownerWalletIdentifier:
         idOSDWG.delegatedWriteGrant.owner_wallet_identifier,
@@ -132,17 +133,22 @@ export default async (request: Request, context: Context) => {
 
     await db.transaction(async (tx: any) => {
       await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
+    
+      try {
+        const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
+          credentialParams,
+          dwgParams,
+        );
 
-      const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
-        credentialParams,
-        dwgParams,
-      );
+        if (!result.originalCredential.id) {
+          console.log(result);
+        }
 
-      if (!result.originalCredential.id) {
-        console.log(result);
+        await setUserPopCredentialId(userId, result.originalCredential.id);
+      } catch (e) {
+        console.log('DWG params on error:', dwgParams);
+        throw e;
       }
-
-      await setUserPopCredentialId(userId, result.originalCredential.id);
     });
 
     return new Response(
@@ -153,6 +159,7 @@ export default async (request: Request, context: Context) => {
       { status: 200 },
     );
   } catch(err) {
+
     console.log(err);
   }
   finally {
