@@ -1,8 +1,10 @@
 import CloseIcon from '@/components/icons/close';
 import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
+import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { type IdosWallet } from '@/interfaces/idos-profile';
 import { useEffect, useRef, useState } from 'react';
+import { useWalletConnector } from '@/hooks/useWalletConnector';
 
 interface WalletDeleteModalProps {
   isOpen: boolean;
@@ -21,9 +23,14 @@ export function WalletDeleteModal({
   onError,
 }: WalletDeleteModalProps) {
   const { idOSClient } = useIdOS();
+  const { mainEvm } = useUserMainEvm();
+  const { connectedWallet } = useWalletConnector();
   const [isDeleting, setIsDeleting] = useState(false);
   const [_error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  const isPrimaryWallet = wallet?.address === mainEvm;
+  const isConnectedWallet = wallet?.address === connectedWallet?.address;
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -47,7 +54,7 @@ export function WalletDeleteModal({
   }, [isOpen, onClose]);
 
   const handleDeleteWallet = async () => {
-    if (!wallet) return;
+    if (!wallet || isPrimaryWallet || isConnectedWallet) return;
     setIsDeleting(true);
     setError(null);
     try {
@@ -70,6 +77,8 @@ export function WalletDeleteModal({
   };
 
   if (!isOpen || !wallet) return null;
+
+  const deletionBlocked = isPrimaryWallet || isConnectedWallet;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -112,11 +121,19 @@ export function WalletDeleteModal({
           ) : (
             <div className="space-y-6">
               <div className="gap-2 flex flex-col">
-                <p className="text-neutral-400 text-sm font-['Inter']">
-                  Do you want to delete this wallet from the idOS?
-                  <br />
-                  This action cannot be undone.
-                </p>
+                {deletionBlocked ? (
+                  <p className="text-neutral-400 text-sm font-['Inter']">
+                    {isPrimaryWallet
+                      ? 'You cannot delete your primary wallet. Please set another wallet as primary first.'
+                      : 'You cannot delete the wallet currently connected. Disconnect or switch wallets first.'}
+                  </p>
+                ) : (
+                  <p className="text-neutral-400 text-sm font-['Inter']">
+                    Do you want to delete this wallet from the idOS?
+                    <br />
+                    This action cannot be undone.
+                  </p>
+                )}
                 <div className="px-3 py-2 rounded-md bg-neutral-800 text-sm font-mono text-neutral-300">
                   {wallet.address}
                 </div>
@@ -131,8 +148,12 @@ export function WalletDeleteModal({
                 </button>
                 <button
                   onClick={handleDeleteWallet}
-                  className="px-4 py-2 bg-neutral-700/70 text-[#EA8E8F] hover:bg-neutral-700 rounded-lg transition-colors"
-                  disabled={isDeleting}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    deletionBlocked
+                      ? 'bg-neutral-700/30 text-neutral-500 cursor-not-allowed'
+                      : 'bg-neutral-700/70 text-[#EA8E8F] hover:bg-neutral-700'
+                  }`}
+                  disabled={isDeleting || deletionBlocked}
                 >
                   Delete
                 </button>
