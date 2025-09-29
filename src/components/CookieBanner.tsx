@@ -5,7 +5,7 @@ import SmallSecondaryButton from './SmallSecondaryButton';
 const CookieBanner = () => {
   const { consent, isLoading, updateConsent } = useCookieConsent();
 
-  const handleCookie = (accepted: boolean) => {
+  const handleCookie = (accepted: number) => {
     updateConsent(accepted);
   };
 
@@ -54,11 +54,14 @@ const CookieBanner = () => {
         </div>
 
         <div className="cookies_banner-buttons flex gap-3 items-center">
-          <SmallSecondaryButton onClick={() => handleCookie(false)}>
+          <SmallSecondaryButton onClick={() => handleCookie(0)}>
             <p>Decline</p>
           </SmallSecondaryButton>
-          <SmallPrimaryButton onClick={() => handleCookie(true)}>
-            <p>Accept</p>
+          <SmallPrimaryButton onClick={() => handleCookie(2)}>
+            <p>Accept all</p>
+          </SmallPrimaryButton>
+          <SmallPrimaryButton onClick={() => handleCookie(1)}>
+            <p>Accept essential</p>
           </SmallPrimaryButton>
         </div>
       </div>
