@@ -4,8 +4,9 @@ import type { Config, Context } from '@netlify/functions';
 import nacl from 'tweetnacl';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool } from '@neondatabase/serverless';
+import { withSentry } from './utils/sentry';
 
-export default async (request: Request, context: Context) => {
+export default withSentry(async (request: Request, context: Context) => {
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
   const db = drizzle(pool);
 
@@ -74,8 +75,8 @@ export default async (request: Request, context: Context) => {
         await idOSIssuerInstance.createUserProfile(user);
       }
 
-      if(!await idOSIssuerInstance.hasProfile(wallet.address)) {
-        await idOSIssuerInstance.upsertWalletAsInserter({...wallet, user_id: userId});
+      if (!await idOSIssuerInstance.hasProfile(wallet.address)) {
+        await idOSIssuerInstance.upsertWalletAsInserter({ ...wallet, user_id: userId });
       }
     });
 
@@ -91,7 +92,7 @@ export default async (request: Request, context: Context) => {
     // Ensure pool is closed after request
     context.waitUntil(pool.end());
   }
-};
+});
 
 export const config: Config = {
   path: '/api/idos-profile',

@@ -1,7 +1,8 @@
 import { idOSConsumer } from "@/config/consumer.config";
 import type { Config, Context } from "@netlify/functions";
+import { withSentry } from "./utils/sentry";
 
-export default async function handler(request: Request, _context: Context) {
+export default withSentry(async (request: Request, _context: Context) => {
   const userId = request.url.split("?")[1].split("=")[1];
 
   if (!userId) {
@@ -48,8 +49,7 @@ export default async function handler(request: Request, _context: Context) {
     verificationResult,
     credentialId: usableCredential.id,
   }), { status: 200 });
-}
-
+});
 
 export const config: Config = {
   path: "/api/get-shared-credential",

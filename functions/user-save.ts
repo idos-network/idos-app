@@ -2,6 +2,8 @@ import { saveUser } from '@/db/user';
 import type { Config, Context } from '@netlify/functions';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 import { getUserName } from './utils/get-user-name';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
 async function saveUserHandler(
   request: AuthenticatedRequest,
@@ -28,13 +30,14 @@ async function saveUserHandler(
     });
   } catch (error) {
     console.error('Error in user-save:', error);
+    Sentry.captureException(error);
     return new Response(JSON.stringify({ error: 'Failed to save user' }), {
       status: 500,
     });
   }
 }
 
-export default withAuth(saveUserHandler);
+export default withSentry(withAuth(saveUserHandler));
 
 export const config: Config = {
   path: '/api/user/save',

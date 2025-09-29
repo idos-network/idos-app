@@ -4,6 +4,7 @@ import {
   getLeaderboardUserPosition,
 } from '@/db/leaderboard';
 import type { Config } from '@netlify/functions';
+import { withSentry } from './utils/sentry';
 
 export interface LeaderboardEntry {
   id: string;
@@ -52,7 +53,7 @@ async function getPaginatedLeaderboard(
   };
 }
 
-export default async (request: Request) => {
+export default withSentry(async (request: Request) => {
   const url = new URL(request.url);
   const userId = url.searchParams.get('userId');
   const limitParam = url.searchParams.get('limit');
@@ -104,7 +105,7 @@ export default async (request: Request) => {
     }),
     { status: 200 },
   );
-};
+});
 
 export const config: Config = {
   path: '/api/leaderboard',

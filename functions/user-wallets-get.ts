@@ -2,6 +2,7 @@ import { getUserWallets } from '@/db/user-wallets';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
+import { withSentry } from './utils/sentry';
 
 async function getUserWalletsHandler(
   request: AuthenticatedRequest,
@@ -37,7 +38,7 @@ async function getUserWalletsHandler(
   }
 }
 
-export default withAuth(getUserWalletsHandler);
+export default withSentry(withAuth(getUserWalletsHandler));
 
 export const config: Config = {
   path: '/api/user-wallets/:userId',

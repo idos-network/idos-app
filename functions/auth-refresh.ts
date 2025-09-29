@@ -8,8 +8,9 @@ import {
   JWT_SECRET,
   REFRESH_TOKEN_EXPIRES_IN,
 } from './utils/constants';
+import { withSentry } from './utils/sentry';
 
-export default async function handler(request: Request, _context: Context) {
+export default withSentry(async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
@@ -131,7 +132,7 @@ export default async function handler(request: Request, _context: Context) {
       },
     );
   }
-}
+});
 
 export const config: Config = {
   path: '/api/auth/refresh',

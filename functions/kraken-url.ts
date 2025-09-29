@@ -1,13 +1,14 @@
 import type { Config, Context } from "@netlify/functions";
 import jwt from "jsonwebtoken";
 import invariant from "tiny-invariant";
+import { withSentry } from "./utils/sentry";
 
 const krakenApiUrl = process.env.KRAKEN_API_URL as string;
 const krakenClientId = process.env.KRAKEN_CLIENT_ID as string;
 const krakenLevel = process.env.KRAKEN_LEVEL as string;
 const krakenPrivateKey = process.env.KRAKEN_PRIVATE_KEY?.replace(/\\n/g, '\n') as string;
 
-export default async (request: Request, _context: Context) => {
+export default withSentry(async (request: Request, _context: Context) => {
   const connectedWallet = request.url.split("?")[1].split("=")[1];
   invariant(krakenApiUrl, "`KRAKEN_API_URL` is not set");
   invariant(krakenClientId, "`KRAKEN_CLIENT_ID` is not set");
@@ -29,7 +30,7 @@ export default async (request: Request, _context: Context) => {
     console.error('Error in kraken-url:', error);
     throw error;
   }
-}
+});
 
 export const config: Config = {
   path: '/api/kraken-url',

@@ -6,8 +6,10 @@ import { encode as utf8Encode } from '@stablelib/utf8';
 import nacl from 'tweetnacl';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool } from '@neondatabase/serverless';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
-export default async (request: Request, context: Context) => {
+export default withSentry(async (request: Request, context: Context) => {
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
   const db = drizzle(pool);
   try {
@@ -152,14 +154,15 @@ export default async (request: Request, context: Context) => {
       }),
       { status: 200 },
     );
-  } catch(err) {
+  } catch (err) {
+    Sentry.captureException(err);
     console.log(err);
   }
   finally {
     // Ensure pool is closed after request
     context.waitUntil(pool.end());
-  } 
-};
+  }
+});
 
 export const config: Config = {
   path: '/api/idos-credential',
