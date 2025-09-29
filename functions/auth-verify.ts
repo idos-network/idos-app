@@ -9,8 +9,10 @@ import {
   JWT_SECRET,
   REFRESH_TOKEN_EXPIRES_IN,
 } from './utils/constants';
+import { withSentry } from './utils/sentry';
+import * as Sentry from "@sentry/aws-serverless";
 
-export default async function handler(request: Request, _context: Context) {
+export default withSentry(async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
@@ -143,6 +145,7 @@ export default async function handler(request: Request, _context: Context) {
     );
   } catch (error) {
     console.error('Error in auth-verify:', error);
+    Sentry.captureException(error);
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
@@ -153,7 +156,7 @@ export default async function handler(request: Request, _context: Context) {
       },
     );
   }
-}
+});
 
 export const config: Config = {
   path: '/api/auth/verify',

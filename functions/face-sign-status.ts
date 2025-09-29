@@ -2,8 +2,9 @@ import { getUserById } from '@/db/user';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
 import { createResponse } from './utils/response';
+import { withSentry } from './utils/sentry';
 
-export default async (_request: Request, context: Context) => {
+export default withSentry(async (_request: Request, context: Context) => {
   const { userId } = context.params;
 
   if (!userId) {
@@ -20,7 +21,7 @@ export default async (_request: Request, context: Context) => {
     // If true liveness was enrolled and we should ask for DWG
     faceSignDone: user.faceSignUserId !== null,
   }, 200);
-};
+});
 
 export const config: Config = {
   path: '/api/face-sign/:userId/status',

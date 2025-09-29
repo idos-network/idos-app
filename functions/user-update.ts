@@ -2,6 +2,7 @@ import { updateUser } from '@/db/user';
 import type { Config, Context } from '@netlify/functions';
 import { idOSUserSchema } from '@/interfaces/user';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
+import { withSentry } from './utils/sentry';
 
 async function updateUserHandler(
   request: AuthenticatedRequest,
@@ -33,7 +34,7 @@ async function updateUserHandler(
   }
 }
 
-export default withAuth(updateUserHandler);
+export default withSentry(withAuth(updateUserHandler));
 
 export const config: Config = {
   path: '/api/user/update',

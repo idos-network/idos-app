@@ -1,7 +1,8 @@
 import { saveUserUnauth } from '@/db/user';
 import type { Config, Context } from '@netlify/functions';
+import { withSentry } from './utils/sentry';
 
-export default async (request: Request, _context: Context) => {
+export default withSentry(async (request: Request, _context: Context) => {
   try {
     const data = await request.json();
 
@@ -24,7 +25,7 @@ export default async (request: Request, _context: Context) => {
     console.error('Error in user-save-unauth:', error);
     throw error;
   }
-};
+});
 
 export const config: Config = {
   path: '/api/user/save-unauth',
