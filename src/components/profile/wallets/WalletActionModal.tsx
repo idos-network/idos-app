@@ -5,6 +5,7 @@ import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { type IdosWallet } from '@/interfaces/idos-profile';
 import { useEffect, useRef, useState } from 'react';
 import { WalletDeleteModal } from './WalletDeleteModal';
+import { useWalletConnector } from '@/hooks/useWalletConnector';
 
 interface WalletActionModalProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ export function WalletActionModal({
   const { showToast } = useToast();
   const { mainEvm } = useUserMainEvm();
   const idOSLoggedIn = useIdOSLoggedIn();
+  const { connectedWallet } = useWalletConnector();
   const selectedWallet: IdosWallet | undefined = wallets.find(
     (wallet) => wallet.id === walletId,
   );
@@ -37,6 +39,10 @@ export function WalletActionModal({
   const shouldShowSetPrimaryButton =
     selectedWallet?.wallet_type?.toLowerCase() === 'evm' &&
     selectedWallet?.address !== mainEvm;
+
+  const isPrimaryWallet = selectedWallet?.address === mainEvm;
+  const isConnectedWallet =
+    selectedWallet?.address === connectedWallet?.address;
 
   useEffect(() => {
     if (isOpen) {
@@ -117,10 +123,17 @@ export function WalletActionModal({
             )}
             <button
               onClick={() => {
-                setIsDeleteModalOpen(true);
-                onClose();
+                if (!isPrimaryWallet && !isConnectedWallet) {
+                  setIsDeleteModalOpen(true);
+                  onClose();
+                }
               }}
-              className="w-full px-3 text-left text-[#EB9595] hover:bg-idos-grey3 transition-colors text-sm font-semibold h-10 cursor-pointer"
+              className={`w-full px-3 text-left text-sm font-semibold h-10 transition-colors ${
+                isPrimaryWallet || isConnectedWallet
+                  ? 'text-neutral-500 cursor-not-allowed'
+                  : 'text-[#EB9595] hover:bg-idos-grey3 cursor-pointer'
+              }`}
+              disabled={isPrimaryWallet || isConnectedWallet}
             >
               Delete
             </button>

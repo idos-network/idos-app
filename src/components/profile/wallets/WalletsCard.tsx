@@ -1,7 +1,6 @@
 import FaceSignTag from '@/components/NotaBank/components/FaceSignTag';
 import { isProduction } from '@/env';
 import { useUserMainEvm } from '@/hooks/useUserMainEvm';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
 import InfoIcon from '@/icons/info';
 import MoreVertIcon from '@/icons/more-vert';
 import type { IdosWallet } from '@/interfaces/idos-profile';
@@ -31,7 +30,6 @@ export const useUserWallets = () => {
 
 export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
   const { data: wallets = [], isLoading, error, refetch } = useUserWallets();
-  const { connectedWallet } = useWalletConnector();
   const { mainEvm } = useUserMainEvm();
   const [actionModalPosition, setActionModalPosition] = useState<{
     x: number;
@@ -48,12 +46,6 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
 
   if (isLoading) return null;
   if (error) return <div>Error: {error.message}</div>;
-
-  const isWalletConnected = (wallet: any) => {
-    if (!connectedWallet) return false;
-
-    return wallet.address === connectedWallet.address;
-  };
 
   return (
     <div className="flex h-full flex-col w-fit min-w-full gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
@@ -103,7 +95,6 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
           <tbody>
             {wallets.map((wallet, index) => {
               const isLastRow = index === wallets.length - 1;
-              const isConnected = isWalletConnected(wallet);
 
               return (
                 <tr
@@ -171,7 +162,6 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
                   <td className="w-1/12 px-4">
                     <button
                       onClick={(e) => {
-                        if (isConnected || wallet.address === mainEvm) return;
                         const rect = e.currentTarget.getBoundingClientRect();
                         setActionModalPosition({
                           x: rect.right + 5,
@@ -180,12 +170,7 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
                         setSelectedWalletId(wallet.id);
                         setIsActionModalOpen(true);
                       }}
-                      className={`rounded-md p-2 transition-colors ${
-                        isConnected || wallet.address === mainEvm
-                          ? 'text-neutral-500 cursor-not-allowed'
-                          : 'text-neutral-200 hover:bg-idos-grey2 cursor-pointer'
-                      }`}
-                      disabled={isConnected || wallet.address === mainEvm}
+                      className="rounded-md p-2 transition-colors text-neutral-200 hover:bg-idos-grey2 cursor-pointer"
                     >
                       <MoreVertIcon className="w-4 h-4" />
                     </button>
