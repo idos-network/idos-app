@@ -3,7 +3,7 @@ import { randomBytes } from 'crypto';
 import * as Sentry from "@sentry/aws-serverless";
 import { withSentry } from './utils/sentry';
 
-export default withSentry<Response>(async (request: Request, _context: Context) => {
+export default withSentry(async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
