@@ -24,7 +24,8 @@ export function useCookieConsent() {
         // First check localStorage
         const localConsent = localStorage.getItem('cookieConsent');
         if (localConsent) {
-          const parsedConsent = JSON.parse(localConsent);
+          const parsedConsentString = JSON.parse(localConsent);
+          const parsedConsent = parsedConsentString === 'true' ? 1 : 0;
           setConsent(parsedConsent);
 
           // If user is logged in and consent is a valid number, sync with backend
