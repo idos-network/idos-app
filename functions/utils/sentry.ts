@@ -3,7 +3,8 @@ import * as Sentry from "@sentry/aws-serverless";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
-  tracesSampleRate: 1.0, // nebo míň v produkci
+  tracesSampleRate: 1.0, // or less in prod
+  ignoreErrors: ["Possible function timeout: undefined"], // This is because of neon & drizzle
 });
 
 
