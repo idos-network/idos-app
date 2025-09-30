@@ -2,10 +2,10 @@ import type { Config, Context } from "@netlify/functions";
 import { createResponse } from "./utils/response";
 
 export default async (_request: Request, _context: Context) => {
-  const publicKeys = process.env.ISSUER_SIGNING_PUBLIC_KEYS?.split(',').map(k => k.trim());
+  const publicKeys = process.env.VITE_ISSUER_SIGNING_PUBLIC_KEYS?.split(',').map(k => k.trim());
 
   if (!publicKeys || publicKeys.length === 0) {
-    throw new Error("ISSUER_SIGNING_PUBLIC_KEYS is not set");
+    throw new Error("VITE_ISSUER_SIGNING_PUBLIC_KEYS is not set");
   }
 
   const keyCount = publicKeys.length;
