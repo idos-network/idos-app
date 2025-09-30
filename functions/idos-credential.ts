@@ -140,7 +140,7 @@ export default withSentry(async (request: Request, context: Context) => {
 
     await db.transaction(async (tx: any) => {
       // https://neon.com/guides/rate-limiting
-      await tx.execute("SELECT pg_advisory_xact_lock(hashtex('idos_issuer_key'))");
+      await tx.execute("SELECT pg_advisory_xact_lock(hashtext('idos_issuer_key'))");
 
       try {
         const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
