@@ -8,7 +8,10 @@ export default withSentry(async (_request: Request, context: Context) => {
   const { userId } = context.params;
 
   if (!userId) {
-    throw new UserNotFoundError(userId);
+    return createResponse({
+      error: true,
+      errorMessage: "User was not found.",
+    }, 400);
   }
 
   const user = await getUserById(userId).then(res => res[0]);
