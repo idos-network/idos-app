@@ -20,8 +20,8 @@ export async function handleDWGCredential(
     setState('idle');
     setLoading(true);
 
-
-    const delegatedWriteGrant: DWG = await createDWG(wallet.type === 'xrpl' ? wallet.address : wallet.publicKey,
+    const delegatedWriteGrant: DWG = await createDWG(
+      wallet.type === 'xrpl' ? wallet.address : wallet.publicKey,
       env.VITE_GRANTEE_WALLET_ADDRESS,
       env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
     );
