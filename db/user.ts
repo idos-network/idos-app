@@ -28,7 +28,6 @@ export async function saveUser(data: any, name: string) {
 
   if (checkDBReferrerCode) {
     if (checkUserReferrerCode) {
-      console.log('updateReferralCount', user.referrerCode);
       await updateReferralCount(user.referrerCode!);
     }
   }
