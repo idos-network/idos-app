@@ -12,6 +12,12 @@ import * as Sentry from '@sentry/aws-serverless';
 export default withSentry(async (request: Request, context: Context) => {
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
   const db = drizzle(pool);
+
+  pool.on("error", (err) => {
+    Sentry.captureException(err);
+    console.error("Unexpected error on idle client", err);
+  });
+
   try {
     if (request.method !== 'POST') {
       return new Response(
@@ -154,9 +160,6 @@ export default withSentry(async (request: Request, context: Context) => {
       }),
       { status: 200 },
     );
-  } catch (err) {
-    Sentry.captureException(err);
-    console.log(err);
   }
   finally {
     // Ensure pool is closed after request
