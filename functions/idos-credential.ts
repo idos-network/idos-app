@@ -141,16 +141,22 @@ export default withSentry(async (request: Request, context: Context) => {
     await db.transaction(async (tx: any) => {
       await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
 
-      const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
-        credentialParams,
-        dwgParams,
-      );
+      try {
+        const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
+          credentialParams,
+          dwgParams,
+        );
 
-      if (!result.originalCredential.id) {
-        console.log(result);
+        if (!result.originalCredential.id) {
+          console.log(result);
+          throw new Error('Credential creation failed');
+        }
+
+        await setUserPopCredentialId(userId, result.originalCredential.id);
+      } catch (e) {
+        console.log('DWG params on error:', dwgParams);
+        throw e;
       }
-
-      await setUserPopCredentialId(userId, result.originalCredential.id);
     });
 
     return new Response(
@@ -159,6 +165,17 @@ export default withSentry(async (request: Request, context: Context) => {
         message: 'Credential created successfully',
       }),
       { status: 200 },
+    );
+  } catch (err) {
+    Sentry.captureException(err);
+    console.log(err);
+
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'An error occurred while creating the credential.',
+      }),
+      { status: 500 },
     );
   }
   finally {

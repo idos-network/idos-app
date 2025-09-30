@@ -5,7 +5,7 @@ import { withSentry } from './utils/sentry';
 import * as Sentry from '@sentry/aws-serverless';
 
 const cookieConsentSchema = z.object({
-  accepted: z.boolean(),
+  accepted: z.number().min(0).max(2),
 });
 
 export default withSentry(async (request: Request, context: Context) => {
@@ -15,7 +15,7 @@ export default withSentry(async (request: Request, context: Context) => {
 
     if (!userId) {
       return new Response(JSON.stringify({ error: 'User ID is required' }), {
-        status: 400
+        status: 400,
       });
     }
 
@@ -24,13 +24,16 @@ export default withSentry(async (request: Request, context: Context) => {
   } catch (error) {
     Sentry.captureException(error);
     console.error('Error in user-cookie-consent-save:', error);
-    return new Response(JSON.stringify({ error: 'Failed to save cookie consent' }), {
-      status: 500
-    });
+    return new Response(
+      JSON.stringify({ error: 'Failed to save cookie consent' }),
+      {
+        status: 500,
+      },
+    );
   }
 });
 
 export const config: Config = {
-  path: '/api/user/:userId/cookie-consent',
+  path: '/api/user/:userId/cookie-consent-save',
   method: 'POST',
 };

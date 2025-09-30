@@ -7,7 +7,7 @@ import { useUserId } from '@/hooks/useUserId';
 
 export function useCookieConsent() {
   const userIdQuery = useUserId();
-  const [consent, setConsent] = useState<boolean | null>(null);
+  const [consent, setConsent] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,10 +24,11 @@ export function useCookieConsent() {
         // First check localStorage
         const localConsent = localStorage.getItem('cookieConsent');
         if (localConsent) {
-          const parsedConsent = JSON.parse(localConsent);
+          const parsedConsentString = JSON.parse(localConsent);
+          const parsedConsent = parsedConsentString === 'true' ? 1 : 0;
           setConsent(parsedConsent);
 
-          // If user is logged in and consent is a valid boolean, sync with backend
+          // If user is logged in and consent is a valid number, sync with backend
           if (
             userId &&
             !userLoading &&
@@ -69,13 +70,13 @@ export function useCookieConsent() {
   }, [userId, userLoading]);
 
   const updateConsent = useCallback(
-    async (accepted: boolean) => {
+    async (accepted: number) => {
       try {
         // Update local state and localStorage immediately
         setConsent(accepted);
         localStorage.setItem('cookieConsent', JSON.stringify(accepted));
 
-        // Sync with backend if user is logged in and consent is a valid boolean
+        // Sync with backend if user is logged in and consent is a valid number
         if (
           userId &&
           !userLoading &&

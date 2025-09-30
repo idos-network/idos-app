@@ -208,7 +208,7 @@ export async function getUserPoints(userId: string): Promise<{
   return { questPoints, socialPoints, contributionPoints, totalPoints };
 }
 
-export async function saveUserCookieConsent(userId: string, accepted: boolean) {
+export async function saveUserCookieConsent(userId: string, accepted: number) {
   return await db
     .update(users)
     .set({
@@ -220,7 +220,7 @@ export async function saveUserCookieConsent(userId: string, accepted: boolean) {
 
 export async function getUserCookieConsent(
   userId: string,
-): Promise<boolean | null> {
+): Promise<number | null> {
   const result = await db
     .select({
       cookieConsent: users.cookieConsent,
