@@ -49,6 +49,7 @@ export const useHasStakingCredential = () => {
         const result = await idOSClient.filterCredentials({
           acceptedIssuers: [
             {
+              // TODO: We have mutliple issuers, we should check all of them
               authPublicKey: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
             },
           ],
@@ -87,8 +88,8 @@ export const useHasFaceSign = () => {
     queryFn: () => {
       return userId
         ? getUserById(userId)
-            .then((res) => !!res[0].faceSignUserId)
-            .catch(() => null)
+          .then((res) => !!res[0].faceSignUserId)
+          .catch(() => null)
         : null;
     },
     enabled: !!userId,

@@ -62,7 +62,7 @@ export function CookieProvider({ children }: CookieProviderProps) {
         if (typeof parsedConsentString === 'number') {
           parsedConsent = parsedConsentString;
         } else {
-          parsedConsent = parsedConsentString === true ? 2 : 0;
+          parsedConsent = parsedConsentString === true ? 1 : 0;
         }
 
         setConsent(parsedConsent);

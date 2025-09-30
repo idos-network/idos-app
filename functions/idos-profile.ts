@@ -1,35 +1,33 @@
 import { idOSProfileRequestSchema } from '@/interfaces/idos-profile';
-import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import type { Config, Context } from '@netlify/functions';
-import nacl from 'tweetnacl';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool } from '@neondatabase/serverless';
 import { withSentry } from './utils/sentry';
 import * as Sentry from '@sentry/aws-serverless';
+import { issuerWithKey } from './utils/idos-issuer';
 
 export default withSentry(async (request: Request, context: Context) => {
+  if (request.method !== 'POST') {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'Method not allowed. Use POST.',
+      }),
+      {
+        status: 405,
+      },
+    );
+  }
+
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
+  const db = drizzle(pool);
 
   pool.on("error", (err) => {
     Sentry.captureException(err);
     console.error("Unexpected error on idle client", err);
   });
 
-  const db = drizzle(pool);
-
   try {
-    if (request.method !== 'POST') {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: 'Method not allowed. Use POST.',
-        }),
-        {
-          status: 405,
-        },
-      );
-    }
-
     const {
       userId,
       userEncryptionPublicKey,
@@ -40,17 +38,6 @@ export default withSentry(async (request: Request, context: Context) => {
       walletType,
       encryptionPasswordStore,
     } = idOSProfileRequestSchema.parse(await request.json());
-
-    const idOSIssuer = await idOSIssuerClass.init({
-      nodeUrl: process.env.VITE_IDOS_NODE_URL as string,
-      signingKeyPair: nacl.sign.keyPair.fromSecretKey(
-        Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
-      ),
-      encryptionSecretKey: Buffer.from(
-        process.env.ISSUER_ENCRYPTION_SECRET_KEY as string,
-        'hex',
-      ),
-    });
 
     const user = {
       id: userId,
@@ -74,8 +61,10 @@ export default withSentry(async (request: Request, context: Context) => {
     };
 
     await db.transaction(async (tx: any) => {
+      const { keyLock, idOSIssuer } = await issuerWithKey();
+
       // https://neon.com/guides/rate-limiting
-      await tx.execute("SELECT pg_advisory_xact_lock(hashtext('idos_issuer_key'))");
+      await tx.execute("SELECT pg_advisory_xact_lock(hashtext($1))", [keyLock]);
 
       if (!await idOSIssuer.getUser(userId).catch(() => null)) {
         const response = await idOSIssuer.createUserProfile(user);

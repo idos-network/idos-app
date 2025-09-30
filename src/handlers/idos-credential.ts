@@ -1,4 +1,5 @@
 import { createIdOSCredential } from '@/api/idos-credential';
+import { getTime } from '@/api/time';
 import { env } from '@/env';
 import type { IdosDWG } from '@/interfaces/idos-credential';
 import { signNearMessage } from '@/utils/near/near-signature';
@@ -19,7 +20,7 @@ export async function handleDWGCredential(
     setState('idle');
     setLoading(true);
 
-    const currentTimestamp = Date.now();
+    const currentTimestamp = await getTime();
     const currentDate = new Date(currentTimestamp);
     const notUsableAfter = new Date(currentTimestamp + 24 * 60 * 60 * 1000);
 

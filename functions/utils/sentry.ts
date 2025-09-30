@@ -9,3 +9,4 @@ Sentry.init({
 
 
 export const withSentry = Sentry.wrapHandler as unknown as <T = Response>(handler: (request: Request, context: Context) => Promise<T>) => (event: Request, context: Context) => Promise<T>;
+
