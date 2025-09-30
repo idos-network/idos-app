@@ -41,7 +41,9 @@ export async function saveUser(data: any, name: string) {
       set: {
         mainEvm: user.mainEvm,
         referrerCode:
-          dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== ''
+          dbUser[0]?.referrerCode &&
+          dbUser[0]?.referrerCode !== '' &&
+          dbUser[0]?.referrerCode !== userReferralCode
             ? dbUser[0].referrerCode
             : user.referrerCode,
         name: name,
@@ -84,7 +86,9 @@ export async function updateUser(data: any) {
   const updateData = {
     ...user,
     referrerCode:
-      dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== ''
+      dbUser[0]?.referrerCode &&
+      dbUser[0]?.referrerCode !== '' &&
+      dbUser[0]?.referrerCode !== userReferralCode
         ? dbUser[0].referrerCode
         : user.referrerCode,
   };
