@@ -1,4 +1,4 @@
-import { useCookieConsent } from '@/hooks/useCookieConsent';
+import { useCookieConsent } from '@/providers/cookie';
 import SmallPrimaryButton from './SmallPrimaryButton';
 import SmallSecondaryButton from './SmallSecondaryButton';
 import { useState } from 'react';
