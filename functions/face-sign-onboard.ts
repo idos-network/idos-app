@@ -35,7 +35,11 @@ export default withSentry(async (request: Request, context: Context) => {
   const json = await response.json();
 
   if (!response.ok) {
-    Sentry.captureException("FaceSign server error: " + response.statusText);
+    // 400 are expected errors from FaceTec, like bad scan
+    if (response.status >= 500) {
+      Sentry.captureException("FaceSign server error: " + response.statusText);
+    }
+
     return createResponse(
       {
         error: true,
