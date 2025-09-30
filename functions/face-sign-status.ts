@@ -3,9 +3,12 @@ import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
 import { createResponse } from './utils/response';
 import { withSentry } from './utils/sentry';
+import * as Sentry from "@sentry/aws-serverless";
 
 export default withSentry(async (_request: Request, context: Context) => {
   const { userId } = context.params;
+
+  Sentry.setUser({ id: userId ?? undefined });
 
   if (!userId) {
     throw new UserNotFoundError(userId);
