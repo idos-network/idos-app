@@ -5,7 +5,8 @@ import { z } from 'zod';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 import { handleDailyQuest } from './utils/quests';
 import { withSentry } from './utils/sentry';
-import * as Sentry from '@sentry/aws-serverless';
+import * as Sentry from './utils/sentry';
+import { QuestNotRepeatableError } from '@/utils/errors';
 
 const completeUserQuestRequestSchema = z.object({
   questName: z.string().min(1, 'questName is required'),
@@ -37,7 +38,10 @@ async function completeUserQuestHandler(
 
     if (questName === 'daily_check') {
       if (!handleDailyQuest(userQuests)) {
-        throw null;
+        return new Response(
+          JSON.stringify({ success: false, error: 'Daily quest already completed today' }),
+          { status: 409, headers: { 'Content-Type': 'application/json' } },
+        );
       }
     }
     const result = await completeUserQuest(userId, questName);
@@ -46,10 +50,29 @@ async function completeUserQuestHandler(
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch (error) {
-    Sentry.captureException(error);
-    console.error('Error in user-quests-complete:', error);
-    throw error;
+  } catch (error: unknown) {
+   
+
+    if (error instanceof QuestNotRepeatableError) {
+      return new Response(
+        JSON.stringify({ success: false, error: error.message }),
+        { status: 409, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+
+    if (error instanceof z.ZodError) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid request body', issues: error.issues }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+
+    // Only capture unexpected errors (500)
+    Sentry.captureException(error as Error);
+    return new Response(
+      JSON.stringify({ success: false, error: 'Internal Server Error' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } },
+    );
   }
 }
 
