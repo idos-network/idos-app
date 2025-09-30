@@ -5,8 +5,8 @@ import { z } from 'zod';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 import { handleDailyQuest } from './utils/quests';
 import { withSentry } from './utils/sentry';
-import * as Sentry from './utils/sentry';
 import { QuestNotRepeatableError } from '@/utils/errors';
+import * as Sentry from '@sentry/aws-serverless'; 
 
 const completeUserQuestRequestSchema = z.object({
   questName: z.string().min(1, 'questName is required'),
@@ -67,7 +67,7 @@ async function completeUserQuestHandler(
       );
     }
 
-    // Only capture unexpected errors (500)
+  
     Sentry.captureException(error as Error);
     return new Response(
       JSON.stringify({ success: false, error: 'Internal Server Error' }),
