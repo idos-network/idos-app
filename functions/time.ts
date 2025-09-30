@@ -1,6 +1,6 @@
 
 import type { Config, Context } from "@netlify/functions";
-export default async (request: Request, _context: Context) => {
+export default async (_request: Request, _context: Context) => {
 
 
   return new Response(JSON.stringify({
