@@ -7,6 +7,7 @@ import { Pool } from '@neondatabase/serverless';
 import { withSentry } from './utils/sentry';
 import * as Sentry from '@sentry/aws-serverless';
 import { issuerWithKey } from './utils/idos-issuer';
+import { sql } from 'drizzle-orm';
 
 export default withSentry(async (request: Request, context: Context) => {
   if (request.method !== 'POST') {
@@ -130,7 +131,9 @@ export default withSentry(async (request: Request, context: Context) => {
 
     await db.transaction(async (tx: any) => {
       // https://neon.com/guides/rate-limiting
-      await tx.execute("SELECT pg_advisory_xact_lock(hashtext($1))", [keyLock]);
+      await tx.execute(
+        sql`SELECT pg_advisory_xact_lock(hashtext(${keyLock}))`
+      );
 
       try {
         const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
