@@ -40,7 +40,10 @@ export async function saveUser(data: any, name: string) {
       target: users.id,
       set: {
         mainEvm: user.mainEvm,
-        referrerCode: user.referrerCode,
+        referrerCode:
+          dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== ''
+            ? dbUser[0].referrerCode
+            : user.referrerCode,
         name: name,
       },
     });
@@ -78,7 +81,15 @@ export async function updateUser(data: any) {
     }
   }
 
-  return await db.update(users).set(user).where(eq(users.id, user.id));
+  const updateData = {
+    ...user,
+    referrerCode:
+      dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== ''
+        ? dbUser[0].referrerCode
+        : user.referrerCode,
+  };
+
+  return await db.update(users).set(updateData).where(eq(users.id, user.id));
 }
 
 export async function setUserName(userId: string) {
