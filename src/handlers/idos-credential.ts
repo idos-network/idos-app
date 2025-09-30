@@ -1,7 +1,6 @@
 import { createIdOSCredential } from '@/api/idos-credential';
-import { createDWG } from '@/api/idos-credential-dwg';
 import { env } from '@/env';
-import type { DWG, IdosDWG } from '@/interfaces/idos-credential';
+import type { IdosDWG } from '@/interfaces/idos-credential';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
 import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
@@ -20,11 +19,20 @@ export async function handleDWGCredential(
     setState('idle');
     setLoading(true);
 
-    const delegatedWriteGrant: DWG = await createDWG(
-      wallet.type === 'xrpl' ? wallet.address : wallet.publicKey,
-      env.VITE_GRANTEE_WALLET_ADDRESS,
-      env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
-    );
+    const currentTimestamp = Date.now();
+    const currentDate = new Date(currentTimestamp);
+    const notUsableAfter = new Date(currentTimestamp + 24 * 60 * 60 * 1000);
+
+    const delegatedWriteGrant = {
+      owner_wallet_identifier:
+        wallet.type === 'xrpl' ? wallet.address : wallet.publicKey,
+      grantee_wallet_identifier: env.VITE_GRANTEE_WALLET_ADDRESS,
+      issuer_public_key: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
+      id: crypto.randomUUID(),
+      access_grant_timelock: currentDate.toISOString().replace(/.\d+Z$/g, 'Z'), // Need to cut milliseconds to have 2025-02-11T13:35:57Z datetime format
+      not_usable_before: currentDate.toISOString().replace(/.\d+Z$/g, 'Z'),
+      not_usable_after: notUsableAfter.toISOString().replace(/.\d+Z$/g, 'Z'),
+    };
 
     const message: string =
       await withSigner.requestDWGMessage(delegatedWriteGrant);
