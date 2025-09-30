@@ -6,10 +6,17 @@ import { encode as utf8Encode } from '@stablelib/utf8';
 import nacl from 'tweetnacl';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool } from '@neondatabase/serverless';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
-export default async (request: Request, context: Context) => {
+export default withSentry(async (request: Request, context: Context) => {
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
   const db = drizzle(pool);
+
+  pool.on("error", (err) => {
+    Sentry.captureException(err);
+    console.error("Unexpected error on idle client", err);
+  });
 
   try {
     if (request.method !== 'POST') {
@@ -118,7 +125,7 @@ export default async (request: Request, context: Context) => {
       recipientEncryptionPublicKey: recipientEncryptionPublicKey,
     };
 
-     const dwgParams = {
+    const dwgParams = {
       id: idOSDWG.delegatedWriteGrant.id,
       ownerWalletIdentifier:
         idOSDWG.delegatedWriteGrant.owner_wallet_identifier,
@@ -134,7 +141,6 @@ export default async (request: Request, context: Context) => {
     await db.transaction(async (tx: any) => {
       await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
 
-    
       try {
         const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
           credentialParams,
@@ -143,6 +149,7 @@ export default async (request: Request, context: Context) => {
 
         if (!result.originalCredential.id) {
           console.log(result);
+          throw new Error('Credential creation failed');
         }
 
         await setUserPopCredentialId(userId, result.originalCredential.id);
@@ -159,15 +166,23 @@ export default async (request: Request, context: Context) => {
       }),
       { status: 200 },
     );
-  } catch(err) {
-
+  } catch (err) {
+    Sentry.captureException(err);
     console.log(err);
+
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'An error occurred while creating the credential.',
+      }),
+      { status: 500 },
+    );
   }
   finally {
     // Ensure pool is closed after request
     context.waitUntil(pool.end());
-  } 
-};
+  }
+});
 
 export const config: Config = {
   path: '/api/idos-credential',

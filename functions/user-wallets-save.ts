@@ -1,8 +1,9 @@
 import { saveUserWallets } from '@/db/user-wallets';
 import { saveUserWalletsSchema } from '@/interfaces/user-wallets';
 import type { Config, Context } from '@netlify/functions';
+import { withSentry } from './utils/sentry';
 
-export default async (request: Request, _context: Context) => {
+export default withSentry(async (request: Request, _context: Context) => {
   try {
     const requestData = saveUserWalletsSchema.parse(await request.json());
 
@@ -16,7 +17,7 @@ export default async (request: Request, _context: Context) => {
     console.error('Error in user-wallets-save:', error);
     throw error;
   }
-};
+});
 
 export const config: Config = {
   path: '/api/user-wallets/save',

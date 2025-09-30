@@ -1,7 +1,9 @@
 import type { Config, Context } from '@netlify/functions';
 import { randomBytes } from 'crypto';
+import * as Sentry from "@sentry/aws-serverless";
+import { withSentry } from './utils/sentry';
 
-export default async function handler(request: Request, _context: Context) {
+export default withSentry(async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
@@ -41,6 +43,8 @@ export default async function handler(request: Request, _context: Context) {
     );
   } catch (error) {
     console.error('Error in auth-message:', error);
+    Sentry.captureException(error);
+
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
@@ -51,7 +55,7 @@ export default async function handler(request: Request, _context: Context) {
       },
     );
   }
-}
+});
 
 export const config: Config = {
   path: '/api/auth/message',

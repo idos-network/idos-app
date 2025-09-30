@@ -4,9 +4,17 @@ import type { Config, Context } from '@netlify/functions';
 import nacl from 'tweetnacl';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool } from '@neondatabase/serverless';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
-export default async (request: Request, context: Context) => {
+export default withSentry(async (request: Request, context: Context) => {
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
+
+  pool.on("error", (err) => {
+    Sentry.captureException(err);
+    console.error("Unexpected error on idle client", err);
+  });
+
   const db = drizzle(pool);
 
   try {
@@ -22,17 +30,6 @@ export default async (request: Request, context: Context) => {
       );
     }
 
-    const idOSIssuer = idOSIssuerClass.init({
-      nodeUrl: process.env.VITE_IDOS_NODE_URL as string,
-      signingKeyPair: nacl.sign.keyPair.fromSecretKey(
-        Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
-      ),
-      encryptionSecretKey: Buffer.from(
-        process.env.ISSUER_ENCRYPTION_SECRET_KEY as string,
-        'hex',
-      ),
-    });
-
     const {
       userId,
       userEncryptionPublicKey,
@@ -44,7 +41,16 @@ export default async (request: Request, context: Context) => {
       encryptionPasswordStore,
     } = idOSProfileRequestSchema.parse(await request.json());
 
-    const idOSIssuerInstance = await idOSIssuer;
+    const idOSIssuer = await idOSIssuerClass.init({
+      nodeUrl: process.env.VITE_IDOS_NODE_URL as string,
+      signingKeyPair: nacl.sign.keyPair.fromSecretKey(
+        Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
+      ),
+      encryptionSecretKey: Buffer.from(
+        process.env.ISSUER_ENCRYPTION_SECRET_KEY as string,
+        'hex',
+      ),
+    });
 
     const user = {
       id: userId,
@@ -70,12 +76,20 @@ export default async (request: Request, context: Context) => {
     await db.transaction(async (tx: any) => {
       await tx.execute('LOCK TABLE lock_table IN EXCLUSIVE MODE');
 
-      if (!await idOSIssuerInstance.getUser(userId).catch(() => null)) {
-        await idOSIssuerInstance.createUserProfile(user);
+      if (!await idOSIssuer.getUser(userId).catch(() => null)) {
+        const response = await idOSIssuer.createUserProfile(user);
+
+        if (!response.id) {
+          throw new Error(`Failed to create user profile: ${JSON.stringify(response)}`);
+        }
       }
 
-      if(!await idOSIssuerInstance.hasProfile(wallet.address)) {
-        await idOSIssuerInstance.upsertWalletAsInserter({...wallet, user_id: userId});
+      if (!await idOSIssuer.hasProfile(wallet.address)) {
+        const walletResponse = await idOSIssuer.upsertWalletAsInserter({ ...wallet, user_id: userId });
+
+        if (!walletResponse.id) {
+          throw new Error(`Failed to upsert wallet: ${JSON.stringify(walletResponse)}`);
+        }
       }
     });
 
@@ -88,10 +102,9 @@ export default async (request: Request, context: Context) => {
       },
     );
   } finally {
-    // Ensure pool is closed after request
     context.waitUntil(pool.end());
   }
-};
+});
 
 export const config: Config = {
   path: '/api/idos-profile',

@@ -1,8 +1,9 @@
 import { getUserByFaceSignToken } from '@/db/user';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
+import { withSentry } from './utils/sentry';
 
-export default async (_request: Request, context: Context) => {
+export default withSentry(async (_request: Request, context: Context) => {
   const { token } = context.params;
 
   if (!token) {
@@ -28,7 +29,7 @@ export default async (_request: Request, context: Context) => {
     JSON.stringify({ userId: user.id }),
     { status: 200 },
   );
-};
+});
 
 export const config: Config = {
   path: '/api/face-sign/:token/user',

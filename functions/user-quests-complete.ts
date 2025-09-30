@@ -4,6 +4,8 @@ import type { Config, Context } from '@netlify/functions';
 import { z } from 'zod';
 import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 import { handleDailyQuest } from './utils/quests';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
 
 const completeUserQuestRequestSchema = z.object({
   questName: z.string().min(1, 'questName is required'),
@@ -45,12 +47,13 @@ async function completeUserQuestHandler(
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    Sentry.captureException(error);
     console.error('Error in user-quests-complete:', error);
     throw error;
   }
 }
 
-export default withAuth(completeUserQuestHandler);
+export default withSentry(withAuth(completeUserQuestHandler));
 
 export const config: Config = {
   path: '/api/user-quests/complete',
