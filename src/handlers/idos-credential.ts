@@ -20,9 +20,6 @@ export async function handleDWGCredential(
     setState('idle');
     setLoading(true);
 
-    //const currentTimestamp = Date.now();
-    //const currentDate = new Date(currentTimestamp);
-    //const notUsableAfter = new Date(currentTimestamp + 24 * 60 * 60 * 1000);
 
     const delegatedWriteGrant: DWG = await createDWG(wallet.type === 'xrpl' ? wallet.address : wallet.publicKey,
       env.VITE_GRANTEE_WALLET_ADDRESS,
