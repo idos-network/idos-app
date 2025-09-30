@@ -1,5 +1,5 @@
 import { createIdOSCredential } from '@/api/idos-credential';
-import { getTime } from '@/api/time';
+import { getDwgConfiguration } from '@/api/idos-dwg';
 import { env } from '@/env';
 import type { IdosDWG } from '@/interfaces/idos-credential';
 import { signNearMessage } from '@/utils/near/near-signature';
@@ -20,7 +20,7 @@ export async function handleDWGCredential(
     setState('idle');
     setLoading(true);
 
-    const currentTimestamp = await getTime();
+    const { time: currentTimestamp, publicKey } = await getDwgConfiguration();
     const currentDate = new Date(currentTimestamp);
     const notUsableAfter = new Date(currentTimestamp + 24 * 60 * 60 * 1000);
 
@@ -28,7 +28,7 @@ export async function handleDWGCredential(
       owner_wallet_identifier:
         wallet.type === 'xrpl' ? wallet.address : wallet.publicKey,
       grantee_wallet_identifier: env.VITE_GRANTEE_WALLET_ADDRESS,
-      issuer_public_key: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
+      issuer_public_key: publicKey,
       id: crypto.randomUUID(),
       access_grant_timelock: currentDate.toISOString().replace(/.\d+Z$/g, 'Z'), // Need to cut milliseconds to have 2025-02-11T13:35:57Z datetime format
       not_usable_before: currentDate.toISOString().replace(/.\d+Z$/g, 'Z'),
