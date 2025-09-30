@@ -3,10 +3,10 @@ import nacl from 'tweetnacl';
 
 export async function issuerWithKey(publicKey?: string) {
   const keys = process.env.ISSUER_SIGNING_SECRET_KEYS?.split(",").map(k => k.trim());
-  const publicKeys = process.env.ISSUER_SIGNING_PUBLIC_KEYS?.split(',').map(k => k.trim());
+  const publicKeys = process.env.VITE_ISSUER_SIGNING_PUBLIC_KEYS?.split(',').map(k => k.trim());
 
   if (!publicKeys || publicKeys.length === 0) {
-    throw new Error("ISSUER_SIGNING_PUBLIC_KEYS is not set");
+    throw new Error("VITE_ISSUER_SIGNING_PUBLIC_KEYS is not set");
   }
 
   if (publicKey && !publicKeys.includes(publicKey)) {

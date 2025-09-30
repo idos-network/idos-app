@@ -46,13 +46,14 @@ export const useHasStakingCredential = () => {
     queryKey: ['has-staking-credentials', walletIdentifier],
     queryFn: async () => {
       if (idOSClient && idOSClient.state === 'logged-in') {
+        const publicKeys = env.VITE_ISSUER_SIGNING_PUBLIC_KEYS.split(',').map(k =>
+          k.trim()
+        );
+
         const result = await idOSClient.filterCredentials({
-          acceptedIssuers: [
-            {
-              // TODO: We have mutliple issuers, we should check all of them
-              authPublicKey: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
-            },
-          ],
+          acceptedIssuers: publicKeys.map(authPublicKey => ({
+            authPublicKey
+          })),
         });
         return result;
       }
@@ -88,8 +89,8 @@ export const useHasFaceSign = () => {
     queryFn: () => {
       return userId
         ? getUserById(userId)
-            .then((res) => !!res[0].faceSignUserId)
-            .catch(() => null)
+          .then((res) => !!res[0].faceSignUserId)
+          .catch(() => null)
         : null;
     },
     enabled: !!userId,
