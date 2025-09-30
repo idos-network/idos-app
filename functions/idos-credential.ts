@@ -13,6 +13,14 @@ export default withSentry(async (request: Request, context: Context) => {
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
   const db = drizzle(pool);
 
+<<<<<<< HEAD
+=======
+  pool.on("error", (err) => {
+    Sentry.captureException(err);
+    console.error("Unexpected error on idle client", err);
+  });
+
+>>>>>>> 36ebfb1 (feat(review) Fixes)
   try {
     if (request.method !== 'POST') {
       return new Response(
