@@ -43,7 +43,7 @@ export async function saveUser(data: any, name: string) {
         referrerCode:
           dbUser[0]?.referrerCode &&
           dbUser[0]?.referrerCode !== '' &&
-          dbUser[0]?.referrerCode !== userReferralCode
+          user.referrerCode !== userReferralCode
             ? dbUser[0].referrerCode
             : user.referrerCode,
         name: name,
@@ -88,7 +88,7 @@ export async function updateUser(data: any) {
     referrerCode:
       dbUser[0]?.referrerCode &&
       dbUser[0]?.referrerCode !== '' &&
-      dbUser[0]?.referrerCode !== userReferralCode
+      user.referrerCode !== userReferralCode
         ? dbUser[0].referrerCode
         : user.referrerCode,
   };
