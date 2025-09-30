@@ -13,7 +13,7 @@ import {
   type ReactNode,
 } from 'react';
 import * as Sentry from '@sentry/tanstackstart-react';
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 import { env } from '@/env';
 
 interface CookieContextValue {
@@ -127,7 +127,7 @@ export function CookieProvider({ children }: CookieProviderProps) {
 
       ReactGA.initialize(env.VITE_GA_TRACKING_ID);
       router.subscribe('onLoad', ({ toLocation }) => {
-        ReactGA.pageview(toLocation.pathname);
+        ReactGA.send({ hitType: 'pageview', page: toLocation.pathname });
       });
     }
   }, [consent, router]);
