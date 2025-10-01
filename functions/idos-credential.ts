@@ -1,15 +1,24 @@
 import { getUserById, setUserPopCredentialId } from '@/db/user';
 import { type IdosDWG } from '@/interfaces/idos-credential';
-import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import type { Config, Context } from '@netlify/functions';
 import { encode as utf8Encode } from '@stablelib/utf8';
-import nacl from 'tweetnacl';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool } from '@neondatabase/serverless';
 import { withSentry } from './utils/sentry';
 import * as Sentry from '@sentry/aws-serverless';
+import { issuerWithKey } from './utils/idos-issuer';
+import { sql } from 'drizzle-orm';
 
 export default withSentry(async (request: Request, context: Context) => {
+  if (request.method !== 'POST') {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'Method not allowed. Use POST.',
+      }),
+    );
+  }
+
   const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
   const db = drizzle(pool);
 
@@ -19,15 +28,6 @@ export default withSentry(async (request: Request, context: Context) => {
   });
 
   try {
-    if (request.method !== 'POST') {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: 'Method not allowed. Use POST.',
-        }),
-      );
-    }
-
     const { idOSDWG, userEncryptionPublicKey, userId } =
       (await request.json()) as {
         idOSDWG: IdosDWG;
@@ -47,6 +47,8 @@ export default withSentry(async (request: Request, context: Context) => {
       );
     }
 
+    Sentry.setUser({ id: userId });
+
     if (!user.faceSignUserId || user.popCredentialsId) {
       return new Response(
         JSON.stringify({
@@ -57,17 +59,6 @@ export default withSentry(async (request: Request, context: Context) => {
         { status: 400 },
       );
     }
-
-    const idOSIssuer = await idOSIssuerClass.init({
-      nodeUrl: process.env.VITE_IDOS_NODE_URL as string,
-      signingKeyPair: nacl.sign.keyPair.fromSecretKey(
-        Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
-      ),
-      encryptionSecretKey: Buffer.from(
-        process.env.ISSUER_ENCRYPTION_SECRET_KEY as string,
-        'hex',
-      ),
-    });
 
     let issuerDomain = process.env.FACETEC_SERVER as string;
     if (issuerDomain.endsWith('/')) {
@@ -86,6 +77,8 @@ export default withSentry(async (request: Request, context: Context) => {
       publicKeyMultibase: process.env.ISSUER_PUBLIC_KEY_MULTIBASE as string,
       privateKeyMultibase: process.env.ISSUER_PRIVATE_KEY_MULTIBASE as string,
     };
+
+    const { keyLock, idOSIssuer } = await issuerWithKey();
 
     const plainContent = await idOSIssuer.buildFaceIdCredential(
       credentialFields,
@@ -140,7 +133,9 @@ export default withSentry(async (request: Request, context: Context) => {
 
     await db.transaction(async (tx: any) => {
       // https://neon.com/guides/rate-limiting
-      await tx.execute("SELECT pg_advisory_xact_lock(hashtext('idos_issuer_key'))");
+      await tx.execute(
+        sql`SELECT pg_advisory_xact_lock(hashtext(${keyLock}))`
+      );
 
       try {
         const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
