@@ -16,6 +16,9 @@ import * as Sentry from '@sentry/tanstackstart-react';
 import ReactGA from 'react-ga4';
 import { env } from '@/env';
 
+// Version for cookie consent localStorage format
+const COOKIE_CONSENT_VERSION = '1.0';
+
 interface CookieContextValue {
   consent: number | null;
   isLoading: boolean;
@@ -49,36 +52,37 @@ export function CookieProvider({ children }: CookieProviderProps) {
     setError(null);
 
     try {
-      // First check localStorage
-      const localConsent = localStorage.getItem('cookieConsent');
+      const localConsentData = localStorage.getItem('cookieConsent');
 
-      if (localConsent) {
-        const parsedConsentString = JSON.parse(localConsent);
-        let parsedConsent: number | null = null;
+      if (localConsentData) {
+        const parsedData = JSON.parse(localConsentData);
 
-        // Convert boolean to number
-        // true -> 1 (accepted), false -> 0 (rejected)
-        // If it's already a number, keep it as is
-        if (typeof parsedConsentString === 'number') {
-          parsedConsent = parsedConsentString;
-        } else {
-          parsedConsent = parsedConsentString === true ? 1 : 0;
-        }
-
-        setConsent(parsedConsent);
-
-        // If user is logged in and consent is a valid number, sync with backend
+        // Check if it's the old format (just a number/boolean) or new format (object with version)
         if (
-          userId &&
-          !userLoading &&
-          parsedConsent !== null &&
-          parsedConsent !== undefined
+          typeof parsedData === 'object' &&
+          parsedData !== null &&
+          'version' in parsedData &&
+          parsedData.version === COOKIE_CONSENT_VERSION
         ) {
-          try {
-            await saveUserCookieConsent(userId, parsedConsent);
-          } catch (err) {
-            console.warn('Failed to sync cookie consent with backend:', err);
+          const parsedConsent = parsedData.consent;
+          setConsent(parsedConsent);
+
+          // If user is logged in and consent is a valid number, sync with backend
+          if (
+            userId &&
+            !userLoading &&
+            parsedConsent !== null &&
+            parsedConsent !== undefined
+          ) {
+            try {
+              await saveUserCookieConsent(userId, parsedConsent);
+            } catch (err) {
+              console.warn('Failed to sync cookie consent with backend:', err);
+            }
           }
+        } else {
+          // Version mismatch - clear it
+          localStorage.removeItem('cookieConsent');
         }
       } else if (userId && !userLoading) {
         // No local consent, try to get from backend
@@ -86,10 +90,12 @@ export function CookieProvider({ children }: CookieProviderProps) {
           const backendConsent = await getUserCookieConsent(userId);
           if (backendConsent !== null) {
             setConsent(backendConsent);
-            // Store in localStorage for future use
             localStorage.setItem(
               'cookieConsent',
-              JSON.stringify(backendConsent),
+              JSON.stringify({
+                consent: backendConsent,
+                version: COOKIE_CONSENT_VERSION,
+              }),
             );
           }
         } catch (err) {
@@ -136,7 +142,13 @@ export function CookieProvider({ children }: CookieProviderProps) {
     try {
       // Update local state and localStorage immediately
       setConsent(accepted);
-      localStorage.setItem('cookieConsent', JSON.stringify(accepted));
+      localStorage.setItem(
+        'cookieConsent',
+        JSON.stringify({
+          consent: accepted,
+          version: COOKIE_CONSENT_VERSION,
+        }),
+      );
 
       // Sync with backend if user is logged in and consent is a valid number
       if (
