@@ -47,6 +47,8 @@ export default withSentry(async (request: Request, context: Context) => {
       );
     }
 
+    Sentry.setUser({ id: userId });
+
     if (!user.faceSignUserId || user.popCredentialsId) {
       return new Response(
         JSON.stringify({

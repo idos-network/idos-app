@@ -40,6 +40,8 @@ export default withSentry(async (request: Request, context: Context) => {
       encryptionPasswordStore,
     } = idOSProfileRequestSchema.parse(await request.json());
 
+    Sentry.setUser({ id: userId });
+
     const user = {
       id: userId,
       recipient_encryption_public_key: userEncryptionPublicKey,
