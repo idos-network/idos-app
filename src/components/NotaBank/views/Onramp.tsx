@@ -65,7 +65,7 @@ const useOnrampUrl = (selectedProvider: string) => {
 export default function Onramp() {
   const navigate = useNavigate();
   const { method } = useSearch({
-    // @ts-ignore
+    // @ts-expect-error
     from: '/layout/notabank/onramp',
   });
   const { selectedProvider } = useSharedStore();
