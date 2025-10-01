@@ -1,6 +1,6 @@
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import nacl from 'tweetnacl';
-import { type KwilSigner, NodeKwil, WebKwil } from "@idos-network/kwil-js";
+import { NodeKwil } from "@idos-network/kwil-js";
 
 export async function issuerWithKey() {
   const keys = process.env.ISSUER_SIGNING_SECRET_KEYS?.split(",").map(k => k.trim());
