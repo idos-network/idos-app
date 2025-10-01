@@ -46,14 +46,13 @@ export const useHasStakingCredential = () => {
     queryKey: ['has-staking-credentials', walletIdentifier],
     queryFn: async () => {
       if (idOSClient && idOSClient.state === 'logged-in') {
-        const publicKeys = env.VITE_ISSUER_SIGNING_PUBLIC_KEYS.split(',').map(k =>
-          k.trim()
-        );
-
         const result = await idOSClient.filterCredentials({
-          acceptedIssuers: publicKeys.map(authPublicKey => ({
-            authPublicKey
-          })),
+          acceptedIssuers: [
+            {
+              authPublicKey: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
+            },
+          ],
+
         });
         return result;
       }
