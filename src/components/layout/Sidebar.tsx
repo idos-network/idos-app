@@ -3,9 +3,7 @@ import LayersIcon from '@/components/icons/layers';
 import UserIcon from '@/components/icons/user';
 import { useUiStore } from '@/stores/uiStore';
 import { Link } from '@tanstack/react-router';
-import { BankIcon } from '../icons/bank';
 import XIcon from '../icons/x-icon';
-import AppTag from '../NotaBank/components/Tag';
 
 const hideSideBar = import.meta.env.VITE_HIDE_SIDEBAR === 'true';
 
@@ -34,21 +32,6 @@ export default function Sidebar() {
 
           {!hideSideBar && (
             <>
-              <Link
-                to="/notabank"
-                className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
-              >
-                {({ isActive }) => (
-                  <div
-                    className={`flex items-center gap-4 w-full rounded-xl p-4 ${isActive ? 'bg-neutral-800/50' : ''}`}
-                  >
-                    <BankIcon isActive={isActive} /> NotaBank
-                    <AppTag className="ml-auto" variant="success">
-                      <span>New</span>
-                    </AppTag>
-                  </div>
-                )}
-              </Link>
               <Link
                 to="/staking-event"
                 className="flex items-center gap-4 rounded-xl hover:bg-neutral-800/30 transition-colors duration-200"
