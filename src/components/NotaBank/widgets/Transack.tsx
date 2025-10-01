@@ -82,7 +82,8 @@ export const TransakProvider = memo(function TransakProvider({
         transak?.cleanup();
         transak?.close();
         updateTransak(null);
-        navigate({ to: '/notabank/buy' });
+        // navigate({ to: '/notabank/buy' });
+        navigate({ to: '/' });
       }, 1000);
     });
 
