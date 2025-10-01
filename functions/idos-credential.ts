@@ -76,9 +76,7 @@ export default withSentry(async (request: Request, context: Context) => {
       privateKeyMultibase: process.env.ISSUER_PRIVATE_KEY_MULTIBASE as string,
     };
 
-    const { keyLock, idOSIssuer } = await issuerWithKey(
-      idOSDWG.delegatedWriteGrant.issuer_public_key
-    );
+    const { keyLock, idOSIssuer } = await issuerWithKey();
 
     const plainContent = await idOSIssuer.buildFaceIdCredential(
       credentialFields,
