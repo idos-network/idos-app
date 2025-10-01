@@ -1,5 +1,4 @@
 import type { Config, Context } from "@netlify/functions";
-import invariant from "tiny-invariant";
 import { withSentry } from "./utils/sentry";
 import { z } from "zod";
 
