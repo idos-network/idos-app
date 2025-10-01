@@ -1,7 +1,7 @@
 import { db } from '@/db/connection';
 import { userTokens, userWallets } from '@/db/schema';
 import type { Context } from '@netlify/functions';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET =
@@ -59,7 +59,10 @@ export async function verifyAuth(
       .where(
         and(
           eq(userTokens.accessToken, token),
-          eq(userTokens.publicAddress, publicAddress),
+          eq(
+            sql`lower(${userTokens.publicAddress})`,
+            publicAddress.toLowerCase(),
+          ),
         ),
       )
       .limit(1);
@@ -75,7 +78,7 @@ export async function verifyAuth(
       .where(
         and(
           eq(userWallets.userId, userId),
-          eq(userWallets.address, publicAddress),
+          eq(sql`lower(${userWallets.address})`, publicAddress.toLowerCase()),
         ),
       )
       .limit(1);

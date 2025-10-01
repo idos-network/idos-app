@@ -1,8 +1,6 @@
-import { db } from '@/db/connection';
-import { userTokens, userWallets } from '@/db/schema';
 import { verifySignature } from '@/utils/verify-signatures';
 import type { Config, Context } from '@netlify/functions';
-import { eq } from 'drizzle-orm';
+
 import jwt from 'jsonwebtoken';
 import {
   JWT_EXPIRES_IN,
@@ -10,7 +8,13 @@ import {
   REFRESH_TOKEN_EXPIRES_IN,
 } from './utils/constants';
 import { withSentry } from './utils/sentry';
-import * as Sentry from "@sentry/aws-serverless";
+import * as Sentry from '@sentry/aws-serverless';
+import { getUserWalletByAddress } from '@/db/user-wallets';
+import {
+  getExistingToken,
+  insertUserToken,
+  updateUserToken,
+} from '@/db/user-tokens';
 
 export default withSentry(async (request: Request, _context: Context) => {
   if (request.method !== 'POST') {
@@ -65,11 +69,7 @@ export default withSentry(async (request: Request, _context: Context) => {
       );
     }
 
-    const walletRecord = await db
-      .select()
-      .from(userWallets)
-      .where(eq(userWallets.address, publicAddress))
-      .limit(1);
+    const walletRecord = await getUserWalletByAddress(publicAddress);
 
     if (walletRecord.length === 0) {
       return new Response(
@@ -105,30 +105,23 @@ export default withSentry(async (request: Request, _context: Context) => {
       { expiresIn: REFRESH_TOKEN_EXPIRES_IN },
     );
 
-    const existingToken = await db
-      .select()
-      .from(userTokens)
-      .where(eq(userTokens.publicAddress, publicAddress))
-      .limit(1);
+    const existingToken = await getExistingToken(publicAddress);
 
     if (existingToken.length > 0) {
-      await db
-        .update(userTokens)
-        .set({
-          userId,
-          accessToken,
-          refreshToken,
-          updatedAt: new Date(),
-        })
-        .where(eq(userTokens.id, existingToken[0].id));
+      await updateUserToken(
+        userId,
+        accessToken,
+        refreshToken,
+        existingToken[0].id,
+      );
     } else {
-      await db.insert(userTokens).values({
+      await insertUserToken(
         userId,
         publicAddress,
         walletType,
         accessToken,
         refreshToken,
-      });
+      );
     }
 
     return new Response(

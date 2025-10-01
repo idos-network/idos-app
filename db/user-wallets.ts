@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db, userWallets } from './index';
 
 export interface UserWalletData {
@@ -32,4 +32,12 @@ export async function getUserWallets(userId: string) {
     .select()
     .from(userWallets)
     .where(eq(userWallets.userId, userId));
+}
+
+export async function getUserWalletByAddress(publicAddress: string) {
+  return await db
+    .select()
+    .from(userWallets)
+    .where(eq(sql`lower(${userWallets.address})`, publicAddress.toLowerCase()))
+    .limit(1);
 }
