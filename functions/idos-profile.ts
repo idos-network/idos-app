@@ -64,12 +64,14 @@ export default withSentry(async (request: Request, context: Context) => {
     };
 
     await db.transaction(async (tx: any) => {
-      const { keyLock, idOSIssuer } = await issuerWithKey();
+      const { keyLock, idOSIssuer, getAccount } = await issuerWithKey();
 
       // https://neon.com/guides/rate-limiting
       await tx.execute(
         sql`SELECT pg_advisory_xact_lock(hashtext(${keyLock}))`
       );
+
+      console.log("[idos-profile] Using account:", JSON.stringify(await getAccount()));
 
       if (!await idOSIssuer.getUser(userId).catch(() => null)) {
         const response = await idOSIssuer.createUserProfile(user);
@@ -78,6 +80,8 @@ export default withSentry(async (request: Request, context: Context) => {
           throw new Error(`Failed to create user profile: ${JSON.stringify(response)}`);
         }
       }
+
+      console.log("[idos-wallets] Using account:", JSON.stringify(await getAccount()));
 
       if (!await idOSIssuer.hasProfile(wallet.address)) {
         const walletResponse = await idOSIssuer.upsertWalletAsInserter({ ...wallet, user_id: userId });

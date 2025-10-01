@@ -34,12 +34,11 @@ export async function issuerWithKey() {
     kwilProvider: process.env.VITE_IDOS_NODE_URL as string,
     chainId: "",
   });
-  const account = await client.getAccount(signingKeyPair.publicKey);
-  console.log("[idOS] Using account:", JSON.stringify(account));
   // TODO: Remove after the issue is solved
 
   return {
     keyLock: `idos_issuer_key_${keyIndex}`,
     idOSIssuer,
+    getAccount: () => client.getAccount(signingKeyPair.publicKey),
   }
 }
