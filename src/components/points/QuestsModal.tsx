@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom';
 import MediumPrimaryButton from '../MediumPrimaryButton';
 import { useUserId } from '../onboarding/OnboardingStepper';
 import { subscribeNewsletter } from '@/api/subscribe-newsletter';
+import SmallPrimaryButton from '../SmallPrimaryButton';
 
 interface QuestsModalProps {
   isOpen: boolean;
@@ -148,11 +149,12 @@ export default function QuestsModal({
                     </span>
                   </label>
 
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col items-center gap-3">
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      disabled={!consentGiven}
                       placeholder="Enter your email"
                       className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-aquamarine-400"
                     />
@@ -161,33 +163,35 @@ export default function QuestsModal({
                       <div className="text-xs text-red-400">{submitError}</div>
                     ) : null}
 
-                    <MediumPrimaryButton
-                      onClick={async () => {
-                        setSubmitError(null);
-                        if (!consentGiven) {
-                          setSubmitError('Please provide consent to continue.');
-                          return;
-                        }
-                        const emailRegex = /[^@\s]+@[^@\s]+\.[^@\s]+/;
-                        if (!emailRegex.test(email)) {
-                          setSubmitError('Please enter a valid email address.');
-                          return;
-                        }
-                        try {
-                          setIsSubmitting(true);
-                          await subscribeNewsletter(email);
-                          await handleQuestClick(quest);
-                        } catch (err: any) {
-                          const message = err?.response?.data?.message || 'Subscription failed. Please try again later.';
-                          setSubmitError(message);
-                        } finally {
-                          setIsSubmitting(false);
-                        }
-                      }}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Submitting...' : 'Subscribe'}
-                    </MediumPrimaryButton>
+                    <div className="w-fit">
+                      <SmallPrimaryButton
+                        onClick={async () => {
+                          setSubmitError(null);
+                          if (!consentGiven) {
+                            setSubmitError('Please provide consent to continue.');
+                            return;
+                          }
+                          const emailRegex = /[^@\s]+@[^@\s]+\.[^@\s]+/;
+                          if (!emailRegex.test(email)) {
+                            setSubmitError('Please enter a valid email address.');
+                            return;
+                          }
+                          try {
+                            setIsSubmitting(true);
+                            await subscribeNewsletter(email);
+                            await handleQuestClick(quest);
+                          } catch (err: any) {
+                            const message = err?.response?.data?.message || 'Subscription failed. Please try again later.';
+                            setSubmitError(message);
+                          } finally {
+                            setIsSubmitting(false);
+                          }
+                        }}
+                        disabled={isSubmitting || !consentGiven}
+                      >
+                        {isSubmitting ? 'Submitting...' : 'Subscribe'}
+                      </SmallPrimaryButton>
+                    </div>
                   </div>
                 </div>
               ) : (

@@ -1,10 +1,11 @@
 import axiosInstance from './axios';
 
 export const subscribeNewsletter = async (
-email: string,
+  email: string,
 ) => {
   const response = await axiosInstance.post('/subscribe-newsletter', {
-  email
+    email
   });
+
   return response.data;
 };

@@ -10,11 +10,10 @@ const SubscribeSchema = z.object({
 });
 
 export default withSentry(async (request: Request, _context: Context) => {
-  invariant(BEEHIIV_TOKEN, "`BEEHIIV_TOKEN` is not set");
-
-  const requestBody = await request.json();
 
   try {
+    const requestBody = await request.json();
+
     const parsed = SubscribeSchema.safeParse(requestBody);
     if (!parsed.success) {
       return new Response(JSON.stringify({
