@@ -74,7 +74,6 @@ export default function QuestsModal({
     };
   }, [isOpen, onClose]);
 
-
   if (!isOpen) return null;
 
   return createPortal(
@@ -115,8 +114,11 @@ export default function QuestsModal({
               </span>
             </div>
             <div className="flex justify-center gap-5">
-              {quest.name === 'subscribe_newsletter' && quest.status !== 'Completed' ? (
-                <div style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
+              {quest.name === 'subscribe_newsletter' &&
+              quest.status !== 'Completed' ? (
+                <div
+                  style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}
+                >
                   <label className="text-xs flex items-center mb-4">
                     <input
                       type="checkbox"
@@ -168,12 +170,16 @@ export default function QuestsModal({
                         onClick={async () => {
                           setSubmitError(null);
                           if (!consentGiven) {
-                            setSubmitError('Please provide consent to continue.');
+                            setSubmitError(
+                              'Please provide consent to continue.',
+                            );
                             return;
                           }
                           const emailRegex = /[^@\s]+@[^@\s]+\.[^@\s]+/;
                           if (!emailRegex.test(email)) {
-                            setSubmitError('Please enter a valid email address.');
+                            setSubmitError(
+                              'Please enter a valid email address.',
+                            );
                             return;
                           }
                           try {
@@ -181,7 +187,9 @@ export default function QuestsModal({
                             await subscribeNewsletter(email);
                             await handleQuestClick(quest);
                           } catch (err: any) {
-                            const message = err?.response?.data?.message || 'Subscription failed. Please try again later.';
+                            const message =
+                              err?.response?.data?.message ||
+                              'Subscription failed. Please try again later.';
                             setSubmitError(message);
                           } finally {
                             setIsSubmitting(false);
