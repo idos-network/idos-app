@@ -39,6 +39,7 @@ export const env = createEnv({
     VITE_LOCKDOWN_MODE: z.string().default('false'),
     VITE_SENTRY_DSN: z.string().optional(),
     VITE_GA_TRACKING_ID: z.string().optional(),
+    VITE_ISSUER_SIGNING_PUBLIC_KEYS: z.string().min(1),
   },
 
   /**
