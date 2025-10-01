@@ -20,14 +20,19 @@ export async function saveUser(data: any, name: string) {
   const dbUser = await getUserById(user.id);
   const userReferralCode = await getUserReferralCode(user.id);
 
-  if (dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== '') {
-    if (
-      user.referrerCode &&
-      user.referrerCode !== '' &&
-      user.referrerCode !== userReferralCode
-    ) {
-      await updateReferralCount(user.referrerCode);
-    }
+  const userDBReferrerCodeIsEmpty =
+    !dbUser[0]?.referrerCode || dbUser[0]?.referrerCode === '';
+
+  const userReqReferrerCodeIsValid =
+    user.referrerCode &&
+    user.referrerCode !== '' &&
+    user.referrerCode !== userReferralCode;
+
+  const validReferrerCode =
+    userDBReferrerCodeIsEmpty && userReqReferrerCodeIsValid;
+
+  if (validReferrerCode) {
+    await updateReferralCount(user.referrerCode!);
   }
 
   return await db
@@ -40,7 +45,9 @@ export async function saveUser(data: any, name: string) {
       target: users.id,
       set: {
         mainEvm: user.mainEvm,
-        referrerCode: user.referrerCode,
+        referrerCode: validReferrerCode
+          ? user.referrerCode
+          : dbUser[0].referrerCode,
         name: name,
       },
     });
@@ -67,18 +74,29 @@ export async function updateUser(data: any) {
 
   const dbUser = await getUserById(user.id);
   const userReferralCode = await getUserReferralCode(user.id);
+  const userDBReferrerCodeIsEmpty =
+    !dbUser[0]?.referrerCode || dbUser[0]?.referrerCode === '';
 
-  if (dbUser[0]?.referrerCode && dbUser[0]?.referrerCode !== '') {
-    if (
-      user.referrerCode &&
-      user.referrerCode !== '' &&
-      user.referrerCode !== userReferralCode
-    ) {
-      await updateReferralCount(user.referrerCode);
-    }
+  const userReqReferrerCodeIsValid =
+    user.referrerCode &&
+    user.referrerCode !== '' &&
+    user.referrerCode !== userReferralCode;
+
+  const validReferrerCode =
+    userDBReferrerCodeIsEmpty && userReqReferrerCodeIsValid;
+
+  if (validReferrerCode) {
+    await updateReferralCount(user.referrerCode!);
   }
 
-  return await db.update(users).set(user).where(eq(users.id, user.id));
+  const updateData = {
+    ...user,
+    referrerCode: validReferrerCode
+      ? user.referrerCode
+      : dbUser[0].referrerCode,
+  };
+
+  return await db.update(users).set(updateData).where(eq(users.id, user.id));
 }
 
 export async function setUserName(userId: string) {
