@@ -1,6 +1,5 @@
 import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import nacl from 'tweetnacl';
-import { NodeKwil } from "@idos-network/kwil-js";
 
 export async function issuerWithKey() {
   const keys = process.env.ISSUER_SIGNING_SECRET_KEYS?.split(",").map(k => k.trim());
@@ -29,16 +28,8 @@ export async function issuerWithKey() {
     ),
   });
 
-  // TODO: Remove after the issue is solved
-  const client = new NodeKwil({
-    kwilProvider: process.env.VITE_IDOS_NODE_URL as string,
-    chainId: "",
-  });
-  // TODO: Remove after the issue is solved
-
   return {
     keyLock: `idos_issuer_key_${keyIndex}`,
     idOSIssuer,
-    getAccount: () => client.getAccount(signingKeyPair.publicKey),
   }
 }
