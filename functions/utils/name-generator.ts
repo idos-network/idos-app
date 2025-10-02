@@ -1,36 +1,33 @@
 import { userNameExists } from '@/db/user';
 import { faker } from '@faker-js/faker';
+import { randomUUID } from 'crypto';
 
-export const generateName = (): string => {
+function capitalize(str: string): string {
+  const words = str.split(' ');
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
+  }
+  return words.join('');
+}
+
+export function generateName(): string {
   const adjective = faker.word.words(1);
   const color = faker.color.human();
   const animal = faker.animal.type();
 
-  const capitalize = (str: string) => {
-    return str
-      .split(' ')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join('');
-  };
+  return capitalize(adjective) + capitalize(color) + capitalize(animal);
+}
 
-  return `${capitalize(adjective)}${capitalize(color)}${capitalize(animal)}`;
-};
+function shortId(): string {
+  return randomUUID().split('-')[0];
+}
 
-export const generateUniqueName = async (): Promise<string> => {
+export async function generateUniqueName(): Promise<string> {
   let name = generateName();
 
-  let attempts = 0;
-  const maxAttempts = 10;
-
-  while ((await userNameExists(name)) && attempts < maxAttempts) {
-    name = generateName();
-    attempts++;
-  }
-
-  if (attempts >= maxAttempts) {
-    const timestamp = Date.now().toString(36);
-    name = `${name}${timestamp}`;
+  while (await userNameExists(name)) {
+    name = generateName() + '-' + shortId();
   }
 
   return name;
-};
+}
