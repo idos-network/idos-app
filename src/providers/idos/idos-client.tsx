@@ -132,12 +132,20 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer, isLoadingSigner, idOSClient]);
 
-  // useEffect(() => {
-  //   if (!idOSClient || isLoadingAuth || isAuthenticated) return;
-  //   if (idOSClient.state === 'logged-in') {
-  //     authenticate();
-  //   }
-  // }, [idOSClient, authenticate, isAuthenticated, isLoadingAuth]);
+  useEffect(() => {
+    const hasStakingCredential =
+      Array.isArray(stakingCreds) && !!stakingCreds?.length;
+    if (
+      !idOSClient ||
+      isLoadingAuth ||
+      isAuthenticated ||
+      !hasStakingCredential
+    )
+      return;
+    if (idOSClient.state === 'logged-in') {
+      authenticate();
+    }
+  }, [idOSClient, authenticate, isAuthenticated, isLoadingAuth, stakingCreds]);
 
   useEffect(() => {
     if (!idOSClient || isLoadingAuth || isLoadingProfileQuest) return;
