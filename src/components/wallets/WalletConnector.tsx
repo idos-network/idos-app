@@ -57,11 +57,11 @@ export function WalletConnector() {
         evmWallet={true}
       />
 
-      {/* <WalletConnectorButton
+      <WalletConnectorButton
         onClick={() => walletConnector.connectNear()}
         label="Connect with NEAR"
         iconSrc="/near.webp"
-      /> */}
+      />
 
       {/* <WalletConnectorButton
         onClick={() => walletConnector.connectStellar()}
