@@ -138,7 +138,8 @@ function BuyModule() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => navigate({ to: '/notabank/onramp' })}
+            // onClick={() => navigate({ to: '/notabank/onramp' })}
+            onClick={() => navigate({ to: '/' })}
           >
             Continue
           </Button>
@@ -147,7 +148,8 @@ function BuyModule() {
             type="button"
             variant="secondary"
             disabled={fetchingCredential}
-            onClick={() => navigate({ to: '/notabank/kyc' })}
+            // onClick={() => navigate({ to: '/notabank/kyc' })}
+            onClick={() => navigate({ to: '/' })}
           >
             Continue
           </Button>

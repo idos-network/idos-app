@@ -22,7 +22,8 @@ export default function OnRampDialog() {
     onrampProviderIcon[selectedProvider as keyof typeof onrampProviderIcon];
 
   const handleContinueClick = () => {
-    navigate({ to: '/notabank/onramp' });
+    // navigate({ to: '/notabank/onramp' });
+    navigate({ to: '/' });
   };
 
   return (

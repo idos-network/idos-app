@@ -4,11 +4,9 @@ import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   createRoute,
-  Outlet,
 } from '@tanstack/react-router';
 import { z } from 'zod';
 import AppLayout from './components/layout/AppLayout';
-import NotaBankLogo from './components/NotaBank/components/NotaBankLogo';
 import { StakingEventLayout } from './components/staking-event/layout/StakingEventLayout';
 import { Stake } from './components/staking-event/views/Stake';
 import { FaceSignMobile } from './routes/FaceSignMobile';
@@ -17,15 +15,6 @@ import { IdosIco } from './routes/IdosIco';
 import { IdosProfile } from './routes/IdosProfile';
 import { IdosStaking } from './routes/IdosStaking';
 import { Leaderboard } from './routes/Leaderboard';
-import {
-  notabankBuyRoute,
-  notabankIndexRoute,
-  notabankKycRoute,
-  notabankNotaCardRoute,
-  notabankNotaCardTermsAndConditionsRoute,
-  notabankOnrampRoute,
-  notabankSellRoute,
-} from './routes/NotaBank';
 import { Points } from './routes/Points';
 import { RootComponent } from './routes/RootComponent';
 import {
@@ -61,19 +50,6 @@ export const idosProfileRoute = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/idos-profile',
   component: IdosProfile,
-});
-
-// NotaBank main route that catches all /notabank/* paths
-export const notabankRoute = createRoute({
-  getParentRoute: () => layoutRoute,
-  path: '/notabank',
-  component: () => (
-    // Yes, this looks ugly, but it's the only way to override the font-sans class at the moment until we merge properly the styles.
-    <div className="font-sans!">
-      <NotaBankLogo />
-      <Outlet />
-    </div>
-  ),
 });
 
 // Staking Event route
@@ -139,15 +115,6 @@ export const routeTree = rootRoute.addChildren([
     ...(isProduction
       ? []
       : [
-          notabankRoute.addChildren([
-            notabankIndexRoute,
-            notabankBuyRoute,
-            notabankSellRoute,
-            notabankKycRoute,
-            notabankNotaCardRoute,
-            notabankNotaCardTermsAndConditionsRoute,
-            notabankOnrampRoute,
-          ]),
           stakingEventRoute.addChildren([
             stakingEventIndexRoute,
             stakingEventMyStakingsRoute,

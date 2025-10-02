@@ -11,7 +11,8 @@ export default function ActionToolbar() {
         <div className="flex items-center gap-2">
           <Button asChild>
             <Link
-              to="/notabank/buy"
+              // to="/notabank/buy"
+              to="/"
               activeProps={{
                 className: 'bg-secondary!',
               }}
@@ -23,7 +24,8 @@ export default function ActionToolbar() {
           </Button>
           <Button asChild>
             <Link
-              to="/notabank/sell"
+              // to="/notabank/sell"
+              to="/"
               activeProps={{
                 className: 'bg-secondary!',
               }}

@@ -15,7 +15,8 @@ export default function NotaCard() {
         <Button
           className="px-5 w-fit mt-10 bg-[#74FB5B] text-neutral-950"
           onClick={() =>
-            navigate({ to: '/notabank/notacard/terms-and-conditions' })
+            // navigate({ to: '/notabank/notacard/terms-and-conditions' })
+            navigate({ to: '/' })
           }
         >
           Get NotaCard

@@ -2,7 +2,7 @@ import { getKrakenUrl } from '@/api/kraken-url';
 import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
 import { useSharedCredential } from '@/hooks/useSharedCredential';
-import { useSharedStore } from '@/stores/shared-store';
+// import { useSharedStore } from '@/stores/shared-store';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -14,7 +14,7 @@ export default function Kyc() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isIframeLoading, setIsIframeLoading] = useState(true);
-  const { selectedProvider, spendAmount, buyAmount } = useSharedStore();
+  // const { selectedProvider, spendAmount, buyAmount } = useSharedStore();
   const { address } = useAccount();
 
   const { data: url } = useQuery({
@@ -78,7 +78,8 @@ export default function Kyc() {
     if (sharedCredential?.credentialContent) {
       setTimeout(() => {
         navigate({
-          to: `/notabank/onramp?method=${selectedProvider}&toSpend=${spendAmount}&toReceive=${buyAmount}`,
+          // to: `/notabank/onramp?method=${selectedProvider}&toSpend=${spendAmount}&toReceive=${buyAmount}`,
+          to: `/`,
         });
       }, 700);
     }

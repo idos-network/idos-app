@@ -65,6 +65,7 @@ const useOnrampUrl = (selectedProvider: string) => {
 export default function Onramp() {
   const navigate = useNavigate();
   const { method } = useSearch({
+    // @ts-expect-error - should be removed once notabank is merged back
     from: '/layout/notabank/onramp',
   });
   const { selectedProvider } = useSharedStore();
@@ -97,7 +98,8 @@ export default function Onramp() {
     <div className="relative">
       {/* Back Button */}
       <button
-        onClick={() => navigate({ to: '/notabank/buy' })}
+        // onClick={() => navigate({ to: '/notabank/buy' })}
+        onClick={() => navigate({ to: '/' })}
         className="absolute top-4 left-4 z-10 cursor-pointer flex items-center gap-3 text-aquamarine-400 hover:text-aquamarine-700 transition-colors"
       >
         <BackArrow className="w-6 h-4" color="currentColor" />
