@@ -7,9 +7,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSignMessage } from 'wagmi';
 import { useNearWallet } from './useNearWallet';
 import { useWalletConnector } from './useWalletConnector';
+import { useProfileStore } from '@/stores/profile-store';
 
 export function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, setIsAuthenticated } = useProfileStore();
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<{
     userId: string;
@@ -43,6 +44,7 @@ export function useAuth() {
       }
     };
 
+    if (isAuthenticated) return;
     checkAuth();
 
     const handleStorageChange = (e: StorageEvent) => {
@@ -53,7 +55,7 @@ export function useAuth() {
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [isAuthenticated]);
 
   const authenticate = useCallback(async (): Promise<boolean> => {
     if (!walletConnector.isConnected || !walletConnector.connectedWallet) {

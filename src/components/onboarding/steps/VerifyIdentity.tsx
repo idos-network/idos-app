@@ -21,6 +21,7 @@ import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
+import { useAuth } from '@/hooks/useAuth';
 
 const useLogin = () => {
   const { idOSClient, setIdOSClient } = useIdOS();
@@ -29,7 +30,14 @@ const useLogin = () => {
     mutationKey: ['login'],
     mutationFn: async () => {
       if (idOSClient && idOSClient.state === 'with-user-signer') {
-        const loggedIn = await idOSClient.logIn();
+        let loggedIn = null;
+        while (!loggedIn) {
+          try {
+            loggedIn = await idOSClient.logIn();
+          } catch (error) {
+            continue;
+          }
+        }
         if (loggedIn) {
           setIdOSClient(loggedIn);
           const userWallets = await loggedIn.getWallets();
@@ -50,6 +58,7 @@ export default function VerifyIdentity() {
   const { mutateAsync: login } = useLogin();
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const { idOSClient } = useIdOS();
+  const { authenticate } = useAuth();
 
   const currentUser = getCurrentUserFromLocalStorage();
   const userId =
@@ -87,6 +96,12 @@ export default function VerifyIdentity() {
       setState('idle');
     } else {
       await login();
+
+      let authenticated = false;
+      while (!authenticated) {
+        authenticated = await authenticate();
+      }
+
       await saveUser({
         id: userId,
         mainEvm: walletType === 'evm' ? userAddress : '',
