@@ -7,6 +7,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import MediumPrimaryButton from '../MediumPrimaryButton';
 import { useUserId } from '../onboarding/OnboardingStepper';
+import { subscribeNewsletter } from '@/api/subscribe-newsletter';
+import SmallPrimaryButton from '../SmallPrimaryButton';
 
 interface QuestsModalProps {
   isOpen: boolean;
@@ -26,6 +28,9 @@ export default function QuestsModal({
   const { data: userId } = useUserId();
 
   const [consentGiven, setConsentGiven] = useState(false);
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleCheckboxChange = () => {
     setConsentGiven(!consentGiven);
@@ -69,23 +74,6 @@ export default function QuestsModal({
     };
   }, [isOpen, onClose]);
 
-  useEffect(() => {
-    const handleIframeMessage = (event: any) => {
-      if (event.origin === 'https://embeds.beehiiv.com') {
-        const data = event.data;
-        if (data && data.type === 'BEEHIIV_SUBSCRIBER_FORM_SUBMITTED') {
-          handleQuestClick(quest);
-        }
-      }
-    };
-
-    window.addEventListener('message', handleIframeMessage);
-
-    return () => {
-      window.removeEventListener('message', handleIframeMessage);
-    };
-  }, [handleQuestClick, quest]);
-
   if (!isOpen) return null;
 
   return createPortal(
@@ -127,9 +115,10 @@ export default function QuestsModal({
             </div>
             <div className="flex justify-center gap-5">
               {quest.name === 'subscribe_newsletter' &&
-              quest.iframe &&
               quest.status !== 'Completed' ? (
-                <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+                <div
+                  style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}
+                >
                   <label className="text-xs flex items-center mb-4">
                     <input
                       type="checkbox"
@@ -162,18 +151,55 @@ export default function QuestsModal({
                     </span>
                   </label>
 
-                  <div className="relative h-13 rounded-lg overflow-hidden bg-neutral-900">
-                    <div dangerouslySetInnerHTML={{ __html: quest.iframe }} />
-
-                    <div
-                      className="absolute top-0 left-0 w-full h-full bg-white bg-opacity-40 z-[2] rounded-lg transition-all duration-500"
-                      style={{
-                        backdropFilter: 'blur(4px)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.4)',
-                        pointerEvents: consentGiven ? 'none' : 'auto',
-                        opacity: consentGiven ? 0 : 1,
-                      }}
+                  <div className="flex flex-col items-center gap-3">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={!consentGiven}
+                      placeholder="Enter your email"
+                      className="w-full rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-aquamarine-400"
                     />
+
+                    {submitError ? (
+                      <div className="text-xs text-red-400">{submitError}</div>
+                    ) : null}
+
+                    <div className="w-fit">
+                      <SmallPrimaryButton
+                        onClick={async () => {
+                          setSubmitError(null);
+                          if (!consentGiven) {
+                            setSubmitError(
+                              'Please provide consent to continue.',
+                            );
+                            return;
+                          }
+                          const emailRegex = /[^@\s]+@[^@\s]+\.[^@\s]+/;
+                          if (!emailRegex.test(email)) {
+                            setSubmitError(
+                              'Please enter a valid email address.',
+                            );
+                            return;
+                          }
+                          try {
+                            setIsSubmitting(true);
+                            await subscribeNewsletter(email);
+                            await handleQuestClick(quest);
+                          } catch (err: any) {
+                            const message =
+                              err?.response?.data?.message ||
+                              'Subscription failed. Please try again later.';
+                            setSubmitError(message);
+                          } finally {
+                            setIsSubmitting(false);
+                          }
+                        }}
+                        disabled={isSubmitting || !consentGiven}
+                      >
+                        {isSubmitting ? 'Submitting...' : 'Subscribe'}
+                      </SmallPrimaryButton>
+                    </div>
                   </div>
                 </div>
               ) : (
