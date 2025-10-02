@@ -92,9 +92,15 @@ export default function FaceSignSetupDialog({
     setIsInitializing(true);
     getPublicKey()
       .then((publicKey) => {
-        faceTec.init(currentUserId, publicKey, () => {
-          console.log('FaceTec initialized');
-          setFaceTecInitialized(true);
+        faceTec.init(currentUserId, publicKey, (errorMessage?: string) => {
+          console.log('Facetec initialized callback', errorMessage);
+          if (errorMessage) {
+            setFaceSignError(errorMessage);
+          } else {
+            setFaceSignError(null);
+            setFaceSignResult(null);
+            setFaceTecInitialized(true);
+          }
         });
       })
       .finally(() => {

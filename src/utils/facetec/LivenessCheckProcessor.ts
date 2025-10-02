@@ -230,7 +230,6 @@ export class LivenessCheckProcessor implements FaceTecFaceScanProcessor {
     // Calling a custom function on the Sample App Controller is done for demonstration purposes to show you that here is where you get control back from the FaceTec SDK.
     //
     this.success = this.latestSessionResult?.isCompletelyDone ?? false;
-    console.log('this.latestSessionResult', this.latestSessionResult);
     // Handle both success and cancellation scenarios
     if (this.success) {
       this.callback(true, false);
