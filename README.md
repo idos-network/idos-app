@@ -58,9 +58,9 @@ This will output four keys:
 Add the following to your environment:
 
 ```
-ISSUER_SIGNING_SECRET_KEY=<signingKeyPair.secretKey>
+ISSUER_SIGNING_SECRET_KEYS=<signingKeyPair.secretKey>
 ISSUER_ENCRYPTION_SECRET_KEY=<encryptionKeyPair.secretKey>
 ```
 
-- `ISSUER_SIGNING_SECRET_KEY`: The secret key (hex) from `signingKeyPair.secretKey`.
+- `ISSUER_SIGNING_SECRET_KEYS`: The secret keys (hex) from `signingKeyPair.secretKey`. (Can be multiple once separated by comma)
 - `ISSUER_ENCRYPTION_SECRET_KEY`: The secret key (hex) from `encryptionKeyPair.secretKey`.

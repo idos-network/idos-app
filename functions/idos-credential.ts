@@ -78,7 +78,7 @@ export default withSentry(async (request: Request, context: Context) => {
       privateKeyMultibase: process.env.ISSUER_PRIVATE_KEY_MULTIBASE as string,
     };
 
-    const { keyLock, idOSIssuer, getAccount } = await issuerWithKey();
+    const { keyLock, idOSIssuer } = await issuerWithKey();
 
     const plainContent = await idOSIssuer.buildFaceIdCredential(
       credentialFields,
@@ -138,8 +138,6 @@ export default withSentry(async (request: Request, context: Context) => {
       );
 
       try {
-        console.log("[idos-credential] Using account:", JSON.stringify(await getAccount()));
-
         const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
           credentialParams,
           dwgParams,
