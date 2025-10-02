@@ -17,6 +17,7 @@ import {
   GetStarted,
   VerifyIdentity,
 } from './steps';
+import { useProfileStore } from '@/stores/profile-store';
 
 const canAccessWalletIdentifier = (idOSClient: idOSClient | null) =>
   !!idOSClient && ['with-user-signer', 'logged-in'].includes(idOSClient.state);
@@ -116,7 +117,7 @@ export default function OnboardingStepper() {
   const hasUserEncryptionKey =
     !!getCurrentUserFromLocalStorage()?.userEncryptionPublicKey;
   const hasUserIdInLocalStorage = !!getCurrentUserFromLocalStorage()?.id;
-
+  const { isAuthenticated } = useProfileStore();
   const initialeStep = useMemo(() => {
     // User has been deleted from local storage after issuing a PoP credentials
     if (hasStakingCredential && !hasEvmWallet) {
@@ -129,7 +130,7 @@ export default function OnboardingStepper() {
 
     if (!hasUserEncryptionKey) return 1;
     if (!hasFaceSign) return 2;
-    if (!hasStakingCredential) return 3;
+    if (!hasStakingCredential && isAuthenticated) return 3;
     if (!hasEvmWallet) return 4;
     return null;
   }, [
@@ -138,11 +139,13 @@ export default function OnboardingStepper() {
     hasFaceSign,
     hasStakingCredential,
     hasEvmWallet,
+    isAuthenticated,
   ]);
 
   console.log({
     initialeStep,
     hasFaceSign,
+    isAuthenticated,
     hasStakingCredential,
     hasEvmWallet,
     stepIndex,

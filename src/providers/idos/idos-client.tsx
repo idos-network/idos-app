@@ -3,7 +3,7 @@ import { type PropsWithChildren, useContext, useEffect } from 'react';
 
 import { WalletConnectorContext } from '@/context/wallet-connector-context';
 import { handleSaveUserWallets } from '@/handlers/user-wallets';
-import { useAuth } from '@/hooks/useAuth';
+import { useProfileStore } from '@/stores/profile-store';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { _idOSClient, useIdosStore } from '@/stores/idosStore';
@@ -13,6 +13,7 @@ import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { useHasStakingCredential } from '@/components/onboarding/OnboardingStepper';
 import { useCompleteQuest } from '@/hooks/useCompleteQuest';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
+import { useAuth } from '@/hooks/useAuth';
 
 const useSigner = () => {
   const walletConnector = useContext(WalletConnectorContext);
@@ -75,7 +76,8 @@ const useSigner = () => {
 
 export function IDOSClientProvider({ children }: PropsWithChildren) {
   const { data: signer, isLoading: isLoadingSigner } = useSigner();
-  const { authenticate, isAuthenticated, isLoading: isLoadingAuth } = useAuth();
+  const { isAuthenticated, isLoadingAuth: isLoadingAuth } = useProfileStore();
+  const { authenticate } = useAuth();
   const { data: stakingCreds } = useHasStakingCredential();
   const { idOSClient, setIdOSClient, initializing, setSettingSigner } =
     useIdosStore();
@@ -130,12 +132,12 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signer, isLoadingSigner, idOSClient]);
 
-  useEffect(() => {
-    if (!idOSClient || isLoadingAuth || isAuthenticated) return;
-    if (idOSClient.state === 'logged-in') {
-      authenticate();
-    }
-  }, [idOSClient, authenticate, isAuthenticated, isLoadingAuth]);
+  // useEffect(() => {
+  //   if (!idOSClient || isLoadingAuth || isAuthenticated) return;
+  //   if (idOSClient.state === 'logged-in') {
+  //     authenticate();
+  //   }
+  // }, [idOSClient, authenticate, isAuthenticated, isLoadingAuth]);
 
   useEffect(() => {
     if (!idOSClient || isLoadingAuth || isLoadingProfileQuest) return;
