@@ -11,6 +11,8 @@ import {
 } from './referrals';
 import { getUserQuestsSummary } from './user-quests';
 import { getUserName } from 'functions/utils/get-user-name';
+import * as Sentry from "@sentry/aws-serverless";
+import { UserNotFoundError } from '@/utils/errors';
 
 export async function saveUser(data: any, name: string) {
   const user = saveUserSchema.parse(data);
@@ -149,15 +151,25 @@ export async function generateFaceScanToken(userId: string) {
   // Only for users without face-scans
   const user = await getUserById(userId).then((res) => res[0]);
 
-  if (!user || user.faceSignUserId !== null || user.popCredentialsId) {
-    throw new Error("This user can't do face sign.");
+  if (!user) {
+    throw new UserNotFoundError(userId);
+  }
+
+  Sentry.setUser({ id: user.id });
+
+  if (user.faceSignUserId) {
+    throw new Error('This user already has a face sign user ID.');
+  }
+
+  if (user.popCredentialsId) {
+    throw new Error('This user already has PoP credentials.');
   }
 
   if (
     user.faceSignTokenCreatedAt &&
     user.faceSignToken &&
     new Date(user.faceSignTokenCreatedAt).getTime() >
-      Date.now() - 30 * 60 * 1000
+    Date.now() - 30 * 60 * 1000
   ) {
     // Token is new and valid
     return user.faceSignToken;
@@ -268,7 +280,7 @@ export async function getUserByFaceSignToken(token: string) {
   if (
     !user.faceSignTokenCreatedAt ||
     new Date(user.faceSignTokenCreatedAt).getTime() <
-      Date.now() - 30 * 60 * 1000
+    Date.now() - 30 * 60 * 1000
   ) {
     return null;
   }
