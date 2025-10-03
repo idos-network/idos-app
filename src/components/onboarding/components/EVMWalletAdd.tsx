@@ -181,7 +181,7 @@ export default function EVMWalletAdd({
 
   return (
     <StepperButton
-      onClick={() => handleOpenWalletPopup('near,xrpl,stellar')}
+      onClick={() => handleOpenWalletPopup('near,stellar')}
       disabled={isLoading}
     >
       {isLoading ? 'Waiting for wallet...' : 'Add EVM wallet'}
