@@ -8,7 +8,7 @@ import * as Sentry from "@sentry/aws-serverless";
 export default withSentry(async (_request: Request, context: Context) => {
   const { userId } = context.params;
 
-  Sentry.setUser({ id: userId ?? undefined });
+  Sentry.setUser({ id: userId });
 
   if (!userId) {
     throw new UserNotFoundError(userId);
