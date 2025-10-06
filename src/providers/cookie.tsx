@@ -125,6 +125,36 @@ export function CookieProvider({ children }: CookieProviderProps) {
         dsn: env.VITE_SENTRY_DSN,
         sendDefaultPii: true,
         tracesSampleRate: 1.0,
+        beforeSend(event, hint) {
+          const error = hint?.originalException;
+
+          // Check against usuall metamask errors, which we can't do anything about
+          const ignoredMessages = [
+            'user rejected the request',
+            'user rejected action',
+            'Request expired. Please try again.',
+          ];
+
+          if (
+            typeof error === 'string' &&
+            ignoredMessages.some((msg) =>
+              error.toLowerCase().includes(msg.toLowerCase()),
+            )
+          ) {
+            return null;
+          }
+
+          if (
+            error instanceof Error &&
+            ignoredMessages.some((msg) =>
+              error.message.toLowerCase().includes(msg.toLowerCase()),
+            )
+          ) {
+            return null;
+          }
+
+          return event;
+        },
       });
     }
 
