@@ -130,22 +130,24 @@ export function CookieProvider({ children }: CookieProviderProps) {
 
           // Check against usuall metamask errors, which we can't do anything about
           const ignoredMessages = [
-            "user rejected the request",
-            "user rejected action",
-            "Request expired. Please try again.",
+            'user rejected the request',
+            'user rejected action',
+            'Request expired. Please try again.',
           ];
 
           if (
-            typeof error === "string" &&
-            ignoredMessages.some(msg => error.toLowerCase().includes(msg.toLowerCase()))
+            typeof error === 'string' &&
+            ignoredMessages.some((msg) =>
+              error.toLowerCase().includes(msg.toLowerCase()),
+            )
           ) {
             return null;
           }
 
           if (
             error instanceof Error &&
-            ignoredMessages.some(msg =>
-              error.message.toLowerCase().includes(msg.toLowerCase())
+            ignoredMessages.some((msg) =>
+              error.message.toLowerCase().includes(msg.toLowerCase()),
             )
           ) {
             return null;
