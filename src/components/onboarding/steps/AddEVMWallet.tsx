@@ -13,6 +13,7 @@ import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
+import { lookLikeAnEvmAddress } from '@/components/NotaBank/components/LegacyUsersMigrator';
 
 const Disclaimer = () => (
   <div className="text-xs text-neutral-400 text-center">
@@ -50,7 +51,9 @@ export default function AddEVMWallet() {
     if (hasEvmWallet) {
       updateUser({
         id: idOSLoggedIn!.user.id,
-        mainEvm: hasEvmWallet?.address,
+        mainEvm: lookLikeAnEvmAddress(hasEvmWallet?.address)
+          ? hasEvmWallet?.address
+          : '',
         referrerCode: referralCode || '',
       });
       queryClient.invalidateQueries({ queryKey: ['has-staking-credentials'] });
