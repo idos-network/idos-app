@@ -97,6 +97,20 @@ export const useHasFaceSign = () => {
     enabled: !!userId,
   });
 };
+export const useHasMainEvm = () => {
+  const { data: userId } = useUserId();
+  return useQuery({
+    queryKey: ['hasMainEvm', userId],
+    queryFn: () => {
+      return userId
+        ? getUserById(userId)
+            .then((res) => res[0].mainEvm)
+            .catch(() => null)
+        : null;
+    },
+    enabled: !!userId,
+  });
+};
 
 const steps = [
   { id: 'step-one', component: <GetStarted /> }, // Get started

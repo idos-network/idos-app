@@ -7,6 +7,10 @@ import type { idOSClientLoggedIn, idOSWallet } from '@idos-network/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import invariant from 'tiny-invariant';
+import { useUserWallets } from './WalletsCard';
+import { lookLikeAnEvmAddress } from '@/components/NotaBank/components/LegacyUsersMigrator';
+import { updateUser } from '@/api/user';
+import { useHasMainEvm } from '@/components/onboarding/OnboardingStepper';
 
 const allowedOrigin = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
 
@@ -83,6 +87,36 @@ export default function WalletAdder() {
   const [walletPayload, setWalletPayload] = useState<any>(null);
   const { idOSClient, setAddingWallet } = useIdosStore();
   const queryClient = useQueryClient();
+  const { data: idosWallets = [] } = useUserWallets();
+  const { data: hasMainEvm, isLoading: hasMainEvmLoading } = useHasMainEvm();
+  const idosEvmWallet = idosWallets.find(
+    (wallet) => wallet.wallet_type === 'EVM',
+  );
+
+  useEffect(() => {
+    if (!idOSClient || hasMainEvmLoading || hasMainEvm || !idosWallets.length)
+      return;
+    if (idOSClient.state !== 'logged-in') return;
+    if (idosEvmWallet) {
+      updateUser({
+        id: idOSClient.user.id,
+        mainEvm: lookLikeAnEvmAddress(idosEvmWallet?.address)
+          ? idosEvmWallet?.address
+          : '',
+      });
+      queryClient.invalidateQueries({ queryKey: ['user-wallets'] });
+      queryClient.invalidateQueries({
+        queryKey: ['hasMainEvm', idOSClient.user.id],
+      });
+    }
+  }, [
+    idosEvmWallet,
+    hasMainEvmLoading,
+    hasMainEvm,
+    idosWallets,
+    idOSClient,
+    queryClient,
+  ]);
 
   const { showToast } = useToast();
 

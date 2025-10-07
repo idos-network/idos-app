@@ -1,19 +1,12 @@
-import { updateUser } from '@/api/user';
 import { handleOpenWalletPopup } from '@/components/profile/wallets/WalletAdder';
-import { useUserWallets } from '@/components/profile/wallets/WalletsCard';
-import { useIdOSLoggedIn } from '@/context/idos-context';
 import AirdropIcon from '@/icons/airdrop';
 import WalletIcon from '@/icons/wallet';
-import { useReferralCode } from '@/providers/quests/referral-provider';
-import { queryClient } from '@/providers/tanstack-query/query-client';
 import { useIdosStore } from '@/stores/idosStore';
-import { useEffect } from 'react';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
-import { lookLikeAnEvmAddress } from '@/components/NotaBank/components/LegacyUsersMigrator';
 
 const Disclaimer = () => (
   <div className="text-xs text-neutral-400 text-center">
@@ -40,25 +33,7 @@ const Disclaimer = () => (
 
 export default function AddEVMWallet() {
   const { state } = useStepState();
-  const idOSLoggedIn = useIdOSLoggedIn();
-  const { referralCode } = useReferralCode();
   const { addingWallet } = useIdosStore();
-  const { data: wallets = [] } = useUserWallets();
-  const hasEvmWallet = wallets.find((wallet) => wallet.wallet_type === 'EVM');
-  console.log('RENDER ADD EVM WALLET', state);
-
-  useEffect(() => {
-    if (hasEvmWallet) {
-      updateUser({
-        id: idOSLoggedIn!.user.id,
-        mainEvm: lookLikeAnEvmAddress(hasEvmWallet?.address)
-          ? hasEvmWallet?.address
-          : '',
-        referrerCode: referralCode || '',
-      });
-      queryClient.invalidateQueries({ queryKey: ['has-staking-credentials'] });
-    }
-  }, [hasEvmWallet]);
 
   return (
     <div className="flex flex-col gap-10 h-[600px] w-[740px]">

@@ -1,6 +1,5 @@
 import FaceSignTag from '@/components/NotaBank/components/FaceSignTag';
 import { isProduction } from '@/env';
-import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import InfoIcon from '@/icons/info';
 import MoreVertIcon from '@/icons/more-vert';
 import type { IdosWallet } from '@/interfaces/idos-profile';
@@ -10,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { WalletActionModal } from './WalletActionModal';
 import WalletAddButton from './WalletAddButton';
+import { useHasMainEvm } from '@/components/onboarding/OnboardingStepper';
 
 interface WalletsCardProps {
   refetchMainEvm: () => void;
@@ -23,14 +23,14 @@ export const useUserWallets = () => {
     queryFn: async () => {
       if (!idOSClient || idOSClient.state !== 'logged-in') return [];
       const wallets = await idOSClient.getWallets();
-      return wallets as IdosWallet[];
+      return (wallets as IdosWallet[]) || [];
     },
   });
 };
 
 export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
   const { data: wallets = [], isLoading, error, refetch } = useUserWallets();
-  const { mainEvm } = useUserMainEvm();
+  const { data: hasMainEvm } = useHasMainEvm();
   const [actionModalPosition, setActionModalPosition] = useState<{
     x: number;
     y: number;
@@ -128,7 +128,7 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
                   <td className="w-1/12 px-4">
                     <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center gap-3">
                       <span className="flex items-center gap-2 font-normal">
-                        {wallet.address === mainEvm ? (
+                        {wallet.address === hasMainEvm ? (
                           <div className="relative">
                             <button
                               onMouseEnter={(e) => {
