@@ -1,4 +1,4 @@
-import { verifySignature } from '@/utils/verify-signatures';
+import { verifySignature } from '@idos-network/utils/crypto/signature-verification';
 import type { Config, Context } from '@netlify/functions';
 
 import jwt from 'jsonwebtoken';

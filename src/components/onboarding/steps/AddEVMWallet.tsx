@@ -90,7 +90,7 @@ export default function AddEVMWallet() {
           <Disclaimer />
           <div className="flex justify-center mt-[-10px]">
             <StepperButton
-              onClick={() => handleOpenWalletPopup('near,xrpl,stellar')}
+              onClick={() => handleOpenWalletPopup()}
               disabled={addingWallet}
             >
               {addingWallet ? 'Waiting for wallet...' : 'Add EVM wallet'}
