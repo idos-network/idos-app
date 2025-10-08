@@ -15,6 +15,7 @@ export const idOSUserSchema = z.object({
   cookieConsent: z.nullable(z.boolean()).optional(),
   faceSignUserId: z.string().optional(),
   faceSignTokenCreatedAt: z.nullable(z.coerce.date().optional()),
+  xHandle: z.string().optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 });

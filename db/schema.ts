@@ -140,6 +140,24 @@ export const userTokens = pgTable(
   ],
 );
 
+export const oauthXSessions = pgTable(
+  'oauth_x_sessions',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    userId: varchar('userId', { length: 36 }).notNull().unique(),
+    codeVerifier: varchar('codeVerifier').default(sql`null`),
+    state: varchar('state').default(sql`null`),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index('oauth_x_sessions_user_id_idx').on(table.userId),
+    unique('oauth_x_sessions_user_id_unique').on(table.userId),
+  ],
+);
+
 export const lockTable = pgTable('lock_table', {
   id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
 });

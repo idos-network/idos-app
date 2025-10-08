@@ -6,10 +6,18 @@ import Spinner from '@/components/Spinner';
 import { useProfileQuestCompleted } from '@/hooks/useProfileQuestCompleted';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
+import XCard from '@/components/points/XCard';
+import { useUserXHandle } from '@/hooks/useUserXHandle';
+import MindshareCard from '@/components/points/MindshareCard';
 
 export function Points() {
   const { isCompleted: profileQuestCompleted, isLoading } =
     useProfileQuestCompleted();
+  const {
+    xHandle,
+    isLoading: xHandleLoading,
+    refetch: refetchXHandle,
+  } = useUserXHandle();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +26,7 @@ export function Points() {
     }
   }, [profileQuestCompleted, isLoading, navigate]);
 
-  if (isLoading) {
+  if (isLoading || xHandleLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner />
@@ -60,10 +68,16 @@ export function Points() {
               Coming soon
             </div>
           </span>
-          <div className="flex gap-5">
+          <div className="flex items-center gap-5">
             {/* TODO: Update this when social points are implemented */}
-            {/* <XCard />
-            <MindshareCard /> */}
+            {xHandle ? (
+              <>
+                <div className="text-lg text-[#A0F73C] font-normal">{`@${xHandle}`}</div>
+                <MindshareCard />
+              </>
+            ) : (
+              <XCard onOAuthSuccess={refetchXHandle} />
+            )}
           </div>
         </div>
 
