@@ -120,19 +120,18 @@ export default function OnboardingStepper() {
   const { isAuthenticated } = useProfileStore();
   const initialeStep = useMemo(() => {
     // User has been deleted from local storage after issuing a PoP credentials
-    if (hasStakingCredential && !hasEvmWallet) {
-      return 4;
-    }
-
     if (!hasUserIdInLocalStorage && !hasUserEncryptionKey && !hasFaceSign) {
       return 0;
     }
 
     if (!hasUserEncryptionKey) return 1;
     if (!hasFaceSign) return 2;
-    if (!hasStakingCredential && isAuthenticated) return 3;
-    if (!hasEvmWallet) return 4;
-    return null;
+    if (isAuthenticated) {
+      if (!hasStakingCredential) return 3;
+      if (!hasEvmWallet) return 4;
+    }
+
+    return stepIndex;
   }, [
     hasUserIdInLocalStorage,
     hasUserEncryptionKey,
@@ -140,6 +139,7 @@ export default function OnboardingStepper() {
     hasStakingCredential,
     hasEvmWallet,
     isAuthenticated,
+    stepIndex,
   ]);
 
   console.log({

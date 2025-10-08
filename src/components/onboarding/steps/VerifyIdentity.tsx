@@ -22,6 +22,7 @@ import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
 import { useAuth } from '@/hooks/useAuth';
+import { useWalletIdentifier } from '../OnboardingStepper';
 
 const useLogin = () => {
   const { idOSClient, setIdOSClient } = useIdOS();
@@ -72,6 +73,7 @@ export default function VerifyIdentity() {
   const encryptionPasswordStore =
     currentUser?.encryptionPasswordStore || 'user';
   const isLogged = idOSClient?.state === 'logged-in';
+  const { data: walletIdentifier } = useWalletIdentifier();
 
   const handleFaceSignSuccess = useCallback(async () => {
     // in case user already have a profile (cleared db or having profile from another platform) just check if faceSignUserId exists again
@@ -108,6 +110,9 @@ export default function VerifyIdentity() {
         referrerCode: '',
       });
       queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
+      queryClient.invalidateQueries({
+        queryKey: ['has-staking-credentials', walletIdentifier],
+      });
     }
   }, [
     userId,
