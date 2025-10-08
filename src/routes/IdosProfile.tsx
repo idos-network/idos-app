@@ -22,9 +22,13 @@ export function IdosProfile() {
   const { isLoading: isLoadingUserId } = useUserId();
   const hasStakingCredential =
     Array.isArray(stakingCreds) && !!stakingCreds?.length;
-  const { data: hasFaceSign } = useHasFaceSign();
+  const { data: hasFaceSign, isLoading: isLoadingFaceSign } = useHasFaceSign();
 
-  const newLoading = stakingCredsLoading || isLoadingUserId || settingSigner;
+  const newLoading =
+    stakingCredsLoading ||
+    isLoadingUserId ||
+    settingSigner ||
+    isLoadingFaceSign;
 
   const showProfile = hasEvmWallet && hasStakingCredential && hasFaceSign;
   if (newLoading) {
