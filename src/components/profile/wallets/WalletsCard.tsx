@@ -42,7 +42,9 @@ export default function WalletsCard() {
 
   useEffect(() => {
     if (!wallets || !wallets.length) return;
-    refetchMainEvm();
+    setTimeout(() => {
+      refetchMainEvm();
+    }, 2000);
   }, [wallets.length]);
 
   if (isLoading) return null;
