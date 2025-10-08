@@ -50,7 +50,13 @@ export default function XCard({ onOAuthSuccess }: XCardProps) {
         };
         window.addEventListener('message', handleMessage);
       }
-    } catch {}
+    } catch (error) {
+      console.error('Error during X OAuth:', error);
+      showToast({
+        type: 'error',
+        message: 'Failed to initiate X sign-in',
+      });
+    }
   };
 
   return (
