@@ -4,6 +4,10 @@ import { useIdosStore } from '@/stores/idosStore';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
+export const lookLikeAnEvmAddress = (address: string) => {
+  return address.startsWith('0x') && address.length === 42;
+};
+
 const useHasDbRecord = (id: string) => {
   return useQuery({
     queryKey: ['hasDbRecord', id],
@@ -27,7 +31,9 @@ export default function LegacyUsersMigrator() {
     if (hasProfile && !hasDbRecord) {
       saveUserUnauth({
         id: idOSClient?.user?.id,
-        mainEvm: idOSClient?.walletIdentifier,
+        mainEvm: lookLikeAnEvmAddress(idOSClient?.walletIdentifier)
+          ? idOSClient?.walletIdentifier
+          : '',
       });
       queryClient.invalidateQueries({
         queryKey: ['hasDbRecord', idOSClient?.user?.id],
