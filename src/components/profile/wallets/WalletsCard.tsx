@@ -42,6 +42,7 @@ export default function WalletsCard() {
 
   useEffect(() => {
     if (!wallets || !wallets.length) return;
+    // giving some time for the db record to be updated
     setTimeout(() => {
       refetchMainEvm();
     }, 2000);
