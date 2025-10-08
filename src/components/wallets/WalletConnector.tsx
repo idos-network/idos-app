@@ -69,11 +69,11 @@ export function WalletConnector() {
         iconSrc="/stellar.webp"
       /> */}
 
-      <WalletConnectorButton
+      {/* <WalletConnectorButton
         onClick={() => walletConnector.connectXRPL()}
         label="Connect with XRPL"
         iconSrc="/xrpl.webp"
-      />
+      /> */}
     </div>
   );
 }
