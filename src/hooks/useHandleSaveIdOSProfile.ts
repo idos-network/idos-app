@@ -12,6 +12,7 @@ import { useMutation } from '@tanstack/react-query';
 import { ethers } from 'ethers';
 import { useSignMessage } from 'wagmi';
 import { useNearWallet } from './useNearWallet';
+import { lookLikeAnEvmAddress } from '@/components/NotaBank/components/LegacyUsersMigrator';
 
 export function useHandleSaveIdOSProfile({
   onNext,
@@ -129,7 +130,7 @@ export function useHandleSaveIdOSProfile({
       // initial save for the user info (mainly the id, for faceSign completion tracking)
       await saveUserUnauth({
         id: userId,
-        mainEvm: wallet.type === 'evm' ? wallet.address : '',
+        mainEvm: lookLikeAnEvmAddress(wallet.address) ? wallet.address : '',
       });
 
       Promise.resolve(savedUser);

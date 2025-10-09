@@ -10,11 +10,9 @@ import { useUserWallets } from '@/components/profile/wallets/WalletsCard';
 import Spinner from '@/components/Spinner';
 import { isProduction } from '@/env';
 import { useToast } from '@/hooks/useToast';
-import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { useIdosStore } from '@/stores/idosStore';
 
 export function IdosProfile() {
-  const { refetch: refetchMainEvm } = useUserMainEvm();
   const { showToast } = useToast();
   const { settingSigner } = useIdosStore();
   const { data: wallets = [] } = useUserWallets();
@@ -55,7 +53,7 @@ export function IdosProfile() {
               onSuccess={(msg) => showToast({ type: 'success', message: msg })}
             />
             {!isProduction && !hasFaceSign && <FaceSignBanner />}
-            <WalletsCard refetchMainEvm={refetchMainEvm} />
+            <WalletsCard />
           </div>
         </div>
       ) : (
