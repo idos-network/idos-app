@@ -33,7 +33,7 @@ export const signStellarMessage = async (
 ) => {
   if (!wallet.address || !wallet.publicKey) return;
   const result = await stellarKit.signMessage(message);
-  let signedMessage = Buffer.from(result.signedMessage, 'base64');
+  const signedMessage = Buffer.from(result.signedMessage, 'base64');
   const signatureHex = signedMessage.toString('hex');
   console.log('signatureHex', signatureHex);
 
