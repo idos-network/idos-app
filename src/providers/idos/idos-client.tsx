@@ -53,7 +53,7 @@ const useSigner = () => {
             stellarWallet.address &&
             stellarWallet.kit
           ) {
-            _signer = stellarWallet.kit
+            _signer = stellarWallet.kit;
           }
         }
         if (walletConnector.connectedWallet.type === 'xrpl') {

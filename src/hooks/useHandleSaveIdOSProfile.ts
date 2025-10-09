@@ -5,7 +5,10 @@ import { env } from '@/env';
 import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
-import { verifySignature, type WalletSignature } from '@idos-network/utils/crypto/signature-verification';
+import {
+  verifySignature,
+  type WalletSignature,
+} from '@idos-network/utils/crypto/signature-verification';
 import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
 import * as GemWallet from '@gemwallet/api';
 import { useMutation } from '@tanstack/react-query';
