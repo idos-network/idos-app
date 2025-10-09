@@ -32,6 +32,7 @@ export async function handleDWGCredential(
       await withSigner.requestDWGMessage(delegatedWriteGrant);
 
     setState('waiting_signature');
+    console.log({withSigner});
 
     let signature;
     try {
