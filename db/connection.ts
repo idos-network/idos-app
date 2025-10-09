@@ -14,5 +14,11 @@ export const db = isProduction
 
 export const schema = pgSchema;
 
-export const { users, userQuests, userWallets, referrals, leaderboardView } =
-  schema;
+export const {
+  users,
+  userQuests,
+  userWallets,
+  referrals,
+  leaderboardView,
+  wallchainLeaderboard,
+} = schema;

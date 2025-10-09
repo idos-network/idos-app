@@ -19,6 +19,7 @@ export async function getLeaderboardEntries(pageSize: number, page: number) {
       referralCount: leaderboardView.referralCount,
       totalPoints: leaderboardView.totalPoints,
       rank: leaderboardView.rank,
+      mindsharePercentage: leaderboardView.mindsharePercentage,
     })
     .from(leaderboardView)
     .where(gt(leaderboardView.totalPoints, 0))
@@ -46,6 +47,7 @@ export async function getLeaderboardUserPosition(userId: string) {
       referralCount: leaderboardView.referralCount,
       totalPoints: leaderboardView.totalPoints,
       rank: leaderboardView.rank,
+      mindsharePercentage: leaderboardView.mindsharePercentage,
     })
     .from(leaderboardView)
     .where(eq(leaderboardView.userId, userId));

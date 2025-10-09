@@ -1,6 +1,7 @@
 import { relations, sql } from 'drizzle-orm';
 import {
   boolean,
+  decimal,
   index,
   integer,
   pgMaterializedView,
@@ -158,6 +159,22 @@ export const oauthXSessions = pgTable(
   ],
 );
 
+export const wallchainLeaderboard = pgTable(
+  'wallchain_leaderboard',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    username: varchar('username').notNull().unique(),
+    mindsharePercentage: decimal('mindsharePercentage')
+      .notNull()
+      .default(sql`0.0`),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt')
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [index('wallchain_leaderboard_username_idx').on(table.username)],
+);
+
 export const lockTable = pgTable('lock_table', {
   id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
 });
@@ -173,6 +190,7 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
   referralCount: integer('referralCount').notNull().default(0),
   totalPoints: integer('totalPoints').notNull().default(0),
   rank: integer('rank').notNull().default(0),
+  mindsharePercentage: decimal('mindsharePercentage').default('0.0'),
 }).as(sql`
   WITH quest_aggregates AS (
     SELECT 
@@ -222,21 +240,67 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
     LEFT JOIN quest_points qp ON qp."userId" = u."id"
     LEFT JOIN ${referrals} r ON r."userId" = u."id"
     CROSS JOIN referral_quest_points rqp
+  ),
+  wallchain_matches AS (
+    SELECT 
+      u."id" as "userId",
+      wl."mindsharePercentage"
+    FROM ${users} u
+    JOIN ${wallchainLeaderboard} wl ON wl."username" = COALESCE(NULLIF(u."xHandle", ''), u."name")
+  ),
+  wallchain_unmatched AS (
+    SELECT 
+      wl."username" as "name",
+      wl."mindsharePercentage",
+      NULL::varchar as "userId"
+    FROM ${wallchainLeaderboard} wl
+    WHERE NOT EXISTS (
+      SELECT 1 FROM ${users} u 
+      WHERE wl."username" = COALESCE(NULLIF(u."xHandle", ''), u."name")
+    )
+  ),
+  total_quest_points AS (
+    SELECT SUM(COALESCE(qpr.quest_points, 0)) as total_points
+    FROM ${users} u
+    LEFT JOIN quest_points_with_referrals qpr ON qpr."userId" = u."id"
   )
   SELECT 
-    ROW_NUMBER() OVER (ORDER BY COALESCE(qpr.quest_points, 0) DESC, u."name" ASC) as "id",
+    ROW_NUMBER() OVER (ORDER BY COALESCE(qpr.quest_points, 0) DESC, COALESCE(NULLIF(u."xHandle", ''), u."name") ASC) as "id",
     u."id" as "userId",
-    u."name",
+    COALESCE(NULLIF(u."xHandle", ''), u."name") as "name",
     u."xHandle",
     COALESCE(qpr.quest_points, 0) as "questPoints",
-    0 as "socialPoints",
+    COALESCE(tqp.total_points, 0) * COALESCE(wm."mindsharePercentage"::numeric, 0) / 100 as "socialPoints",
     0 as "contributionPoints",
     COALESCE(qpr."referralCount", 0) as "referralCount",
-    COALESCE(qpr.quest_points, 0) as "totalPoints",
-    DENSE_RANK() OVER (ORDER BY COALESCE(qpr.quest_points, 0) DESC) as "rank"
+     COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."mindsharePercentage"::numeric, 0) / 100 + 0 as "totalPoints",
+     DENSE_RANK() OVER (ORDER BY COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."mindsharePercentage"::numeric, 0) / 100 DESC) as "rank",
+    COALESCE(wm."mindsharePercentage", '0.0') as "mindsharePercentage"
   FROM ${users} u
   LEFT JOIN quest_points_with_referrals qpr ON qpr."userId" = u."id"
-  ORDER BY "totalPoints" DESC, u."name" ASC
+  LEFT JOIN wallchain_matches wm ON wm."userId" = u."id"
+  CROSS JOIN total_quest_points tqp
+  WHERE COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."mindsharePercentage"::numeric, 0) / 100 >= 1
+  
+  UNION ALL
+  
+  SELECT 
+    (SELECT COUNT(*) FROM ${users}) + ROW_NUMBER() OVER (ORDER BY wu."mindsharePercentage" DESC) as "id",
+    wu."userId",
+    wu."name",
+    NULL::varchar as "xHandle",
+    0 as "questPoints",
+    COALESCE(tqp.total_points, 0) * COALESCE(wu."mindsharePercentage"::numeric, 0) / 100 as "socialPoints",
+    0 as "contributionPoints",
+    0 as "referralCount",
+    0 + COALESCE(tqp.total_points, 0) * COALESCE(wu."mindsharePercentage"::numeric, 0) / 100 + 0 as "totalPoints",
+    0 as "rank",
+    wu."mindsharePercentage"
+  FROM wallchain_unmatched wu
+  CROSS JOIN total_quest_points tqp
+  WHERE COALESCE(tqp.total_points, 0) * COALESCE(wu."mindsharePercentage"::numeric, 0) / 100 >= 1
+  
+  ORDER BY "totalPoints" DESC, "rank" ASC, "name" ASC
 `);
 
 // Relations

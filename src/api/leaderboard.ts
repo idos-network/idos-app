@@ -13,6 +13,7 @@ export interface LeaderboardEntryData {
   contributionPoints: number;
   referralCount: number;
   rank: number;
+  mindsharePercentage: number;
 }
 
 export const getLeaderboard = async (opts?: {
@@ -41,6 +42,7 @@ export const getLeaderboard = async (opts?: {
           contributionPoints: z.number(),
           referralCount: z.number(),
           rank: z.number(),
+          mindsharePercentage: z.number(),
         }),
       ),
       total: z.number().optional(),
@@ -74,6 +76,7 @@ export const getUserPosition = async (
           contributionPoints: z.number(),
           referralCount: z.number(),
           rank: z.number(),
+          mindsharePercentage: z.number(),
         }),
       }),
     );

@@ -100,7 +100,9 @@ export function LeaderboardTable({
                   key={item.id}
                   className={`font-[Urbanist] text-sm font-medium h-[44px] ${!isLastRow ? 'border-neutral-800 border-b' : ''} text-neutral-400`}
                 >
-                  <td className="px-4">#{item.rank}</td>
+                  <td className="px-4">
+                    {item.rank === 0 ? '-' : `#${item.rank}`}
+                  </td>
                   <td className="px-4 truncate">{item.name}</td>
                   <td className="px-4 font-light text-sm text-neutral-200">
                     <div className="flex items-center justify-center">
@@ -112,9 +114,17 @@ export function LeaderboardTable({
                       {item.totalPoints}
                     </div>
                   </td>
-                  <td className="px-4 text-center">{item.referralCount}</td>
-                  <td className="px-4 text-center">{item.questPoints}</td>
-                  <td className="px-4 text-center">-</td>
+                  <td className="px-4 text-center">
+                    {item.rank === 0 ? '-' : item.referralCount}
+                  </td>
+                  <td className="px-4 text-center">
+                    {item.questPoints === 0 ? '-' : item.questPoints}
+                  </td>
+                  <td className="px-4 text-center">
+                    {item.mindsharePercentage === 0
+                      ? '-'
+                      : `${item.mindsharePercentage.toFixed(2)}%`}
+                  </td>
                   <td className="px-4 text-center">
                     {item.socialPoints === 0 ? '-' : item.socialPoints}
                   </td>

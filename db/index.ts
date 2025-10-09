@@ -6,4 +6,5 @@ export {
   userQuests,
   users,
   userWallets,
+  wallchainLeaderboard,
 } from './connection';
