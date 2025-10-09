@@ -6,7 +6,6 @@ import {
   handleDWGCredential,
 } from '@/handlers/idos-credential';
 import { useCompleteQuest } from '@/hooks/useCompleteQuest';
-import { useNearWallet } from '@/hooks/useNearWallet';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import CredentialIcon from '@/icons/credential';
@@ -17,7 +16,6 @@ import { queryClient } from '@/providers/tanstack-query/query-client';
 import { clearUserDataFromLocalStorage } from '@/storage/idos-profile';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useEffect } from 'react';
-import { useSignMessage } from 'wagmi';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
