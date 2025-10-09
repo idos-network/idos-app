@@ -20,7 +20,8 @@
     "db:setup": "createdb idos_dev && npm run db:generate && npm run db:migrate",
     "db:populate-quests": "tsx scripts/populate-quests.ts",
     "postinstall": "patch-package",
-    "facetec-browser-sdk": "live-server --host=localhost --port=8000"
+    "facetec-browser-sdk": "live-server --host=localhost --port=8000",
+    "preinstall": "npm config set @idos-network:registry https://pkg.pr.new/"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-beta.2",
