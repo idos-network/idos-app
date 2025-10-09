@@ -29,11 +29,9 @@ export default function AddCredential() {
   const { state, setState, loading, setLoading, error } = useStepState();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { showToast } = useToast();
-  const { selector } = useNearWallet();
   const { referralCode } = useReferralCode();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const { signMessageAsync } = useSignMessage();
   const { completeQuest } = useCompleteQuest();
   const { nextStep } = useOnboardingStore();
   const { data: userId } = useUserId();
