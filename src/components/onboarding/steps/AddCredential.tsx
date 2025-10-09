@@ -89,13 +89,12 @@ export default function AddCredential() {
   async function handleAddCredential() {
     try {
       setState('creating');
+      console.log({ idOSLoggedIn, wallet });
       const idOSDWG: IdosDWG = await handleDWGCredential(
         setState,
         setLoading,
         idOSLoggedIn!,
         wallet,
-        wallet && wallet.type === 'near' ? await selector.wallet() : undefined,
-        signMessageAsync,
       );
       if (!idOSDWG) {
         setState('idle');

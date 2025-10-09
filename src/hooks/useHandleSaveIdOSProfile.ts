@@ -81,7 +81,6 @@ export function useHandleSaveIdOSProfile({
           ownershipProofMessage,
         );
         console.log('ownershipProofSignature', ownershipProofSignature);
-        // debugger;
         if (ownershipProofSignature) {
           publicKey = wallet.publicKey;
           walletPayload = {

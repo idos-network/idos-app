@@ -1,5 +1,5 @@
 import { useIdOSLoggedIn } from '@/context/idos-context';
-import { verifySignature } from '@/utils/verify-signatures';
+import { verifySignature } from '@idos-network/utils/crypto/signature-verification';
 import type { idOSWallet } from '@idos-network/client';
 import { useEffect, useState } from 'react';
 import invariant from 'tiny-invariant';
@@ -52,6 +52,7 @@ const createWallet = async (
 ): Promise<idOSWallet> => {
   const walletParams = createWalletParamsFactory(params);
   try {
+    console.log('adding evm wallet', walletParams);
     setIsLoading(true);
     await idOSClient.addWallet(walletParams);
   } catch (error) {

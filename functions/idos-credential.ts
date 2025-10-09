@@ -138,6 +138,7 @@ export default withSentry(async (request: Request, context: Context) => {
       );
 
       try {
+        console.log('creating credential', credentialParams, dwgParams);
         const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
           credentialParams,
           dwgParams,
@@ -150,7 +151,7 @@ export default withSentry(async (request: Request, context: Context) => {
 
         await setUserPopCredentialId(userId, result.originalCredential.id);
       } catch (e) {
-        console.log('DWG params on error:', dwgParams);
+        console.error('DWG params on error:', dwgParams);
         throw e;
       }
     });

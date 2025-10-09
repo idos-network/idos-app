@@ -85,6 +85,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     isLoading: isLoadingProfileQuest,
   } = useProfileQuestCompleted();
   useEffect(() => {
+    console.log({ idOSClient, signer, isLoadingSigner });
     if (idOSClient || !signer || isLoadingSigner) return;
 
     const setupClient = async () => {
