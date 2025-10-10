@@ -6,7 +6,7 @@ import z from 'zod';
 
 const EpochEntrySchema = z.object({
   xInfo: z.object({ username: z.string().min(1) }),
-  mindsharePercentage: z.number(),
+  relativeMindshare: z.number(),
 });
 
 const WallchainResponseSchema = z.object({
@@ -37,12 +37,12 @@ export default async (_req: Request) => {
   const rows = entries
     ?.map((entry) => ({
       username: entry?.xInfo?.username,
-      mindsharePercentage: Number(entry?.mindsharePercentage ?? 0),
+      relativeMindshare: Number(entry?.relativeMindshare ?? 0),
     }))
-    .filter((r) => r.username && !Number.isNaN(r.mindsharePercentage));
+    .filter((r) => r.username && !Number.isNaN(r.relativeMindshare));
 
   await updateWallchainLeaderboard(
-    rows as { username: string; mindsharePercentage: number }[],
+    rows as { username: string; relativeMindshare: number }[],
   );
 };
 

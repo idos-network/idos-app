@@ -121,9 +121,9 @@ export function LeaderboardTable({
                     {item.questPoints === 0 ? '-' : item.questPoints}
                   </td>
                   <td className="px-4 text-center">
-                    {item.mindsharePercentage === 0
+                    {item.relativeMindshare === 0
                       ? '-'
-                      : `${item.mindsharePercentage.toFixed(2)}%`}
+                      : `${(item.relativeMindshare * 100).toFixed(2)}%`}
                   </td>
                   <td className="px-4 text-center">
                     {item.socialPoints === 0 ? '-' : item.socialPoints}

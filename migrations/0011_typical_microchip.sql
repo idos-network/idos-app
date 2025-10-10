@@ -1,7 +1,7 @@
 CREATE TABLE "wallchain_leaderboard" (
 	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "wallchain_leaderboard_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
 	"username" varchar NOT NULL,
-	"mindsharePercentage" numeric DEFAULT 0.0 NOT NULL,
+	"relativeMindshare" numeric DEFAULT 0.0 NOT NULL,
 	"createdAt" timestamp DEFAULT now(),
 	"updatedAt" timestamp DEFAULT now(),
 	CONSTRAINT "wallchain_leaderboard_username_unique" UNIQUE("username")
@@ -62,14 +62,14 @@ CREATE MATERIALIZED VIEW "public"."leaderboard_view" AS (
   wallchain_matches AS (
     SELECT 
       u."id" as "userId",
-      wl."mindsharePercentage"
+      wl."relativeMindshare"
     FROM "users" u
     JOIN "wallchain_leaderboard" wl ON wl."username" = COALESCE(NULLIF(u."xHandle", ''), u."name")
   ),
   wallchain_unmatched AS (
     SELECT 
       wl."username" as "name",
-      wl."mindsharePercentage",
+      wl."relativeMindshare",
       NULL::varchar as "userId"
     FROM "wallchain_leaderboard" wl
     WHERE NOT EXISTS (
@@ -88,35 +88,35 @@ CREATE MATERIALIZED VIEW "public"."leaderboard_view" AS (
     COALESCE(NULLIF(u."xHandle", ''), u."name") as "name",
     u."xHandle",
     COALESCE(qpr.quest_points, 0) as "questPoints",
-    COALESCE(tqp.total_points, 0) * COALESCE(wm."mindsharePercentage"::numeric, 0) / 100 as "socialPoints",
+    COALESCE(tqp.total_points, 0) * COALESCE(wm."relativeMindshare"::numeric, 0) as "socialPoints",
     0 as "contributionPoints",
     COALESCE(qpr."referralCount", 0) as "referralCount",
-     COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."mindsharePercentage"::numeric, 0) / 100 + 0 as "totalPoints",
-     DENSE_RANK() OVER (ORDER BY COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."mindsharePercentage"::numeric, 0) / 100 DESC) as "rank",
-    COALESCE(wm."mindsharePercentage", '0.0') as "mindsharePercentage"
+     COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."relativeMindshare"::numeric, 0) + 0 as "totalPoints",
+     DENSE_RANK() OVER (ORDER BY COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."relativeMindshare"::numeric, 0) DESC) as "rank",
+    COALESCE(wm."relativeMindshare", '0.0') as "relativeMindshare"
   FROM "users" u
   LEFT JOIN quest_points_with_referrals qpr ON qpr."userId" = u."id"
   LEFT JOIN wallchain_matches wm ON wm."userId" = u."id"
   CROSS JOIN total_quest_points tqp
-  WHERE COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."mindsharePercentage"::numeric, 0) / 100 >= 1
+  WHERE COALESCE(qpr.quest_points, 0) + COALESCE(tqp.total_points, 0) * COALESCE(wm."relativeMindshare"::numeric, 0) >= 1
   
   UNION ALL
   
   SELECT 
-    (SELECT COUNT(*) FROM "users") + ROW_NUMBER() OVER (ORDER BY wu."mindsharePercentage" DESC) as "id",
+    (SELECT COUNT(*) FROM "users") + ROW_NUMBER() OVER (ORDER BY wu."relativeMindshare" DESC) as "id",
     wu."userId",
     wu."name",
     NULL::varchar as "xHandle",
     0 as "questPoints",
-    COALESCE(tqp.total_points, 0) * COALESCE(wu."mindsharePercentage"::numeric, 0) / 100 as "socialPoints",
+    COALESCE(tqp.total_points, 0) * COALESCE(wu."relativeMindshare"::numeric, 0) as "socialPoints",
     0 as "contributionPoints",
     0 as "referralCount",
-    0 + COALESCE(tqp.total_points, 0) * COALESCE(wu."mindsharePercentage"::numeric, 0) / 100 + 0 as "totalPoints",
+    0 + COALESCE(tqp.total_points, 0) * COALESCE(wu."relativeMindshare"::numeric, 0) + 0 as "totalPoints",
     0 as "rank",
-    wu."mindsharePercentage"
+    wu."relativeMindshare"
   FROM wallchain_unmatched wu
   CROSS JOIN total_quest_points tqp
-  WHERE COALESCE(tqp.total_points, 0) * COALESCE(wu."mindsharePercentage"::numeric, 0) / 100 >= 1
+  WHERE COALESCE(tqp.total_points, 0) * COALESCE(wu."relativeMindshare"::numeric, 0) >= 1
   
   ORDER BY "totalPoints" DESC, "rank" ASC, "name" ASC
 );

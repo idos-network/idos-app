@@ -3,7 +3,7 @@ import { db, wallchainLeaderboard } from './index';
 
 export type WallchainLeaderboardRow = {
   username: string;
-  mindsharePercentage: number;
+  relativeMindshare: number;
 };
 
 export async function updateWallchainLeaderboard(
@@ -19,7 +19,7 @@ export async function updateWallchainLeaderboard(
     await tx.insert(wallchainLeaderboard).values(
       rows.map((r) => ({
         username: r.username,
-        mindsharePercentage: r.mindsharePercentage.toString(),
+        relativeMindshare: r.relativeMindshare.toString(),
       })),
     );
   });
