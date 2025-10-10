@@ -12,7 +12,7 @@ export default function WalletAddButton() {
     <div className="flex flex-col gap-2 items-start">
       <SmallPrimaryButton
         icon={<AddIcon />}
-        onClick={() => handleOpenWalletPopup('stellar,xrpl')}
+        onClick={() => handleOpenWalletPopup()}
         disabled={addingWallet}
         className="bg-aquamarine-400 text-neutral-950 hover:bg-aquamarine-600"
       >

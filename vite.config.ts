@@ -17,4 +17,13 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      external: (id) => {
+        // Externalize solid-js dependencies for devtools
+        if (id.includes('solid-js')) return true;
+        return false;
+      },
+    },
+  },
 });

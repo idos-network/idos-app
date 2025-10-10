@@ -6,7 +6,6 @@ import {
   handleDWGCredential,
 } from '@/handlers/idos-credential';
 import { useCompleteQuest } from '@/hooks/useCompleteQuest';
-import { useNearWallet } from '@/hooks/useNearWallet';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import CredentialIcon from '@/icons/credential';
@@ -17,7 +16,6 @@ import { queryClient } from '@/providers/tanstack-query/query-client';
 import { clearUserDataFromLocalStorage } from '@/storage/idos-profile';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import { useEffect } from 'react';
-import { useSignMessage } from 'wagmi';
 import StepperButton from '../components/StepperButton';
 import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
@@ -29,11 +27,9 @@ export default function AddCredential() {
   const { state, setState, loading, setLoading, error } = useStepState();
   const idOSLoggedIn = useIdOSLoggedIn();
   const { showToast } = useToast();
-  const { selector } = useNearWallet();
   const { referralCode } = useReferralCode();
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
-  const { signMessageAsync } = useSignMessage();
   const { completeQuest } = useCompleteQuest();
   const { nextStep } = useOnboardingStore();
   const { data: userId } = useUserId();
@@ -89,13 +85,12 @@ export default function AddCredential() {
   async function handleAddCredential() {
     try {
       setState('creating');
+      console.log({ idOSLoggedIn, wallet });
       const idOSDWG: IdosDWG = await handleDWGCredential(
         setState,
         setLoading,
         idOSLoggedIn!,
         wallet,
-        wallet && wallet.type === 'near' ? await selector.wallet() : undefined,
-        signMessageAsync,
       );
       if (!idOSDWG) {
         setState('idle');

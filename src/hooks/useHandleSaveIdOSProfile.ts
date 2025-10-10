@@ -5,7 +5,10 @@ import { env } from '@/env';
 import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { signNearMessage } from '@/utils/near/near-signature';
 import { signStellarMessage } from '@/utils/stellar/stellar-signature';
-import { verifySignature } from '@/utils/verify-signatures';
+import {
+  verifySignature,
+  type WalletSignature,
+} from '@idos-network/utils/crypto/signature-verification';
 import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
 import * as GemWallet from '@gemwallet/api';
 import { useMutation } from '@tanstack/react-query';
@@ -13,13 +16,6 @@ import { ethers } from 'ethers';
 import { useSignMessage } from 'wagmi';
 import { useNearWallet } from './useNearWallet';
 import { lookLikeAnEvmAddress } from '@/components/NotaBank/components/LegacyUsersMigrator';
-
-export type WalletPayload = {
-  address: string;
-  signature: string;
-  public_key: string[];
-  message: string;
-};
 
 export function useHandleSaveIdOSProfile({
   onNext,
@@ -47,7 +43,7 @@ export function useHandleSaveIdOSProfile({
       const ownershipProofMessage = env.VITE_OWNERSHIP_PROOF_MESSAGE;
 
       let ownershipProofSignature;
-      let walletPayload: WalletPayload | null = null;
+      let walletPayload: WalletSignature | null = null;
       let publicKey;
 
       setState('waiting_signature');
@@ -88,6 +84,7 @@ export function useHandleSaveIdOSProfile({
           wallet,
           ownershipProofMessage,
         );
+        console.log('ownershipProofSignature', ownershipProofSignature);
         if (ownershipProofSignature) {
           publicKey = wallet.publicKey;
           walletPayload = {

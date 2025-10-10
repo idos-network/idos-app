@@ -7,7 +7,6 @@ import {
   WalletNetwork,
   xBullModule,
 } from '@creit.tech/stellar-wallets-kit';
-import { KwilSigner } from '@kwilteam/kwil-js';
 import { StrKey } from '@stellar/stellar-base';
 
 function getSelectedWalletId() {
@@ -33,46 +32,10 @@ export const signStellarMessage = async (
   message: string,
 ) => {
   if (!wallet.address || !wallet.publicKey) return;
-  // Encode the message as base64 (stellarKit expects this)
-  const messageBase64 = Buffer.from(message).toString('base64');
-
-  const result = await stellarKit.signMessage(messageBase64);
-
-  let signedMessage = Buffer.from(result.signedMessage, 'base64');
-
-  if (signedMessage.length > 64) {
-    signedMessage = Buffer.from(signedMessage.toString(), 'base64');
-  }
-
+  const result = await stellarKit.signMessage(message);
+  const signedMessage = Buffer.from(result.signedMessage, 'base64');
   const signatureHex = signedMessage.toString('hex');
+  console.log('signatureHex', signatureHex);
 
   return signatureHex;
-};
-
-export const createStellarSigner = async (
-  walletPublicKey: string,
-  walletAddress: string,
-) => {
-  const stellarSigner = new KwilSigner(
-    async (msg: Uint8Array): Promise<Uint8Array> => {
-      const messageBase64 = Buffer.from(msg).toString('base64');
-      const result = await stellarKit.signMessage(messageBase64);
-
-      let signedMessage = Buffer.from(result.signedMessage, 'base64');
-
-      if (signedMessage.length > 64) {
-        signedMessage = Buffer.from(signedMessage.toString(), 'base64');
-      }
-      return signedMessage;
-    },
-    walletPublicKey as string,
-    'ed25519',
-  );
-  try {
-    // @ts-expect-error publicAddress is not typed
-    stellarSigner.publicAddress = walletAddress;
-  } catch (error) {
-    console.error('error setting public address', error);
-  }
-  return stellarSigner;
 };

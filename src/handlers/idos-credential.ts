@@ -2,19 +2,12 @@ import { createIdOSCredential } from '@/api/idos-credential';
 import { getTime } from '@/api/time';
 import { env } from '@/env';
 import type { IdosDWG } from '@/interfaces/idos-credential';
-import { signNearMessage } from '@/utils/near/near-signature';
-import { signStellarMessage } from '@/utils/stellar/stellar-signature';
-import { signGemWalletTx } from '@/utils/xrpl/xrpl-signature';
-import * as GemWallet from '@gemwallet/api';
 import type { idOSClientLoggedIn } from '@idos-network/client';
-import type { Wallet as NearWallet } from '@near-wallet-selector/core';
 export async function handleDWGCredential(
   setState: (state: string) => void,
   setLoading: (loading: boolean) => void,
   withSigner: idOSClientLoggedIn,
   wallet: any,
-  nearWallet: NearWallet | undefined,
-  signMessageAsync?: (args: { message: string }) => Promise<string>,
 ) {
   try {
     setState('idle');
@@ -26,7 +19,7 @@ export async function handleDWGCredential(
 
     const delegatedWriteGrant = {
       owner_wallet_identifier:
-        wallet.type === 'xrpl' ? wallet.address : wallet.publicKey,
+        wallet.type === 'near' ? wallet.publicKey : wallet.address,
       grantee_wallet_identifier: env.VITE_GRANTEE_WALLET_ADDRESS,
       issuer_public_key: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
       id: crypto.randomUUID(),
@@ -39,23 +32,11 @@ export async function handleDWGCredential(
       await withSigner.requestDWGMessage(delegatedWriteGrant);
 
     setState('waiting_signature');
+    console.log({ withSigner });
 
     let signature;
     try {
-      if (wallet.type === 'evm') {
-        if (!signMessageAsync) {
-          throw new Error('signMessageAsync is required for EVM wallets');
-        }
-        signature = await signMessageAsync({
-          message: message,
-        });
-      } else if (wallet.type === 'near') {
-        signature = await signNearMessage(nearWallet!, message);
-      } else if (wallet.type === 'stellar') {
-        signature = await signStellarMessage(wallet, message);
-      } else if (wallet.type === 'xrpl') {
-        signature = await signGemWalletTx(GemWallet, message);
-      }
+      signature = await withSigner.messageSigner.signMessage(message);
     } catch (err: any) {
       setState('idle');
       setLoading(false);
@@ -71,6 +52,7 @@ export async function handleDWGCredential(
       signature: signature,
       message: message,
     };
+    console.log('idOSDWG', idOSDWG);
 
     return idOSDWG;
   } catch (error) {

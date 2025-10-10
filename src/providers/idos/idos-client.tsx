@@ -7,7 +7,6 @@ import { useProfileStore } from '@/stores/profile-store';
 import { useEthersSigner } from '@/hooks/useEthersSigner';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { _idOSClient, useIdosStore } from '@/stores/idosStore';
-import { createStellarSigner } from '@/utils/stellar/stellar-signature';
 import { useQuery } from '@tanstack/react-query';
 import { saveNewUserToLocalStorage } from '@/storage/idos-profile';
 import { useHasStakingCredential } from '@/components/onboarding/OnboardingStepper';
@@ -54,10 +53,7 @@ const useSigner = () => {
             stellarWallet.address &&
             stellarWallet.kit
           ) {
-            _signer = await createStellarSigner(
-              stellarWallet.publicKey as string,
-              stellarWallet.address as string,
-            );
+            _signer = stellarWallet.kit;
           }
         }
         if (walletConnector.connectedWallet.type === 'xrpl') {
@@ -66,8 +62,10 @@ const useSigner = () => {
             return GemWallet;
           }
         }
+        console.log('signer', _signer);
         return _signer;
       } catch (error) {
+        console.error('Failed to get signer:', error);
         return null;
       }
     },
@@ -87,6 +85,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
     isLoading: isLoadingProfileQuest,
   } = useProfileQuestCompleted();
   useEffect(() => {
+    console.log({ idOSClient, signer, isLoadingSigner });
     if (idOSClient || !signer || isLoadingSigner) return;
 
     const setupClient = async () => {
@@ -94,6 +93,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
         setSettingSigner(true);
         console.log('setupClient');
         const client = await _idOSClient.createClient();
+        console.log('client', client);
         if (client.state === 'idle') {
           const _withSigner = await client.withUserSigner(signer);
           // setWithSigner(_withSigner);
@@ -118,6 +118,7 @@ export function IDOSClientProvider({ children }: PropsWithChildren) {
 
             setIdOSClient(client);
           } else {
+            console.log('setting idOS client with signer', _withSigner);
             setIdOSClient(_withSigner);
           }
         }

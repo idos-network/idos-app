@@ -19,7 +19,7 @@ export default withSentry(async (request: Request, _context: Context) => {
   if (!usableCredential)
     return new Response(JSON.stringify({ error: "No credential were shared with this user" }), { status: 400 });
 
-  const credentialContent = await consumer.getSharedCredentialContentDecrypted(usableCredential.id);
+  const credentialContent = await consumer.getCredentialSharedContentDecrypted(usableCredential.id);
 
   if (!credentialContent)
     return new Response(JSON.stringify({

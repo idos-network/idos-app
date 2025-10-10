@@ -2,7 +2,7 @@ import { handleSaveUserWallets } from '@/handlers/user-wallets';
 import { useToast } from '@/hooks/useToast';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { useIdosStore } from '@/stores/idosStore';
-import { verifySignature } from '@/utils/verify-signatures';
+import { verifySignature } from '@idos-network/utils/crypto/signature-verification';
 import type { idOSClientLoggedIn, idOSWallet } from '@idos-network/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -142,7 +142,9 @@ export default function WalletAdder() {
     if (idOSClient.state !== 'logged-in') return;
     (async () => {
       setAddingWallet(true);
+      console.log('verifying signature', walletPayload);
       const isValid = await verifySignature(walletPayload);
+      console.log('signature verified', isValid);
       if (!isValid) {
         showToast({
           type: 'error',

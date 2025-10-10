@@ -63,17 +63,17 @@ export function WalletConnector() {
         iconSrc="/near.webp"
       />
 
-      {/* <WalletConnectorButton
+      <WalletConnectorButton
         onClick={() => walletConnector.connectStellar()}
         label="Connect with Stellar"
         iconSrc="/stellar.webp"
-      /> */}
+      />
 
-      {/* <WalletConnectorButton
+      <WalletConnectorButton
         onClick={() => walletConnector.connectXRPL()}
         label="Connect with XRPL"
         iconSrc="/xrpl.webp"
-      /> */}
+      />
     </div>
   );
 }
