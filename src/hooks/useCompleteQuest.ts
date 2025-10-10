@@ -1,13 +1,15 @@
 import { completeUserQuest } from '@/api/user-quests';
 import { useToast } from '@/hooks/useToast';
-import { useUserPoints } from '@/hooks/useUserPoints';
 import { getQuestByName } from '@/utils/quests';
 import { useCallback } from 'react';
 import { useQuests } from './useQuests';
+import { useLeaderboard } from './useLeaderboard';
+import { useUserId } from './useUserId';
 
 export const useCompleteQuest = () => {
   const { showToast } = useToast();
-  const { refetch: refetchPoints } = useUserPoints();
+  const { data: userId } = useUserId();
+  const { refetch: refetchUserLeaderboard } = useLeaderboard({ userId });
   const { refetch: refetchQuests } = useQuests();
 
   const completeQuest = useCallback(
@@ -16,7 +18,6 @@ export const useCompleteQuest = () => {
         const result = await completeUserQuest(userId, questName);
         const quest = getQuestByName(questName);
         if (questName === 'create_idos_profile') {
-          refetchPoints();
           refetchQuests();
           return;
         }
@@ -29,7 +30,7 @@ export const useCompleteQuest = () => {
             icon: false,
           });
 
-          refetchPoints();
+          refetchUserLeaderboard();
           refetchQuests();
         } else {
           showToast({
@@ -44,7 +45,7 @@ export const useCompleteQuest = () => {
         });
       }
     },
-    [showToast, refetchPoints, refetchQuests],
+    [showToast, refetchUserLeaderboard, refetchQuests],
   );
 
   return { completeQuest };

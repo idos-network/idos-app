@@ -1,7 +1,14 @@
-import { useUserPoints } from '@/hooks/useUserPoints';
+import { useUserId } from '@/hooks/useUserId';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
+import Spinner from '../Spinner';
 
 export default function PointsFrame() {
-  const { points } = useUserPoints();
+  const { data: userId } = useUserId();
+  const { userPosition, isLoading } = useLeaderboard({ userId });
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="flex gap-4 w-full">
@@ -12,7 +19,7 @@ export default function PointsFrame() {
         <div className="flex gap-2 items-center h-8">
           <img src="/idos-points-logo.png" alt="Points" className="h-8 w-8" />
           <div className="text-3xl font-medium text-neutral-50">
-            {points.totalPoints}
+            {userPosition?.totalPoints}
           </div>
         </div>
       </div>
@@ -43,7 +50,7 @@ export default function PointsFrame() {
                 <div className="absolute -left-2 -top-2 w-7 h-7 bg-[#09090933] rounded-full"></div>
               </div>
               <span className="text-neutral-900 font-['Inter'] text-sm font-medium ml-10">
-                {points.questPoints} Points
+                {userPosition?.questPoints} Points
               </span>
             </div>
 
@@ -54,10 +61,9 @@ export default function PointsFrame() {
                 <div className="absolute -left-2 -top-2 w-7 h-7 bg-[#09090933] rounded-full"></div>
               </div>{' '}
               <span className="text-neutral-900 font-['Inter'] text-sm font-medium ml-10">
-                {/* TODO: Update this when social points are implemented */}
-                {points.socialPoints === 0
+                {userPosition?.socialPoints === 0
                   ? '-'
-                  : `${points.socialPoints} Points`}{' '}
+                  : `${userPosition?.socialPoints} Points`}{' '}
               </span>
             </div>
 
@@ -69,9 +75,9 @@ export default function PointsFrame() {
               </div>
               <span className="text-neutral-50 font-['Inter'] text-sm font-medium ml-10">
                 {/* TODO: Update this when contribution points are implemented */}
-                {points.contributionPoints === 0
+                {userPosition?.contributionPoints === 0
                   ? '-'
-                  : `${points.contributionPoints} Points`}{' '}
+                  : `${userPosition?.contributionPoints} Points`}{' '}
               </span>
             </div>
           </div>

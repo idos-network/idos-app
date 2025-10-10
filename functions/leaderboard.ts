@@ -16,6 +16,7 @@ export interface LeaderboardEntry {
   questPoints: number;
   socialPoints: number;
   contributionPoints: number;
+  relativeMindshare: number;
   referralCount: number;
 }
 
@@ -44,6 +45,9 @@ async function getPaginatedLeaderboard(
       socialPoints: entry.socialPoints,
       contributionPoints: entry.contributionPoints,
       referralCount: entry.referralCount,
+      relativeMindshare: entry.relativeMindshare
+        ? parseFloat(entry.relativeMindshare)
+        : 0,
     }),
   );
 
@@ -83,6 +87,9 @@ export default withSentry(async (request: Request) => {
       socialPoints: userPosition.socialPoints,
       contributionPoints: userPosition.contributionPoints,
       referralCount: userPosition.referralCount,
+      relativeMindshare: userPosition.relativeMindshare
+        ? parseFloat(userPosition.relativeMindshare)
+        : 0,
     };
 
     return new Response(JSON.stringify({ data: userEntry }), {
