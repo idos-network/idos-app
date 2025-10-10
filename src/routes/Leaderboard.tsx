@@ -1,3 +1,4 @@
+import Countdown from '@/components/leaderboard/Countdown';
 import ConnectModal from '@/components/leaderboard/ConnectModal';
 import { GeneralLeaderboard } from '@/components/leaderboard/GeneralLeaderboard';
 import { LeaderboardTitle } from '@/components/leaderboard/LeaderboardTitle';
@@ -103,7 +104,13 @@ export function Leaderboard() {
   }
 
   return (
-    <div className="max-w-[1285px] mx-auto p-6 space-y-14">
+    <div className="max-w-[1310px] mx-auto p-6 space-y-14">
+      <div className="flex justify-between w-full bg-neutral-800/60 rounded-2xl p-6 border border-[#A0F73C]">
+        <div className="flex flex-col justify-center text-lg text-neutral-50 font-normal font-['Inter']">
+          idOS App Leaderboard Epoch I ends in
+        </div>
+        <Countdown targetDate={new Date(Date.UTC(2025, 9, 23, 23, 58, 59))} />
+      </div>
       <div className="flex flex-col w-full gap-5">
         <LeaderboardTitle
           title="My total idOS Points"
