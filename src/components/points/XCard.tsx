@@ -90,7 +90,7 @@ export default function XCard() {
             icon={<XIcon className="w-4 h-4" />}
             onClick={handleSignInClick}
           >
-            Sign in with
+            Connect with
           </SignInXButton>
         )}
       </div>

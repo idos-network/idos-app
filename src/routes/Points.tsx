@@ -58,7 +58,7 @@ export function Points() {
 
         <div className="flex flex-col gap-6 justify-between">
           <span className="flex font-medium text-xl text-neutral-300 mt-10">
-            Talk about idOS on X to get{' '}
+            Write about idOS on X to get{' '}
             <span className="text-[#A0F73C] ml-1">Social Points</span>
           </span>
           <div className="flex items-center gap-5">
