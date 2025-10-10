@@ -2,9 +2,13 @@ import { getUserById } from '@/db/user';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
 import { createResponse } from './utils/response';
+import { withSentry } from './utils/sentry';
+import * as Sentry from "@sentry/aws-serverless";
 
-export default async (_request: Request, context: Context) => {
+export default withSentry(async (_request: Request, context: Context) => {
   const { userId } = context.params;
+
+  Sentry.setUser({ id: userId });
 
   if (!userId) {
     throw new UserNotFoundError(userId);
@@ -18,12 +22,9 @@ export default async (_request: Request, context: Context) => {
 
   return createResponse({
     // If true liveness was enrolled and we should ask for DWG
-    faceSignHash: !!user.faceSignHash,
-
-    // If true, user completed full onboarding incl. DWG
-    faceSignDone: !!user.faceSignDone,
+    faceSignDone: user.faceSignUserId !== null,
   }, 200);
-};
+});
 
 export const config: Config = {
   path: '/api/face-sign/:userId/status',

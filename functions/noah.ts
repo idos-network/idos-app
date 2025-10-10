@@ -1,7 +1,8 @@
-import type { Credentials } from '@idos-network/consumer';
+import type { Credential } from '@idos-network/consumer';
 import type { Config, Context } from '@netlify/functions';
 import { goTry } from 'go-try';
 import invariant from 'tiny-invariant';
+import { withSentry } from './utils/sentry';
 
 function formatDate(dateString?: string | Date): string | undefined {
   if (!dateString) return undefined;
@@ -88,7 +89,7 @@ type NoahResponse = {
 
 async function createNoahCustomer(
   userAddress: string,
-  credentialSubject: Credentials['credentialSubject'],
+  credentialSubject: Credential['credentialSubject'],
   origin: string,
 ) {
   const noahApiKey = process.env.NOAH_API_KEY;
@@ -183,7 +184,7 @@ async function createNoahCustomer(
   return data;
 }
 
-export default async function handler(request: Request, _context: Context) {
+export default withSentry(async (request: Request, _context: Context) => {
   const origin = request.url.split('?')[0];
   const { searchParams } = new URL(request.url);
   const credentialId = searchParams.get('credentialId');
@@ -208,7 +209,7 @@ export default async function handler(request: Request, _context: Context) {
   }
 
   const [credentialError, credential] = await goTry<{
-    credentialContent: Credentials['credentialSubject'];
+    credentialContent: Credential['credentialSubject'];
   }>(async () => {
     return await fetch(`${apiUrl}/get-shared-credential?userId=${userId}`).then(
       (res) => res.json(),
@@ -231,7 +232,7 @@ export default async function handler(request: Request, _context: Context) {
     url: customer.HostedURL,
     currentUrl: request.url,
   });
-}
+});
 
 export const config: Config = {
   path: '/api/noah',

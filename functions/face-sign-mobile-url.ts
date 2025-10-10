@@ -1,8 +1,9 @@
 import { generateFaceScanToken } from '@/db/user';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
+import { withSentry } from './utils/sentry';
 
-export default async (_request: Request, context: Context) => {
+export default withSentry(async (_request: Request, context: Context) => {
   // TODO: Fix after authorization is implemented
   const { userId } = context.params;
 
@@ -20,7 +21,7 @@ export default async (_request: Request, context: Context) => {
     JSON.stringify({ url: url.toString() }),
     { status: 200 },
   );
-};
+});
 
 export const config: Config = {
   path: '/api/face-sign/:userId/mobile-url',

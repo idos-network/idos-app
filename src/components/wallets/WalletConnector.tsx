@@ -26,15 +26,15 @@ function WalletConnectorButton({
         {evmWallet ? (
           <div className="flex items-center">
             <img
-              src="/arbitrum.png"
+              src="/arbitrum.webp"
               className="border-2 border-[#1a1a1a] rounded-full object-cover w-9 h-9 group-hover:border-neutral-800"
             />
             <img
-              src="/ethereum.png"
+              src="/ethereum.webp"
               className="border-2 border-[#1a1a1a] rounded-full object-cover w-9 h-9 -ml-2 group-hover:border-neutral-800"
             />
             <img
-              src="/wallet-connect-icon.png"
+              src="/wallet-connect-icon.webp"
               className="border-2 border-[#1a1a1a] rounded-full object-cover w-9 h-9 -ml-2 group-hover:border-neutral-800"
             />
           </div>
@@ -60,19 +60,19 @@ export function WalletConnector() {
       <WalletConnectorButton
         onClick={() => walletConnector.connectNear()}
         label="Connect with NEAR"
-        iconSrc="/near.png"
+        iconSrc="/near.webp"
       />
 
-      {/* <WalletConnectorButton
+      <WalletConnectorButton
         onClick={() => walletConnector.connectStellar()}
         label="Connect with Stellar"
-        iconSrc="/stellar.png"
-      /> */}
+        iconSrc="/stellar.webp"
+      />
 
       <WalletConnectorButton
         onClick={() => walletConnector.connectXRPL()}
         label="Connect with XRPL"
-        iconSrc="/xrpl.png"
+        iconSrc="/xrpl.webp"
       />
     </div>
   );

@@ -10,11 +10,9 @@ import { useUserWallets } from '@/components/profile/wallets/WalletsCard';
 import Spinner from '@/components/Spinner';
 import { isProduction } from '@/env';
 import { useToast } from '@/hooks/useToast';
-import { useUserMainEvm } from '@/hooks/useUserMainEvm';
 import { useIdosStore } from '@/stores/idosStore';
 
 export function IdosProfile() {
-  const { refetch: refetchMainEvm } = useUserMainEvm();
   const { showToast } = useToast();
   const { settingSigner } = useIdosStore();
   const { data: wallets = [] } = useUserWallets();
@@ -24,11 +22,15 @@ export function IdosProfile() {
   const { isLoading: isLoadingUserId } = useUserId();
   const hasStakingCredential =
     Array.isArray(stakingCreds) && !!stakingCreds?.length;
-  const { data: hasFaceSign } = useHasFaceSign();
+  const { data: hasFaceSign, isLoading: isLoadingFaceSign } = useHasFaceSign();
 
-  const newLoading = stakingCredsLoading || isLoadingUserId || settingSigner;
+  const newLoading =
+    stakingCredsLoading ||
+    isLoadingUserId ||
+    settingSigner ||
+    isLoadingFaceSign;
 
-  const showProfile = hasEvmWallet && hasStakingCredential;
+  const showProfile = hasEvmWallet && hasStakingCredential && hasFaceSign;
   if (newLoading) {
     return (
       <div className="container mx-auto flex justify-center items-center h-screen -translate-y-20">
@@ -55,7 +57,7 @@ export function IdosProfile() {
               onSuccess={(msg) => showToast({ type: 'success', message: msg })}
             />
             {!isProduction && !hasFaceSign && <FaceSignBanner />}
-            <WalletsCard refetchMainEvm={refetchMainEvm} />
+            <WalletsCard />
           </div>
         </div>
       ) : (

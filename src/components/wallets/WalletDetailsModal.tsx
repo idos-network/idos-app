@@ -3,6 +3,8 @@ import SmallSecondaryButton from '@/components/SmallSecondaryButton';
 import { useToast } from '@/hooks/useToast';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import LogoutIcon from '@/icons/logout';
+import { clearUserDataFromLocalStorage } from '@/storage/idos-profile';
+import { useIdosStore } from '@/stores/idosStore';
 import truncateAddress from '@/utils/address';
 import { addressGradient } from '@/utils/gradient';
 import {
@@ -18,7 +20,6 @@ interface WalletDetailsModalProps {
   address: string;
   profileStatus: string;
   onClose: () => void;
-  balance: string;
 }
 
 export default function WalletDetailsModal({
@@ -26,11 +27,11 @@ export default function WalletDetailsModal({
   network,
   address,
   profileStatus,
-  balance,
   onClose,
 }: WalletDetailsModalProps) {
   const { disconnect } = useWalletConnector();
   const { showToast } = useToast();
+  const { resetStore } = useIdosStore();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -62,9 +63,11 @@ export default function WalletDetailsModal({
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
+    clearUserDataFromLocalStorage();
     try {
       await disconnect();
       localStorage.removeItem('onboardingToastShown');
+      await resetStore();
       onClose();
     } catch (error) {
       showToast({
@@ -108,9 +111,11 @@ export default function WalletDetailsModal({
               <span className="text-xl font-semibold text-neutral-50">
                 {network === 'near' ? address : truncateAddress(address)}
               </span>
-              <span className="text-sm text-neutral-400 font-['Inter']">
+              {/* Balance */}
+              {/* <span className="text-sm text-neutral-400 font-['Inter']">
                 {balance}
               </span>
+              */}
               {/* Status */}
             </div>
             <div

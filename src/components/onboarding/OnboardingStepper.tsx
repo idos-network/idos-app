@@ -1,6 +1,7 @@
 import { getUserById } from '@/api/user';
 import { useIdOS } from '@/context/idos-context';
 import { env } from '@/env';
+import { getCurrentUserFromLocalStorage } from '@/storage/idos-profile';
 import { useOnboardingStore } from '@/stores/onboarding-store';
 import type {
   idOSClient,
@@ -16,6 +17,7 @@ import {
   GetStarted,
   VerifyIdentity,
 } from './steps';
+import { useProfileStore } from '@/stores/profile-store';
 
 const canAccessWalletIdentifier = (idOSClient: idOSClient | null) =>
   !!idOSClient && ['with-user-signer', 'logged-in'].includes(idOSClient.state);
@@ -45,12 +47,14 @@ export const useHasStakingCredential = () => {
     queryKey: ['has-staking-credentials', walletIdentifier],
     queryFn: async () => {
       if (idOSClient && idOSClient.state === 'logged-in') {
+        const publicKeys = env.VITE_ISSUER_SIGNING_PUBLIC_KEYS.split(',').map(
+          (k) => k.trim(),
+        );
+
         const result = await idOSClient.filterCredentials({
-          acceptedIssuers: [
-            {
-              authPublicKey: env.VITE_ISSUER_SIGNING_PUBLIC_KEY,
-            },
-          ],
+          acceptedIssuers: publicKeys.map((authPublicKey) => ({
+            authPublicKey,
+          })),
         });
         return result;
       }
@@ -86,7 +90,21 @@ export const useHasFaceSign = () => {
     queryFn: () => {
       return userId
         ? getUserById(userId)
-            .then((res) => res[0].faceSignHash)
+            .then((res) => !!res[0].faceSignUserId)
+            .catch(() => null)
+        : null;
+    },
+    enabled: !!userId,
+  });
+};
+export const useHasMainEvm = () => {
+  const { data: userId } = useUserId();
+  return useQuery({
+    queryKey: ['hasMainEvm', userId],
+    queryFn: () => {
+      return userId
+        ? getUserById(userId)
+            .then((res) => res[0].mainEvm)
             .catch(() => null)
         : null;
     },
@@ -110,25 +128,38 @@ export default function OnboardingStepper() {
     Array.isArray(stakingCreds) && !!stakingCreds?.length;
   const hasEvmWallet = wallets.find((wallet) => wallet.wallet_type === 'EVM');
   const { stepIndex, setStepIndex } = useOnboardingStore();
-  const { data: userId } = useUserId();
+  const hasUserEncryptionKey =
+    !!getCurrentUserFromLocalStorage()?.userEncryptionPublicKey;
+  const hasUserIdInLocalStorage = !!getCurrentUserFromLocalStorage()?.id;
+  const { isAuthenticated } = useProfileStore();
+  const initialeStep = useMemo(() => {
+    // User has been deleted from local storage after issuing a PoP credentials
+    if (!hasUserIdInLocalStorage && !hasUserEncryptionKey && !hasFaceSign) {
+      return 0;
+    }
 
-  const initialeStep = useMemo(
-    () =>
-      userId
-        ? hasFaceSign
-          ? hasStakingCredential
-            ? hasEvmWallet
-              ? null
-              : 4 // no EVM wallet
-            : 3 // no staking credential
-          : 2 // no face sign
-        : 0,
-    [hasEvmWallet, hasStakingCredential, stepIndex, hasFaceSign],
-  );
+    if (!hasUserEncryptionKey) return 1;
+    if (!hasFaceSign) return 2;
+    if (isAuthenticated) {
+      if (!hasStakingCredential) return 3;
+      if (!hasEvmWallet) return 4;
+    }
+
+    return stepIndex;
+  }, [
+    hasUserIdInLocalStorage,
+    hasUserEncryptionKey,
+    hasFaceSign,
+    hasStakingCredential,
+    hasEvmWallet,
+    isAuthenticated,
+    stepIndex,
+  ]);
 
   console.log({
     initialeStep,
     hasFaceSign,
+    isAuthenticated,
     hasStakingCredential,
     hasEvmWallet,
     stepIndex,

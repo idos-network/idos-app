@@ -11,13 +11,13 @@ export default function WalletBar({
   network,
   address,
   profileStatus,
-  balance,
+  //balance,
 }: {
   network: string;
   address: string;
   profileStatus: string;
   chainId?: number;
-  balance: string;
+  //balance: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const selectedNetwork =
@@ -39,7 +39,7 @@ export default function WalletBar({
         <div className="flex items-center gap-1.5 bg-neutral-800 rounded-full pr-4 pl-1 py-1">
           <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden">
             <img
-              src={`/${selectedNetwork.icon}.png`}
+              src={`/${selectedNetwork.icon}.webp`}
               alt={selectedNetwork.name}
               className="w-full h-full object-contain"
             />
@@ -63,7 +63,7 @@ export default function WalletBar({
         network={network}
         address={address}
         profileStatus={profileStatus}
-        balance={balance}
+        /*balance={balance}*/
         onClose={() => setIsModalOpen(false)}
       />
     </>

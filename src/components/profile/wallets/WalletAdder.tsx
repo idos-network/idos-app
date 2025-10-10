@@ -2,15 +2,20 @@ import { handleSaveUserWallets } from '@/handlers/user-wallets';
 import { useToast } from '@/hooks/useToast';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { useIdosStore } from '@/stores/idosStore';
-import { verifySignature } from '@/utils/verify-signatures';
+import { verifySignature } from '@idos-network/utils/crypto/signature-verification';
 import type { idOSClientLoggedIn, idOSWallet } from '@idos-network/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import invariant from 'tiny-invariant';
+import { useUserWallets } from './WalletsCard';
+import { lookLikeAnEvmAddress } from '@/components/NotaBank/components/LegacyUsersMigrator';
+import { updateUser } from '@/api/user';
+import { useHasMainEvm } from '@/components/onboarding/OnboardingStepper';
 
 const allowedOrigin = import.meta.env.VITE_EMBEDDED_WALLET_APP_URL;
 
-export const handleOpenWalletPopup = () => {
+// hidden_wallet example: "evm,near"
+export const handleOpenWalletPopup = (hiddenWallets: string = '') => {
   const url = allowedOrigin;
   invariant(url, 'VITE_EMBEDDED_WALLET_APP_URL is not set');
   const popupWidth = 400;
@@ -18,7 +23,7 @@ export const handleOpenWalletPopup = () => {
   const left = (window.screen.width - popupWidth) / 2;
   const top = (window.screen.height - popupHeight) / 2;
   window.open(
-    url,
+    `${url}?hidden_wallets=${hiddenWallets}`,
     'wallet-connection',
     `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=no`,
   );
@@ -82,6 +87,36 @@ export default function WalletAdder() {
   const [walletPayload, setWalletPayload] = useState<any>(null);
   const { idOSClient, setAddingWallet } = useIdosStore();
   const queryClient = useQueryClient();
+  const { data: idosWallets = [] } = useUserWallets();
+  const { data: hasMainEvm, isLoading: hasMainEvmLoading } = useHasMainEvm();
+  const idosEvmWallet = idosWallets.find(
+    (wallet) => wallet.wallet_type === 'EVM',
+  );
+
+  useEffect(() => {
+    if (!idOSClient || hasMainEvmLoading || hasMainEvm || !idosWallets.length)
+      return;
+    if (idOSClient.state !== 'logged-in') return;
+    if (idosEvmWallet) {
+      updateUser({
+        id: idOSClient.user.id,
+        mainEvm: lookLikeAnEvmAddress(idosEvmWallet?.address)
+          ? idosEvmWallet?.address
+          : '',
+      });
+      queryClient.invalidateQueries({ queryKey: ['user-wallets'] });
+      queryClient.invalidateQueries({
+        queryKey: ['hasMainEvm', idOSClient.user.id],
+      });
+    }
+  }, [
+    idosEvmWallet,
+    hasMainEvmLoading,
+    hasMainEvm,
+    idosWallets,
+    idOSClient,
+    queryClient,
+  ]);
 
   const { showToast } = useToast();
 
@@ -107,7 +142,9 @@ export default function WalletAdder() {
     if (idOSClient.state !== 'logged-in') return;
     (async () => {
       setAddingWallet(true);
+      console.log('verifying signature', walletPayload);
       const isValid = await verifySignature(walletPayload);
+      console.log('signature verified', isValid);
       if (!isValid) {
         showToast({
           type: 'error',

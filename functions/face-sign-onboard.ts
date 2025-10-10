@@ -2,10 +2,12 @@ import { updateUserFaceSign } from '@/db/user';
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
 import { createResponse } from './utils/response';
+import { withSentry } from './utils/sentry';
+import * as Sentry from "@sentry/aws-serverless";
 
 const facetecServer = process.env.FACETEC_SERVER as string;
 
-export default async (request: Request, context: Context) => {
+export default withSentry(async (request: Request, context: Context) => {
   // TODO: Get userID from token or session or whatever is available
   const { userId } = context.params;
 
@@ -33,6 +35,11 @@ export default async (request: Request, context: Context) => {
   const json = await response.json();
 
   if (!response.ok) {
+    // 400 are expected errors from FaceTec, like bad scan
+    if (response.status >= 500) {
+      Sentry.captureException("FaceSign server error: " + response.statusText);
+    }
+
     return createResponse(
       {
         error: true,
@@ -52,15 +59,26 @@ export default async (request: Request, context: Context) => {
     }, 400);
   }
 
-  await updateUserFaceSign(userId, json.faceSignUserId);
+  try {
+    await updateUserFaceSign(userId, json.faceSignUserId);
 
-  return createResponse({
-    success: true,
-    wasProcessed: true,
-    error: false,
-    scanResultBlob: json.scanResultBlob,
-  }, 200);
-};
+    return createResponse({
+      success: true,
+      wasProcessed: true,
+      error: false,
+      duplicate: false,
+      scanResultBlob: json.scanResultBlob,
+    }, 200);
+  } catch (e) {
+    return createResponse({
+      success: false,
+      wasProcessed: true,
+      error: true,
+      duplicate: true,
+      errorMessage: "Sorry, you have already created an idOS profile with FaceSign on another wallet. Please disconnect and reconnect with that original wallet.",
+    }, 400);
+  }
+});
 
 export const config: Config = {
   path: '/api/face-sign/:userId/onboard',

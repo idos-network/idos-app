@@ -4,9 +4,11 @@ import Spinner from '@/components/Spinner';
 import { useIdOS } from '@/context/idos-context';
 import { env } from '@/env';
 import { handleCreateIdOSProfile } from '@/handlers/idos-profile';
+import { handleSaveUserWallets } from '@/handlers/user-wallets';
 import { useWalletConnector } from '@/hooks/useWalletConnector';
 import FrameIcon from '@/icons/frame';
 import PersonIcon from '@/icons/person';
+import type { IdosWallet } from '@/interfaces/idos-profile';
 import { queryClient } from '@/providers/tanstack-query/query-client';
 import {
   getCurrentUserFromLocalStorage,
@@ -19,16 +21,29 @@ import StepperCards from '../components/StepperCards';
 import TextBlock from '../components/TextBlock';
 import TopBar from '../components/TopBar';
 import { useStepState } from './useStepState';
+import { useAuth } from '@/hooks/useAuth';
+import { useWalletIdentifier } from '../OnboardingStepper';
 
 const useLogin = () => {
   const { idOSClient, setIdOSClient } = useIdOS();
+
   return useMutation({
     mutationKey: ['login'],
     mutationFn: async () => {
       if (idOSClient && idOSClient.state === 'with-user-signer') {
-        const loggedIn = await idOSClient.logIn();
+        let loggedIn = null;
+        while (!loggedIn) {
+          try {
+            loggedIn = await idOSClient.logIn();
+          } catch (error) {
+            continue;
+          }
+        }
         if (loggedIn) {
           setIdOSClient(loggedIn);
+          const userWallets = await loggedIn.getWallets();
+          const walletsArray = userWallets as IdosWallet[];
+          handleSaveUserWallets(loggedIn.user.id, walletsArray);
         }
       }
       return Promise.resolve(undefined);
@@ -41,9 +56,10 @@ export default function VerifyIdentity() {
   const walletConnector = useWalletConnector();
   const wallet = walletConnector.isConnected && walletConnector.connectedWallet;
   const walletType = (wallet && wallet.type) || '';
-  const { mutate: login } = useLogin();
+  const { mutateAsync: login } = useLogin();
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const { idOSClient } = useIdOS();
+  const { authenticate } = useAuth();
 
   const currentUser = getCurrentUserFromLocalStorage();
   const userId =
@@ -56,8 +72,15 @@ export default function VerifyIdentity() {
   const publicKey = currentUser?.publicKey || '';
   const encryptionPasswordStore =
     currentUser?.encryptionPasswordStore || 'user';
+  const isLogged = idOSClient?.state === 'logged-in';
+  const { data: walletIdentifier } = useWalletIdentifier();
 
   const handleFaceSignSuccess = useCallback(async () => {
+    // in case user already have a profile (cleared db or having profile from another platform) just check if faceSignUserId exists again
+    if (isLogged) {
+      queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
+      return;
+    }
     updateUserStateInLocalStorage(userAddress, { humanVerified: true });
     setState('creating');
     const response = await handleCreateIdOSProfile(
@@ -75,15 +98,21 @@ export default function VerifyIdentity() {
       setState('idle');
     } else {
       await login();
+
+      let authenticated = false;
+      while (!authenticated) {
+        authenticated = await authenticate();
+      }
+
       await saveUser({
         id: userId,
         mainEvm: walletType === 'evm' ? userAddress : '',
         referrerCode: '',
-        faceSignHash: '',
-        faceSignUserId: null,
-        faceSignTokenCreatedAt: null,
       });
       queryClient.invalidateQueries({ queryKey: ['hasFaceSign', userId] });
+      queryClient.invalidateQueries({
+        queryKey: ['has-staking-credentials', walletIdentifier],
+      });
     }
   }, [
     userId,
@@ -98,6 +127,7 @@ export default function VerifyIdentity() {
     setState,
     updateUserStateInLocalStorage,
     handleCreateIdOSProfile,
+    isLogged,
   ]);
 
   return (
@@ -113,18 +143,32 @@ export default function VerifyIdentity() {
                   title="Verify you are a human"
                   subtitle={
                     <>
-                      In a moment, we'll ask you to follow some instructions for
-                      a liveness check.
-                      <br />
-                      This will let us know that this is you, without exposing
-                      your identity.
+                      In a moment, we’ll ask you to follow some instructions for
+                      a privacy-preserving proof of personhood and uniqueness
+                      check using idOS FaceSign. This will prove your wallet is
+                      controlled by a unique human.
                     </>
                   }
                 />
                 <div className="w-full h-full flex flex-row gap-5 min-h-[120px]">
                   <StepperCards
                     icon={<FrameIcon color="var(--color-aquamarine-400)" />}
-                    description="Pictures of your face and personal data stays encrypted and is never shared without your consent."
+                    description={
+                      <>
+                        All biometric data is solely processed in a secure
+                        enclave and idOS or other third parties have no access
+                        to it (unless you grant it) as described in more details
+                        here in the{' '}
+                        <a
+                          href="https://www.idos.network/legal/privacy-policy"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-aquamarine-400 underline text-sm"
+                        >
+                          Privacy Policy
+                        </a>
+                      </>
+                    }
                   />
                   <StepperCards
                     icon={
@@ -137,15 +181,17 @@ export default function VerifyIdentity() {
                     description="Once verified, your Proof of Personhood credential can be reused across other supported platforms."
                   />
                 </div>
-                <span className="text-neutral-400 w-[860px] text-base text-center font-normal font-['Urbanist']">
-                  For privacy, idOS allows{' '}
-                  <span className="text-aquamarine-400">
-                    multiple profiles system-wide
-                  </span>{' '}
-                  but lets users prove uniqueness when needed. <br />{' '}
-                  <span className="text-aquamarine-400">This app </span>{' '}
-                  prevents quest farming and sybil attacks by limiting each
-                  human to one idOS profile.
+                <span className="text-neutral-400 block mb-2 w-[860px] text-base text-center font-normal font-['Urbanist']">
+                  Learn more about idOS FaceSign{' '}
+                  <a
+                    href="https://docs.idos.network/how-it-works/biometrics-and-idos-facesign-beta"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-aquamarine-400 underline"
+                  >
+                    here
+                  </a>
+                  .
                 </span>
               </div>
             </>

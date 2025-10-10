@@ -43,8 +43,8 @@ export default function CreatePrivateKey() {
       {state !== 'created' && (
         <div className="pt-10">
           <TextBlock
-            title="Create your private key"
-            subtitle="idOS is a self-sovereign solution, where data is only created and shared based on user consent, and encrypted with your key pair."
+            title="Create your idOS Private Key"
+            subtitle="idOS is a self-sovereign decentralized storage network for your sensitive personal data. Data is only read from and written to your idOS Profile with your consent, and is encrypted with your idOS private key."
           />
         </div>
       )}
@@ -54,10 +54,10 @@ export default function CreatePrivateKey() {
             <div className="rounded-full bg-[#00382D66] w-39 h-39 flex items-center justify-center">
               <EncryptedIcon color="var(--color-aquamarine-400)" />
             </div>
-            <span className="text-neutral-400 text-base text-center font-medium font-['Urbanist'] max-w-[560px] pt-8">
-              Sign a message with your connected wallet to derive a secure
-              private key from our MPC network, built together with
-              PartisiaBlockchain.{' '}
+            <span className="text-neutral-400 text-base text-center font-medium font-['Urbanist'] max-w-[85%] pt-8">
+              Create an idOS Private Key and either store it with a wallet
+              signature in our idOS TSS-MPC Native Module for key abstraction
+              powered by Partisia Blockchain.{' '}
               <a
                 href="https://www.idos.network/blog/key-abstracted-self-sovereign-identity-idos-and-partisia-blockchain-mpc-tech-are-making-it-possible"
                 target="_blank"

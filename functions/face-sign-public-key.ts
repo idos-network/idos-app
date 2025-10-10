@@ -1,8 +1,9 @@
 import type { Config, Context } from '@netlify/functions';
+import { withSentry } from './utils/sentry';
 
 const facetecServer = process.env.FACETEC_SERVER as string;
 
-export default async (_request: Request, _context: Context) => {
+export default withSentry(async (_request: Request, _context: Context) => {
   const response = await fetch(`${facetecServer}sdk/public-key`, {
     method: 'GET',
   });
@@ -25,7 +26,7 @@ export default async (_request: Request, _context: Context) => {
     responseData,
     { status: 200 },
   );
-};
+});
 
 export const config: Config = {
   path: '/api/face-sign/public-key',

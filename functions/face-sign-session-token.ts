@@ -1,9 +1,10 @@
 import { UserNotFoundError } from '@/utils/errors';
 import type { Config, Context } from '@netlify/functions';
+import { withSentry } from './utils/sentry';
 
 const facetecServer = process.env.FACETEC_SERVER as string;
 
-export default async (request: Request, context: Context) => {
+export default withSentry(async (request: Request, context: Context) => {
   // TODO: Get userID from token or session or whatever is available
   const { userId } = context.params;
 
@@ -43,7 +44,7 @@ export default async (request: Request, context: Context) => {
     JSON.stringify({ sessionToken }),
     { status: 200 },
   );
-};
+});
 
 export const config: Config = {
   path: '/api/face-sign/:userId/session-token',

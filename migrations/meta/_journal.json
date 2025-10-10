@@ -8,6 +8,69 @@
       "when": 1758015696449,
       "tag": "0000_faithful_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758552934234,
+      "tag": "0001_acoustic_squadron_supreme",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758614414207,
+      "tag": "0002_bouncy_garia",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1758619715627,
+      "tag": "0003_natural_daredevil",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1758626180907,
+      "tag": "0004_burly_songbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1758641328205,
+      "tag": "0005_opposite_spiral",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1758738743045,
+      "tag": "0006_lazy_klaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1758819958633,
+      "tag": "0007_wakeful_skreet",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1758917176930,
+      "tag": "0008_boring_crystal",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1759147810548,
+      "tag": "0009_quiet_frog_thor",
+      "breakpoints": true
     }
   ]
 }

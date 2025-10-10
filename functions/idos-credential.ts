@@ -1,21 +1,15 @@
+import { getUserById, setUserPopCredentialId } from '@/db/user';
 import { type IdosDWG } from '@/interfaces/idos-credential';
 import type { Config, Context } from '@netlify/functions';
-// @ts-expect-error Missing types in this library
-import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
-import { idOSIssuer as idOSIssuerClass } from '@idos-network/issuer';
 import { encode as utf8Encode } from '@stablelib/utf8';
-import nacl from 'tweetnacl';
-import { z } from 'zod';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from '@neondatabase/serverless';
+import { withSentry } from './utils/sentry';
+import * as Sentry from '@sentry/aws-serverless';
+import { issuerWithKey } from './utils/idos-issuer';
+import { sql } from 'drizzle-orm';
 
-// TODO: update for idOS App launch
-export const IDDocumentTypeSchema = z.enum([
-  'PASSPORT',
-  'DRIVERS',
-  'ID_CARD',
-] as const);
-export type IDDocumentType = z.infer<typeof IDDocumentTypeSchema>;
-
-export default async (request: Request, _context: Context) => {
+export default withSentry(async (request: Request, context: Context) => {
   if (request.method !== 'POST') {
     return new Response(
       JSON.stringify({
@@ -25,118 +19,106 @@ export default async (request: Request, _context: Context) => {
     );
   }
 
-  const { idOSDWG, userEncryptionPublicKey, userId } =
-    (await request.json()) as {
-      idOSDWG: IdosDWG;
-      userEncryptionPublicKey: string;
-      userId: string;
+  const pool = new Pool({ connectionString: process.env.NETLIFY_DATABASE_URL });
+  const db = drizzle(pool);
+
+  pool.on("error", (err) => {
+    Sentry.captureException(err);
+    console.error("Unexpected error on idle client", err);
+  });
+
+  try {
+    const { idOSDWG, userEncryptionPublicKey, userId } =
+      (await request.json()) as {
+        idOSDWG: IdosDWG;
+        userEncryptionPublicKey: string;
+        userId: string;
+      };
+
+    const user = await getUserById(userId).then((res) => res[0]);
+
+    if (!user) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'User not found.',
+        }),
+        { status: 404 },
+      );
+    }
+
+    Sentry.setUser({ id: userId });
+
+    if (!user.faceSignUserId || user.popCredentialsId) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message:
+            'User is in invalid state (did not complete face sign, or already has POP credentials).',
+        }),
+        { status: 400 },
+      );
+    }
+
+    let issuerDomain = process.env.FACETEC_SERVER as string;
+    if (issuerDomain.endsWith('/')) {
+      issuerDomain = issuerDomain.slice(0, -1);
+    }
+
+    const credentialFields = {
+      id: `${issuerDomain}/credentials/${user.faceSignUserId}`,
+      level: 'human',
+      issued: new Date(),
+      approvedAt: new Date(),
     };
 
-  const idOSIssuer = await idOSIssuerClass.init({
-    nodeUrl: process.env.IDOS_NODE_URL as string,
-    signingKeyPair: nacl.sign.keyPair.fromSecretKey(
-      Buffer.from(process.env.ISSUER_SIGNING_SECRET_KEY as string, 'hex'),
-    ),
-    encryptionSecretKey: Buffer.from(
-      process.env.ISSUER_ENCRYPTION_SECRET_KEY as string,
-      'hex',
-    ),
-  });
+    const issuer = {
+      issuer: `${issuerDomain}/idos`,
+      publicKeyMultibase: process.env.ISSUER_PUBLIC_KEY_MULTIBASE as string,
+      privateKeyMultibase: process.env.ISSUER_PRIVATE_KEY_MULTIBASE as string,
+    };
 
-  const id = process.env.CREDENTIAL_ID as string;
-  const issuerDomain = process.env.ISSUER_DOMAIN as string;
+    const { keyLock, idOSIssuer } = await issuerWithKey();
 
-  const credentialFields = {
-    id: `https://idOS-app/credentials/${id}`,
-    level: 'human',
-    issued: new Date(),
-    approvedAt: new Date(),
-  };
-
-  const credentialId = crypto.randomUUID();
-
-  // TODO: update for idOS App launch
-  const credentialSubject = {
-    id: `https://idOS-app/subjects/${credentialId}`,
-    firstName: 'Cristiano',
-    familyName: 'Ronaldo',
-    dateOfBirth: new Date(),
-    placeOfBirth: 'Funchal',
-    idDocumentCountry: 'PT',
-    idDocumentNumber: '293902002',
-    idDocumentType: 'PASSPORT' as const,
-    idDocumentDateOfIssue: new Date(),
-    idDocumentFrontFile: Buffer.from('SOME_IMAGE'),
-    selfieFile: Buffer.from('SOME_IMAGE'),
-    residentialAddress: {
-      street: 'Main St',
-      houseNumber: '123',
-      additionalAddressInfo: 'Apt 1',
-      city: 'Funchal',
-      postalCode: '10001',
-      country: 'PT',
-    },
-    residentialAddressProofFile: Buffer.from('SOME_IMAGE'),
-    residentialAddressProofCategory: 'UTILITY_BILL',
-    residentialAddressProofDateOfIssue: new Date(),
-  };
-
-  const multibaseSigningKeyPair = await Ed25519VerificationKey2020.generate({
-    id: `${issuerDomain}/keys/1`,
-    controller: `${issuerDomain}/issuers/1`,
-  });
-
-  const issuer = {
-    id: `${issuerDomain}/keys/1`,
-    controller: `${issuerDomain}/issuers/1`,
-    publicKeyMultibase: multibaseSigningKeyPair.publicKeyMultibase,
-    privateKeyMultibase: multibaseSigningKeyPair.privateKeyMultibase,
-  };
-
-  const credential = await idOSIssuer.buildCredentials(
-    credentialFields,
-    credentialSubject,
-    issuer,
-  );
-  const publicNotesId = crypto.randomUUID();
-
-  const credentialsPublicNotes = {
-    // `id` is required to make `editCredential` work.
-    id: publicNotesId,
-    type: 'PoP',
-    level: 'human',
-    status: 'approved',
-    issuer: 'idOS',
-  };
-
-  const credentialContent = JSON.stringify(credential);
-
-  if (!userEncryptionPublicKey) {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: 'User encryption public key is required.',
-      }),
-      { status: 400 },
+    const plainContent = await idOSIssuer.buildFaceIdCredential(
+      credentialFields,
+      {
+        faceSignUserId: user.faceSignUserId,
+      },
+      issuer,
     );
-  }
 
-  const recipientEncryptionPublicKey = Buffer.from(
-    userEncryptionPublicKey,
-    'base64',
-  );
+    const publicNotes = {
+      // `id` is required to make `editCredential` work.
+      id: crypto.randomUUID(),
+      type: 'PoP',
+      level: 'human',
+      status: 'approved',
+      issuer: 'FaceSign',
+    };
 
-  const credentialPayload = {
-    id: crypto.randomUUID(),
-    user_id: userId,
-    plaintextContent: utf8Encode(credentialContent),
-    recipientEncryptionPublicKey: recipientEncryptionPublicKey,
-    publicNotes: JSON.stringify(credentialsPublicNotes),
-  };
+    if (!userEncryptionPublicKey) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'User encryption public key is required.',
+        }),
+        { status: 400 },
+      );
+    }
 
-  const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
-    credentialPayload,
-    {
+    const recipientEncryptionPublicKey = Buffer.from(
+      userEncryptionPublicKey,
+      'base64',
+    );
+
+    const credentialParams = {
+      publicNotes: JSON.stringify(publicNotes),
+      plaintextContent: utf8Encode(JSON.stringify(plainContent)),
+      recipientEncryptionPublicKey: recipientEncryptionPublicKey,
+    };
+
+    const dwgParams = {
       id: idOSDWG.delegatedWriteGrant.id,
       ownerWalletIdentifier:
         idOSDWG.delegatedWriteGrant.owner_wallet_identifier,
@@ -147,11 +129,57 @@ export default async (request: Request, _context: Context) => {
       notUsableBefore: idOSDWG.delegatedWriteGrant.not_usable_before,
       notUsableAfter: idOSDWG.delegatedWriteGrant.not_usable_after,
       signature: idOSDWG.signature,
-    },
-  );
+    };
 
-  return new Response(JSON.stringify(result), { status: 200 });
-};
+    await db.transaction(async (tx: any) => {
+      // https://neon.com/guides/rate-limiting
+      await tx.execute(
+        sql`SELECT pg_advisory_xact_lock(hashtext(${keyLock}))`
+      );
+
+      try {
+        console.log('creating credential', credentialParams, dwgParams);
+        const result = await idOSIssuer.createCredentialByDelegatedWriteGrant(
+          credentialParams,
+          dwgParams,
+        );
+
+        if (!result.originalCredential.id) {
+          console.log(result);
+          throw new Error('Credential creation failed');
+        }
+
+        await setUserPopCredentialId(userId, result.originalCredential.id);
+      } catch (e) {
+        console.error('DWG params on error:', dwgParams);
+        throw e;
+      }
+    });
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: 'Credential created successfully',
+      }),
+      { status: 200 },
+    );
+  } catch (err) {
+    Sentry.captureException(err);
+    console.log(err);
+
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'An error occurred while creating the credential.',
+      }),
+      { status: 500 },
+    );
+  }
+  finally {
+    // Ensure pool is closed after request
+    context.waitUntil(pool.end());
+  }
+});
 
 export const config: Config = {
   path: '/api/idos-credential',

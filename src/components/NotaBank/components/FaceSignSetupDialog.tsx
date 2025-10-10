@@ -3,7 +3,6 @@ import {
   getFaceSignStatus,
   getPublicKey,
 } from '@/api/face-sign';
-import { updateUserFaceSign } from '@/api/update-user-face-sign';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,7 +13,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useIdOSLoggedIn } from '@/context/idos-context';
-import { isProduction } from '@/env';
 import { AlertCircleIcon, ChevronLeftIcon } from 'lucide-react';
 import encodeQR from 'qr';
 import { useEffect, useState } from 'react';
@@ -79,7 +77,10 @@ export default function FaceSignSetupDialog({
   const [faceSignInProgress, setFaceSignInProgress] = useState(false);
   const [faceSignResult, setFaceSignResult] = useState<null | boolean>(null);
   const [faceSignError, setFaceSignError] = useState<string | null>(null);
+  const [faceSignDuplicate, setFaceSignDuplicate] = useState(false);
   const idOSLoggedIn = useIdOSLoggedIn();
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [faceTecInitialized, setFaceTecInitialized] = useState(false);
   const currentUserId = userId ?? idOSLoggedIn?.user.id ?? undefined;
 
   if (!currentUserId) {
@@ -88,22 +89,34 @@ export default function FaceSignSetupDialog({
 
   useEffect(() => {
     // Initialize FaceTec when component mounts
-    getPublicKey().then((publicKey) => {
-      faceTec.init(currentUserId, publicKey);
-    });
+    setIsInitializing(true);
+    getPublicKey()
+      .then((publicKey) => {
+        faceTec.init(currentUserId, publicKey, (errorMessage?: string) => {
+          console.log('Facetec initialized callback', errorMessage);
+          if (errorMessage) {
+            setFaceSignError(errorMessage);
+          } else {
+            setFaceSignError(null);
+            setFaceSignResult(null);
+            setFaceTecInitialized(true);
+          }
+        });
+      })
+      .finally(() => {
+        setIsInitializing(false);
+      });
 
     const checkFaceSignStatus = (interval?: any) =>
       getFaceSignStatus(currentUserId)
         .then((result) => {
-          if (result.faceSignHash) {
+          if (result.faceSignDone) {
             if (interval) {
               clearInterval(interval);
             }
             setQrCodeView(false);
             setFaceSignResult(true);
-            updateUserFaceSign(currentUserId, result.faceSignHash).then(() => {
-              onDone(true);
-            });
+            onDone(true);
           }
         })
         .catch((error) => {
@@ -123,18 +136,13 @@ export default function FaceSignSetupDialog({
   const handleLivenessCheck = () => {
     setFaceSignInProgress(true);
 
-    faceTec.onLivenessCheckClick((status, errorMessage?: string) => {
-      console.log('status', status);
-      console.log('errorMessage', errorMessage);
+    faceTec.onLivenessCheckClick((status, duplicate, errorMessage?: string) => {
       setFaceSignInProgress(false);
       setFaceSignResult(status);
       setFaceSignError(errorMessage || null);
+      setFaceSignDuplicate(duplicate);
     });
   };
-
-  if (isProduction) {
-    return null;
-  }
 
   if (faceSignInProgress) {
     return (
@@ -171,33 +179,68 @@ export default function FaceSignSetupDialog({
             <AlertCircleIcon />
             <AlertDescription>
               <p>
-                Learn about idOS FaceSign Terms & Conditions and Privacy Policy.
+                Learn about idOS{' '}
+                <a
+                  href="https://docs.idos.network/how-it-works/biometrics-and-idos-facesign-beta"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  FaceSign
+                </a>
+                {', '} {' view our '}
+                <a
+                  href="https://www.idos.network/legal/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  Privacy Policy
+                </a>
+                {' and our '}
+                <a
+                  href="https://www.idos.network/legal/user-agreement"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  Terms & Conditions
+                </a>
+                {'.'}
               </p>
             </AlertDescription>
           </Alert>
 
           {/* Actions */}
-          <div className="flex flex-col gap-5 w-full mt-2">
-            <Button
-              className="bg-aquamarine-400"
-              onClick={() =>
-                mobile ? handleLivenessCheck() : setQrCodeView(true)
-              }
-            >
-              {mobile ? 'Start Liveness Check' : 'Continue in Mobile'}
-            </Button>
-            {!mobile && (
+          {!isInitializing ? (
+            <div className="flex flex-col gap-5 w-full mt-2">
               <Button
-                variant="underline"
-                className="bg-neutral-700 hover:bg-neutral-600"
-                onClick={() => handleLivenessCheck()}
+                className="bg-aquamarine-400"
+                disabled={!faceTecInitialized}
+                onClick={() =>
+                  mobile ? handleLivenessCheck() : setQrCodeView(true)
+                }
               >
-                <span className="text-neutral-100 text-xs font-medium">
-                  Continue on this device
-                </span>
+                {mobile ? 'Start Liveness Check' : 'Continue on Mobile'}
               </Button>
-            )}
-          </div>
+              {!mobile && (
+                <Button
+                  variant="underline"
+                  disabled={!faceTecInitialized}
+                  className="bg-neutral-700 hover:bg-neutral-600"
+                  onClick={() => handleLivenessCheck()}
+                >
+                  <span className="text-neutral-100 text-xs font-medium">
+                    Continue on this device
+                  </span>
+                </Button>
+              )}
+            </div>
+          ) : (
+            <span className="text-neutral-400 text-sm max-w-[270px] text-center">
+              Initializing FaceSign...
+            </span>
+          )}
         </div>
       </div>
     );
@@ -218,15 +261,19 @@ export default function FaceSignSetupDialog({
             </p>
           </AlertDescription>
         </Alert>
-        <Button
-          className="bg-aquamarine-400"
-          onClick={() => setFaceSignResult(null)}
-        >
-          Retry
-        </Button>
-        <p className="text-neutral-400 text-sm max-w-[270px] text-center">
-          Unfortunately, we couldn't verify your identity. Please try again.
-        </p>
+        {!faceSignDuplicate && (
+          <>
+            <Button
+              className="bg-aquamarine-400"
+              onClick={() => setFaceSignResult(null)}
+            >
+              Retry
+            </Button>
+            <p className="text-neutral-400 text-sm max-w-[270px] text-center">
+              Unfortunately, we couldn't verify your identity. Please try again.
+            </p>
+          </>
+        )}
       </div>
     );
   }
@@ -280,7 +327,10 @@ export default function FaceSignSetupDialog({
       }}
       open={!faceSignInProgress}
     >
-      <DialogContent className="sm:max-w-[425px] bg-[#1A1A1A] border-none">
+      <DialogContent
+        className="sm:max-w-[425px] bg-[#1A1A1A] border-none"
+        showCloseButton={!(faceSignResult === true && mobile)}
+      >
         <DialogHeader>
           <DialogTitle className="flex justify-center mt-9">
             {qrCodeView && faceSignResult === null && (

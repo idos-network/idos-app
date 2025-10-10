@@ -1,5 +1,6 @@
 import { getGeoblock } from '@/api/geoblock';
 import CookieBanner from '@/components/CookieBanner';
+import LegacyUsersMigrator from '@/components/NotaBank/components/LegacyUsersMigrator';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { IDOSClientProvider } from '@/providers/idos/idos-client';
 import { ReferralProvider } from '@/providers/quests/referral-provider';
@@ -17,9 +18,13 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import AccessRestricted from './AccessRestricted';
 import MobileRestricted from './MobileRestricted';
 import { RootDocument } from './RootDocument';
+import { env } from '@/env';
+import LockdownMode from './LockdownMode';
+import { CookieProvider } from '@/providers/cookie';
 
 export function RootComponent() {
   const isMobile = useIsMobile();
+
   const { data: response } = useQuery({
     queryKey: ['geoblock'],
     queryFn: () => getGeoblock(),
@@ -29,6 +34,14 @@ export function RootComponent() {
     return (
       <RootDocument>
         <AccessRestricted />
+      </RootDocument>
+    );
+  }
+
+  if (env.VITE_LOCKDOWN_MODE === 'true') {
+    return (
+      <RootDocument>
+        <LockdownMode />
       </RootDocument>
     );
   }
@@ -43,28 +56,31 @@ export function RootComponent() {
 
   return (
     <RootDocument>
-      <ReferralProvider>
-        <ToastProvider>
-          <TanstackQueryProvider.Provider>
-            <RainbowKitProvider.Provider>
-              <NearWalletProvider>
-                <StellarWalletProvider>
-                  <XrplWalletProvider>
-                    <WalletConnectorProvider>
-                      <IDOSClientProvider>
-                        <Outlet />
-                        <TanStackRouterDevtools position="bottom-right" />
-                        <ReactQueryDevtools buttonPosition="bottom-right" />
-                        {!isMobile && <CookieBanner />}
-                      </IDOSClientProvider>
-                    </WalletConnectorProvider>
-                  </XrplWalletProvider>
-                </StellarWalletProvider>
-              </NearWalletProvider>
-            </RainbowKitProvider.Provider>
-          </TanstackQueryProvider.Provider>
-        </ToastProvider>
-      </ReferralProvider>
+      <CookieProvider>
+        <ReferralProvider>
+          <ToastProvider>
+            <TanstackQueryProvider.Provider>
+              <RainbowKitProvider.Provider>
+                <NearWalletProvider>
+                  <StellarWalletProvider>
+                    <XrplWalletProvider>
+                      <WalletConnectorProvider>
+                        <IDOSClientProvider>
+                          <Outlet />
+                          <TanStackRouterDevtools position="bottom-right" />
+                          <ReactQueryDevtools buttonPosition="bottom-right" />
+                          {!isMobile && <CookieBanner />}
+                          <LegacyUsersMigrator />
+                        </IDOSClientProvider>
+                      </WalletConnectorProvider>
+                    </XrplWalletProvider>
+                  </StellarWalletProvider>
+                </NearWalletProvider>
+              </RainbowKitProvider.Provider>
+            </TanstackQueryProvider.Provider>
+          </ToastProvider>
+        </ReferralProvider>
+      </CookieProvider>
     </RootDocument>
   );
 }

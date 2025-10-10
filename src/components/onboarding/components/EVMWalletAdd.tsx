@@ -1,5 +1,5 @@
 import { useIdOSLoggedIn } from '@/context/idos-context';
-import { verifySignature } from '@/utils/verify-signatures';
+import { verifySignature } from '@idos-network/utils/crypto/signature-verification';
 import type { idOSWallet } from '@idos-network/client';
 import { useEffect, useState } from 'react';
 import invariant from 'tiny-invariant';
@@ -52,6 +52,7 @@ const createWallet = async (
 ): Promise<idOSWallet> => {
   const walletParams = createWalletParamsFactory(params);
   try {
+    console.log('adding evm wallet', walletParams);
     setIsLoading(true);
     await idOSClient.addWallet(walletParams);
   } catch (error) {
@@ -153,7 +154,7 @@ export default function EVMWalletAdd({
   }, [walletPayload, onWalletAdded, onError, onSuccess, idOSLoggedIn]);
 
   // Open the embedded wallet popup
-  const handleOpenWalletPopup = () => {
+  const handleOpenWalletPopup = (hiddenWallets?: string) => {
     const url = import.meta.env.VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL;
     invariant(url, 'VITE_ONBOARDING_EMBEDDED_WALLET_APP_URL is not set');
     setIsLoading(true);
@@ -162,7 +163,7 @@ export default function EVMWalletAdd({
     const left = (window.screen.width - popupWidth) / 2;
     const top = (window.screen.height - popupHeight) / 2;
     const popup = window.open(
-      url,
+      `${url}?hidden_wallets=${hiddenWallets}`,
       'wallet-connection',
       `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=no`,
     );
@@ -180,7 +181,7 @@ export default function EVMWalletAdd({
   };
 
   return (
-    <StepperButton onClick={handleOpenWalletPopup} disabled={isLoading}>
+    <StepperButton onClick={() => handleOpenWalletPopup()} disabled={isLoading}>
       {isLoading ? 'Waiting for wallet...' : 'Add EVM wallet'}
     </StepperButton>
   );

@@ -1,12 +1,12 @@
 export const STAKING_ASSETS = [
   {
     name: 'ETH',
-    icon: '/ethereum.png',
+    icon: '/ethereum.webp',
     apy: '1.5', // TODO: update to final value
   },
   {
     name: 'NEAR',
-    icon: '/near.png',
+    icon: '/near.webp',
     apy: '2.0', // TODO: update to final value
   },
 ];

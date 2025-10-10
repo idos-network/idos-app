@@ -24,7 +24,9 @@ const PointsHeaderFrame = forwardRef<HTMLAnchorElement, PointsHeaderFrameProps>(
       >
         <img src="/idos-points-logo.png" alt="Points" className="h-5 w-5" />
         <div className="flex gap-1.5">
-          <div className="text-sm font-sesmibold text-neutral-50">{points}</div>
+          <div className="text-sm font-semibold text-neutral-50">
+            {points.totalPoints}
+          </div>
           <div className="text-sm font-semibold text-neutral-50">Points</div>
         </div>
       </Link>

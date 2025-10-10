@@ -1,20 +1,15 @@
 import FaceSignTag from '@/components/NotaBank/components/FaceSignTag';
 import { isProduction } from '@/env';
-import { useUserMainEvm } from '@/hooks/useUserMainEvm';
-import { useWalletConnector } from '@/hooks/useWalletConnector';
 import InfoIcon from '@/icons/info';
 import MoreVertIcon from '@/icons/more-vert';
 import type { IdosWallet } from '@/interfaces/idos-profile';
 import { useIdosStore } from '@/stores/idosStore';
 import { addressGradient } from '@/utils/gradient';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { WalletActionModal } from './WalletActionModal';
 import WalletAddButton from './WalletAddButton';
-
-interface WalletsCardProps {
-  refetchMainEvm: () => void;
-}
+import { useHasMainEvm } from '@/components/onboarding/OnboardingStepper';
 
 export const useUserWallets = () => {
   const { idOSClient } = useIdosStore();
@@ -24,15 +19,14 @@ export const useUserWallets = () => {
     queryFn: async () => {
       if (!idOSClient || idOSClient.state !== 'logged-in') return [];
       const wallets = await idOSClient.getWallets();
-      return wallets as IdosWallet[];
+      return (wallets as IdosWallet[]) || [];
     },
   });
 };
 
-export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
+export default function WalletsCard() {
   const { data: wallets = [], isLoading, error, refetch } = useUserWallets();
-  const { connectedWallet } = useWalletConnector();
-  const { mainEvm } = useUserMainEvm();
+  const { data: mainEvmAddress, refetch: refetchMainEvm } = useHasMainEvm();
   const [actionModalPosition, setActionModalPosition] = useState<{
     x: number;
     y: number;
@@ -46,14 +40,16 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
   } | null>(null);
   const [tooltipText, setTooltipText] = useState<string>('');
 
+  useEffect(() => {
+    if (!wallets || !wallets.length) return;
+    // giving some time for the db record to be updated
+    setTimeout(() => {
+      refetchMainEvm();
+    }, 2000);
+  }, [wallets.length]);
+
   if (isLoading) return null;
   if (error) return <div>Error: {error.message}</div>;
-
-  const isWalletConnected = (wallet: any) => {
-    if (!connectedWallet) return false;
-
-    return wallet.address === connectedWallet.address;
-  };
 
   return (
     <div className="flex h-full flex-col w-fit min-w-full gap-6 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-800/60 p-6">
@@ -103,7 +99,6 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
           <tbody>
             {wallets.map((wallet, index) => {
               const isLastRow = index === wallets.length - 1;
-              const isConnected = isWalletConnected(wallet);
 
               return (
                 <tr
@@ -137,7 +132,7 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
                   <td className="w-1/12 px-4">
                     <div className="truncate font-['Inter'] text-base text-neutral-200 flex items-center gap-3">
                       <span className="flex items-center gap-2 font-normal">
-                        {wallet.address === mainEvm ? (
+                        {wallet.address === mainEvmAddress ? (
                           <div className="relative">
                             <button
                               onMouseEnter={(e) => {
@@ -171,7 +166,6 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
                   <td className="w-1/12 px-4">
                     <button
                       onClick={(e) => {
-                        if (isConnected || wallet.address === mainEvm) return;
                         const rect = e.currentTarget.getBoundingClientRect();
                         setActionModalPosition({
                           x: rect.right + 5,
@@ -180,12 +174,7 @@ export default function WalletsCard({ refetchMainEvm }: WalletsCardProps) {
                         setSelectedWalletId(wallet.id);
                         setIsActionModalOpen(true);
                       }}
-                      className={`rounded-md p-2 transition-colors ${
-                        isConnected || wallet.address === mainEvm
-                          ? 'text-neutral-500 cursor-not-allowed'
-                          : 'text-neutral-200 hover:bg-idos-grey2 cursor-pointer'
-                      }`}
-                      disabled={isConnected || wallet.address === mainEvm}
+                      className="rounded-md p-2 transition-colors text-neutral-200 hover:bg-idos-grey2 cursor-pointer"
                     >
                       <MoreVertIcon className="w-4 h-4" />
                     </button>
