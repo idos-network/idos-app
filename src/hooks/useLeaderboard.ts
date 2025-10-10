@@ -17,6 +17,7 @@ interface UseLeaderboardResult {
   userPosition: LeaderboardEntryData | null;
   isLoading: boolean;
   error: any;
+  refetch: () => void;
 }
 
 export const useLeaderboard = ({
@@ -28,6 +29,7 @@ export const useLeaderboard = ({
     data: leaderboardData,
     isLoading: leaderboardLoading,
     error: leaderboardError,
+    refetch: refetchLeaderboard,
   } = useQuery<{ data: LeaderboardEntryData[]; total?: number }>({
     queryKey: ['leaderboard', 'paginated', limit, offset],
     queryFn: () => getLeaderboard({ limit, offset }),
@@ -38,6 +40,7 @@ export const useLeaderboard = ({
     data: userPosition,
     isLoading: userPositionLoading,
     error: userPositionError,
+    refetch: refetchUserPosition,
   } = useQuery<LeaderboardEntryData | null>({
     queryKey: ['leaderboard', 'userPosition', userId],
     queryFn: () => getUserPosition(userId!),
@@ -52,6 +55,10 @@ export const useLeaderboard = ({
       userPosition: null,
       isLoading: leaderboardLoading || (userId ? userPositionLoading : false),
       error: leaderboardError || userPositionError,
+      refetch: () => {
+        refetchLeaderboard();
+        refetchUserPosition();
+      },
     };
   }
 
@@ -61,5 +68,9 @@ export const useLeaderboard = ({
     userPosition: userPosition ?? null,
     isLoading: leaderboardLoading || (userId ? userPositionLoading : false),
     error: leaderboardError || userPositionError,
+    refetch: () => {
+      refetchLeaderboard();
+      refetchUserPosition();
+    },
   };
 };

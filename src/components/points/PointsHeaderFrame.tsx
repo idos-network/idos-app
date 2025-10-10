@@ -1,5 +1,6 @@
 import { useIdOSLoginStatus } from '@/hooks/useIdOSHasProfile';
-import { useUserPoints } from '@/hooks/useUserPoints';
+import { useUserId } from '@/hooks/useUserId';
+import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { Link } from '@tanstack/react-router';
 import { forwardRef } from 'react';
 
@@ -9,7 +10,8 @@ interface PointsHeaderFrameProps {
 
 const PointsHeaderFrame = forwardRef<HTMLAnchorElement, PointsHeaderFrameProps>(
   ({ highlight = false }, ref) => {
-    const { points } = useUserPoints();
+    const { data: userId } = useUserId();
+    const { userPosition } = useLeaderboard({ userId });
 
     const hasProfile = useIdOSLoginStatus();
     return (
@@ -25,7 +27,7 @@ const PointsHeaderFrame = forwardRef<HTMLAnchorElement, PointsHeaderFrameProps>(
         <img src="/idos-points-logo.png" alt="Points" className="h-5 w-5" />
         <div className="flex gap-1.5">
           <div className="text-sm font-semibold text-neutral-50">
-            {points.totalPoints}
+            {userPosition?.totalPoints}
           </div>
           <div className="text-sm font-semibold text-neutral-50">Points</div>
         </div>
