@@ -86,7 +86,7 @@ CREATE MATERIALIZED VIEW "public"."leaderboard_view" AS (
     ROW_NUMBER() OVER (ORDER BY COALESCE(qpr.quest_points, 0) DESC, COALESCE(NULLIF(u."xHandle", ''), u."name") ASC) as "id",
     u."id" as "userId",
     CASE 
-      WHEN u."xHandle" IS NOT NULL AND u."xHandle" != '' THEN '@' || u."xHandle"
+      WHEN u."xHandle" IS NOT NULL AND u."xHandle" != '' THEN u."xHandle"
       ELSE u."name"
     END as "name",
     u."xHandle",
@@ -108,7 +108,7 @@ CREATE MATERIALIZED VIEW "public"."leaderboard_view" AS (
   SELECT 
     (SELECT COUNT(*) FROM "users") + ROW_NUMBER() OVER (ORDER BY wu."relativeMindshare" DESC) as "id",
     wu."userId",
-    '@' || wu."name" as "name",
+    wu."name" as "name",
     NULL::varchar as "xHandle",
     0 as "questPoints",
     COALESCE(tqp.total_points, 0) * COALESCE(wu."relativeMindshare"::numeric, 0) as "socialPoints",

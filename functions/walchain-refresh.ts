@@ -36,7 +36,7 @@ export default async (_req: Request) => {
 
   const rows = entries
     ?.map((entry) => ({
-      username: entry?.xInfo?.username,
+      username: '@' + entry?.xInfo?.username,
       relativeMindshare: Number(entry?.relativeMindshare ?? 0),
     }))
     .filter((r) => r.username && !Number.isNaN(r.relativeMindshare));
@@ -47,6 +47,5 @@ export default async (_req: Request) => {
 };
 
 export const config: Config = {
-  // TODO: find out at what time wallchain updates
-  schedule: '0 0 * * *',
+  schedule: '30 9 * * *',
 };

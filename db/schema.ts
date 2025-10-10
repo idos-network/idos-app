@@ -268,7 +268,7 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
     ROW_NUMBER() OVER (ORDER BY COALESCE(qpr.quest_points, 0) DESC, COALESCE(NULLIF(u."xHandle", ''), u."name") ASC) as "id",
     u."id" as "userId",
     CASE 
-      WHEN u."xHandle" IS NOT NULL AND u."xHandle" != '' THEN '@' || u."xHandle"
+      WHEN u."xHandle" IS NOT NULL AND u."xHandle" != '' THEN u."xHandle"
       ELSE u."name"
     END as "name",
     u."xHandle",
@@ -290,7 +290,7 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
   SELECT 
     (SELECT COUNT(*) FROM ${users}) + ROW_NUMBER() OVER (ORDER BY wu."relativeMindshare" DESC) as "id",
     wu."userId",
-    '@' || wu."name" as "name",
+    wu."name" as "name",
     NULL::varchar as "xHandle",
     0 as "questPoints",
     COALESCE(tqp.total_points, 0) * COALESCE(wu."relativeMindshare"::numeric, 0) as "socialPoints",
@@ -345,6 +345,13 @@ export const questsRelations = relations(quests, ({ many }) => ({
 export const userTokensRelations = relations(userTokens, ({ one }) => ({
   user: one(users, {
     fields: [userTokens.userId],
+    references: [users.id],
+  }),
+}));
+
+export const oauthXSessionsRelations = relations(oauthXSessions, ({ one }) => ({
+  user: one(users, {
+    fields: [oauthXSessions.userId],
     references: [users.id],
   }),
 }));
