@@ -1,8 +1,14 @@
-export default function Spinner() {
+export default function Spinner({
+  height = 'h-30',
+  width = 'w-30',
+}: {
+  height?: string;
+  width?: string;
+}) {
   return (
     <div className="flex flex-col items-center justify-center gap-8">
       <div
-        className={`animate-spin rounded-full h-30 w-30 border-4 border-aquamarine-950 border-t-aquamarine-400`}
+        className={`animate-spin rounded-full ${height} ${width} border-4 border-aquamarine-950 border-t-aquamarine-400`}
       ></div>
     </div>
   );
