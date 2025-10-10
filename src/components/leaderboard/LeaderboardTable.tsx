@@ -1,6 +1,9 @@
 import { type LeaderboardEntryData } from '@/api/leaderboard';
 import Spinner from '@/components/Spinner';
 import DropdownArrowIcon from '@/components/icons/dropdown-arrow';
+import InfoIcon from '@/components/icons/info';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface LeaderboardTableProps {
   data: LeaderboardEntryData[];
@@ -25,6 +28,28 @@ export function LeaderboardTable({
   emptyState,
   errorState,
 }: LeaderboardTableProps) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const tooltipText =
+    'Social Points are a reflection of your Mindshare with the idOS Community. These points can go up or down based on your activity on X.';
+
+  const handleTooltipMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltipPosition({
+      x: rect.left + rect.width,
+      y: rect.bottom + 8,
+    });
+    setShowTooltip(true);
+  };
+
+  const handleTooltipMouseLeave = () => {
+    setShowTooltip(false);
+    setTooltipPosition(null);
+  };
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -58,7 +83,7 @@ export function LeaderboardTable({
               <th className="w-[70px] px-4 font-normal rounded-l-[20px]">
                 Rank
               </th>
-              <th className="w-[240px] px-4 font-normal">Name</th>
+              <th className="w-[220px] px-4 font-normal">Name</th>
               <th className="w-[110px] px-4 font-normal text-center">
                 Total Points
               </th>
@@ -68,18 +93,30 @@ export function LeaderboardTable({
               <th className="w-[120px] px-4 font-normal text-[#FFA015] text-center">
                 Quest Points
               </th>
-              <th className="w-[100px] px-4 font-normal text-center">
-                Mindshare
-              </th>
-              <th className="w-[165px] px-4 font-normal text-[#A0F73C] text-center">
-                <span className="inline-flex items-center gap-2">
-                  Social Points
-                  <span className="inline-flex items-center h-4 px-2 rounded-xl bg-[#00FFB933] text-aquamarine-400 text-[10px] font-normal">
-                    Soon
-                  </span>
+              <th className="w-[120px] px-4 font-normal text-center">
+                <span className="inline-flex items-center gap-1">
+                  Mindshare
+                  <img
+                    src="/wallchain-logo.svg"
+                    alt="Wallchain"
+                    className="w-4 h-4"
+                    title="Wallchain"
+                  />
                 </span>
               </th>
-              <th className="w-[145px] px-4 font-normal text-center">
+              <th className="w-[130px] px-4 font-normal text-[#A0F73C] text-center">
+                <span className="inline-flex items-center gap-2">
+                  Social Points
+                  <button
+                    onMouseEnter={handleTooltipMouseEnter}
+                    onMouseLeave={handleTooltipMouseLeave}
+                    className="flex items-center text-neutral-400 hover:text-neutral-300 transition-colors"
+                  >
+                    <InfoIcon className="w-3 h-3" />
+                  </button>
+                </span>
+              </th>
+              <th className="w-[135px] px-4 font-normal text-center">
                 Total Contribution
               </th>
               <th className="w-[200px] px-4 font-normal text-[#00B3FF] rounded-r-[20px] text-center">
@@ -212,6 +249,20 @@ export function LeaderboardTable({
           </button>
         </div>
       )}
+      {showTooltip &&
+        tooltipPosition &&
+        createPortal(
+          <div
+            className="fixed z-50 bg-neutral-800 rounded-lg p-4 text-neutral-200 drop-shadow-[0_0_10px_rgba(0,0,0,0.7)] w-[420px] pointer-events-none"
+            style={{
+              left: `${tooltipPosition.x}px`,
+              top: `${tooltipPosition.y}px`,
+            }}
+          >
+            <div className="text-sm text-neutral-400">{tooltipText}</div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

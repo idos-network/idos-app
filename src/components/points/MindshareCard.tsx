@@ -17,7 +17,7 @@ export default function MindshareCard() {
   } | null>(null);
 
   const tooltipText =
-    'Mindshare data is provided by WallChain. By linking your X account to the idOS App, your X handle will publicly be associated with your points on the idOS Leaderboard. Your wallet address is still private.';
+    'Mindshare data is provided by Wallchain. By linking your X account to the idOS App, your X handle will publicly be associated with your points on the idOS Leaderboard. Your wallet address is still private.';
 
   const handleTooltipMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
