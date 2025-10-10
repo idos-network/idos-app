@@ -11,8 +11,6 @@ export const xOAuthResponseSchema = z.object({
 export type XOAuthResponse = z.infer<typeof xOAuthResponseSchema>;
 
 export const getXOAuth = async (userId: string): Promise<XOAuthResponse> => {
-  const response = await axiosInstance.post(`/user/${userId}/x-oauth`, {
-    id: userId,
-  });
+  const response = await axiosInstance.post(`/user/${userId}/x-oauth`);
   return parseWithSchema(response.data, xOAuthResponseSchema);
 };

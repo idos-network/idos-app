@@ -59,7 +59,7 @@ export default withSentry(async (request: Request, _context: Context) => {
 
     const { data: userData } = await loggedClient.v2.me();
 
-    await setUserXHandle(user.userId, userData.username);
+    await setUserXHandle(user.userId, `@${userData.username}`);
 
     return new Response(buildOAuthPopupHtml('oauth-success', originUrl), {
       status: 200,

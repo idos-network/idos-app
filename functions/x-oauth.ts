@@ -7,9 +7,7 @@ import { withAuth, type AuthenticatedRequest } from './middleware/auth';
 
 async function xOAuthHandler(request: AuthenticatedRequest, _context: Context) {
   try {
-    const data = await request.json();
-
-    if (data.id !== request.userId) {
+    if (!request.userId) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized to authenticate user' }),
         {
@@ -32,7 +30,7 @@ async function xOAuthHandler(request: AuthenticatedRequest, _context: Context) {
       { scope: ['users.read', 'tweet.read'] },
     );
 
-    await saveUserXCodeAndState(data.id, codeVerifier, state);
+    await saveUserXCodeAndState(request.userId, codeVerifier, state);
 
     return new Response(JSON.stringify({ url, codeVerifier, state }), {
       status: 200,

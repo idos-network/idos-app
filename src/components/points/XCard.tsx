@@ -83,7 +83,9 @@ export default function XCard() {
 
       <div className="absolute right-8 z-10">
         {xHandle && !xHandleLoading ? (
-          <div className="text-sm text-[#A0F73C] font-normal font-['Inter']">{`@${xHandle}`}</div>
+          <div className="text-sm text-[#A0F73C] font-normal font-['Inter']">
+            {xHandle}
+          </div>
         ) : (
           <SignInXButton
             disabled={xOAuth.isLoading}
