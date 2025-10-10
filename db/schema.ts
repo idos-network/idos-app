@@ -267,7 +267,10 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
   SELECT 
     ROW_NUMBER() OVER (ORDER BY COALESCE(qpr.quest_points, 0) DESC, COALESCE(NULLIF(u."xHandle", ''), u."name") ASC) as "id",
     u."id" as "userId",
-    COALESCE(NULLIF(u."xHandle", ''), u."name") as "name",
+    CASE 
+      WHEN u."xHandle" IS NOT NULL AND u."xHandle" != '' THEN '@' || u."xHandle"
+      ELSE u."name"
+    END as "name",
     u."xHandle",
     COALESCE(qpr.quest_points, 0) as "questPoints",
     COALESCE(tqp.total_points, 0) * COALESCE(wm."relativeMindshare"::numeric, 0) as "socialPoints",
@@ -287,7 +290,7 @@ export const leaderboardView = pgMaterializedView('leaderboard_view', {
   SELECT 
     (SELECT COUNT(*) FROM ${users}) + ROW_NUMBER() OVER (ORDER BY wu."relativeMindshare" DESC) as "id",
     wu."userId",
-    wu."name",
+    '@' || wu."name" as "name",
     NULL::varchar as "xHandle",
     0 as "questPoints",
     COALESCE(tqp.total_points, 0) * COALESCE(wu."relativeMindshare"::numeric, 0) as "socialPoints",

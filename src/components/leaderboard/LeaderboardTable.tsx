@@ -103,7 +103,20 @@ export function LeaderboardTable({
                   <td className="px-4">
                     {item.rank === 0 ? '-' : `#${item.rank}`}
                   </td>
-                  <td className="px-4 truncate">{item.name}</td>
+                  <td className="px-4 truncate">
+                    {item.name.startsWith('@') ? (
+                      <a
+                        href={`https://x.com/${item.name.slice(1)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-[#C99BFF] hover:underline"
+                      >
+                        {item.name}
+                      </a>
+                    ) : (
+                      item.name
+                    )}
+                  </td>
                   <td className="px-4 font-light text-sm text-neutral-200">
                     <div className="flex items-center justify-center">
                       <img
