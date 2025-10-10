@@ -4,14 +4,16 @@ import { useQuery } from '@tanstack/react-query';
 import { getXOAuth } from '@/api/x-oauth';
 import { useUserId } from '@/hooks/useUserId';
 import { useToast } from '@/hooks/useToast';
+import { useUserXHandle } from '@/hooks/useUserXHandle';
 
-interface XCardProps {
-  onOAuthSuccess?: () => void;
-}
-
-export default function XCard({ onOAuthSuccess }: XCardProps) {
+export default function XCard() {
   const { data: userId, isLoading: userIdLoading } = useUserId();
   const { showToast } = useToast();
+  const {
+    xHandle,
+    isLoading: xHandleLoading,
+    refetch: refetchXHandle,
+  } = useUserXHandle();
 
   const xOAuth = useQuery({
     queryKey: ['xOAuth', userId],
@@ -37,7 +39,7 @@ export default function XCard({ onOAuthSuccess }: XCardProps) {
           if (event.data.type === 'oauth-success') {
             popup?.close();
             window.removeEventListener('message', handleMessage);
-            onOAuthSuccess?.();
+            refetchXHandle();
           }
           if (event.data.type === 'oauth-error') {
             popup?.close();
@@ -60,7 +62,7 @@ export default function XCard({ onOAuthSuccess }: XCardProps) {
   };
 
   return (
-    <div className="w-[445px] h-[98px] rounded-lg border border-neutral-800 flex items-center">
+    <div className="relative w-[350px] h-[98px] rounded-lg border border-neutral-800 flex items-center">
       <div
         className="w-[298px] h-[96px] rounded-l-lg relative overflow-hidden"
         style={{
@@ -75,18 +77,22 @@ export default function XCard({ onOAuthSuccess }: XCardProps) {
         <img
           src="/x-logos.png"
           alt="Rotated image"
-          className="absolute inset-0 w-[220px] h-full object-cover left-[-10px] top-[5px] rotate-25"
+          className="absolute inset-0 w-[220px] h-full object-cover left-[-30px] top-[5px] rotate-25"
         />
       </div>
 
-      <div className="flex-1 -ml-4 z-10">
-        <SignInXButton
-          disabled={xOAuth.isLoading}
-          icon={<XIcon className="w-4 h-4" />}
-          onClick={handleSignInClick}
-        >
-          Sign in with X
-        </SignInXButton>
+      <div className="absolute right-8 z-10">
+        {xHandle && !xHandleLoading ? (
+          <div className="text-sm text-[#A0F73C] font-normal font-['Inter']">{`@${xHandle}`}</div>
+        ) : (
+          <SignInXButton
+            disabled={xOAuth.isLoading}
+            icon={<XIcon className="w-4 h-4" />}
+            onClick={handleSignInClick}
+          >
+            Sign in with
+          </SignInXButton>
+        )}
       </div>
     </div>
   );

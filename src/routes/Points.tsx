@@ -13,11 +13,7 @@ import MindshareCard from '@/components/points/MindshareCard';
 export function Points() {
   const { isCompleted: profileQuestCompleted, isLoading } =
     useProfileQuestCompleted();
-  const {
-    xHandle,
-    isLoading: xHandleLoading,
-    refetch: refetchXHandle,
-  } = useUserXHandle();
+  const { xHandle, isLoading: xHandleLoading } = useUserXHandle();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,20 +60,10 @@ export function Points() {
           <span className="flex font-medium text-xl text-neutral-300 mt-10">
             Talk about idOS on X to get{' '}
             <span className="text-[#A0F73C] ml-1">Social Points</span>
-            <div className="flex text-sm font-normal items-center px-3 rounded-xl bg-[#00FFB933] text-aquamarine-400 ml-4">
-              Coming soon
-            </div>
           </span>
           <div className="flex items-center gap-5">
-            {/* TODO: Update this when social points are implemented */}
-            {xHandle ? (
-              <>
-                <div className="text-lg text-[#A0F73C] font-normal">{`@${xHandle}`}</div>
-                <MindshareCard />
-              </>
-            ) : (
-              <XCard onOAuthSuccess={refetchXHandle} />
-            )}
+            <XCard />
+            {xHandle ? <MindshareCard /> : null}
           </div>
         </div>
 
