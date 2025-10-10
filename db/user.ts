@@ -11,8 +11,9 @@ import {
 } from './referrals';
 import { getUserQuestsSummary } from './user-quests';
 import { getUserName } from 'functions/utils/get-user-name';
-import * as Sentry from "@sentry/aws-serverless";
+import * as Sentry from '@sentry/aws-serverless';
 import { UserNotFoundError } from '@/utils/errors';
+import { oauthXSessions } from './schema';
 
 export async function saveUser(data: any, name: string) {
   const user = saveUserSchema.parse(data);
@@ -124,6 +125,50 @@ export async function setUserPopCredentialId(
     .where(eq(users.id, userId));
 }
 
+export async function setUserXHandle(userId: string, xHandle: string) {
+  return await db.update(users).set({ xHandle }).where(eq(users.id, userId));
+}
+
+export async function saveUserXCodeAndState(
+  userId: string,
+  codeVerifier: string,
+  state: string,
+) {
+  return await db
+    .insert(oauthXSessions)
+    .values({ userId, codeVerifier, state })
+    .onConflictDoUpdate({
+      target: oauthXSessions.userId,
+      set: { codeVerifier, state },
+    });
+}
+
+export async function getUserXCodeAndState(state: string) {
+  const result = await db
+    .select()
+    .from(oauthXSessions)
+    .where(eq(oauthXSessions.state, state));
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  return result[0];
+}
+
+export async function getUserXHandle(userId: string): Promise<string> {
+  const result = await db
+    .select({ xHandle: users.xHandle })
+    .from(users)
+    .where(eq(users.id, userId));
+
+  if (result.length === 0) {
+    return '';
+  }
+
+  return result[0].xHandle || '';
+}
+
 export async function clearUserPopCredentialId(userId: string) {
   return await db
     .update(users)
@@ -169,7 +214,7 @@ export async function generateFaceScanToken(userId: string) {
     user.faceSignTokenCreatedAt &&
     user.faceSignToken &&
     new Date(user.faceSignTokenCreatedAt).getTime() >
-    Date.now() - 30 * 60 * 1000
+      Date.now() - 30 * 60 * 1000
   ) {
     // Token is new and valid
     return user.faceSignToken;
@@ -280,7 +325,7 @@ export async function getUserByFaceSignToken(token: string) {
   if (
     !user.faceSignTokenCreatedAt ||
     new Date(user.faceSignTokenCreatedAt).getTime() <
-    Date.now() - 30 * 60 * 1000
+      Date.now() - 30 * 60 * 1000
   ) {
     return null;
   }

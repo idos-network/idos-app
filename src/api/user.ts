@@ -47,3 +47,8 @@ export const getUserReferralCount = async (userId: string): Promise<number> => {
   const response = await axiosInstance.get(`/user/${userId}/referral-count`);
   return parseWithSchema(response.data, z.number());
 };
+
+export const getUserXHandle = async (userId: string): Promise<string> => {
+  const response = await axiosInstance.get(`/user/${userId}/x-handle`);
+  return parseWithSchema(response.data, z.string());
+};
